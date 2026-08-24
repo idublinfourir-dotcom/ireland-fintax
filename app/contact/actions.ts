@@ -3,6 +3,7 @@
 import { after } from "next/server";
 import { query } from "../lib/db";
 import { createClient } from "../lib/supabase/server";
+import { isSupabaseConfigured } from "../lib/supabase/config";
 import { allowPublicAction } from "../lib/rate-limit";
 import { site } from "../lib/content";
 
@@ -126,6 +127,7 @@ export async function submitEnquiry(
   // logged-out (public) submissions stay null. Read via the SSR server client.
   let userId: string | null = null;
   try {
+    if (!isSupabaseConfigured()) throw new Error("no auth backend configured");
     const supabase = await createClient();
     const {
       data: { user },

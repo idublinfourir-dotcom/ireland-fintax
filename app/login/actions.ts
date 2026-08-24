@@ -2,6 +2,10 @@
 
 import { redirect } from "next/navigation";
 import { createClient } from "../lib/supabase/server";
+import {
+  isSupabaseConfigured,
+  SUPABASE_NOT_CONFIGURED,
+} from "../lib/supabase/config";
 import { query } from "../lib/db";
 
 export interface AuthState {
@@ -24,6 +28,10 @@ export async function login(
 
   if (!email || !password) {
     return { error: "Enter your email and password.", values: { email } };
+  }
+
+  if (!isSupabaseConfigured()) {
+    return { error: SUPABASE_NOT_CONFIGURED, values: { email } };
   }
 
   const supabase = await createClient();

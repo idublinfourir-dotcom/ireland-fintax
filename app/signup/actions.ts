@@ -4,6 +4,10 @@ import { headers } from "next/headers";
 import { createClient } from "../lib/supabase/server";
 import { createAdminClient } from "../lib/supabase/admin";
 import { allowPublicAction } from "../lib/rate-limit";
+import {
+  isSupabaseConfigured,
+  SUPABASE_NOT_CONFIGURED,
+} from "../lib/supabase/config";
 
 export interface SignupState {
   error?: string;
@@ -27,6 +31,8 @@ export async function signup(
     return { error: "Please enter a valid email address.", values };
   if (password.length < 8)
     return { error: "Password must be at least 8 characters.", values };
+
+  if (!isSupabaseConfigured()) return { error: SUPABASE_NOT_CONFIGURED, values };
 
   const allowed = await allowPublicAction({
     action: "signup",

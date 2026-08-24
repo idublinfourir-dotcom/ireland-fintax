@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { createClient } from "../../lib/supabase/server";
+import { isSupabaseConfigured } from "../../lib/supabase/config";
 import { query } from "../../lib/db";
 import { claimVerifiedGuestEnquiries } from "../../lib/enquiry-ownership";
 
@@ -10,6 +11,14 @@ import { claimVerifiedGuestEnquiries } from "../../lib/enquiry-ownership";
  */
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url);
+
+  // No backend: nothing can have issued this code. Bounce to the same notice
+  // screen every other OAuth failure lands on.
+  if (!isSupabaseConfigured()) {
+    console.error("[auth] oauth: no Supabase backend configured");
+    return NextResponse.redirect(`${origin}/login?notice=oauth`);
+  }
+
   const code = searchParams.get("code");
   const rawNext = searchParams.get("next") ?? "";
   const next =

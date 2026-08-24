@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { isSupabaseConfigured } from "./config";
 
 const PROTECTED = ["/portal", "/admin"];
 
@@ -12,6 +13,20 @@ const PROTECTED = ["/portal", "/admin"];
  */
 export async function updateSession(request: NextRequest) {
   let response = NextResponse.next({ request });
+
+  // No backend configured: nothing to refresh, and nobody can be signed in, so
+  // send the protected areas to /login instead of constructing a client that
+  // would throw.
+  if (!isSupabaseConfigured()) {
+    const { pathname } = request.nextUrl;
+    if (PROTECTED.some((p) => pathname.startsWith(p))) {
+      const url = request.nextUrl.clone();
+      url.pathname = "/login";
+      url.searchParams.set("next", pathname);
+      return NextResponse.redirect(url);
+    }
+    return response;
+  }
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
