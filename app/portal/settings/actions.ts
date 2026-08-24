@@ -3,6 +3,10 @@
 import { revalidatePath } from "next/cache";
 import { requireClient } from "../../lib/supabase/guards";
 import { createClient } from "../../lib/supabase/server";
+import {
+  isSupabaseConfigured,
+  SUPABASE_NOT_CONFIGURED,
+} from "../../lib/supabase/config";
 import { query } from "../../lib/db";
 import {
   validateDisplayName,
@@ -24,6 +28,7 @@ export async function updateNameAction(
   if (invalid) return { error: invalid };
 
   try {
+    if (!isSupabaseConfigured()) return { error: SUPABASE_NOT_CONFIGURED };
     const supabase = await createClient();
     const { error } = await supabase.auth.updateUser({
       data: { full_name: fullName },
@@ -58,6 +63,7 @@ export async function updatePasswordAction(
   if (invalid) return { error: invalid };
 
   try {
+    if (!isSupabaseConfigured()) return { error: SUPABASE_NOT_CONFIGURED };
     const supabase = await createClient();
     const { error } = await supabase.auth.updateUser({ password });
     if (error) throw error;

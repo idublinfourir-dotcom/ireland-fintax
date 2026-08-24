@@ -1,9 +1,11 @@
 import { redirect } from "next/navigation";
 import { createClient } from "./server";
+import { isSupabaseConfigured } from "./config";
 import { query } from "../db";
 
-/** Current authenticated user, or null. */
+/** Current authenticated user, or null (also null when no backend is configured). */
 export async function getUser() {
+  if (!isSupabaseConfigured()) return null;
   const supabase = await createClient();
   const {
     data: { user },
@@ -27,6 +29,9 @@ export type SessionUser = {
  * stays correct either way. Returns null when signed out.
  */
 export async function getSessionUser(): Promise<SessionUser | null> {
+  // No backend yet → render the site signed-out rather than throwing. The root
+  // layout calls this on every route, so a throw here 500s the entire site.
+  if (!isSupabaseConfigured()) return null;
   const supabase = await createClient();
   const { data } = await supabase.auth.getClaims();
   const claims = data?.claims;
@@ -96,10 +101,7 @@ export async function requireClient() {
  * is_admin() policy footgun.
  */
 export async function requireAdmin() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getUser();
   if (!user) redirect(`/login?next=${encodeURIComponent("/admin")}`);
 
   const { rows } = await query<{ role: string }>(

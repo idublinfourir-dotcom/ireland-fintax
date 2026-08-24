@@ -2,10 +2,14 @@
 
 import { useState } from "react";
 import { createClient } from "../lib/supabase/client";
+import { isSupabaseConfigured } from "../lib/supabase/config";
 
 /** "Continue with Google" — starts the Supabase OAuth (PKCE) flow. */
 export function GoogleButton() {
   const [loading, setLoading] = useState(false);
+
+  // Nothing to sign in to yet — render nothing rather than a button that throws.
+  if (!isSupabaseConfigured()) return null;
 
   async function handleGoogle() {
     setLoading(true);
