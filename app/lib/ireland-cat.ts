@@ -3,7 +3,7 @@
 
    PURE FUNCTIONS ONLY — no React, no I/O — so every figure is unit-testable.
    The rates/thresholds/reliefs here are the CODE FALLBACK: the live values are
-   stored in Supabase (calculator_settings, key 'cat') and edited from
+   stored in MongoDB (calculator_settings, _id 'cat') and edited from
    /admin/cat-rates. cat-data.ts reads the DB and falls back to these constants
    so the tool never renders broken numbers.
 

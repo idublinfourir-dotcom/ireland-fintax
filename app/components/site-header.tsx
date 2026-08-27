@@ -135,12 +135,12 @@ function Logo({ onClick }: { onClick?: () => void }) {
     <Link href="/" className="flex items-center" onClick={onClick}>
       <span className="flex flex-col leading-none">
         <span className="font-display text-lg font-semibold tracking-tight text-ink">
-          AIBN
+          IRELAND
         </span>
-        {/* tracking tightened from 0.16em: "Chartered Accountants Ltd" is 4
-            characters longer and the nav row is already tight at xl. */}
-        <span className="mt-0.5 whitespace-nowrap text-[10px] font-medium uppercase tracking-[0.1em] text-muted">
-          Chartered Accountants Ltd
+        {/* Back to the wider 0.16em: the descriptor is one short word now, so
+            the nav row has the room the old four-word lockup did not. */}
+        <span className="mt-0.5 whitespace-nowrap text-[10px] font-medium uppercase tracking-[0.16em] text-muted">
+          Fintax
         </span>
       </span>
     </Link>

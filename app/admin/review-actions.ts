@@ -22,10 +22,10 @@ export async function markCalculatorReviewedAction(formData: FormData): Promise<
 
   if (key === "cgt") {
     // CGT keeps its reviewedAt in its own collection. Upserted, like
-    // markCalculatorReviewed does for the other five: with no document yet the
-    // SQL UPDATE this replaces silently did nothing, so the reminder could not
-    // be dismissed for an un-customised CGT. A config-less document leaves the
-    // code defaults authoritative, so no rate moves.
+    // markCalculatorReviewed does for the other five: a plain update would
+    // silently do nothing while no document exists, leaving the reminder
+    // impossible to dismiss on an un-customised CGT. A config-less document
+    // leaves the code defaults authoritative, so no rate moves.
     try {
       const settings = await cgtSettingsCollection();
       await settings.updateOne(

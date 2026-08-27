@@ -9,8 +9,7 @@ import { isAuthConfigured } from "../../lib/auth/config";
  * session and claims any matching guest enquiries (the `signIn` event in
  * auth.ts), then forwards the user on.
  *
- * Under Supabase this took a `token_hash` + `type` pair and called verifyOtp;
- * the token is now issued and redeemed by this app — see app/lib/auth/tokens.ts.
+ * The token is issued and redeemed by this app — see app/lib/auth/tokens.ts.
  */
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url);

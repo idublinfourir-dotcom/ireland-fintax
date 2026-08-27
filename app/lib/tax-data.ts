@@ -7,7 +7,7 @@
 
    The stored shape has no Infinity: the open-ended upper bound of the last USC
    band and the last pension age band are stored as null and converted back on
-   read. Kept from the jsonb original so an exported config stays portable. */
+   read, so an exported config stays portable JSON. */
 
 import { taxRatesCollection } from "./collections";
 import { isDbConfigured } from "./db-config";

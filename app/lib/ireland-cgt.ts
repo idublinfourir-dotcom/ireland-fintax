@@ -3,7 +3,7 @@
 
    PURE FUNCTIONS ONLY — no React, no I/O — so every figure is unit-testable.
    The rates/thresholds and the indexation multiplier table here are the CODE
-   FALLBACK: the live values are stored in Supabase (cgt_settings +
+   FALLBACK: the live values are stored in MongoDB (cgt_settings +
    cgt_multipliers) and edited from /admin/cgt-rates. cgt-data.ts reads the DB
    and falls back to these constants so the tool never renders broken numbers.
 

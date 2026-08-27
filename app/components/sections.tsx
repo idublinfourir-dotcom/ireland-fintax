@@ -43,7 +43,7 @@ export function Hero() {
         <div className="max-w-4xl">
           <span className="animate-fade-up block">
             <Eyebrow tone="dark">
-              Chartered Accountants &amp; Advisors · Ireland
+              Finance, Tax &amp; Advisory · Ireland
             </Eyebrow>
           </span>
           <h1 className="animate-fade-up mt-7 font-display text-5xl font-bold leading-[0.95] tracking-[-0.03em] text-balance [animation-delay:80ms] sm:text-6xl lg:text-7xl">
@@ -403,7 +403,7 @@ const aiCapabilities: { icon: AiIcon; title: string; note: string }[] = [
   {
     icon: "tax",
     title: "Tax intelligence",
-    note: "Spot reliefs you’re missing, checked by a chartered accountant.",
+    note: "Spot reliefs you’re missing, checked by our team.",
   },
 ];
 
@@ -567,7 +567,7 @@ export function Process() {
 const testimonials = [
   {
     quote:
-      "AIBN Chartered Accountants Ltd took our year-end from a three-week scramble to a non-event. The books are just… done.",
+      "Ireland Fintax took our year-end from a three-week scramble to a non-event. The books are just… done.",
     name: "Priya Shah",
     role: "Founder, Bloom Studio",
   },

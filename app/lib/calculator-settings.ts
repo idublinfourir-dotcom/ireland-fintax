@@ -11,7 +11,7 @@
    (cgt_settings + cgt_multipliers); the four Project-B calculators share this.
 
    The config is stored as a real subdocument rather than a JSON string, so it
-   arrives back already parsed — the same as the jsonb column it replaces. */
+   arrives back already parsed and stays queryable. */
 
 import { calculatorSettingsCollection } from "./collections";
 import { isDbConfigured } from "./db-config";

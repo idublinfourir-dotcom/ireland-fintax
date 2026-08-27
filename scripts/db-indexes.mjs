@@ -1,7 +1,7 @@
 // Create every index the app relies on: node scripts/db-indexes.mjs
 //
-// This is the MongoDB equivalent of applying db/schema.sql — MongoDB creates
-// collections on first write, so indexes are the only structure to declare.
+// This is the migration step: MongoDB creates collections on first write, so
+// indexes are the only structure there is to declare.
 // Re-runnable: createIndex is a no-op when an index with the same name and
 // spec already exists.
 //
@@ -72,7 +72,7 @@ const INDEXES = {
     [{ area: 1, changedAt: -1 }, { name: "rate_audit_area_idx" }],
   ],
   request_rate_limits: [
-    // Replaces the periodic DELETE the SQL version ran on every check.
+    // Keeps the collection bounded with no scheduler and no sweep query.
     [
       { windowStart: 1 },
       { expireAfterSeconds: EIGHT_DAYS, name: "rate_limits_ttl" },

@@ -49,10 +49,9 @@ export async function getMortgageData(): Promise<MortgageData> {
 
     if (productDocs.length === 0) return STATIC;
 
-    /* The rate fields are stored as numbers now (the pg numeric columns arrived
-       as strings and every one of them was wrapped in Number()). The optional
-       ones stay `undefined` rather than null, which is what LenderProduct
-       expects and what the maths distinguishes on. */
+    /* The rate fields are stored as numbers, so nothing needs parsing here.
+       The optional ones stay `undefined` rather than null, which is what
+       LenderProduct expects and what the maths distinguishes on. */
     const products: LenderProduct[] = productDocs.map((r) => ({
       id: r._id.toHexString(),
       lender: r.lender,

@@ -31,5 +31,9 @@
     ".next/dev/types/**/*.ts",
     "**/*.mts"
   ],
-  "exclude": ["node_modules"]
+  // e2e/ is gitignored local QA with its own runner, and @playwright/test is
+  // installed --no-save — so type-checking it here makes `npm run build` fail
+  // on a fresh clone with "Cannot find module '@playwright/test'". Playwright
+  // transpiles and checks those specs itself.
+  "exclude": ["node_modules", "e2e"]
 }

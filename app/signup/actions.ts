@@ -6,7 +6,13 @@ import { usersCollection } from "../lib/collections";
 import { allowPublicAction } from "../lib/rate-limit";
 import { hashPassword } from "../lib/auth/password";
 import { createVerificationToken } from "../lib/auth/tokens";
-import { AUTH_NOT_CONFIGURED, isAuthConfigured, roleForEmail } from "../lib/auth/config";
+import {
+  AUTH_NOT_CONFIGURED,
+  isAuthConfigured,
+  isGoogleEnabled,
+  isSignupEmailConfigured,
+  roleForEmail,
+} from "../lib/auth/config";
 import { sendTemplateEmail } from "../lib/emailjs";
 import { site } from "../lib/content";
 
@@ -79,6 +85,20 @@ export async function signup(
     return { error: "Password must be at least 8 characters.", values };
 
   if (!isAuthConfigured()) return { error: AUTH_NOT_CONFIGURED, values };
+
+  /* Refuse before writing anything. The confirmation link is the second half
+     of this flow, not a nicety: without it the account is created, cannot be
+     confirmed, and therefore can never sign in — while the form cheerfully
+     says "check your email". Better to say so than to leave a dead account
+     behind and blame the user's inbox. */
+  if (!isSignupEmailConfigured()) {
+    return {
+      error: isGoogleEnabled()
+        ? "Email sign-up is unavailable right now — we can’t send the confirmation link. Use “Continue with Google” instead."
+        : "Sign-up is unavailable right now — we can’t send the confirmation link. Please contact us and we’ll set your account up.",
+      values,
+    };
+  }
 
   const allowed = await allowPublicAction({
     action: "signup",

@@ -1,12 +1,12 @@
 export const site = {
-  name: "AIBN Chartered Accountants Ltd",
+  name: "Ireland Fintax",
   // Canonical host. `www` is canonical: the apex 308-redirects to it in Vercel,
   // so this must carry the www prefix or every canonical URL and sitemap entry
   // points at a redirect. Drives metadataBase, sitemap.xml and robots.txt.
-  url: "https://www.aibncharteredaccountants.ie",
+  url: "https://www.irelandfintax.ie",
   // NOTE: this mailbox needs email forwarding (or a mail plan) configured at the
   // registrar before launch, or enquiries to it bounce.
-  email: "hello@aibncharteredaccountants.ie",
+  email: "hello@irelandfintax.ie",
   phone: "+353 (0)1 234 5678",
   phoneHref: "tel:+35312345678",
   address: ["The Chase, Carmanhall Road", "Sandyford, Dublin 18, D18 Y3X2"],
@@ -626,9 +626,9 @@ export const serviceCategories: ServiceCategory[] = [
     slug: "ai",
     title: "AI",
     blurb:
-      "AI on real finance problems: forecasting, automation, tax. A chartered accountant signs off every output.",
+      "AI on real finance problems: forecasting, automation, tax. Our team signs off every output.",
     overview:
-      "We put AI to work on real finance problems. Where it adds genuine value (forecasting, automation, tax analysis) we deploy it; where it doesn’t, we say so. Practical applications, measurable results, with a chartered accountant on every output.",
+      "We put AI to work on real finance problems. Where it adds genuine value (forecasting, automation, tax analysis) we deploy it; where it doesn’t, we say so. Practical applications, measurable results, with an expert on every output.",
     kind: "services",
     items: [
       {
@@ -652,7 +652,7 @@ export const serviceCategories: ServiceCategory[] = [
           "Leaders making data-led decisions",
         ],
         context:
-          "Most finance teams are rich in data and poor in time to interrogate it. The monthly numbers tell you what already happened; the questions that matter (will cash hold up, which customers are slipping, where margin is leaking) need someone to dig, and the digging rarely gets done. That’s the gap AI is genuinely good at closing.\n\nWe apply it to your own figures: cash-flow and revenue forecasting built on your real patterns, anomaly detection that flags the odd transaction early, and reporting that stays current instead of being rebuilt every month. A chartered accountant reviews what it produces, because a forecast you’re going to act on needs judgement behind it, not just output.",
+          "Most finance teams are rich in data and poor in time to interrogate it. The monthly numbers tell you what already happened; the questions that matter (will cash hold up, which customers are slipping, where margin is leaking) need someone to dig, and the digging rarely gets done. That’s the gap AI is genuinely good at closing.\n\nWe apply it to your own figures: cash-flow and revenue forecasting built on your real patterns, anomaly detection that flags the odd transaction early, and reporting that stays current instead of being rebuilt every month. Our team reviews what it produces, because a forecast you’re going to act on needs judgement behind it, not just output.",
       },
       {
         slug: "business-automation",
@@ -683,14 +683,14 @@ export const serviceCategories: ServiceCategory[] = [
         blurb:
           "AI-assisted tax analysis and optimisation: spot reliefs, model scenarios and cut compliance time.",
         overview:
-          "Tax work is full of repetition and pattern-matching, the kind of thing AI genuinely helps with. We use it to scan for reliefs you’re missing, model the tax impact of decisions, and speed up compliance across the Irish tax regime, always with a chartered accountant signing off the output.",
+          "Tax work is full of repetition and pattern-matching, the kind of thing AI genuinely helps with. We use it to scan for reliefs you’re missing, model the tax impact of decisions, and speed up compliance across the Irish tax regime, always with our team signing off the output.",
         included: [
           "Relief discovery: allowances and reliefs surfaced by AI",
           "Scenario modelling: the tax impact of decisions, mapped",
           "Compliance checks: automated across the Irish tax regime",
           "Data extraction: documents and figures pulled automatically",
           "Risk flagging: anomalies caught before Revenue does",
-          "Expert sign-off: a chartered accountant reviews every output",
+          "Expert sign-off: our team reviews every output",
         ],
         bestFor: [
           "Businesses with complex tax positions",
@@ -698,7 +698,7 @@ export const serviceCategories: ServiceCategory[] = [
           "Anyone leaving reliefs unclaimed",
         ],
         context:
-          "Irish tax is detailed, changes every Budget, and is full of reliefs that go unclaimed simply because nobody had time to check: R&D, capital allowances, various sector-specific measures. Much of the work of finding them is pattern-matching across documents and prior returns, which is exactly where AI earns its place.\n\nWe use it to scan for reliefs and allowances you may be missing, model the tax impact of a decision before you make it, and speed up routine compliance across the Irish regime. Nothing goes out on AI’s say-so, though: a chartered accountant reviews and signs off every position, because with Revenue the responsibility is yours and the answer has to be right.",
+          "Irish tax is detailed, changes every Budget, and is full of reliefs that go unclaimed simply because nobody had time to check: R&D, capital allowances, various sector-specific measures. Much of the work of finding them is pattern-matching across documents and prior returns, which is exactly where AI earns its place.\n\nWe use it to scan for reliefs and allowances you may be missing, model the tax impact of a decision before you make it, and speed up routine compliance across the Irish regime. Nothing goes out on AI’s say-so, though: our team reviews and signs off every position, because with Revenue the responsibility is yours and the answer has to be right.",
       },
     ],
   },

@@ -4,9 +4,9 @@ import { verificationTokensCollection } from "../collections";
 
 /* Signup email-confirmation tokens. SERVER ONLY.
  *
- * Supabase issued and verified these; with Auth.js the app owns them. The
- * token in the emailed link is the only copy — the database holds its SHA-256,
- * so a leaked dump cannot be replayed into a confirmed account. */
+ * The app issues and redeems these itself. The token in the emailed link is
+ * the only copy — the database holds its SHA-256, so a leaked dump cannot be
+ * replayed into a confirmed account. */
 
 /** How long a confirmation link stays usable. */
 const TTL_MS = 24 * 60 * 60 * 1000;

@@ -10,7 +10,6 @@ const isDev = process.env.NODE_ENV !== "production";
 // connect-src is 'self' alone: the database is reached server-side only, and
 // Google sign-in is a full-page redirect through this app's own
 // /api/auth/callback/google — neither is a browser fetch to a foreign origin.
-// (The Supabase host that used to be allow-listed here is gone with it.)
 const csp = [
   `default-src 'self'`,
   `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,
@@ -45,6 +44,15 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  /* A stray package-lock.json in the home directory above this one makes Next
+     infer THAT as the workspace root, which is where it then traces server
+     files from and where Turbopack roots the dev server. Pin both to this
+     project. `process.cwd()` rather than __dirname/import.meta: next.config.ts
+     is loaded as CJS or ESM depending on the runner, and next build / next dev
+     always run from the project root. */
+  outputFileTracingRoot: process.cwd(),
+  turbopack: { root: process.cwd() },
+
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
   },

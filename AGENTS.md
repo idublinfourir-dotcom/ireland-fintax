@@ -1,4 +1,4 @@
-## AIBN Chartered Accountants Ltd — Agent Instructions
+## Ireland Fintax — Agent Instructions
 
 Persistent rules for repo. Apply **every Agent session** automatically.
 Git push/merge workflow: see `CLAUDE.md`.
@@ -6,7 +6,7 @@ Git push/merge workflow: see `CLAUDE.md`.
 
 ## Project
 
-Marketing site for **AIBN Chartered Accountants Ltd** — partner-led chartered accountancy practice (audit, tax, bookkeeping, payroll, advisory). UK copy + tone: professional, plain English, no jargon.
+Marketing site for **Ireland Fintax** — partner-led finance and tax practice (audit, tax, bookkeeping, payroll, advisory). UK copy + tone: professional, plain English, no jargon.
 
 
 
@@ -118,8 +118,7 @@ Whenever anything else gets hidden rather than deleted, add a row here.
   on every route. Guards live in `lib/auth/guards.ts` (`requireUser`,
   `requireAdmin`, `requireClient`, `getSessionUser`).
 - **Roles.** `ADMIN_EMAILS` (comma-separated, case-insensitive) is the
-  allow-list, replacing the `handle_new_user` trigger. Applied **once, at
-  account creation**, on every sign-in path — password or Google — by
+  allow-list. Applied **once, at account creation**, on every sign-in path — password or Google — by
   `roleForEmail` in `lib/auth/config.ts`. Nothing else writes `role`, so a
   client cannot self-promote. The role rides in the JWT, so a role edited
   directly in the database takes effect on that user's next sign-in. Change an
@@ -130,12 +129,21 @@ Whenever anything else gets hidden rather than deleted, add a row here.
   it through the `verify-email` Credentials provider, which marks the address
   proved and signs the user in. `authorize` refuses to sign in an account whose
   `emailVerified` is still null. Never relax that: confirmation is the boundary
-  that lets guest enquiries be claimed by address.
+  that lets guest enquiries be claimed by address. The action refuses up front
+  when the `EmailJs_*` keys that send the link are missing
+  (`isSignupEmailConfigured`) — mail is best-effort everywhere else in this app,
+  but here the link is the second half of the transaction, and creating an
+  account nobody can ever confirm is worse than declining.
 - **Google OAuth** is Auth.js' own provider. Google's authorized redirect URI is
-  **this app's** `<origin>/api/auth/callback/google` — no longer a Supabase URL.
+  **this app's** `<origin>/api/auth/callback/google`, one entry per host.
   `allowDangerousEmailAccountLinking` is on deliberately: Google verifies
-  addresses, and it preserves the behaviour where signing in with Google reaches
-  the account you had already registered. `/auth/callback` is now only a
+  addresses, so signing in with Google reaches the account you already
+  registered instead of dead-ending on a duplicate. Auth.js itself creates and links OAuth
+  accounts with `emailVerified: null` — it only stamps that field for its own
+  Email provider — so the `signIn` event in `auth.ts` sets it for the `google`
+  provider. Don't remove that: without it a password set later on the settings
+  page can never sign in, and signup mistakes a live Google account for an
+  abandoned registration and overwrites its credentials. `/auth/callback` is now only a
   role-router (admins → /admin, else /portal); it does no code exchange.
   The button hides itself when `AUTH_GOOGLE_ID`/`AUTH_GOOGLE_SECRET` are unset —
   the flag is read server-side and threaded down as a prop, because the browser
@@ -161,9 +169,9 @@ Whenever anything else gets hidden rather than deleted, add a row here.
   browser for the header. `/admin` and `/portal` render own shells (sidebar +
   topbar); `ChromeGate` hides public header/footer there.
 - **One data path.** Every read and write goes through `lib/collections.ts`
-  (typed accessors over `lib/mongodb.ts`). There is no public database API to
-  defend, so the RLS/policy machinery the Postgres schema carried is gone and
-  is not needed — see "What is gone" in `db/schema.md`.
+  (typed accessors over `lib/mongodb.ts`). There is no client-side database
+  access and no public database API, so every read and write is already behind
+  server code and a session check.
 - **Case-insensitive email lookups need the collation on the QUERY, not just
   the index** (`CASE_INSENSITIVE` in `lib/collections.ts`). Omitting it silently
   matches case-sensitively instead of erroring. Two places rely on it: claiming

@@ -51,8 +51,8 @@ export async function countRecentRequests(email: string): Promise<number> {
       email,
       createdAt: { $gt: new Date(Date.now() - 60 * 60 * 1000) },
     },
-    // Addresses are stored as the requester typed them, so this stands in for
-    // `lower(email) = lower($1)`. It must match the collated index.
+    // Addresses are stored as the requester typed them, so the match has to
+    // ignore case. The collation must match the collated index.
     { collation: CASE_INSENSITIVE },
   );
 }
@@ -80,9 +80,9 @@ export async function getToolkitRequests(limit = 200): Promise<ToolkitRequest[]>
   const requests = await toolkitRequestsCollection();
   const docs = await requests
     .find()
-    // "pending" sorts before "sent" alphabetically, which is the order the SQL
-    // spelled out as `(status = 'pending') desc`. Kept explicit here so a new
-    // status value cannot silently reorder the queue.
+    // "pending" sorts before "sent" alphabetically, which happens to be the
+    // order we want. Stated explicitly so a new status value cannot silently
+    // reorder the queue.
     .sort({ status: 1, createdAt: -1 })
     .limit(limit)
     .toArray();

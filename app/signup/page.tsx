@@ -5,7 +5,7 @@ import { isGoogleEnabled } from "../lib/auth/config";
 
 export const metadata: Metadata = {
   title: "Create an account",
-  description: "Create your AIBN Chartered Accountants Ltd client account.",
+  description: "Create your Ireland Fintax client account.",
 };
 
 export default function SignupPage() {
@@ -14,7 +14,7 @@ export default function SignupPage() {
       <PageHero
         eyebrow="Client area"
         title="Create your account."
-        lede="Set up access to your AIBN Chartered Accountants Ltd client area in under a minute."
+        lede="Set up access to your Ireland Fintax client area in under a minute."
         image="tower"
       />
       <Container className="py-16 sm:py-20">

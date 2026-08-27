@@ -141,7 +141,7 @@ function parseYearForm(formData: FormData): { year: number; rates: YearRates } {
   return { year, rates };
 }
 
-/** Save one tax year's full rate config (upsert into tax_rates as JSONB). */
+/** Save one tax year's full rate config (upsert into tax_rates). */
 export async function saveTaxYear(
   _prev: ActionState,
   formData: FormData,

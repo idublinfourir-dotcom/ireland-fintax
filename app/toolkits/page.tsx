@@ -6,13 +6,13 @@ import { ToolkitBrowser } from "../components/toolkit-browser";
 export const metadata: Metadata = {
   title: "Founders Hub: memos, templates, tax & VAT forms",
   description:
-    "Practical resources for founders and business owners: memos, templates, tax forms, VAT forms and business setup guides for Ireland and the UK, prepared by chartered accountants.",
+    "Practical resources for founders and business owners: memos, templates, tax forms, VAT forms and business setup guides for Ireland and the UK, prepared by our team.",
 };
 
 const notes = [
   {
     title: "Prepared by accountants",
-    body: "Every memo, template and walkthrough is drafted and reviewed by our chartered accountants, the same standards we apply to client work.",
+    body: "Every memo, template and walkthrough is drafted and reviewed by our team, the same standards we apply to client work.",
   },
   {
     title: "Ireland & UK focused",

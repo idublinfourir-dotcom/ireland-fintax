@@ -8,8 +8,8 @@
    - Pending state: the button shows a spinner + "Sending…" and both the box
      and button disable while the request is in flight.
 
-   `import type` keeps the server-only enquiry-messages module (pg) out of this
-   client bundle. */
+   `import type` keeps the server-only enquiry-messages module — and the
+   MongoDB driver behind it — out of this client bundle. */
 
 import { useOptimistic, useRef } from "react";
 import { useFormStatus } from "react-dom";
@@ -50,18 +50,18 @@ function Bubble({
   const mine = item.sender === viewer;
   // Short mark, not the full legal name: this caption repeats under every
   // admin message and the full name wraps the bubble column.
-  const label = item.sender === "admin" ? "AIBN" : clientName;
+  const label = item.sender === "admin" ? "Ireland Fintax" : clientName;
   return (
     <div className={`flex items-end gap-2 ${mine ? "flex-row-reverse" : "flex-row"}`}>
       <span
         aria-hidden="true"
         className={`grid h-7 w-7 shrink-0 place-items-center rounded-full font-semibold ${
           item.sender === "admin"
-            ? "bg-navy-900 text-[8px] tracking-tight text-white"
+            ? "bg-navy-900 text-[10px] text-white"
             : "bg-primary-100 text-[10px] text-primary-700"
         }`}
       >
-        {item.sender === "admin" ? "AIBN" : initials(clientName)}
+        {item.sender === "admin" ? "IF" : initials(clientName)}
       </span>
       <div className={`flex max-w-[80%] flex-col ${mine ? "items-end" : "items-start"}`}>
         <div

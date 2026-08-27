@@ -8,10 +8,9 @@ import type { UserRole } from "../collections";
  * Every function here reads the signed session JWT locally — no database round
  * trip, no network call — so the root layout can call getSessionUser() on every
  * request without cost. The role travels in the token, stamped at sign-in from
- * the account document, which is the same trade Supabase's
- * `custom_access_token_hook` made. One consequence, unchanged from before: a
- * role edited directly in the database takes effect on that user's next
- * sign-in, not immediately. */
+ * the account document. One consequence of that trade: a role edited directly
+ * in the database takes effect on that user's next sign-in, not
+ * immediately. */
 
 /** The authenticated account, as the app uses it. */
 export interface AuthUser {

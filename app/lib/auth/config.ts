@@ -23,8 +23,7 @@ export const AUTH_NOT_CONFIGURED =
 
 /**
  * Is "Continue with Google" available? Auth.js talks to Google directly, so
- * this needs the OAuth client credentials in this app's own env — under
- * Supabase they lived in the Supabase dashboard instead.
+ * this needs the OAuth client credentials in this app's own env.
  *
  * The sign-in pages read this server-side and hide the button when it is
  * false, rather than rendering a button that can only fail.
@@ -36,11 +35,33 @@ export function isGoogleEnabled(): boolean {
 }
 
 /**
+ * Can a signup confirmation link actually be sent?
+ *
+ * Signing up by email is a two-part transaction: create the account, then mail
+ * a link that proves the address. Mail is best-effort everywhere else in this
+ * app — a failed enquiry notification still leaves the enquiry stored — but
+ * here the link IS the second half of the flow. Without it the account can
+ * never be confirmed, and `authorize` refuses to sign in an unconfirmed
+ * account, so the person is left holding an address they cannot use.
+ *
+ * Checked BEFORE the account is written, so a misconfigured deployment turns
+ * signup away honestly instead of creating a dead account and telling the user
+ * to check an inbox nothing was sent to.
+ */
+export function isSignupEmailConfigured(): boolean {
+  return Boolean(
+    process.env.EmailJs_Gmail_serviceid_KEY?.trim() &&
+      process.env.EmailJs_PUBLIC_KEY?.trim() &&
+      process.env.EmailJs_Private_KEY?.trim() &&
+      process.env.EmailJs_Verify_Template_KEY?.trim(),
+  );
+}
+
+/**
  * THE ADMIN ALLOW-LIST. `ADMIN_EMAILS` is a comma-separated list of addresses;
  * anyone signing up with one of them gets `role: "admin"`, everyone else gets
- * `client`. This replaces the `handle_new_user` Postgres trigger and is the
- * single source of truth for the role, on every sign-in path — password or
- * Google.
+ * `client`. It is the single source of truth for the role, applied on every
+ * sign-in path — password or Google.
  *
  * A role is only ever assigned at account creation, and nothing in the app
  * writes `role` afterwards, so a client cannot self-promote. To change an
