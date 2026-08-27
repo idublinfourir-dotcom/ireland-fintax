@@ -227,11 +227,21 @@ Whenever anything else gets hidden rather than deleted, add a row here.
 - `app/contact/actions.ts` saves the enquiry, then sends email through
   `app/lib/emailjs.ts` (the shared **EmailJS REST** sender, also used by the
   signup confirmation link), wrapped in Next's `after()` so it never blocks the
-  form response (best-effort — failures logged, not surfaced). Keys:
-  `EmailJs_Gmail_serviceid_KEY`, `EmailJs_Template_KEY`,
-  `EmailJs_Verify_Template_KEY`, `EmailJs_PUBLIC_KEY`, `EmailJs_Private_KEY`,
-  plus `ENQUIRY_TO_EMAIL` (the monitored inbox). All must be set or the email
-  step is skipped and only the document is written — never hardcode the
+  form response (best-effort — failures logged, not surfaced). Shared keys:
+  `EmailJs_Gmail_serviceid_KEY`, `EmailJs_PUBLIC_KEY`, `EmailJs_Private_KEY`.
+  **Three separate templates**, each written for a different reader, each
+  independently optional:
+  - `EmailJs_Template_KEY` + `ENQUIRY_TO_EMAIL` — the notification to the firm.
+    Either one unset skips it; the enquiry document is still written.
+  - `EmailJs_AutoReply_Template_KEY` — the acknowledgement to the enquirer.
+  - `EmailJs_Verify_Template_KEY` — the signup confirmation link. Unset makes
+    email signup refuse up front (see the signup bullet above).
+
+  Every template's "To email" field must be `{{to_email}}` or EmailJS returns
+  422; the app always passes the recipient under that name, whoever it is. Note
+  `company` means the FIRM in the acknowledgement and confirmation templates and
+  the ENQUIRER'S employer in the notification template — same variable, opposite
+  meanings, because each addresses a different reader. Never hardcode the
   recipient back into the source.
 - Public signup and contact submissions use DB-backed fixed-window throttling
   from `app/lib/rate-limit.ts` (per IP + per normalised email). Only SHA-256

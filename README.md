@@ -39,13 +39,14 @@ Optional, but each gates a feature:
   Cloud console is **this app's own** callback, one entry per host:
   `http://localhost:3000/api/auth/callback/google` and the production
   equivalent.
-- `EmailJs_*` + `ENQUIRY_TO_EMAIL` — two templates are used:
-  `EmailJs_Template_KEY` for the enquiry notification and
-  `EmailJs_Verify_Template_KEY` for the signup confirmation link. Both must have
-  `{{to_email}}` in the template's "To email" field or EmailJS rejects the send
-  with a 422; the verify template also needs `{{verify_url}}`. Without the
-  verify template, accounts are created but no confirmation link is ever sent,
-  so nobody can finish signing up.
+- `EmailJs_*` + `ENQUIRY_TO_EMAIL` — three templates, each optional and each
+  written for a different reader: `EmailJs_Template_KEY` (+ `ENQUIRY_TO_EMAIL`)
+  notifies the firm of an enquiry, `EmailJs_AutoReply_Template_KEY`
+  acknowledges it to the person who sent it, and `EmailJs_Verify_Template_KEY`
+  carries the signup confirmation link. Every one needs `{{to_email}}` in the
+  template's "To email" field or EmailJS rejects the send with a 422; the verify
+  template also needs `{{verify_url}}`. With the verify template unset, email
+  signup is refused up front rather than creating an account nobody can confirm.
 
 **An empty database is fine.** Every calculator falls back to a versioned code
 default, so the marketing site and all eight tax tools render correct numbers
