@@ -7,7 +7,7 @@
    Mirrors vat-rates/actions.ts. */
 
 import { revalidatePath } from "next/cache";
-import { requireAdmin } from "../../lib/supabase/guards";
+import { requireAdmin } from "../../lib/auth/guards";
 import { saveCalculatorConfig } from "../../lib/calculator-settings";
 import { CAT_SETTINGS_KEY, getCatData } from "../../lib/cat-data";
 import { parseCatConfig, type CatConfig } from "../../lib/ireland-cat";

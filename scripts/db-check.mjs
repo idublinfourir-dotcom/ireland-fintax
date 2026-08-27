@@ -1,30 +1,35 @@
 // One-off connectivity check: node scripts/db-check.mjs
-import { readFileSync } from "node:fs";
-import { Pool } from "pg";
+import { MongoClient } from "mongodb";
+import { mongoUri, dbName } from "./load-env.mjs";
 
-// Minimal .env.local loader (no dependency on dotenv).
-for (const line of readFileSync(
-  new URL("../.env.local", import.meta.url),
-  "utf8",
-).split("\n")) {
-  const m = line.match(/^\s*([\w.-]+)\s*=\s*(.*)\s*$/);
-  if (m) process.env[m[1]] = m[2].replace(/^["']|["']$/g, "");
-}
-
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: { rejectUnauthorized: false },
-});
+const client = new MongoClient(mongoUri(), { serverSelectionTimeoutMS: 10_000 });
 
 try {
-  const { rows } = await pool.query(
-    "select current_database() as db, current_user as usr, version() as version, now() as now",
-  );
-  console.log("Connected to Supabase Postgres====>");
-  console.table(rows);
+  await client.connect();
+  const db = client.db(dbName);
+
+  const { version } = await db.admin().serverInfo();
+  const collections = await db.listCollections().toArray();
+
+  console.log(`Connected to MongoDB "${dbName}" (server ${version})`);
+
+  if (collections.length === 0) {
+    console.log(
+      "\nNo collections yet. Run `node scripts/db-indexes.mjs` then `node scripts/db-seed.mjs`.",
+    );
+  } else {
+    const counts = [];
+    for (const { name } of collections.sort((a, b) => a.name.localeCompare(b.name))) {
+      counts.push({
+        collection: name,
+        documents: await db.collection(name).estimatedDocumentCount(),
+      });
+    }
+    console.table(counts);
+  }
 } catch (err) {
   console.error("Connection failed:", err.message);
   process.exitCode = 1;
 } finally {
-  await pool.end();
+  await client.close();
 }

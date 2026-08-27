@@ -1,39 +1,150 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# AIBN Chartered Accountants Ltd
 
-## Getting Started
+Marketing site, client portal and admin console for a partner-led Irish
+chartered accountancy practice. Next.js 16 (App Router), React 19, TypeScript,
+Tailwind v4, **MongoDB** and **Auth.js v5**.
 
-First, run the development server:
+Working rules for the codebase live in [`AGENTS.md`](./AGENTS.md). The database
+shapes and the reasoning behind them live in [`db/schema.md`](./db/schema.md).
+
+---
+
+## Getting started
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+cp .env.example .env.local     # then fill it in — see below
+node scripts/db-indexes.mjs    # create the indexes (the migration step)
+node scripts/db-seed.mjs       # seed the mortgage products + policy
+npm run dev                    # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Environment
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Every key is documented inline in [`.env.example`](./.env.example). The ones
+that must be set before anything works:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Key | What it is |
+| --- | --- |
+| `MONGODB_URI` **or** `DB_USER`+`DB_PASSWORD`+`DB_CLUSTER` | Connection. `DB_CLUSTER` is the host only — `cluster0.abcde.mongodb.net`, no scheme. |
+| `MONGODB_DB` | Database name inside the cluster. Defaults to `aibn`. |
+| `AUTH_SECRET` | Signs the session JWT. `openssl rand -base64 32`. Changing it signs everyone out. |
+| `ADMIN_EMAILS` | Comma-separated allow-list. Signing up with one of these gets the admin role. |
+| `AUTH_URL` | Canonical origin. **Production only** — pins the OAuth callback and the emailed confirmation links so they don't depend on a forwarded host header. |
 
-## Learn More
+Optional, but each gates a feature:
 
-To learn more about Next.js, take a look at the following resources:
+- `AUTH_GOOGLE_ID` / `AUTH_GOOGLE_SECRET` — with these unset, "Continue with
+  Google" is not rendered at all. The authorized redirect URI in the Google
+  Cloud console is **this app's own** callback, one entry per host:
+  `http://localhost:3000/api/auth/callback/google` and the production
+  equivalent.
+- `EmailJs_*` + `ENQUIRY_TO_EMAIL` — two templates are used:
+  `EmailJs_Template_KEY` for the enquiry notification and
+  `EmailJs_Verify_Template_KEY` for the signup confirmation link. Both must have
+  `{{to_email}}` in the template's "To email" field or EmailJS rejects the send
+  with a 422; the verify template also needs `{{verify_url}}`. Without the
+  verify template, accounts are created but no confirmation link is ever sent,
+  so nobody can finish signing up.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+**An empty database is fine.** Every calculator falls back to a versioned code
+default, so the marketing site and all eight tax tools render correct numbers
+before anything is seeded. With no connection string at all the site still
+serves — it just renders signed-out. Only the mortgage comparison is seeded,
+because its admin editor can only edit rows that exist.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Commands
 
-## Deploy on Vercel
+```bash
+npm run dev            # dev server
+npm run build          # production build
+npm start              # serve the build
+npm run lint           # eslint
+npm run typecheck      # tsc --noEmit
+npm test               # unit tests (pure calculator + validation logic)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+node scripts/db-check.mjs     # connectivity + per-collection document counts
+node scripts/db-indexes.mjs   # create every index; re-runnable
+node scripts/db-seed.mjs      # seed reference data; skips non-empty collections
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Making the first admin
+
+`ADMIN_EMAILS` is applied **at account creation only**. Set it before signing
+up. To promote an account that already exists:
+
+```js
+db.users.updateOne({ email: "someone@example.ie" }, { $set: { role: "admin" } })
+```
+
+The role travels in the session JWT, so it takes effect on that user's next
+sign-in, not immediately.
+
+---
+
+## Architecture in one page
+
+```
+app/
+  page.tsx, about/, contact/, services/, tools/, toolkits/   # public
+  login/, signup/, auth/{confirm,callback}/                  # auth entry points
+  portal/                                                    # client area
+  admin/                                                     # admin console
+  api/auth/[...nextauth]/                                    # Auth.js handler
+  lib/mongodb.ts, lib/collections.ts                         # data access
+  lib/auth/                                                  # guards, roles, passwords, tokens
+auth.ts, auth.config.ts                                      # Auth.js (split, see below)
+proxy.ts                                                     # middleware: gates /portal, /admin
+db/schema.md                                                 # collections + indexes
+scripts/db-*.mjs                                             # check · indexes · seed
+```
+
+**The Auth.js config is split in two on purpose.** `auth.config.ts` is
+edge-safe and is all the middleware imports; `auth.ts` adds the MongoDB adapter
+and the password providers and only ever loads in the Node runtime. Importing
+`auth.ts` from `proxy.ts` pulls the driver onto the edge and breaks the build.
+
+**Sessions are JWTs, not database rows.** That is not a preference — the
+Credentials provider only works with the JWT strategy. It also means the
+header's session read costs no network call, which is why the root layout can
+do it on every route.
+
+**All data access goes through `app/lib/collections.ts`**, which names every
+collection and types every document. There is no client-side database access
+and no public database API.
+
+---
+
+## Backend history: Supabase → MongoDB
+
+This project began as a clone of a sibling site that used Supabase (Postgres via
+`pg`, plus Supabase Auth). The **entire backend was replaced with MongoDB and
+Auth.js**; the frontend was deliberately left untouched — no markup, class or
+copy changes.
+
+What that means when reading older code, or the sibling project:
+
+| Was | Now |
+| --- | --- |
+| `pg` pool, `db/schema.sql`, raw SQL | `mongodb` driver, `db/schema.md`, `app/lib/collections.ts` |
+| Supabase Auth, `@supabase/ssr` cookie sessions | Auth.js v5, JWT sessions |
+| `public.profiles` joined to `auth.users` | one `users` document |
+| `handle_new_user` trigger picked the admin | `ADMIN_EMAILS` env allow-list |
+| `custom_access_token_hook` stamped the role claim | the `jwt` callback in `auth.config.ts` |
+| RLS deny-all on 11 tables | not needed — no public database API exists |
+| Supabase sent the confirmation email and verified the OTP | the app issues its own single-use token and emails it via EmailJS |
+| Google OAuth redirected to `https://<ref>.supabase.co/auth/v1/callback` | redirects to this app's `/api/auth/callback/google` |
+| `enquiries.id` (bigint identity) | `enquiries.ref` (counter) — still renders as `Ref #0042` |
+
+Two things were dropped because nothing read them: the `toolkit_resources`
+table and `enquiries.status` (superseded by the read-tracking timestamps).
+
+One behaviour was fixed rather than reproduced: "Mark reviewed" on the CGT
+calculator now upserts. The SQL `UPDATE ... WHERE id = 1` it replaced silently
+did nothing when no row existed, so on a fresh database the review reminder
+could never be dismissed. It now matches the other five calculators.
+
+---
 
 ## Parked work and pending setup
 
@@ -59,9 +170,9 @@ silent. Abuse is bounded by a five-per-hour limit per email address.
 file: no upload form, no storage bucket, no public download link. The catalogue
 on `/toolkits` is `app/lib/toolkit-content.ts` and every copy goes out by hand.
 Two earlier versions were removed — automated email (Resend, signed links) and
-admin file upload (Supabase Storage) — so do not add either back without
-agreeing it first. `toolkit_resources` stays in the database only for its
-existing rows; nothing reads or writes it.
+admin file upload (object storage) — so do not add either back without agreeing
+it first. The `toolkit_resources` table was already read and written by nothing
+and was not carried over to MongoDB.
 
 ### 2. Founders Hub documents — 4 of 27 drafted, not in the repo
 

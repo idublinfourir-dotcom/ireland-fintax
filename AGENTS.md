@@ -16,7 +16,7 @@ Marketing site for **AIBN Chartered Accountants Ltd** — partner-led chartered 
 - **React 19**, **TypeScript**
 - **Tailwind CSS v4** (`app/globals.css` with `@theme` tokens)
 - **Framer Motion** (`motion` package, import from `motion/react`) — scroll reveals, count-up, accordion
-- **Supabase** — Postgres (via `pg`) + **Supabase Auth** (`@supabase/ssr`, cookie sessions, RLS)
+- **MongoDB** (official `mongodb` driver) + **Auth.js v5** (`next-auth@beta`, `@auth/mongodb-adapter`, JWT sessions)
 - **Fonts:** Fraunces (display), Geist (body) — loaded in `app/layout.tsx`
 
 Commands: `npm run dev` · `npm run build` · `npm run lint`
@@ -31,12 +31,20 @@ app/
   _pricing/          # hidden route — see "Hidden for now" below
   login/, signup/, portal/, admin/, auth/{confirm,callback}/  # auth routes
   components/      # UI, layout, sections + motion primitives
+  api/auth/[...nextauth]/  # Auth.js handler (sign-in, OAuth callback, sign-out)
   lib/content.ts   # site config, services, pricing, copy data
   lib/images.ts    # curated Unsplash URLs (used as CSS background-image)
-  lib/db.ts        # Postgres pool (pg) — contact write, admin reads
-  lib/supabase/    # @supabase/ssr browser/server/admin clients, guards, session helper
+  lib/mongodb.ts   # lazy MongoClient singleton + getDb()
+  lib/db-config.ts # connection-string env reads, driver-free (edge-safe)
+  lib/collections.ts # every collection: document types + typed accessors
+  lib/auth/        # config (roles, feature flags), guards, password, tokens
+  lib/emailjs.ts   # shared EmailJS REST sender
   globals.css      # brand tokens, easing/animation tokens, base styles
-proxy.ts           # (Next 16 middleware) refreshes session + gates /portal, /admin
+auth.ts            # Auth.js: adapter + Credentials + Google (Node runtime only)
+auth.config.ts     # edge-safe half: session strategy, callbacks, Google
+proxy.ts           # (Next 16 middleware) gates /portal, /admin
+db/schema.md       # collections, indexes, and why each shape is what it is
+scripts/db-*.mjs   # check connectivity · create indexes · seed
 ```
 
 - **Motion primitives** (client components, all reduced-motion safe):
@@ -98,77 +106,83 @@ Whenever anything else gets hidden rather than deleted, add a row here.
 
 ### Auth & data
 
-- **Auth = Supabase Auth via `@supabase/ssr`.** Browser client `lib/supabase/client.ts`,
-  server client `lib/supabase/server.ts`, session refresh + route gating in `proxy.ts`
-  (matcher = `/portal` + `/admin` only), guards in `lib/supabase/guards.ts`
-  (`requireUser`, `requireAdmin`, `requireClient`, `getSessionUser`).
-- **Roles** live in `public.profiles.role` (`client` | `admin`). The `handle_new_user`
-  signup trigger is **single source of truth**: sets `role='admin'` only when
-  email matches one hardcoded admin address (currently the placeholder
-  `change-me@example.com` — replace it before applying `db/schema.sql`,
-  case-insensitive), else `client`. Holds for every sign-in path (password
-  or Google OAuth); intentionally **no profile UPDATE policy**, so a
-  client can't self-promote. Change admin by editing that email in the trigger
-  (via migration/MCP).
-- **Signup requires verified email ownership.** `app/signup/actions.ts` uses
-  normal Supabase `signUp`, returns the form's "Check your email" state, and
-  fails closed (signs out + removes the new user) if the dashboard's "Confirm
-  email" setting is accidentally disabled. `/auth/confirm` verifies the OTP,
-  establishes the session and claims matching guest enquiries. Never restore
-  Admin API `email_confirm: true` signup.
-- **Google OAuth** via `signInWithOAuth` → `/auth/callback` exchanges PKCE
-  code. OAuth users get `client` profile from same trigger. Provider
-  enabled in Supabase dashboard (not via code/MCP). `redirectTo` =
-  `window.location.origin/auth/callback` (adapts per host). Google's authorized
-  redirect URI is the **Supabase** callback (`https://<ref>.supabase.co/auth/v1/callback`),
-  not app URL. Supabase **Auth → URL Configuration** must allow-list both
-  the deployment's own prod URL (`https://<prod-host>/auth/callback`) and local
-  (`http://localhost:3000/**` — note **http**). Consent screen is External: add
-  test users or Publish.
-- **Role in JWT:** `custom_access_token_hook` (DB function) stamps a `user_role`
-  claim from `profiles`; enable "Customize Access Token (JWT) Claims" hook in
-  dashboard to activate. `getSessionUser` prefers that claim, falls back to
-  `profiles` lookup when absent — so header needs no per-request DB query once
-  hook on.
-- **Role lookups for redirect/gating use `pg`** (login action, `/auth/callback`,
-  `requireAdmin`) — reading `profiles.role` via Supabase client right after
-  sign-in is unreliable (RLS + session timing), so query `pg` pool by user id.
-- **Enquiry ownership uses `enquiries.user_id` exclusively in the portal.**
+- **Auth = Auth.js v5 (`next-auth@beta`) with the MongoDB adapter.** Config is
+  **split in two on purpose**: `auth.config.ts` is edge-safe (session strategy,
+  callbacks, Google) and is all `proxy.ts` imports; `auth.ts` adds the adapter,
+  the Credentials providers and the events, and must only ever load in the Node
+  runtime. Importing `auth.ts` from the middleware pulls the MongoDB driver onto
+  the edge and breaks the build — don't.
+- **Sessions are JWTs, not database rows.** Not optional: the Credentials
+  provider only works with the JWT strategy. `getSessionUser()` therefore reads
+  the session with no network call, which is what lets the root layout call it
+  on every route. Guards live in `lib/auth/guards.ts` (`requireUser`,
+  `requireAdmin`, `requireClient`, `getSessionUser`).
+- **Roles.** `ADMIN_EMAILS` (comma-separated, case-insensitive) is the
+  allow-list, replacing the `handle_new_user` trigger. Applied **once, at
+  account creation**, on every sign-in path — password or Google — by
+  `roleForEmail` in `lib/auth/config.ts`. Nothing else writes `role`, so a
+  client cannot self-promote. The role rides in the JWT, so a role edited
+  directly in the database takes effect on that user's next sign-in. Change an
+  existing account with a `db.users.updateOne` (see `db/schema.md`).
+- **Signup requires verified email ownership.** `app/signup/actions.ts` creates
+  the account with `emailVerified: null` and emails a single-use token
+  (`lib/auth/tokens.ts` — only its SHA-256 is stored). `/auth/confirm` redeems
+  it through the `verify-email` Credentials provider, which marks the address
+  proved and signs the user in. `authorize` refuses to sign in an account whose
+  `emailVerified` is still null. Never relax that: confirmation is the boundary
+  that lets guest enquiries be claimed by address.
+- **Google OAuth** is Auth.js' own provider. Google's authorized redirect URI is
+  **this app's** `<origin>/api/auth/callback/google` — no longer a Supabase URL.
+  `allowDangerousEmailAccountLinking` is on deliberately: Google verifies
+  addresses, and it preserves the behaviour where signing in with Google reaches
+  the account you had already registered. `/auth/callback` is now only a
+  role-router (admins → /admin, else /portal); it does no code exchange.
+  The button hides itself when `AUTH_GOOGLE_ID`/`AUTH_GOOGLE_SECRET` are unset —
+  the flag is read server-side and threaded down as a prop, because the browser
+  cannot see server-only env.
+- **Enquiry ownership uses `enquiries.userId` exclusively in the portal.**
   Matching guest enquiries by email is allowed only in
-  `claimVerifiedGuestEnquiries`, called immediately after a successful email
-  confirmation or Google OAuth exchange. Never add an email fallback to portal
-  reads/actions: an unproved address is not an ownership boundary.
-- **Header auth read SERVER-SIDE**: root layout calls `getSessionUser()`
-  (local `getClaims`, no network) and passes `user` (email/name/avatar/role) to
-  `<SiteHeader>`; logout is the **server action** in `app/auth/actions.ts` (clears
-  cookie server-side). Do **not** read session in browser for header
-  — SSR cookie not reliably readable client-side. `/admin` and `/portal` render
-  own shells (sidebar + topbar); `ChromeGate` hides public header/footer there.
-- **Two data paths by design:** `lib/db.ts` (`pg`) for contact write, admin
-  enquiries read, all role lookups; `supabase-js` for auth/session.
-- **RLS deny-all is intentional on 11 tables** — `enquiries`,
-  `enquiry_messages`, `rate_audit`, `calculator_settings`, `cgt_settings`,
-  `cgt_multipliers`, `mortgage_settings`, `mortgage_products`, `tax_rates`,
-  `request_rate_limits`, `toolkit_resources` all keep **RLS enabled with no policy**: the
-  public Supabase API (anon/`authenticated`) is denied; the server reaches them
-  via the `pg` owner connection, which **bypasses RLS**. The security advisor's
-  `rls_enabled_no_policy` INFO on these is **expected, not a bug** — leave it.
-  **Never add a permissive policy** (e.g. `using (true)`) to silence it: on
-  `enquiries` that leaks customer PII, on the rate/settings tables it lets the
-  public API tamper with tax rates. Each table carries a `comment on table`
-  spelling this out. Only add a policy if a specific read moves to client-side
-  `supabase-js`, and then scope it read-only to that need.
+  `claimVerifiedGuestEnquiries`, called from the `signIn` **event** in `auth.ts`
+  and only for the `verify-email` and `google` providers — the two paths that
+  just proved the address. Never add an email fallback to portal reads/actions:
+  an unproved address is not an ownership boundary.
+- **`enquiries.ref`, not `_id`, is the public enquiry id.** The portal and admin
+  inbox render it as `Ref #0042`, so it stays a short incrementing number from
+  the `counters` collection (`nextSequence`, atomic `$inc`). Server actions
+  still validate it with the `/^\d+$/` shape via `toEnquiryRef`.
+- **Unread state is denormalised.** `lastClientMessageAt` / `lastAdminMessageAt`
+  live on the enquiry and are written by `addThreadMessage` — always insert
+  replies through it, never straight into `enquiry_messages`, or the unread
+  badge drifts from the thread. `ADMIN_UNREAD_FILTER` and `isUnreadForAdmin` are
+  the query and in-memory forms of the same test; keep them in step.
+- **Header auth read SERVER-SIDE**: root layout calls `getSessionUser()` and
+  passes `user` (email/name/avatar/role) to `<SiteHeader>`; logout is the
+  **server action** in `app/auth/actions.ts`. Do **not** read the session in the
+  browser for the header. `/admin` and `/portal` render own shells (sidebar +
+  topbar); `ChromeGate` hides public header/footer there.
+- **One data path.** Every read and write goes through `lib/collections.ts`
+  (typed accessors over `lib/mongodb.ts`). There is no public database API to
+  defend, so the RLS/policy machinery the Postgres schema carried is gone and
+  is not needed — see "What is gone" in `db/schema.md`.
+- **Case-insensitive email lookups need the collation on the QUERY, not just
+  the index** (`CASE_INSENSITIVE` in `lib/collections.ts`). Omitting it silently
+  matches case-sensitively instead of erroring. Two places rely on it: claiming
+  guest enquiries, and the Founders Hub per-address throttle.
+- **Schema** lives in **`db/schema.md`** (narrative) and `lib/collections.ts`
+  (authoritative types). MongoDB needs no DDL, so `scripts/db-indexes.mjs` is
+  the migration equivalent — run it, then `scripts/db-seed.mjs`, on a new
+  cluster.
 - **Secrets** live in `.env.local` locally — the full key list is in the
-  committed **`.env.example`** template (values never committed): `DATABASE_URL`,
-  `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`,
-  **`SUPABASE_SERVICE_ROLE_KEY`** (server-only, never `NEXT_PUBLIC`),
-  `ENQUIRY_TO_EMAIL` and the `EmailJs_*` keys. Same keys set in the hosting
-  provider's project env for prod. Never echo or commit them. Run Supabase security advisors
-  after any DDL.
+  committed **`.env.example`** template (values never committed):
+  `MONGODB_URI` **or** `DB_USER`/`DB_PASSWORD`/`DB_CLUSTER`, `MONGODB_DB`,
+  **`AUTH_SECRET`**, `AUTH_URL` (prod), `ADMIN_EMAILS`, `AUTH_GOOGLE_ID`/
+  `AUTH_GOOGLE_SECRET`, `ENQUIRY_TO_EMAIL` and the `EmailJs_*` keys. Same keys
+  set in the hosting provider's project env for prod. Never echo or commit them.
 - **Security headers** set in `next.config.ts` (`headers()`, all routes): CSP, HSTS
   (prod), X-Frame-Options DENY, nosniff, Referrer-Policy, Permissions-Policy. CSP allows
-  `'unsafe-inline'` (no nonce yet) and dev-only `'unsafe-eval'` + localhost ws; it
-  allow-lists Supabase (`connect-src`) and Google avatar / Unsplash image hosts.
+  `'unsafe-inline'` (no nonce yet) and dev-only `'unsafe-eval'` + localhost ws.
+  `connect-src` is `'self'` alone — the database is server-side only and Google
+  sign-in is a top-level redirect, not a cross-origin fetch.
 
 ### Editable calculator rates (CGT, VAT, Corp Tax, R&D, Capital Allowances, CAT)
 
@@ -180,10 +194,10 @@ Whenever anything else gets hidden rather than deleted, add a row here.
     (`*_CONFIG_DEFAULT` is the code fallback, `parse<X>Config` validates a
     stored blob) — no React/IO, unit-tested.
   - `app/lib/<x>-data.ts` wraps the shared `getCalculatorConfig` (from
-    `app/lib/calculator-settings.ts`) to read one JSONB row per calculator from
-    `calculator_settings` (key = calculator slug); falls back to the code
-    default on a missing row, invalid value, or DB error — never throws, never
-    renders broken numbers.
+    `app/lib/calculator-settings.ts`) to read one document per calculator from
+    `calculator_settings` (`_id` = calculator slug); falls back to the code
+    default on a missing document, invalid value, or DB error — never throws,
+    never renders broken numbers.
   - `app/admin/<x>-rates/{page,actions,‑manager}.tsx` is a **two-phase**
     preview→confirm editor: phase 1 validates (`app/lib/<x>-guardrails.ts`) and
     returns a diff (`app/lib/rate-diff.ts`); phase 2 re-parses the previewed
@@ -194,20 +208,23 @@ Whenever anything else gets hidden rather than deleted, add a row here.
     href, reviewed-at loader) so the admin dashboard's review-reminder + nav
     badge cover all six.
   - CGT is the one exception with extra state: it also keeps a
-    `cgt_multipliers` table (indexation multipliers) alongside `cgt_settings`.
+    `cgt_multipliers` collection (indexation multipliers) alongside
+    `cgt_settings`, and its own two-collection loader.
   - Adding a **new** editable calculator = clone this file set (cheapest
     reference: `ireland-cat.ts` + `cat-data.ts` + `admin/cat-rates/*`, added
     2026-07) — do not invent a new storage shape.
 
 ### Contact email (EmailJS)
 
-- `app/contact/actions.ts` saves enquiry to Postgres, then sends email via
-  **EmailJS REST API** server-side, wrapped in Next's `after()` so it never
-  blocks form response (best-effort — failures logged, not surfaced). Keys:
-  `EmailJs_Gmail_serviceid_KEY`, `EmailJs_Template_KEY`, `EmailJs_PUBLIC_KEY`,
-  `EmailJs_Private_KEY`, plus `ENQUIRY_TO_EMAIL` (the monitored inbox). All five
-  must be set or the email step is skipped and only the DB row is written —
-  never hardcode the recipient back into the source.
+- `app/contact/actions.ts` saves the enquiry, then sends email through
+  `app/lib/emailjs.ts` (the shared **EmailJS REST** sender, also used by the
+  signup confirmation link), wrapped in Next's `after()` so it never blocks the
+  form response (best-effort — failures logged, not surfaced). Keys:
+  `EmailJs_Gmail_serviceid_KEY`, `EmailJs_Template_KEY`,
+  `EmailJs_Verify_Template_KEY`, `EmailJs_PUBLIC_KEY`, `EmailJs_Private_KEY`,
+  plus `ENQUIRY_TO_EMAIL` (the monitored inbox). All must be set or the email
+  step is skipped and only the document is written — never hardcode the
+  recipient back into the source.
 - Public signup and contact submissions use DB-backed fixed-window throttling
   from `app/lib/rate-limit.ts` (per IP + per normalised email). Only SHA-256
   identifiers are stored in `request_rate_limits`; never store raw IP/email
@@ -230,7 +247,7 @@ Whenever anything else gets hidden rather than deleted, add a row here.
 - **The site never hosts a file.** No upload form, no storage bucket, no public
   download link — for memos, templates, tax/VAT forms, setup guides or anything
   else. This is a product decision, not a missing feature: do not add an upload
-  path, a Supabase Storage bucket or a direct download link back.
+  path, an object store or a direct download link back.
 - The catalogue **is** `app/lib/toolkit-content.ts` (a pure module, no DB).
   Adding a resource = adding an entry there. `toolkit-types.ts` holds the
   categories and the title→slug helper both the browser and the request route
@@ -240,8 +257,8 @@ Whenever anything else gets hidden rather than deleted, add a row here.
   mailbox via `/admin/toolkits` → **Mark sent**
   (`app/admin/toolkits/request-status-button.tsx`, which shows a pending
   spinner and a confirmation so the click is never silent).
-- `toolkit_resources` and `toolkit_requests.resource_id` are **legacy**: kept
-  for existing rows, read and written by nothing.
+- `toolkit_resources` and `toolkit_requests.resource_id` are **gone**: they were
+  already read and written by nothing, and were not recreated in MongoDB.
 
 ### Testing
 
@@ -250,8 +267,8 @@ Whenever anything else gets hidden rather than deleted, add a row here.
   (spins up prod server on `:3100`). Specs: `site.spec.ts` (marketing pages,
   auth gating, login/signup/logout, role routing), `calculators.spec.ts` +
   `cgt.spec.ts` (public calculators + admin rate editors), `contact-wizard.spec.ts`
-  (wizard steps, FAQ hints, validation). Creates `pw-*@example.com` users/enquiries —
-  clean up via Supabase MCP after a run.
+  (wizard steps, FAQ hints, validation). Creates `pw-*@example.com`
+  users/enquiries — clean these up in the MongoDB database after a run.
 
 ---
 
@@ -266,7 +283,7 @@ both merge into `main`. Two rules keep them from colliding:
 |------|----------------|
 | `/admin/**` (dashboard, enquiries inbox, rate editors) | Niaz (`niaz`) |
 | `/portal/**` (client dashboard, settings) | Nidan (`nidan`) |
-| Shared components (`app/components/dashboard-*.tsx`), `db/schema.sql`, marketing pages | Either — pull `main` immediately before touching, keep the change additive |
+| Shared components (`app/components/dashboard-*.tsx`), `app/lib/collections.ts`, `db/schema.md`, marketing pages | Either — pull `main` immediately before touching, keep the change additive |
 
 If a task needs a change in the other person's area, prefer a small PR against
 their branch (or a chat ping) over editing it on your own branch.

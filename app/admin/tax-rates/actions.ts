@@ -1,8 +1,8 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { query } from "../../lib/db";
-import { requireAdmin } from "../../lib/supabase/guards";
+import { taxRatesCollection } from "../../lib/collections";
+import { requireAdmin } from "../../lib/auth/guards";
 import { TAX_YEARS, yearRatesToJson } from "../../lib/tax-data";
 import type { YearRates } from "../../lib/ireland-income-tax";
 
@@ -157,12 +157,19 @@ export async function saveTaxYear(
   }
 
   try {
-    await query(
-      `insert into tax_rates (year, rates)
-       values ($1, $2)
-       on conflict (year) do update
-         set rates = excluded.rates, updated_at = now()`,
-      [parsed.year, JSON.stringify(yearRatesToJson(parsed.rates))],
+    const taxRates = await taxRatesCollection();
+    await taxRates.updateOne(
+      { _id: parsed.year },
+      {
+        $set: {
+          // Stored as a subdocument, not a JSON string. yearRatesToJson still
+          // runs: it maps the open-ended Infinity bounds to null, which is the
+          // shape parseYearRates reads back.
+          rates: yearRatesToJson(parsed.rates),
+          updatedAt: new Date(),
+        },
+      },
+      { upsert: true },
     );
   } catch (err) {
     console.error("[tax-rates] save failed:", err);

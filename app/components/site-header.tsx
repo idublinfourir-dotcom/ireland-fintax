@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { serviceCategories, site } from "../lib/content";
 import { CALCULATOR_TOOLS } from "./calculator-tabs";
-import type { SessionUser } from "../lib/supabase/guards";
+import type { SessionUser } from "../lib/auth/guards";
 
 /* Pricing is hidden site-wide while the fee model is being decided; restore
    { href: "/pricing", label: "Pricing" } here to bring it back. */

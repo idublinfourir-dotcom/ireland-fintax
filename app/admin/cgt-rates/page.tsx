@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { requireAdmin } from "../../lib/supabase/guards";
+import { requireAdmin } from "../../lib/auth/guards";
 import { getCgtData } from "../../lib/cgt-data";
 import { getRecentAudit } from "../../lib/rate-audit";
 import { CgtRatesManager } from "./cgt-rates-manager";

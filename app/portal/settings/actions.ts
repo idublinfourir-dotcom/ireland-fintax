@@ -1,13 +1,11 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { requireClient } from "../../lib/supabase/guards";
-import { createClient } from "../../lib/supabase/server";
-import {
-  isSupabaseConfigured,
-  SUPABASE_NOT_CONFIGURED,
-} from "../../lib/supabase/config";
-import { query } from "../../lib/db";
+import { updateSession } from "../../../auth";
+import { requireClient } from "../../lib/auth/guards";
+import { toObjectId, usersCollection } from "../../lib/collections";
+import { hashPassword } from "../../lib/auth/password";
+import { AUTH_NOT_CONFIGURED, isAuthConfigured } from "../../lib/auth/config";
 import {
   validateDisplayName,
   validatePassword,
@@ -15,8 +13,9 @@ import {
 
 export type SettingsState = { ok?: string; error?: string };
 
-/** Update the client's display name in auth user_metadata (header) AND
- *  profiles (portal). Both stores are written so the two stay in sync. */
+/** Update the client's display name. One write now that the account and the
+ *  profile are the same document — the two stores that used to be kept in
+ *  sync (auth user_metadata and public.profiles) are one. */
 export async function updateNameAction(
   _prev: SettingsState,
   formData: FormData,
@@ -27,18 +26,18 @@ export async function updateNameAction(
   const invalid = validateDisplayName(fullName);
   if (invalid) return { error: invalid };
 
-  try {
-    if (!isSupabaseConfigured()) return { error: SUPABASE_NOT_CONFIGURED };
-    const supabase = await createClient();
-    const { error } = await supabase.auth.updateUser({
-      data: { full_name: fullName },
-    });
-    if (error) throw error;
+  if (!isAuthConfigured()) return { error: AUTH_NOT_CONFIGURED };
 
-    await query("update public.profiles set full_name = $1 where id = $2", [
-      fullName,
-      user.id,
-    ]);
+  const id = toObjectId(user.id);
+  if (!id) return { error: "Couldn't save your name. Please try again." };
+
+  try {
+    const users = await usersCollection();
+    await users.updateOne({ _id: id }, { $set: { name: fullName } });
+
+    // The header renders the name from the session token, not the database,
+    // so re-stamp it or the old one stays on screen until the next sign-in.
+    await updateSession({ user: { name: fullName } });
   } catch (err) {
     console.error("[settings] name update failed:", err);
     return { error: "Couldn't save your name. Please try again." };
@@ -55,18 +54,26 @@ export async function updatePasswordAction(
   _prev: SettingsState,
   formData: FormData,
 ): Promise<SettingsState> {
-  await requireClient();
+  const user = await requireClient();
   const password = String(formData.get("password") ?? "");
   const confirm = String(formData.get("confirm") ?? "");
 
   const invalid = validatePassword(password, confirm);
   if (invalid) return { error: invalid };
 
+  if (!isAuthConfigured()) return { error: AUTH_NOT_CONFIGURED };
+
+  const id = toObjectId(user.id);
+  if (!id) return { error: "Couldn't update your password. Please try again." };
+
   try {
-    if (!isSupabaseConfigured()) return { error: SUPABASE_NOT_CONFIGURED };
-    const supabase = await createClient();
-    const { error } = await supabase.auth.updateUser({ password });
-    if (error) throw error;
+    const users = await usersCollection();
+    // Also fills in a password for an account created through Google, which is
+    // what "set a password" means for those users.
+    await users.updateOne(
+      { _id: id },
+      { $set: { passwordHash: await hashPassword(password) } },
+    );
   } catch (err) {
     console.error("[settings] password update failed:", err);
     return { error: "Couldn't update your password. Please try again." };

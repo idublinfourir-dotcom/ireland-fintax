@@ -1,10 +1,16 @@
-/* Founders Hub resource requests: read + write. SERVER ONLY (imports pg).
+/* Founders Hub resource requests: read + write. SERVER ONLY.
 
    Nothing is emailed automatically. A visitor fills in the request form, we
    store who they are and what they want, and a team member sends the file by
    hand from /admin/toolkits and marks the request sent. */
 
-import { query } from "./db";
+import { ObjectId } from "mongodb";
+import {
+  CASE_INSENSITIVE,
+  toObjectId,
+  toolkitRequestsCollection,
+  type ToolkitRequestDoc,
+} from "./collections";
 
 export type RequestStatus = "pending" | "sent";
 
@@ -22,44 +28,33 @@ export interface ToolkitRequest {
   createdAt: Date;
 }
 
-interface RequestRow {
-  id: string;
-  resource_title: string;
-  name: string;
-  phone: string;
-  email: string;
-  website: string;
-  purpose: string;
-  status: RequestStatus;
-  sent_at: Date | null;
-  created_at: Date;
-}
-
-const fromRow = (r: RequestRow): ToolkitRequest => ({
-  id: r.id,
-  resourceTitle: r.resource_title,
+const fromDoc = (r: ToolkitRequestDoc): ToolkitRequest => ({
+  id: r._id.toHexString(),
+  resourceTitle: r.resourceTitle,
   name: r.name,
   phone: r.phone,
   email: r.email,
   website: r.website,
   purpose: r.purpose,
   status: r.status,
-  sentAt: r.sent_at,
-  createdAt: r.created_at,
+  sentAt: r.sentAt,
+  createdAt: r.createdAt,
 });
 
 /** How many requests one address may submit per hour. */
 export const REQUEST_RATE_LIMIT = 5;
 
 export async function countRecentRequests(email: string): Promise<number> {
-  const { rows } = await query<{ n: number }>(
-    `select count(*)::int as n
-       from toolkit_requests
-      where lower(email) = lower($1)
-        and created_at > now() - interval '1 hour'`,
-    [email],
+  const requests = await toolkitRequestsCollection();
+  return requests.countDocuments(
+    {
+      email,
+      createdAt: { $gt: new Date(Date.now() - 60 * 60 * 1000) },
+    },
+    // Addresses are stored as the requester typed them, so this stands in for
+    // `lower(email) = lower($1)`. It must match the collated index.
+    { collation: CASE_INSENSITIVE },
   );
-  return rows[0]?.n ?? 0;
 }
 
 export async function createRequest(input: {
@@ -70,39 +65,33 @@ export async function createRequest(input: {
   website: string;
   purpose: string;
 }): Promise<void> {
-  await query(
-    `insert into toolkit_requests
-       (resource_title, name, phone, email, website, purpose)
-     values ($1, $2, $3, $4, $5, $6)`,
-    [
-      input.resourceTitle,
-      input.name,
-      input.phone,
-      input.email,
-      input.website,
-      input.purpose,
-    ],
-  );
+  const requests = await toolkitRequestsCollection();
+  await requests.insertOne({
+    _id: new ObjectId(),
+    ...input,
+    status: "pending",
+    sentAt: null,
+    createdAt: new Date(),
+  });
 }
 
 /** Newest first, pending ahead of sent so outstanding work surfaces at the top. */
 export async function getToolkitRequests(limit = 200): Promise<ToolkitRequest[]> {
-  const { rows } = await query<RequestRow>(
-    `select id, resource_title, name, phone, email, website, purpose,
-            status, sent_at, created_at
-       from toolkit_requests
-      order by (status = 'pending') desc, created_at desc
-      limit $1`,
-    [limit],
-  );
-  return rows.map(fromRow);
+  const requests = await toolkitRequestsCollection();
+  const docs = await requests
+    .find()
+    // "pending" sorts before "sent" alphabetically, which is the order the SQL
+    // spelled out as `(status = 'pending') desc`. Kept explicit here so a new
+    // status value cannot silently reorder the queue.
+    .sort({ status: 1, createdAt: -1 })
+    .limit(limit)
+    .toArray();
+  return docs.map(fromDoc);
 }
 
 export async function countPendingRequests(): Promise<number> {
-  const { rows } = await query<{ n: number }>(
-    `select count(*)::int as n from toolkit_requests where status = 'pending'`,
-  );
-  return rows[0]?.n ?? 0;
+  const requests = await toolkitRequestsCollection();
+  return requests.countDocuments({ status: "pending" });
 }
 
 /** Flip a request to sent (or back to pending) after a team member acts on it. */
@@ -110,11 +99,12 @@ export async function setRequestStatus(
   id: string,
   status: RequestStatus,
 ): Promise<void> {
-  await query(
-    `update toolkit_requests
-        set status = $1,
-            sent_at = case when $1 = 'sent' then now() else null end
-      where id = $2`,
-    [status, id],
+  const _id = toObjectId(id);
+  if (!_id) return;
+
+  const requests = await toolkitRequestsCollection();
+  await requests.updateOne(
+    { _id },
+    { $set: { status, sentAt: status === "sent" ? new Date() : null } },
   );
 }

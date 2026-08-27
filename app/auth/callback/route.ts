@@ -1,88 +1,45 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { createClient } from "../../lib/supabase/server";
-import { isSupabaseConfigured } from "../../lib/supabase/config";
-import { query } from "../../lib/db";
-import { claimVerifiedGuestEnquiries } from "../../lib/enquiry-ownership";
+import { auth } from "../../../auth";
+import { isAuthConfigured } from "../../lib/auth/config";
 
 /**
- * OAuth (Google) redirect target. Exchanges the PKCE `code` for a session,
- * then routes by role: admins to /admin, everyone else to /portal — unless an
- * explicit safe `next` was carried through.
+ * Post-Google landing route: routes by role, admins to /admin and everyone
+ * else to /portal — unless an explicit safe `next` was carried through.
+ *
+ * The PKCE exchange itself is no longer done here. Google now redirects to
+ * Auth.js' own handler at /api/auth/callback/google, which mints the session
+ * and creates the account on a first sign-in; the button sends users on to
+ * this route afterwards because only the server knows which area to land them
+ * in. Guest enquiries are claimed by the `signIn` event in auth.ts.
  */
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url);
 
-  // No backend: nothing can have issued this code. Bounce to the same notice
-  // screen every other OAuth failure lands on.
-  if (!isSupabaseConfigured()) {
-    console.error("[auth] oauth: no Supabase backend configured");
-    return NextResponse.redirect(`${origin}/login?notice=oauth`);
-  }
-
-  const code = searchParams.get("code");
   const rawNext = searchParams.get("next") ?? "";
   const next =
     rawNext.startsWith("/") && !rawNext.startsWith("//") ? rawNext : "";
 
-  /* Every failure below lands on the same /login?notice=oauth screen, so the
-     only way to tell them apart afterwards is this log. Grep "[auth] oauth".
-     Never log `code` itself — it is a single-use credential. */
-  const providerError = searchParams.get("error");
-  if (providerError) {
-    console.error("[auth] oauth: provider returned an error", {
-      error: providerError,
-      // Google's own wording; untrusted text, logged but never rendered.
-      description: searchParams.get("error_description"),
-    });
+  // No backend: nothing can have issued a session. Bounce to the same notice
+  // screen every other OAuth failure lands on.
+  if (!isAuthConfigured()) {
+    console.error("[auth] oauth: no authentication backend configured");
+    return NextResponse.redirect(`${origin}/login?notice=oauth`);
   }
 
-  if (code) {
-    const supabase = await createClient();
-    const { data, error } = await supabase.auth.exchangeCodeForSession(code);
-    if (error) {
-      console.error("[auth] oauth: could not exchange the code for a session", {
-        message: error.message,
-        status: error.status,
-        code: error.code,
-      });
-    }
-    if (!error) {
-      if (data.user) {
-        try {
-          await claimVerifiedGuestEnquiries(data.user.id, data.user.email);
-        } catch (claimError) {
-          console.error(
-            "[auth] could not claim verified guest enquiries:",
-            claimError,
-          );
-        }
-      }
-
-      if (next) return NextResponse.redirect(`${origin}${next}`);
-
-      // Role via the pg pool (bypasses RLS) — reliable right after exchange.
-      let role: string | null = null;
-      const userId = data.user?.id;
-      if (userId) {
-        const { rows } = await query<{ role: string }>(
-          "select role from public.profiles where id = $1",
-          [userId],
-        );
-        role = rows[0]?.role ?? null;
-      }
-      return NextResponse.redirect(
-        `${origin}${role === "admin" ? "/admin" : "/portal"}`,
-      );
-    }
-  }
-
-  /* Reached with no `code` and no provider error: usually a refresh or a
-     back-navigation onto this URL after the code was already spent. */
-  if (!code && !providerError) {
-    console.error("[auth] oauth: callback hit with no code and no error", {
+  const session = await auth();
+  if (!session?.user) {
+    /* Reached with no session: the provider errored, the user cancelled, or
+       this URL was opened directly. They are indistinguishable from here, so
+       grep "[auth] oauth" alongside Auth.js' own error logs. */
+    console.error("[auth] oauth: callback reached with no session", {
       referer: request.headers.get("referer"),
     });
+    return NextResponse.redirect(`${origin}/login?notice=oauth`);
   }
 
-  return NextResponse.redirect(`${origin}/login?notice=oauth`);
+  if (next) return NextResponse.redirect(`${origin}${next}`);
+
+  return NextResponse.redirect(
+    `${origin}${session.user.role === "admin" ? "/admin" : "/portal"}`,
+  );
 }

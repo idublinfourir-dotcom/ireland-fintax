@@ -10,8 +10,11 @@
    Both re-check requireAdmin. */
 
 import { revalidatePath } from "next/cache";
-import { query } from "../../lib/db";
-import { requireAdmin } from "../../lib/supabase/guards";
+import {
+  cgtMultipliersCollection,
+  cgtSettingsCollection,
+} from "../../lib/collections";
+import { requireAdmin } from "../../lib/auth/guards";
 import {
   slugifyYearKey,
   CGT_CONFIG_DEFAULT,
@@ -72,10 +75,12 @@ export async function saveCgtSettings(
     const v = validateCgtConfig(parsed as never);
     if (!v.ok) return { status: "error", message: v.message };
     try {
-      await query(
-        `insert into cgt_settings (id, config, reviewed_at) values (1, $1, now())
-         on conflict (id) do update set config = excluded.config, reviewed_at = now(), updated_at = now()`,
-        [JSON.stringify(v.value)],
+      const settings = await cgtSettingsCollection();
+      const now = new Date();
+      await settings.updateOne(
+        { _id: 1 },
+        { $set: { config: v.value, reviewedAt: now, updatedAt: now } },
+        { upsert: true },
       );
     } catch (err) {
       console.error("[cgt] settings save failed:", err);
@@ -128,11 +133,12 @@ export async function saveCgtMultiplierRow(
   if (!validateMultiplier(n)) return { status: "error", message: "Multiplier must be > 0 and ≤ 50." };
 
   try {
-    const { rowCount } = await query(
-      `update cgt_multipliers set multiplier = $1, updated_at = now() where year_key = $2`,
-      [n, yearKey],
+    const multipliers = await cgtMultipliersCollection();
+    const { matchedCount } = await multipliers.updateOne(
+      { _id: yearKey },
+      { $set: { multiplier: n, updatedAt: new Date() } },
     );
-    if (!rowCount) return { status: "error", message: "Year not found." };
+    if (!matchedCount) return { status: "error", message: "Year not found." };
   } catch (err) {
     console.error("[cgt] multiplier row save failed:", err);
     return { status: "error", message: "Could not save." };
@@ -155,7 +161,8 @@ export async function deleteCgtMultiplierRow(formData: FormData): Promise<void> 
   if (!yearKey) return;
 
   try {
-    await query(`delete from cgt_multipliers where year_key = $1`, [yearKey]);
+    const multipliers = await cgtMultipliersCollection();
+    await multipliers.deleteOne({ _id: yearKey });
   } catch (err) {
     console.error("[cgt] delete failed:", err);
     return;
@@ -185,17 +192,19 @@ export async function addCgtMultiplier(
   if (!yearKey) return { status: "error", message: "That label isn't a valid year." };
 
   try {
-    const { rows } = await query<{ next: number }>(
-      `select coalesce(max(sort_order), -1) + 1 as next from cgt_multipliers`,
-    );
-    const sortOrder = rows[0]?.next ?? 0;
-    await query(
-      `insert into cgt_multipliers (year_key, year_label, sort_order, multiplier)
-       values ($1, $2, $3, $4)`,
-      [yearKey, label, sortOrder, n],
-    );
+    const multipliers = await cgtMultipliersCollection();
+    // New years go on the end of the table, as `max(sort_order) + 1` did.
+    const last = await multipliers.find().sort({ sortOrder: -1 }).limit(1).next();
+    await multipliers.insertOne({
+      _id: yearKey,
+      yearLabel: label,
+      sortOrder: (last?.sortOrder ?? -1) + 1,
+      multiplier: n,
+      updatedAt: new Date(),
+    });
   } catch (err) {
-    if (typeof err === "object" && err !== null && (err as { code?: string }).code === "23505")
+    // 11000 = duplicate key, i.e. the year key is already in the table.
+    if (typeof err === "object" && err !== null && (err as { code?: number }).code === 11000)
       return { status: "error", message: "That year already exists." };
     console.error("[cgt] add year failed:", err);
     return { status: "error", message: "Could not add the year." };
@@ -246,23 +255,26 @@ export async function importCgtMultipliers(
         return { status: "error", message: "The import contains an invalid row." };
     }
 
-    const tuples: string[] = [];
-    const params: unknown[] = [];
-    rows.forEach((r, i) => {
-      const b = i * 4;
-      tuples.push(`($${b + 1}::text, $${b + 2}::text, $${b + 3}::int, $${b + 4}::numeric)`);
-      params.push(r.yearKey, r.yearLabel, r.sortOrder, r.multiplier);
-    });
     try {
-      await query(
-        `insert into cgt_multipliers (year_key, year_label, sort_order, multiplier)
-         values ${tuples.join(", ")}
-         on conflict (year_key) do update set
-           year_label = excluded.year_label,
-           sort_order = excluded.sort_order,
-           multiplier = excluded.multiplier,
-           updated_at = now()`,
-        params,
+      const multipliers = await cgtMultipliersCollection();
+      const now = new Date();
+      // Merge, not replace: years not in the file keep their current value.
+      // One round-trip for the whole file, as the multi-row upsert was.
+      await multipliers.bulkWrite(
+        rows.map((r) => ({
+          updateOne: {
+            filter: { _id: r.yearKey },
+            update: {
+              $set: {
+                yearLabel: r.yearLabel,
+                sortOrder: r.sortOrder,
+                multiplier: r.multiplier,
+                updatedAt: now,
+              },
+            },
+            upsert: true,
+          },
+        })),
       );
     } catch (err) {
       console.error("[cgt] import failed:", err);
@@ -326,25 +338,28 @@ export async function resetCgtDefaults(
   // Phase 2 — confirm.
   if (formData.get("payload") === "defaults") {
     try {
-      await query(
-        `insert into cgt_settings (id, config, reviewed_at) values (1, $1, now())
-         on conflict (id) do update set config = excluded.config, reviewed_at = now(), updated_at = now()`,
-        [JSON.stringify(CGT_CONFIG_DEFAULT)],
+      const [settings, multipliers] = await Promise.all([
+        cgtSettingsCollection(),
+        cgtMultipliersCollection(),
+      ]);
+      const now = new Date();
+      await settings.updateOne(
+        { _id: 1 },
+        { $set: { config: CGT_CONFIG_DEFAULT, reviewedAt: now, updatedAt: now } },
+        { upsert: true },
       );
       // Replace-all: the defaults ARE the whole table (removes any added years).
-      // If the re-insert failed, an empty table falls back to the code defaults,
-      // so the calculator stays correct and a retry restores the rows.
-      await query(`delete from cgt_multipliers`);
-      const tuples: string[] = [];
-      const params: unknown[] = [];
-      CGT_MULTIPLIERS_DEFAULT.forEach((r, i) => {
-        const b = i * 4;
-        tuples.push(`($${b + 1}::text, $${b + 2}::text, $${b + 3}::int, $${b + 4}::numeric)`);
-        params.push(r.yearKey, r.yearLabel, r.sortOrder, r.multiplier);
-      });
-      await query(
-        `insert into cgt_multipliers (year_key, year_label, sort_order, multiplier) values ${tuples.join(", ")}`,
-        params,
+      // If the re-insert failed, an empty collection falls back to the code
+      // defaults, so the calculator stays correct and a retry restores the rows.
+      await multipliers.deleteMany({});
+      await multipliers.insertMany(
+        CGT_MULTIPLIERS_DEFAULT.map((r) => ({
+          _id: r.yearKey,
+          yearLabel: r.yearLabel,
+          sortOrder: r.sortOrder,
+          multiplier: r.multiplier,
+          updatedAt: now,
+        })),
       );
     } catch (err) {
       console.error("[cgt] reset failed:", err);
@@ -394,11 +409,22 @@ export async function resetCgtDefaults(
 
 /* ---------- review reminder ---------- */
 
-/** Stamp reviewed_at without changing any values. */
+/** Stamp reviewedAt without changing any values. */
 export async function markReviewed(): Promise<void> {
   const user = await requireAdmin();
   try {
-    await query(`update cgt_settings set reviewed_at = now() where id = 1`);
+    const settings = await cgtSettingsCollection();
+    // Upserted so the reminder can also be dismissed for a CGT that has never
+    // been customised; a config-less document leaves the code defaults
+    // authoritative, so no rate moves. See app/admin/review-actions.ts.
+    await settings.updateOne(
+      { _id: 1 },
+      {
+        $set: { reviewedAt: new Date() },
+        $setOnInsert: { config: null, updatedAt: new Date() },
+      },
+      { upsert: true },
+    );
   } catch (err) {
     console.error("[cgt] mark reviewed failed:", err);
     return;

@@ -1,17 +1,20 @@
 /* Server-side loader for the Ireland mortgage comparison.
-   Reads lender products + policy from Postgres (editable in /admin/mortgage-rates);
-   falls back to the static snapshot in ireland-mortgage.ts when the DB is
-   unreachable or not yet seeded, so the calculator never renders empty. */
+   Reads lender products + policy from `mortgage_products` / `mortgage_settings`
+   (editable in /admin/mortgage-rates); falls back to the static snapshot in
+   ireland-mortgage.ts when the database is unreachable or not yet seeded, so
+   the calculator never renders empty. */
 
-import { query } from "./db";
+import {
+  mortgageProductsCollection,
+  mortgageSettingsCollection,
+} from "./collections";
+import { isDbConfigured } from "./db-config";
 import {
   DEFAULT_POLICY,
   LENDER_PRODUCTS,
   RATES_AS_OF,
   type LenderProduct,
   type MortgagePolicy,
-  type ProductType,
-  type RateType,
 } from "./ireland-mortgage";
 
 export interface MortgageData {
@@ -20,93 +23,68 @@ export interface MortgageData {
   ratesAsOf: string;
 }
 
-interface ProductRow {
-  id: string;
-  lender: string;
-  name: string;
-  rate_type: RateType;
-  rate_percent: string; // pg numeric arrives as string
-  aprc_percent: string;
-  max_ltv: string;
-  green: boolean;
-  cashback: string | null;
-  revert_rate_percent: string | null;
-  cashback_percent: string | null;
-  cashback_flat: string | null;
-  details: string | null;
-  audience: ProductType[];
-}
-
-interface SettingsRow {
-  rates_as_of: string;
-  lti_first_time: string;
-  lti_trading_up: string;
-  max_ltv_owner: string;
-  max_ltv_investment: string;
-  max_age_at_end: number;
-  max_term_owner: number;
-  max_term_investment: number;
-}
+const STATIC: MortgageData = {
+  products: LENDER_PRODUCTS,
+  policy: DEFAULT_POLICY,
+  ratesAsOf: RATES_AS_OF,
+};
 
 export async function getMortgageData(): Promise<MortgageData> {
+  // No backend configured: the static snapshot IS the answer.
+  if (!isDbConfigured()) return STATIC;
+
   try {
-    const [{ rows: productRows }, { rows: settingsRows }] = await Promise.all([
-      query<ProductRow>(
-        `select id, lender, name, rate_type, rate_percent, aprc_percent,
-                max_ltv, green, cashback, revert_rate_percent,
-                cashback_percent, cashback_flat, details, audience
-           from mortgage_products
-          where active
-          order by rate_percent asc, lender asc`,
-      ),
-      query<SettingsRow>(
-        `select rates_as_of, lti_first_time, lti_trading_up,
-                max_ltv_owner, max_ltv_investment, max_age_at_end,
-                max_term_owner, max_term_investment
-           from mortgage_settings
-          where id = 1`,
-      ),
+    const [productsCollection, settingsCollection] = await Promise.all([
+      mortgageProductsCollection(),
+      mortgageSettingsCollection(),
     ]);
 
-    if (productRows.length === 0) {
-      return { products: LENDER_PRODUCTS, policy: DEFAULT_POLICY, ratesAsOf: RATES_AS_OF };
-    }
+    const [productDocs, settingsDoc] = await Promise.all([
+      productsCollection
+        .find({ active: true })
+        .sort({ ratePercent: 1, lender: 1 })
+        .toArray(),
+      settingsCollection.findOne({ _id: 1 }),
+    ]);
 
-    const products: LenderProduct[] = productRows.map((r) => ({
-      id: r.id,
+    if (productDocs.length === 0) return STATIC;
+
+    /* The rate fields are stored as numbers now (the pg numeric columns arrived
+       as strings and every one of them was wrapped in Number()). The optional
+       ones stay `undefined` rather than null, which is what LenderProduct
+       expects and what the maths distinguishes on. */
+    const products: LenderProduct[] = productDocs.map((r) => ({
+      id: r._id.toHexString(),
       lender: r.lender,
       name: r.name,
-      rateType: r.rate_type,
-      ratePercent: Number(r.rate_percent),
-      aprcPercent: Number(r.aprc_percent),
-      maxLtv: Number(r.max_ltv),
+      rateType: r.rateType,
+      ratePercent: r.ratePercent,
+      aprcPercent: r.aprcPercent,
+      maxLtv: r.maxLtv,
       green: r.green,
       cashback: r.cashback ?? undefined,
-      revertRatePercent:
-        r.revert_rate_percent == null ? undefined : Number(r.revert_rate_percent),
-      cashbackPercent:
-        r.cashback_percent == null ? undefined : Number(r.cashback_percent),
-      cashbackFlat: r.cashback_flat == null ? undefined : Number(r.cashback_flat),
+      revertRatePercent: r.revertRatePercent ?? undefined,
+      cashbackPercent: r.cashbackPercent ?? undefined,
+      cashbackFlat: r.cashbackFlat ?? undefined,
       details: r.details ?? undefined,
       audience: r.audience,
     }));
 
-    const s = settingsRows[0];
-    const policy: MortgagePolicy = s
+    const policy: MortgagePolicy = settingsDoc
       ? {
-          ltiFirstTime: Number(s.lti_first_time),
-          ltiTradingUp: Number(s.lti_trading_up),
-          maxLtvOwner: Number(s.max_ltv_owner),
-          maxLtvInvestment: Number(s.max_ltv_investment),
-          maxAgeAtEnd: s.max_age_at_end,
-          maxTermOwner: s.max_term_owner,
-          maxTermInvestment: s.max_term_investment,
+          ltiFirstTime: settingsDoc.ltiFirstTime,
+          ltiTradingUp: settingsDoc.ltiTradingUp,
+          maxLtvOwner: settingsDoc.maxLtvOwner,
+          maxLtvInvestment: settingsDoc.maxLtvInvestment,
+          maxAgeAtEnd: settingsDoc.maxAgeAtEnd,
+          maxTermOwner: settingsDoc.maxTermOwner,
+          maxTermInvestment: settingsDoc.maxTermInvestment,
         }
       : DEFAULT_POLICY;
 
-    return { products, policy, ratesAsOf: s?.rates_as_of ?? RATES_AS_OF };
+    return { products, policy, ratesAsOf: settingsDoc?.ratesAsOf ?? RATES_AS_OF };
   } catch (err) {
     console.error("[mortgage] DB read failed, using static snapshot:", err);
-    return { products: LENDER_PRODUCTS, policy: DEFAULT_POLICY, ratesAsOf: RATES_AS_OF };
+    return STATIC;
   }
 }

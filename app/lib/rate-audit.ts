@@ -1,8 +1,8 @@
 /* Change-audit log, shared by every editable calculator (Project B reuses it).
-   recordAudit never throws — an audit failure must not block the actual change.
-   Reads/writes go through the pg pool (app/lib/db.ts). */
+   recordAudit never throws — an audit failure must not block the actual change. */
 
-import { query } from "./db";
+import { ObjectId } from "mongodb";
+import { rateAuditCollection } from "./collections";
 
 export interface RateAuditEntry {
   /** e.g. "cgt-settings", "cgt-multipliers". */
@@ -10,14 +10,14 @@ export interface RateAuditEntry {
   /** e.g. "update", "add", "delete", "import", "reset", "reviewed". */
   action: string;
   summary: string;
-  /** Field-level old→new (or the affected row). Stored as jsonb. */
+  /** Field-level old→new (or the affected row). Stored as a subdocument. */
   details?: unknown;
   /** Admin email. */
   changedBy: string;
 }
 
 export interface RateAuditRow {
-  id: number;
+  id: string;
   area: string;
   action: string;
   summary: string | null;
@@ -27,39 +27,53 @@ export interface RateAuditRow {
 
 export async function recordAudit(e: RateAuditEntry): Promise<void> {
   try {
-    await query(
-      `insert into rate_audit (area, action, summary, details, changed_by)
-       values ($1, $2, $3, $4, $5)`,
-      [e.area, e.action, e.summary, e.details === undefined ? null : JSON.stringify(e.details), e.changedBy],
-    );
+    const audit = await rateAuditCollection();
+    await audit.insertOne({
+      _id: new ObjectId(),
+      area: e.area,
+      action: e.action,
+      summary: e.summary,
+      // Stored as a nested document rather than a JSON string, so the history
+      // stays queryable.
+      details: e.details === undefined ? null : e.details,
+      changedBy: e.changedBy,
+      changedAt: new Date(),
+    });
   } catch (err) {
     console.error("[audit] record failed:", err);
   }
 }
 
-/** Recent changes for an area LIKE pattern (e.g. "cgt-%"), newest first. */
-export async function getRecentAudit(areaLike: string, limit = 20): Promise<RateAuditRow[]> {
+/**
+ * Recent changes for an area, newest first.
+ *
+ * `areaLike` keeps the SQL LIKE patterns the six rate editors already pass
+ * ("cgt-%", "vat%", …). Every one of them is a prefix match, so a trailing `%`
+ * becomes an anchored regex and the prefix itself is escaped — an area name is
+ * a literal, never a pattern.
+ */
+export async function getRecentAudit(
+  areaLike: string,
+  limit = 20,
+): Promise<RateAuditRow[]> {
   try {
-    const { rows } = await query<{
-      id: number;
-      area: string;
-      action: string;
-      summary: string | null;
-      changed_by: string | null;
-      changed_at: string;
-    }>(
-      `select id, area, action, summary, changed_by, changed_at
-         from rate_audit where area like $1
-        order by changed_at desc limit $2`,
-      [areaLike, limit],
-    );
+    const prefix = areaLike.endsWith("%") ? areaLike.slice(0, -1) : areaLike;
+    const escaped = prefix.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+    const audit = await rateAuditCollection();
+    const rows = await audit
+      .find({ area: { $regex: `^${escaped}` } })
+      .sort({ changedAt: -1 })
+      .limit(limit)
+      .toArray();
+
     return rows.map((r) => ({
-      id: r.id,
+      id: r._id.toHexString(),
       area: r.area,
       action: r.action,
       summary: r.summary,
-      changedBy: r.changed_by,
-      changedAt: r.changed_at,
+      changedBy: r.changedBy,
+      changedAt: r.changedAt.toISOString(),
     }));
   } catch (err) {
     console.error("[audit] read failed:", err);

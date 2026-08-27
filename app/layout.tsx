@@ -5,7 +5,7 @@ import { SiteFooter } from "./components/site-footer";
 import { BackToTop } from "./components/back-to-top";
 import { ChromeGate } from "./components/chrome-gate";
 import { RouteProgress } from "./components/route-progress";
-import { getSessionUser } from "./lib/supabase/guards";
+import { getSessionUser } from "./lib/auth/guards";
 import { site } from "./lib/content";
 import "./globals.css";
 

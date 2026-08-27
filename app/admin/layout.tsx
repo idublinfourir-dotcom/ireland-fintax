@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { requireAdmin } from "../lib/supabase/guards";
+import { requireAdmin } from "../lib/auth/guards";
 import { loadReviewStatus } from "../lib/editable-calculators";
 import { DashboardShell } from "../components/dashboard-ui";
 import type { DashNavItem } from "../components/dashboard-nav";
@@ -35,10 +35,7 @@ export default async function AdminLayout({
       badge="admin"
       navItems={navItems}
       dueHrefs={dueHrefs}
-      user={{
-        email: user.email ?? "",
-        name: (user.user_metadata?.full_name as string | undefined) ?? null,
-      }}
+      user={{ email: user.email, name: user.name }}
     >
       {children}
     </DashboardShell>

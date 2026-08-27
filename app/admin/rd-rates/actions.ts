@@ -8,7 +8,7 @@
    on both phases; guard-railed + audited. Mirrors the CGT settings action. */
 
 import { revalidatePath } from "next/cache";
-import { requireAdmin } from "../../lib/supabase/guards";
+import { requireAdmin } from "../../lib/auth/guards";
 import { saveCalculatorConfig } from "../../lib/calculator-settings";
 import { RD_SETTINGS_KEY, getRdData } from "../../lib/rd-data";
 import { validateRdConfig } from "../../lib/rd-guardrails";

@@ -1,17 +1,20 @@
 /* Shared server-side loader for admin-editable calculator configs.
 
-   One JSONB row per calculator in `calculator_settings` (key = calculator slug),
-   editable in /admin/<calc>-rates. Every calculator's `*-data.ts` is a thin
-   typed wrapper around getCalculatorConfig: it passes its own `parse` +
-   code-default `fallback`, so a missing row / invalid stored value / DB error
-   all resolve to today's versioned numbers — the tool never renders broken data.
+   One document per calculator in `calculator_settings`, keyed by the
+   calculator slug and editable in /admin/<calc>-rates. Every calculator's
+   `*-data.ts` is a thin typed wrapper around getCalculatorConfig: it passes its
+   own `parse` + code-default `fallback`, so a missing document / invalid stored
+   value / database error all resolve to today's versioned numbers — the tool
+   never renders broken data.
 
-   Mirrors cgt-data.ts, but generic: CGT keeps its own two-table loader
+   Mirrors cgt-data.ts, but generic: CGT keeps its own two-collection loader
    (cgt_settings + cgt_multipliers); the four Project-B calculators share this.
 
-   Reads/writes go through the pg pool (app/lib/db.ts). */
+   The config is stored as a real subdocument rather than a JSON string, so it
+   arrives back already parsed — the same as the jsonb column it replaces. */
 
-import { query } from "./db";
+import { calculatorSettingsCollection } from "./collections";
+import { isDbConfigured } from "./db-config";
 
 export interface CalculatorConfigResult<T> {
   config: T;
@@ -20,23 +23,29 @@ export interface CalculatorConfigResult<T> {
 }
 
 /**
- * Load a calculator's config: the DB row when present and valid, otherwise the
- * code fallback. `parse` returns a valid typed config or null (reject partial /
- * malformed JSON). Never throws — any failure falls back to `fallback`.
+ * Load a calculator's config: the stored document when present and valid,
+ * otherwise the code fallback. `parse` returns a valid typed config or null
+ * (reject partial / malformed values). Never throws — any failure falls back
+ * to `fallback`.
  */
 export async function getCalculatorConfig<T>(
   key: string,
   parse: (raw: unknown) => T | null,
   fallback: T,
 ): Promise<CalculatorConfigResult<T>> {
+  // No backend configured: the code default IS the answer, so don't open a
+  // connection just to fail and catch. Keeps `next build` quiet on a fresh
+  // clone with no .env.local.
+  if (!isDbConfigured()) return { config: fallback, reviewedAt: null };
+
   try {
-    const { rows } = await query<{ config: unknown; reviewed_at: string | null }>(
-      `select config, reviewed_at from calculator_settings where key = $1`,
-      [key],
-    );
-    const config = parse(rows[0]?.config) ?? fallback;
-    const reviewedAt = rows[0]?.reviewed_at ?? null;
-    return { config, reviewedAt };
+    const settings = await calculatorSettingsCollection();
+    const doc = await settings.findOne({ _id: key });
+
+    return {
+      config: parse(doc?.config) ?? fallback,
+      reviewedAt: doc?.reviewedAt?.toISOString() ?? null,
+    };
   } catch (err) {
     console.error(`[calc:${key}] DB read failed, using static defaults:`, err);
     return { config: fallback, reviewedAt: null };
@@ -46,34 +55,40 @@ export async function getCalculatorConfig<T>(
 /**
  * Upsert a calculator's config and stamp it reviewed now. The caller is
  * responsible for validating `config` before this point (guardrails); we only
- * serialise and write. Throws on DB error so the action can surface a message.
+ * store it. Throws on error so the action can surface a message.
  */
-export async function saveCalculatorConfig(key: string, config: unknown): Promise<void> {
-  await query(
-    `insert into calculator_settings (key, config, reviewed_at, updated_at)
-     values ($1, $2, now(), now())
-     on conflict (key) do update set
-       config = excluded.config,
-       reviewed_at = now(),
-       updated_at = now()`,
-    [key, JSON.stringify(config)],
+export async function saveCalculatorConfig(
+  key: string,
+  config: unknown,
+): Promise<void> {
+  const settings = await calculatorSettingsCollection();
+  const now = new Date();
+  await settings.updateOne(
+    { _id: key },
+    { $set: { config, reviewedAt: now, updatedAt: now } },
+    { upsert: true },
   );
 }
 
 /**
- * Stamp reviewed_at = now() without touching config. If the calculator has no
- * row yet (serving code defaults), inserts a CONFIG-LESS row (config stays null
- * → the code fallback remains authoritative, so no rate drift) purely to record
- * the review date — this lets the admin dismiss the reminder for an
- * un-customised calculator. Never throws — a review stamp must not block the admin.
+ * Stamp reviewedAt = now without touching config. If the calculator has no
+ * document yet (serving code defaults), inserts a CONFIG-LESS one (config stays
+ * null → the code fallback remains authoritative, so no rate drift) purely to
+ * record the review date — this lets the admin dismiss the reminder for an
+ * un-customised calculator. Never throws — a review stamp must not block the
+ * admin.
  */
 export async function markCalculatorReviewed(key: string): Promise<void> {
   try {
-    await query(
-      `insert into calculator_settings (key, reviewed_at, updated_at)
-       values ($1, now(), now())
-       on conflict (key) do update set reviewed_at = now(), updated_at = now()`,
-      [key],
+    const settings = await calculatorSettingsCollection();
+    const now = new Date();
+    await settings.updateOne(
+      { _id: key },
+      {
+        $set: { reviewedAt: now, updatedAt: now },
+        $setOnInsert: { config: null },
+      },
+      { upsert: true },
     );
   } catch (err) {
     console.error(`[calc:${key}] mark reviewed failed:`, err);

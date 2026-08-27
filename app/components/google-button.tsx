@@ -1,29 +1,33 @@
 "use client";
 
 import { useState } from "react";
-import { createClient } from "../lib/supabase/client";
-import { isSupabaseConfigured } from "../lib/supabase/config";
+import { signIn } from "next-auth/react";
 
-/** "Continue with Google" — starts the Supabase OAuth (PKCE) flow. */
-export function GoogleButton() {
+/**
+ * "Continue with Google" — starts the Auth.js OAuth flow.
+ *
+ * `enabled` is decided on the server (isGoogleEnabled in app/lib/auth/config.ts)
+ * and threaded down, because the OAuth client credentials are server-only: the
+ * browser has no way to tell whether the provider is wired up. Renders nothing
+ * when it is not, rather than a button that can only fail.
+ */
+export function GoogleButton({ enabled }: { enabled: boolean }) {
   const [loading, setLoading] = useState(false);
 
-  // Nothing to sign in to yet — render nothing rather than a button that throws.
-  if (!isSupabaseConfigured()) return null;
+  if (!enabled) return null;
 
   async function handleGoogle() {
     setLoading(true);
-    const supabase = createClient();
-    // Keep redirectTo free of query strings so it exact-matches the Supabase
-    // redirect allow-list on every host (localhost + prod). A `?next=` param
-    // fails the match on non-wildcard entries and Supabase falls back to the
-    // Site URL (prod). The callback role-routes (/portal or /admin) anyway.
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: { redirectTo: `${window.location.origin}/auth/callback` },
-    });
-    // On success the browser is redirected to Google; only reset on failure.
-    if (error) setLoading(false);
+    try {
+      // Land on /auth/callback rather than a fixed page: only the server knows
+      // whether this account belongs in /admin or /portal, and that route
+      // decides. Google's own redirect URI is Auth.js' handler at
+      // /api/auth/callback/google — not this one.
+      await signIn("google", { redirectTo: "/auth/callback" });
+    } catch {
+      // On success the browser is redirected to Google; only reset on failure.
+      setLoading(false);
+    }
   }
 
   return (

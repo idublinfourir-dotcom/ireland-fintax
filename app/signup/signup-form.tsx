@@ -11,7 +11,7 @@ const inputClasses =
 
 const initialState: SignupState = {};
 
-export function SignupForm() {
+export function SignupForm({ googleEnabled }: { googleEnabled: boolean }) {
   const [state, formAction, isPending] = useActionState(signup, initialState);
 
   if (state.checkEmail) {
@@ -59,7 +59,7 @@ export function SignupForm() {
         </p>
       )}
 
-      <GoogleButton />
+      <GoogleButton enabled={googleEnabled} />
 
       <div className="flex items-center gap-3 text-xs font-medium uppercase tracking-wide text-muted">
         <span className="h-px flex-1 bg-line" />

@@ -1,12 +1,10 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { createClient } from "../lib/supabase/server";
-import {
-  isSupabaseConfigured,
-  SUPABASE_NOT_CONFIGURED,
-} from "../lib/supabase/config";
-import { query } from "../lib/db";
+import { AuthError } from "next-auth";
+import { signIn } from "../../auth";
+import { usersCollection } from "../lib/collections";
+import { AUTH_NOT_CONFIGURED, isAuthConfigured } from "../lib/auth/config";
 
 export interface AuthState {
   error?: string;
@@ -30,18 +28,44 @@ export async function login(
     return { error: "Enter your email and password.", values: { email } };
   }
 
-  if (!isSupabaseConfigured()) {
-    return { error: SUPABASE_NOT_CONFIGURED, values: { email } };
+  if (!isAuthConfigured()) {
+    return { error: AUTH_NOT_CONFIGURED, values: { email } };
   }
 
-  const supabase = await createClient();
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email,
-    password,
-  });
+  /* `authorize` returns null for a wrong password, an unknown address and an
+     unconfirmed one alike, so it cannot be used to probe which accounts exist.
+     Auth.js reports that as a thrown AuthError; some builds instead hand back
+     the error URL, so both signals are treated as a failure. */
+  let failed = false;
+  try {
+    const result = await signIn("credentials", {
+      email,
+      password,
+      redirect: false,
+    });
+    if (typeof result === "string" && result.includes("error=")) failed = true;
+  } catch (err) {
+    if (!(err instanceof AuthError)) throw err;
+    failed = true;
+  }
 
-  if (error) {
-    return { error: error.message, values: { email } };
+  // One lookup, used either way: to say WHICH failure it was, or to route by
+  // role. Reading the account directly rather than re-reading the session keeps
+  // this independent of the cookie that was just written.
+  const users = await usersCollection();
+  const account = await users.findOne(
+    { email: email.toLowerCase() },
+    { projection: { role: 1, emailVerified: 1 } },
+  );
+
+  if (failed) {
+    return {
+      error:
+        account && !account.emailVerified
+          ? "Email not confirmed. Check your inbox for the confirmation link."
+          : "Invalid login credentials.",
+      values: { email },
+    };
   }
 
   // Honor an explicit, safe redirect (set when the user was gated). Otherwise
@@ -50,17 +74,5 @@ export async function login(
     redirect(requestedNext);
   }
 
-  // Look up role via the pg pool (bypasses RLS) — reliable and independent of
-  // the just-set session cookie that the RLS read path depends on.
-  let role: string | null = null;
-  const userId = data.user?.id;
-  if (userId) {
-    const { rows } = await query<{ role: string }>(
-      "select role from public.profiles where id = $1",
-      [userId],
-    );
-    role = rows[0]?.role ?? null;
-  }
-
-  redirect(role === "admin" ? "/admin" : "/portal");
+  redirect(account?.role === "admin" ? "/admin" : "/portal");
 }

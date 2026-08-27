@@ -1,13 +1,19 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { query } from "../../lib/db";
-import { requireAdmin } from "../../lib/supabase/guards";
+import type { Filter } from "mongodb";
+import {
+  enquiriesCollection,
+  toEnquiryRef,
+  type EnquiryDoc,
+} from "../../lib/collections";
+import { requireAdmin } from "../../lib/auth/guards";
 import { sendAdminMessageAction } from "./actions";
 import { Icon } from "../../components/dashboard-icons";
 import { ChatPanel } from "../../components/chat-panel";
 import {
-  ADMIN_UNREAD_SQL,
+  ADMIN_UNREAD_FILTER,
   getThreadMessages,
+  isUnreadForAdmin,
   markAdminRead,
 } from "../../lib/enquiry-messages";
 import {
@@ -43,6 +49,12 @@ const fmtLong = new Intl.DateTimeFormat("en-GB", {
   minute: "2-digit",
 });
 
+/** The search box is free text, so every metacharacter in it has to be a
+    literal — otherwise a stray `(` throws and a `.*` scans the collection. */
+function escapeRegExp(value: string) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
 /** Inbox URL preserving the active filter + search. */
 function hrefWith(p: { filter?: string; q?: string; id?: string }) {
   const sp = new URLSearchParams();
@@ -62,55 +74,58 @@ export default async function EnquiriesPage({
   const params = await searchParams;
   const q = params.q?.trim() ?? "";
   const filter = params.filter === "unread" ? "unread" : "all";
-  const idParam = params.id && /^\d+$/.test(params.id) ? params.id : null;
+  const selectedRef = toEnquiryRef(params.id);
+  const idParam = selectedRef === null ? null : String(selectedRef);
 
   // Opening a thread marks it read for the admin — do this first so the list
   // and counts below reflect it immediately (no one-render lag on the badge).
   if (idParam) await markAdminRead(idParam);
 
-  // List query with optional unread + free-text filters. (`e` alias is required
-  // by ADMIN_UNREAD_SQL.)
-  const conds: string[] = [];
-  const values: unknown[] = [];
-  if (filter === "unread") conds.push(ADMIN_UNREAD_SQL);
-  if (q) {
-    values.push(`%${q}%`);
-    const n = values.length;
-    conds.push(
-      `(e.name ilike $${n} or e.email ilike $${n} or coalesce(e.company, '') ilike $${n}
-        or coalesce(e.service, '') ilike $${n} or e.message ilike $${n})`,
-    );
-  }
-  const where = conds.length ? `where ${conds.join(" and ")}` : "";
+  const enquiries = await enquiriesCollection();
 
-  const [listResult, countsResult, selectedResult] = await Promise.all([
-    query<EnquiryRow>(
-      `select e.id, e.name, e.email, e.company, e.service, e.message, e.created_at,
-              ${ADMIN_UNREAD_SQL} as unread
-         from enquiries e ${where}
-        order by e.created_at desc
-        limit 100`,
-      values,
-    ),
-    query<{ total: number; unread: number }>(
-      `select count(*)::int as total,
-              count(*) filter (where ${ADMIN_UNREAD_SQL})::int as unread
-         from enquiries e`,
-    ),
-    idParam
-      ? query<EnquiryRow>(
-          `select e.id, e.name, e.email, e.company, e.service, e.message, e.created_at,
-                  ${ADMIN_UNREAD_SQL} as unread
-             from enquiries e where e.id = $1`,
-          [idParam],
-        )
-      : Promise.resolve(null),
+  // List query with optional unread + free-text filters.
+  const conditions: Filter<EnquiryDoc>[] = [];
+  if (filter === "unread") conditions.push(ADMIN_UNREAD_FILTER);
+  if (q) {
+    // Unanchored + case-insensitive is what `ilike '%q%'` meant. Like the SQL
+    // it replaces, this is a scan; the inbox caps at 100 rows.
+    const term = { $regex: escapeRegExp(q), $options: "i" };
+    conditions.push({
+      $or: [
+        { name: term },
+        { email: term },
+        { company: term },
+        { service: term },
+        { message: term },
+      ],
+    } as Filter<EnquiryDoc>);
+  }
+  const where: Filter<EnquiryDoc> = conditions.length ? { $and: conditions } : {};
+
+  const toRow = (e: EnquiryDoc): EnquiryRow => ({
+    id: String(e.ref),
+    name: e.name,
+    email: e.email,
+    company: e.company,
+    service: e.service,
+    message: e.message,
+    created_at: e.createdAt,
+    unread: isUnreadForAdmin(e),
+  });
+
+  const [listDocs, total, unreadCount, selectedDoc] = await Promise.all([
+    enquiries.find(where).sort({ createdAt: -1 }).limit(100).toArray(),
+    enquiries.countDocuments({}),
+    enquiries.countDocuments(ADMIN_UNREAD_FILTER),
+    selectedRef === null
+      ? Promise.resolve(null)
+      : enquiries.findOne({ ref: selectedRef }),
   ]);
 
-  const rows = listResult.rows;
-  const counts = countsResult.rows[0] ?? { total: 0, unread: 0 };
-  const selected = selectedResult?.rows[0] ?? rows[0] ?? null;
-  const explicitSelection = Boolean(selectedResult?.rows[0]);
+  const rows = listDocs.map(toRow);
+  const counts = { total, unread: unreadCount };
+  const selected = selectedDoc ? toRow(selectedDoc) : rows[0] ?? null;
+  const explicitSelection = Boolean(selectedDoc);
 
   const thread = selected ? await getThreadMessages(selected.id) : [];
 

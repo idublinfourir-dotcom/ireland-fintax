@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
 import { headers } from "next/headers";
-import { query } from "./db";
+import { rateLimitsCollection } from "./collections";
 
 interface PublicActionLimits {
   action: string;
@@ -23,6 +23,18 @@ async function requestIp(): Promise<string> {
   ).slice(0, 128);
 }
 
+/**
+ * Count one hit against a fixed window and report whether it is still allowed.
+ *
+ * The counter document is keyed by the whole (action, keyHash, windowStart)
+ * triple, so `findOneAndUpdate` with `$inc` and `upsert` is a single atomic
+ * server-side operation — the same guarantee the SQL's
+ * `insert … on conflict … do update … returning count` gave. Concurrent
+ * requests in one window increment the same document rather than racing.
+ *
+ * The field order in that composite _id is significant: MongoDB compares
+ * embedded documents by exact shape, so it must always be built here.
+ */
 async function consume(
   action: string,
   identifier: string,
@@ -30,21 +42,22 @@ async function consume(
   windowSeconds: number,
 ): Promise<boolean> {
   const windowMs = windowSeconds * 1000;
-  const windowStart = new Date(
-    Math.floor(Date.now() / windowMs) * windowMs,
-  ).toISOString();
+  const windowStart = new Date(Math.floor(Date.now() / windowMs) * windowMs);
   const keyHash = hashIdentifier(identifier);
 
-  const { rows } = await query<{ count: number }>(
-    `insert into request_rate_limits (action, key_hash, window_start, count)
-     values ($1, $2, $3, 1)
-     on conflict (action, key_hash, window_start) do update
-       set count = request_rate_limits.count + 1
-     returning count`,
-    [action, keyHash, windowStart],
+  const limits = await rateLimitsCollection();
+  const doc = await limits.findOneAndUpdate(
+    { _id: { action, keyHash, windowStart } },
+    {
+      $inc: { count: 1 },
+      // Duplicated out of the _id so the TTL index has a top-level field to
+      // sweep on. That index replaces the periodic DELETE the SQL version ran.
+      $setOnInsert: { windowStart },
+    },
+    { upsert: true, returnDocument: "after" },
   );
 
-  return (rows[0]?.count ?? max + 1) <= max;
+  return (doc?.count ?? max + 1) <= max;
 }
 
 /**
@@ -72,12 +85,6 @@ export async function allowPublicAction({
       `identity:${identity.trim().toLowerCase()}`,
       identityLimit.max,
       identityLimit.windowSeconds,
-    );
-
-    // Keep the fixed-window table bounded without requiring a scheduler.
-    await query(
-      `delete from request_rate_limits
-        where window_start < now() - interval '8 days'`,
     );
 
     return ipAllowed && identityAllowed;

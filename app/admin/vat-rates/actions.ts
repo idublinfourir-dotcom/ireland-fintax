@@ -8,7 +8,7 @@
    Re-checks requireAdmin on both phases; guard-railed + audited. */
 
 import { revalidatePath } from "next/cache";
-import { requireAdmin } from "../../lib/supabase/guards";
+import { requireAdmin } from "../../lib/auth/guards";
 import { saveCalculatorConfig } from "../../lib/calculator-settings";
 import { VAT_SETTINGS_KEY, getVatData } from "../../lib/vat-data";
 import {

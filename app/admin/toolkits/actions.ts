@@ -5,7 +5,8 @@
    and then marks the request sent here. */
 
 import { revalidatePath } from "next/cache";
-import { requireAdmin } from "../../lib/supabase/guards";
+import { requireAdmin } from "../../lib/auth/guards";
+import { toObjectId } from "../../lib/collections";
 import { setRequestStatus } from "../../lib/toolkit-requests";
 
 export interface ActionState {
@@ -21,9 +22,10 @@ export async function setRequestStatusAction(
 ): Promise<ActionState> {
   await requireAdmin();
 
+  // Requests are keyed by ObjectId now, not by a bigint sequence.
   const id = String(formData.get("id") ?? "").trim();
   const status = String(formData.get("status") ?? "").trim();
-  if (!/^\d+$/.test(id) || (status !== "pending" && status !== "sent")) {
+  if (!toObjectId(id) || (status !== "pending" && status !== "sent")) {
     return { status: "error", message: "Could not update — bad request." };
   }
 
