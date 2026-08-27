@@ -8,8 +8,8 @@
    Re-checks requireAdmin. */
 
 import { revalidatePath } from "next/cache";
-import { query } from "../lib/db";
-import { requireAdmin } from "../lib/supabase/guards";
+import { cgtSettingsCollection } from "../lib/collections";
+import { requireAdmin } from "../lib/auth/guards";
 import { markCalculatorReviewed } from "../lib/calculator-settings";
 import { recordAudit } from "../lib/rate-audit";
 import { EDITABLE_CALCULATORS } from "../lib/editable-calculators";
@@ -21,9 +21,21 @@ export async function markCalculatorReviewedAction(formData: FormData): Promise<
   if (!entry) return;
 
   if (key === "cgt") {
-    // CGT keeps its reviewed_at in its own table.
+    // CGT keeps its reviewedAt in its own collection. Upserted, like
+    // markCalculatorReviewed does for the other five: with no document yet the
+    // SQL UPDATE this replaces silently did nothing, so the reminder could not
+    // be dismissed for an un-customised CGT. A config-less document leaves the
+    // code defaults authoritative, so no rate moves.
     try {
-      await query(`update cgt_settings set reviewed_at = now() where id = 1`);
+      const settings = await cgtSettingsCollection();
+      await settings.updateOne(
+        { _id: 1 },
+        {
+          $set: { reviewedAt: new Date() },
+          $setOnInsert: { config: null, updatedAt: new Date() },
+        },
+        { upsert: true },
+      );
     } catch (err) {
       console.error("[cgt] mark reviewed failed:", err);
       return;

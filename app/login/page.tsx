@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Container, PageHero } from "../components/ui";
 import { LoginForm } from "./login-form";
+import { isGoogleEnabled } from "../lib/auth/config";
 
 export const metadata: Metadata = {
   title: "Client login",
@@ -30,7 +31,11 @@ export default async function LoginPage({
       />
       <Container className="py-16 sm:py-20">
         <div className="mx-auto max-w-md rounded-none border border-line bg-surface p-6 shadow-sm shadow-navy-900/5 sm:p-8">
-          <LoginForm next={next} notice={notice ? NOTICES[notice] : undefined} />
+          <LoginForm
+            next={next}
+            notice={notice ? NOTICES[notice] : undefined}
+            googleEnabled={isGoogleEnabled()}
+          />
         </div>
       </Container>
     </>

@@ -8,7 +8,7 @@
    in code. Re-checks requireAdmin on both phases; guard-railed + audited. */
 
 import { revalidatePath } from "next/cache";
-import { requireAdmin } from "../../lib/supabase/guards";
+import { requireAdmin } from "../../lib/auth/guards";
 import { saveCalculatorConfig } from "../../lib/calculator-settings";
 import { CA_SETTINGS_KEY, getCaData } from "../../lib/ca-data";
 import {

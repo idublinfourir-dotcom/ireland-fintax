@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { requireAdmin } from "../../lib/supabase/guards";
+import { requireAdmin } from "../../lib/auth/guards";
 import { getTaxRates, TAX_YEARS } from "../../lib/tax-data";
 import { TaxRatesManager } from "./tax-rates-manager";
 

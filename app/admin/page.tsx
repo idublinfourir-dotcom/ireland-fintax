@@ -1,10 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { query } from "../lib/db";
-import { requireAdmin } from "../lib/supabase/guards";
+import { enquiriesCollection, usersCollection } from "../lib/collections";
+import { requireAdmin } from "../lib/auth/guards";
 import { loadReviewStatus } from "../lib/editable-calculators";
 import { markCalculatorReviewedAction } from "./review-actions";
-import { ADMIN_UNREAD_SQL } from "../lib/enquiry-messages";
+import {
+  ADMIN_UNREAD_FILTER,
+  isUnreadForAdmin,
+} from "../lib/enquiry-messages";
 import { Icon } from "../components/dashboard-icons";
 import {
   Avatar,
@@ -44,10 +47,8 @@ const todayFmt = new Intl.DateTimeFormat("en-GB", {
 });
 
 /** Bucket per-day counts into a dense 14-slot array ending today. */
-function dailySeries(rows: { day: Date; n: number }[]) {
-  const byDay = new Map(
-    rows.map((r) => [new Date(r.day).toISOString().slice(0, 10), r.n]),
-  );
+function dailySeries(rows: { day: string; n: number }[]) {
+  const byDay = new Map(rows.map((r) => [r.day, r.n]));
   const points: number[] = [];
   const today = new Date();
   for (let i = 13; i >= 0; i--) {
@@ -61,49 +62,56 @@ function dailySeries(rows: { day: Date; n: number }[]) {
 export default async function AdminPage() {
   const user = await requireAdmin();
 
-  const [enquiriesResult, statsResult, trendResult, clientsResult, reviews] =
+  const [enquiries, users] = await Promise.all([
+    enquiriesCollection(),
+    usersCollection(),
+  ]);
+
+  const DAY = 24 * 60 * 60 * 1000;
+  const now = new Date();
+  const sevenDaysAgo = new Date(now.getTime() - 7 * DAY);
+  const fourteenDaysAgo = new Date(now.getTime() - 14 * DAY);
+
+  const [recent, total, last7, prev7, unread, trendRows, clients, reviews] =
     await Promise.all([
-      query<EnquiryRow>(
-        `select e.id, e.name, e.email, e.company, e.service, e.message, e.created_at,
-                ${ADMIN_UNREAD_SQL} as unread
-           from enquiries e
-          order by e.created_at desc
-          limit 8`,
-      ),
-      query<{ total: number; last7: number; prev7: number; unread: number }>(
-        `select count(*)::int as total,
-                count(*) filter (where e.created_at >= now() - interval '7 days')::int as last7,
-                count(*) filter (where e.created_at >= now() - interval '14 days'
-                             and e.created_at <  now() - interval '7 days')::int as prev7,
-                count(*) filter (where ${ADMIN_UNREAD_SQL})::int as unread
-           from enquiries e`,
-      ),
-      query<{ day: Date; n: number }>(
-        `select date_trunc('day', created_at) as day, count(*)::int as n
-           from enquiries
-          where created_at >= now() - interval '14 days'
-          group by 1`,
-      ),
-      query<{ clients: number }>(
-        `select count(*)::int as clients from public.profiles where role = 'client'`,
-      ),
+      enquiries.find().sort({ createdAt: -1 }).limit(8).toArray(),
+      enquiries.countDocuments({}),
+      enquiries.countDocuments({ createdAt: { $gte: sevenDaysAgo } }),
+      enquiries.countDocuments({
+        createdAt: { $gte: fourteenDaysAgo, $lt: sevenDaysAgo },
+      }),
+      enquiries.countDocuments(ADMIN_UNREAD_FILTER),
+      enquiries
+        .aggregate<{ day: string; n: number }>([
+          { $match: { createdAt: { $gte: fourteenDaysAgo } } },
+          {
+            $group: {
+              _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
+              n: { $sum: 1 },
+            },
+          },
+          { $project: { _id: 0, day: "$_id", n: 1 } },
+        ])
+        .toArray(),
+      users.countDocuments({ role: "client" }),
       loadReviewStatus(),
     ]);
 
-  const rows = enquiriesResult.rows;
-  const { total, last7, prev7, unread } = statsResult.rows[0] ?? {
-    total: 0,
-    last7: 0,
-    prev7: 0,
-    unread: 0,
-  };
-  const clients = clientsResult.rows[0]?.clients ?? 0;
-  const trend = dailySeries(trendResult.rows);
+  const rows: EnquiryRow[] = recent.map((e) => ({
+    id: String(e.ref),
+    name: e.name,
+    email: e.email,
+    company: e.company,
+    service: e.service,
+    message: e.message,
+    created_at: e.createdAt,
+    unread: isUnreadForAdmin(e),
+  }));
+
+  const trend = dailySeries(trendRows);
   const dueReviews = reviews.filter((r) => r.due);
   const upToDate = reviews.length - dueReviews.length;
-  const firstName = (user.user_metadata?.full_name as string | undefined)
-    ?.trim()
-    .split(" ")[0];
+  const firstName = user.name?.trim().split(" ")[0];
 
   return (
     <div className="mx-auto max-w-6xl">

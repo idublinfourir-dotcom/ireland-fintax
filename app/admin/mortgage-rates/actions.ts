@@ -1,8 +1,15 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { query } from "../../lib/db";
-import { requireAdmin } from "../../lib/supabase/guards";
+import { ObjectId } from "mongodb";
+import {
+  mortgageProductsCollection,
+  mortgageSettingsCollection,
+  toObjectId,
+  type ProductAudience,
+  type RateType,
+} from "../../lib/collections";
+import { requireAdmin } from "../../lib/auth/guards";
 
 export interface ActionState {
   status: "idle" | "saved" | "error";
@@ -39,7 +46,7 @@ const optNum = (v: FormDataEntryValue | null): number | null => {
 interface ParsedProduct {
   lender: string;
   name: string;
-  rateType: string;
+  rateType: RateType;
   ratePercent: number;
   aprcPercent: number;
   maxLtv: number;
@@ -49,7 +56,7 @@ interface ParsedProduct {
   cashbackPercent: number | null;
   cashbackFlat: number | null;
   details: string | null;
-  audience: string[];
+  audience: ProductAudience[];
   active: boolean;
 }
 
@@ -100,7 +107,8 @@ function parseProduct(formData: FormData): ParsedProduct | string {
   return {
     lender,
     name,
-    rateType,
+    // Narrowed by the RATE_TYPES check above.
+    rateType: rateType as RateType,
     ratePercent,
     aprcPercent,
     maxLtv,
@@ -126,59 +134,25 @@ export async function saveProduct(
   if (typeof parsed === "string") return { status: "error", message: parsed };
 
   const id = String(formData.get("id") ?? "").trim();
+  const _id = id ? toObjectId(id) : null;
+  if (id && !_id) return { status: "error", message: "Unknown product." };
 
   try {
-    if (id) {
-      await query(
-        `update mortgage_products
-            set lender = $1, name = $2, rate_type = $3, rate_percent = $4,
-                aprc_percent = $5, max_ltv = $6, green = $7, cashback = $8,
-                revert_rate_percent = $9, cashback_percent = $10,
-                cashback_flat = $11, details = $12,
-                audience = $13, active = $14, updated_at = now()
-          where id = $15`,
-        [
-          parsed.lender,
-          parsed.name,
-          parsed.rateType,
-          parsed.ratePercent,
-          parsed.aprcPercent,
-          parsed.maxLtv,
-          parsed.green,
-          parsed.cashback,
-          parsed.revertRatePercent,
-          parsed.cashbackPercent,
-          parsed.cashbackFlat,
-          parsed.details,
-          parsed.audience,
-          parsed.active,
-          id,
-        ],
+    const products = await mortgageProductsCollection();
+    if (_id) {
+      const { matchedCount } = await products.updateOne(
+        { _id },
+        { $set: { ...parsed, updatedAt: new Date() } },
       );
+      if (matchedCount === 0) {
+        return { status: "error", message: "That product no longer exists." };
+      }
     } else {
-      await query(
-        `insert into mortgage_products
-           (lender, name, rate_type, rate_percent, aprc_percent, max_ltv,
-            green, cashback, revert_rate_percent, cashback_percent,
-            cashback_flat, details, audience, active)
-         values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)`,
-        [
-          parsed.lender,
-          parsed.name,
-          parsed.rateType,
-          parsed.ratePercent,
-          parsed.aprcPercent,
-          parsed.maxLtv,
-          parsed.green,
-          parsed.cashback,
-          parsed.revertRatePercent,
-          parsed.cashbackPercent,
-          parsed.cashbackFlat,
-          parsed.details,
-          parsed.audience,
-          parsed.active,
-        ],
-      );
+      await products.insertOne({
+        _id: new ObjectId(),
+        ...parsed,
+        updatedAt: new Date(),
+      });
     }
   } catch (err) {
     console.error("[mortgage-rates] save failed:", err);
@@ -195,11 +169,12 @@ export async function deleteProduct(
 ): Promise<ActionState> {
   await requireAdmin();
 
-  const id = String(formData.get("id") ?? "").trim();
-  if (!id) return { status: "error", message: "Missing product id." };
+  const _id = toObjectId(String(formData.get("id") ?? "").trim());
+  if (!_id) return { status: "error", message: "Missing product id." };
 
   try {
-    await query(`delete from mortgage_products where id = $1`, [id]);
+    const products = await mortgageProductsCollection();
+    await products.deleteOne({ _id });
   } catch (err) {
     console.error("[mortgage-rates] delete failed:", err);
     return { status: "error", message: "Could not delete." };
@@ -242,32 +217,23 @@ export async function updateSettings(
     return { status: "error", message: "Investment max term must be 5–45 years." };
 
   try {
-    await query(
-      `insert into mortgage_settings
-         (id, rates_as_of, lti_first_time, lti_trading_up,
-          max_ltv_owner, max_ltv_investment, max_age_at_end,
-          max_term_owner, max_term_investment)
-       values (1, $1, $2, $3, $4, $5, $6, $7, $8)
-       on conflict (id) do update
-         set rates_as_of = excluded.rates_as_of,
-             lti_first_time = excluded.lti_first_time,
-             lti_trading_up = excluded.lti_trading_up,
-             max_ltv_owner = excluded.max_ltv_owner,
-             max_ltv_investment = excluded.max_ltv_investment,
-             max_age_at_end = excluded.max_age_at_end,
-             max_term_owner = excluded.max_term_owner,
-             max_term_investment = excluded.max_term_investment,
-             updated_at = now()`,
-      [
-        ratesAsOf,
-        ltiFirstTime,
-        ltiTradingUp,
-        maxLtvOwner,
-        maxLtvInvestment,
-        maxAgeAtEnd,
-        maxTermOwner,
-        maxTermInvestment,
-      ],
+    const settings = await mortgageSettingsCollection();
+    await settings.updateOne(
+      { _id: 1 },
+      {
+        $set: {
+          ratesAsOf,
+          ltiFirstTime,
+          ltiTradingUp,
+          maxLtvOwner,
+          maxLtvInvestment,
+          maxAgeAtEnd,
+          maxTermOwner,
+          maxTermInvestment,
+          updatedAt: new Date(),
+        },
+      },
+      { upsert: true },
     );
   } catch (err) {
     console.error("[mortgage-rates] settings save failed:", err);

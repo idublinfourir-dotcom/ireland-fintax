@@ -2,7 +2,7 @@
    client-side blob) so the strict CSP is a non-issue. requireAdmin redirects
    non-admins to /login. */
 
-import { requireAdmin } from "../../../lib/supabase/guards";
+import { requireAdmin } from "../../../lib/auth/guards";
 import { getCgtData } from "../../../lib/cgt-data";
 import { serializeMultiplierCsv } from "../../../lib/csv";
 

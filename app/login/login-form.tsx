@@ -14,9 +14,11 @@ const initialState: AuthState = {};
 export function LoginForm({
   next,
   notice,
+  googleEnabled,
 }: {
   next?: string;
   notice?: string;
+  googleEnabled: boolean;
 }) {
   const [state, formAction, isPending] = useActionState(login, initialState);
   const email = state.values?.email ?? "";
@@ -37,7 +39,7 @@ export function LoginForm({
         </p>
       )}
 
-      <GoogleButton />
+      <GoogleButton enabled={googleEnabled} />
 
       <div className="flex items-center gap-3 text-xs font-medium uppercase tracking-wide text-muted">
         <span className="h-px flex-1 bg-line" />

@@ -1,11 +1,10 @@
 import type { Metadata } from "next";
-import { query } from "../../lib/db";
-import { requireAdmin } from "../../lib/supabase/guards";
 import {
-  DEFAULT_POLICY,
-  RATES_AS_OF,
-  type RateType,
-} from "../../lib/ireland-mortgage";
+  mortgageProductsCollection,
+  mortgageSettingsCollection,
+} from "../../lib/collections";
+import { requireAdmin } from "../../lib/auth/guards";
+import { DEFAULT_POLICY, RATES_AS_OF } from "../../lib/ireland-mortgage";
 import { RatesManager, type AdminProduct, type AdminSettings } from "./rates-manager";
 
 export const metadata: Metadata = {
@@ -13,85 +12,50 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-interface ProductRow {
-  id: string;
-  lender: string;
-  name: string;
-  rate_type: RateType;
-  rate_percent: string;
-  aprc_percent: string;
-  max_ltv: string;
-  green: boolean;
-  cashback: string | null;
-  revert_rate_percent: string | null;
-  cashback_percent: string | null;
-  cashback_flat: string | null;
-  details: string | null;
-  audience: string[];
-  active: boolean;
-}
-
-interface SettingsRow {
-  rates_as_of: string;
-  lti_first_time: string;
-  lti_trading_up: string;
-  max_ltv_owner: string;
-  max_ltv_investment: string;
-  max_age_at_end: number;
-  max_term_owner: number;
-  max_term_investment: number;
-}
-
 export default async function MortgageRatesPage() {
   await requireAdmin();
 
-  const [{ rows: productRows }, { rows: settingsRows }] = await Promise.all([
-    query<ProductRow>(
-      `select id, lender, name, rate_type, rate_percent, aprc_percent,
-              max_ltv, green, cashback, revert_rate_percent, cashback_percent,
-              cashback_flat, details, audience, active
-         from mortgage_products
-        order by lender asc, rate_percent asc`,
-    ),
-    query<SettingsRow>(
-      `select rates_as_of, lti_first_time, lti_trading_up,
-              max_ltv_owner, max_ltv_investment, max_age_at_end,
-              max_term_owner, max_term_investment
-         from mortgage_settings
-        where id = 1`,
-    ),
+  const [productsCollection, settingsCollection] = await Promise.all([
+    mortgageProductsCollection(),
+    mortgageSettingsCollection(),
   ]);
 
-  const products: AdminProduct[] = productRows.map((r) => ({
-    id: r.id,
+  // Every product, active or not — this is the editor, not the public list.
+  const [productDocs, settingsDoc] = await Promise.all([
+    productsCollection.find().sort({ lender: 1, ratePercent: 1 }).toArray(),
+    settingsCollection.findOne({ _id: 1 }),
+  ]);
+
+  const products: AdminProduct[] = productDocs.map((r) => ({
+    id: r._id.toHexString(),
     lender: r.lender,
     name: r.name,
-    rateType: r.rate_type,
-    ratePercent: Number(r.rate_percent),
-    aprcPercent: Number(r.aprc_percent),
-    maxLtvPercent: Math.round(Number(r.max_ltv) * 100),
+    rateType: r.rateType,
+    ratePercent: r.ratePercent,
+    aprcPercent: r.aprcPercent,
+    // Stored as a fraction (0.9), edited as a percentage (90).
+    maxLtvPercent: Math.round(r.maxLtv * 100),
     green: r.green,
     cashback: r.cashback ?? "",
-    revertRatePercent:
-      r.revert_rate_percent == null ? null : Number(r.revert_rate_percent),
-    cashbackPercent: r.cashback_percent == null ? null : Number(r.cashback_percent),
-    cashbackFlat: r.cashback_flat == null ? null : Number(r.cashback_flat),
+    revertRatePercent: r.revertRatePercent,
+    cashbackPercent: r.cashbackPercent,
+    cashbackFlat: r.cashbackFlat,
     details: r.details ?? "",
     audience: r.audience,
     active: r.active,
   }));
 
-  const s = settingsRows[0];
+  const s = settingsDoc;
   const settings: AdminSettings = s
     ? {
-        ratesAsOf: s.rates_as_of,
-        ltiFirstTime: Number(s.lti_first_time),
-        ltiTradingUp: Number(s.lti_trading_up),
-        maxLtvOwnerPercent: Math.round(Number(s.max_ltv_owner) * 100),
-        maxLtvInvestmentPercent: Math.round(Number(s.max_ltv_investment) * 100),
-        maxAgeAtEnd: s.max_age_at_end,
-        maxTermOwner: s.max_term_owner,
-        maxTermInvestment: s.max_term_investment,
+        ratesAsOf: s.ratesAsOf,
+        ltiFirstTime: s.ltiFirstTime,
+        ltiTradingUp: s.ltiTradingUp,
+        maxLtvOwnerPercent: Math.round(s.maxLtvOwner * 100),
+        maxLtvInvestmentPercent: Math.round(s.maxLtvInvestment * 100),
+        maxAgeAtEnd: s.maxAgeAtEnd,
+        maxTermOwner: s.maxTermOwner,
+        maxTermInvestment: s.maxTermInvestment,
       }
     : {
         ratesAsOf: RATES_AS_OF,
@@ -124,9 +88,9 @@ export default async function MortgageRatesPage() {
               {" "}
               No products in the database yet — run{" "}
               <code className="rounded-none bg-surface-muted px-1.5 py-0.5 text-xs">
-                node scripts/db-migrate.mjs
+                node scripts/db-seed.mjs
               </code>{" "}
-              to create and seed the tables.
+              to seed them.
             </>
           )}
         </p>

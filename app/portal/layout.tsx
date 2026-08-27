@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { requireClient } from "../lib/supabase/guards";
+import { requireClient } from "../lib/auth/guards";
 import { DashboardShell } from "../components/dashboard-ui";
 import type { DashNavItem } from "../components/dashboard-nav";
 
@@ -24,10 +24,7 @@ export default async function PortalLayout({
       areaLabel="Client portal"
       badge="client"
       navItems={navItems}
-      user={{
-        email: user.email ?? "",
-        name: (user.user_metadata?.full_name as string | undefined) ?? null,
-      }}
+      user={{ email: user.email, name: user.name }}
     >
       {children}
     </DashboardShell>

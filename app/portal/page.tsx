@@ -1,6 +1,7 @@
 import Link from "next/link";
-import { query } from "../lib/db";
-import { requireClient } from "../lib/supabase/guards";
+import { redirect } from "next/navigation";
+import { enquiriesCollection, toObjectId, usersCollection } from "../lib/collections";
+import { requireClient } from "../lib/auth/guards";
 import { getThreadsFor, markClientRead } from "../lib/enquiry-messages";
 import { PortalConversation } from "../components/portal-conversation";
 import { sendClientMessageAction } from "./actions";
@@ -46,35 +47,44 @@ const quickActions = [
 export default async function PortalPage() {
   const user = await requireClient();
 
-  // Profile, the client's own enquiries and a total count — all from the pg
-  // pool and fetched in parallel. Guest enquiries are linked to user_id only
-  // at the verified email/OAuth callback boundary.
-  const [profileResult, enquiriesResult, countsResult] = await Promise.all([
-    query<{ full_name: string | null; role: string; created_at: Date }>(
-      "select full_name, role, created_at from public.profiles where id = $1",
-      [user.id],
-    ),
-    query<EnquiryRow>(
-      `select id, service, message, created_at, client_last_read_at
-         from enquiries
-        where user_id = $1
-        order by created_at desc
-        limit 50`,
-      [user.id],
-    ),
-    query<{ total: number }>(
-      `select count(*)::int as total
-         from enquiries
-        where user_id = $1`,
-      [user.id],
-    ),
+  // requireClient guarantees a session; an id that is not an ObjectId means a
+  // token this app never issued, so treat it as signed out.
+  const owner = toObjectId(user.id);
+  if (!owner) redirect("/login?next=%2Fportal");
+
+  const [users, enquiriesCol] = await Promise.all([
+    usersCollection(),
+    enquiriesCollection(),
   ]);
 
-  const profile = profileResult.rows[0] ?? null;
-  const enquiries = enquiriesResult.rows;
+  // Account, the client's own enquiries and a total count — fetched in
+  // parallel. Guest enquiries are linked to a userId only at the verified
+  // email/OAuth boundary.
+  const [account, enquiryDocs, totalEnquiries] = await Promise.all([
+    users.findOne(
+      { _id: owner },
+      { projection: { name: 1, createdAt: 1 } },
+    ),
+    enquiriesCol
+      .find({ userId: owner })
+      .sort({ createdAt: -1 })
+      .limit(50)
+      .toArray(),
+    enquiriesCol.countDocuments({ userId: owner }),
+  ]);
+
+  const profile = account
+    ? { full_name: account.name, created_at: account.createdAt }
+    : null;
+  const enquiries: EnquiryRow[] = enquiryDocs.map((e) => ({
+    id: String(e.ref),
+    service: e.service,
+    message: e.message,
+    created_at: e.createdAt,
+    client_last_read_at: e.clientLastReadAt,
+  }));
   // Reply threads for the listed enquiries (one round-trip, grouped by id).
   const threads = await getThreadsFor(enquiries.map((e) => e.id));
-  const { total: totalEnquiries } = countsResult.rows[0] ?? { total: 0 };
 
   // A thread is unread when the team has replied since the client last read it.
   // Compute BEFORE marking read so the "new reply" cues show on this visit.

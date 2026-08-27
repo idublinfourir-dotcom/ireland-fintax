@@ -1,14 +1,16 @@
 /* Server-side loader for the Ireland income tax calculator.
-   Reads the per-year rate config from Postgres (tax_rates, one JSONB row per
-   tax year, editable in /admin/tax-rates); falls back to the versioned
+   Reads the per-year rate config from `tax_rates` (one document per tax year,
+   keyed by the year, editable in /admin/tax-rates); falls back to the versioned
    RATES_<year> configs in ireland-income-tax.ts when the DB is unreachable,
-   the row is missing, or the stored JSON fails validation — so the calculator
-   never renders with broken numbers.
+   the document is missing, or the stored value fails validation — so the
+   calculator never renders with broken numbers.
 
-   JSON has no Infinity: the open-ended upper bound of the last USC band and
-   the last pension age band are stored as null and converted back on read. */
+   The stored shape has no Infinity: the open-ended upper bound of the last USC
+   band and the last pension age band are stored as null and converted back on
+   read. Kept from the jsonb original so an exported config stays portable. */
 
-import { query } from "./db";
+import { taxRatesCollection } from "./collections";
+import { isDbConfigured } from "./db-config";
 import {
   RATES_2025,
   RATES_2026,
@@ -149,16 +151,18 @@ export function parseYearRates(year: number, raw: unknown): YearRates | null {
 /* ---------- loader ---------- */
 
 export async function getTaxRates(): Promise<Record<number, YearRates>> {
+  // No backend configured: the versioned RATES_<year> configs ARE the answer.
+  if (!isDbConfigured()) return { ...FALLBACK };
+
   try {
-    const { rows } = await query<{ year: number; rates: unknown }>(
-      `select year, rates from tax_rates where year = any($1)`,
-      [[...TAX_YEARS]],
-    );
+    const taxRates = await taxRatesCollection();
+    const docs = await taxRates.find({ _id: { $in: [...TAX_YEARS] } }).toArray();
+
     const out: Record<number, YearRates> = { ...FALLBACK };
-    for (const row of rows) {
-      const parsed = parseYearRates(row.year, row.rates);
-      if (parsed) out[row.year] = parsed;
-      else console.error(`[tax] stored rates for ${row.year} failed validation — using fallback`);
+    for (const doc of docs) {
+      const parsed = parseYearRates(doc._id, doc.rates);
+      if (parsed) out[doc._id] = parsed;
+      else console.error(`[tax] stored rates for ${doc._id} failed validation — using fallback`);
     }
     return out;
   } catch (err) {

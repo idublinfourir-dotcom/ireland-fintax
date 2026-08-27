@@ -1,13 +1,12 @@
 /* Server-side loader for the Ireland CGT calculator.
-   Reads the editable config (cgt_settings, one JSONB row id=1) and the
-   indexation multiplier table (cgt_multipliers, 29 rows) from Postgres, both
-   editable in /admin/cgt-rates; falls back to the versioned constants in
-   ireland-cgt.ts when the DB is unreachable, a row is missing, or a stored
-   value fails validation — so the calculator never renders broken numbers.
+   Reads the editable config (cgt_settings, a singleton document) and the
+   indexation multiplier table (cgt_multipliers, 29 documents), both editable in
+   /admin/cgt-rates; falls back to the versioned constants in ireland-cgt.ts
+   when the database is unreachable, a document is missing, or a stored value
+   fails validation — so the calculator never renders broken numbers. */
 
-   Reads go through the pg pool (app/lib/db.ts), matching tax-data.ts. */
-
-import { query } from "./db";
+import { cgtMultipliersCollection, cgtSettingsCollection } from "./collections";
+import { isDbConfigured } from "./db-config";
 import {
   CGT_CONFIG_DEFAULT,
   CGT_MULTIPLIERS_DEFAULT,
@@ -24,31 +23,43 @@ export interface CgtData {
 }
 
 /**
- * Load the CGT config + multipliers: DB row(s) when present and valid,
+ * Load the CGT config + multipliers: stored documents when present and valid,
  * otherwise the versioned code fallback. Never throws.
  */
 export async function getCgtData(): Promise<CgtData> {
+  // No backend configured: the versioned defaults ARE the answer.
+  if (!isDbConfigured()) {
+    return {
+      config: CGT_CONFIG_DEFAULT,
+      multipliers: CGT_MULTIPLIERS_DEFAULT,
+      reviewedAt: null,
+    };
+  }
+
   try {
-    const [{ rows: cfgRows }, { rows: multRows }] = await Promise.all([
-      query<{ config: unknown; reviewed_at: string | null }>(
-        `select config, reviewed_at from cgt_settings where id = 1`,
-      ),
-      query<{ year_key: string; year_label: string; sort_order: number; multiplier: string }>(
-        `select year_key, year_label, sort_order, multiplier from cgt_multipliers order by sort_order`,
-      ),
+    const [settings, multipliersCollection] = await Promise.all([
+      cgtSettingsCollection(),
+      cgtMultipliersCollection(),
     ]);
 
-    const config = parseCgtConfig(cfgRows[0]?.config) ?? CGT_CONFIG_DEFAULT;
-    const reviewedAt = cfgRows[0]?.reviewed_at ?? null;
+    const [settingsDoc, multiplierDocs] = await Promise.all([
+      settings.findOne({ _id: 1 }),
+      multipliersCollection.find().sort({ sortOrder: 1 }).toArray(),
+    ]);
 
-    // pg returns numeric as a string — coerce and drop any invalid row.
+    const config = parseCgtConfig(settingsDoc?.config) ?? CGT_CONFIG_DEFAULT;
+    const reviewedAt = settingsDoc?.reviewedAt?.toISOString() ?? null;
+
+    // Multipliers are stored as numbers (the pg numeric column arrived as a
+    // string), but a hand-edited document could still hold anything — drop
+    // rows that are not a usable multiplier rather than rendering NaN.
     let multipliers: CgtMultiplier[] = CGT_MULTIPLIERS_DEFAULT;
-    if (multRows.length > 0) {
-      const parsed = multRows
+    if (multiplierDocs.length > 0) {
+      const parsed = multiplierDocs
         .map((r) => ({
-          yearKey: r.year_key,
-          yearLabel: r.year_label,
-          sortOrder: r.sort_order,
+          yearKey: r._id,
+          yearLabel: r.yearLabel,
+          sortOrder: r.sortOrder,
           multiplier: Number(r.multiplier),
         }))
         .filter((m) => Number.isFinite(m.multiplier) && m.multiplier > 0);
@@ -58,6 +69,10 @@ export async function getCgtData(): Promise<CgtData> {
     return { config, multipliers, reviewedAt };
   } catch (err) {
     console.error("[cgt] DB read failed, using static defaults:", err);
-    return { config: CGT_CONFIG_DEFAULT, multipliers: CGT_MULTIPLIERS_DEFAULT, reviewedAt: null };
+    return {
+      config: CGT_CONFIG_DEFAULT,
+      multipliers: CGT_MULTIPLIERS_DEFAULT,
+      reviewedAt: null,
+    };
   }
 }

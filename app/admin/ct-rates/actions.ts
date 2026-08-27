@@ -8,7 +8,7 @@
    CGT settings action. */
 
 import { revalidatePath } from "next/cache";
-import { requireAdmin } from "../../lib/supabase/guards";
+import { requireAdmin } from "../../lib/auth/guards";
 import { saveCalculatorConfig } from "../../lib/calculator-settings";
 import { CT_SETTINGS_KEY, getCorporationTaxData } from "../../lib/corporation-tax-data";
 import { validateCtConfig } from "../../lib/ct-guardrails";
