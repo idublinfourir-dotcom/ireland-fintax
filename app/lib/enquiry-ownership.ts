@@ -28,8 +28,8 @@ export async function claimVerifiedGuestEnquiries(
     // is what "unclaimed" means. Already-claimed enquiries are never touched.
     { userId: null, email: normalizedEmail },
     { $set: { userId: owner } },
-    // Was `lower(email) = lower($2)`; the collation has to be on the query as
-    // well as the index or the match silently becomes case-sensitive.
+    // The collation has to be on the query as well as the index, or the match
+    // silently becomes case-sensitive.
     { collation: CASE_INSENSITIVE },
   );
 }

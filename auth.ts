@@ -5,7 +5,7 @@ import type { Adapter, AdapterUser } from "next-auth/adapters";
 
 import authConfig from "./auth.config";
 import { getMongoClient, MONGODB_DB } from "./app/lib/mongodb";
-import { usersCollection, type UserDoc } from "./app/lib/collections";
+import { toObjectId, usersCollection, type UserDoc } from "./app/lib/collections";
 import { verifyPassword } from "./app/lib/auth/password";
 import { roleForEmail } from "./app/lib/auth/config";
 import { consumeVerificationToken } from "./app/lib/auth/tokens";
@@ -29,9 +29,8 @@ function mongoAdapter(): Adapter {
     /**
      * The adapter creates the account on a first Google sign-in and knows
      * nothing about our extra fields, so they are stamped here — at creation,
-     * once, which is what the `handle_new_user` Postgres trigger did. `role`
-     * in particular must never be assignable later: nothing else in the app
-     * writes it, so a client cannot promote themselves.
+     * once. `role` in particular must never be assignable later: nothing else
+     * in the app writes it, so a client cannot promote themselves.
      *
      * The adapter copies unknown keys through verbatim in both directions, so
      * they also arrive in the `user` the jwt callback sees.
@@ -89,6 +88,30 @@ export const {
       }
       if (!user.id || !user.email) return;
 
+      /* Auth.js creates — and links — OAuth accounts with `emailVerified:
+         null`; it only stamps that field for its own Email provider. Google
+         does verify addresses, which is the whole justification for
+         allowDangerousEmailAccountLinking, so the proof is recorded here.
+         Without it two things break: a password set later on the settings page
+         can never be used to sign in (`authorize` below refuses an unverified
+         account), and the signup form mistakes a live Google account for an
+         abandoned registration and overwrites its name and password hash.
+         `emailVerified: null` in the filter makes this a one-time stamp. */
+      if (account.provider === "google") {
+        try {
+          const id = toObjectId(user.id);
+          if (id) {
+            const users = await usersCollection();
+            await users.updateOne(
+              { _id: id, emailVerified: null },
+              { $set: { emailVerified: new Date() } },
+            );
+          }
+        } catch (err) {
+          console.error("[auth] could not mark the Google address verified:", err);
+        }
+      }
+
       try {
         await claimVerifiedGuestEnquiries(user.id, user.email);
       } catch (err) {
@@ -139,9 +162,9 @@ export const {
 
       /**
        * Redeems the token from a signup confirmation link: marks the address
-       * proved and signs the user straight in, which is what Supabase's
-       * verifyOtp did. The token is single-use (see consumeVerificationToken),
-       * so a replayed link lands on the same failure notice as an expired one.
+       * proved and signs the user straight in. The token is single-use (see
+       * consumeVerificationToken), so a replayed link lands on the same
+       * failure notice as an expired one.
        */
       async authorize(credentials) {
         const token = String(credentials?.token ?? "");

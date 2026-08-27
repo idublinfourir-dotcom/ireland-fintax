@@ -34,20 +34,20 @@ export function SiteFooter() {
         <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1.2fr]">
           <div>
             <Link href="/" className="flex items-center gap-2.5">
-              <span className="grid h-9 w-9 shrink-0 place-items-center rounded-none bg-white/10 font-display text-[11px] font-semibold tracking-tight text-primary-300">
-                AIBN
+              <span className="grid h-9 w-9 shrink-0 place-items-center rounded-none bg-white/10 font-display text-[13px] font-semibold tracking-tight text-primary-300">
+                IF
               </span>
               <span className="flex flex-col leading-none">
                 <span className="font-display text-lg font-semibold tracking-tight text-white">
-                  AIBN
+                  IRELAND
                 </span>
-                <span className="mt-0.5 whitespace-nowrap text-[10px] font-medium uppercase tracking-[0.1em] text-white/50">
-                  Chartered Accountants Ltd
+                <span className="mt-0.5 whitespace-nowrap text-[10px] font-medium uppercase tracking-[0.16em] text-white/50">
+                  Fintax
                 </span>
               </span>
             </Link>
             <p className="mt-4 max-w-xs text-sm leading-6 text-white/60">
-              A partner-led chartered accountancy practice helping founders and
+              A partner-led finance and tax practice helping founders and
               family businesses across Ireland grow on solid financial ground.
             </p>
           </div>
@@ -116,8 +116,8 @@ export function SiteFooter() {
         </div>
 
         <div className="mt-14 flex flex-col gap-2 border-t border-white/10 pt-6 text-xs text-white/45 sm:flex-row sm:items-center sm:justify-between">
-          <p>© {new Date().getFullYear()} AIBN Chartered Accountants Ltd. All rights reserved.</p>
-          <p>Chartered Accountants Ireland member firm · Dublin</p>
+          <p>© {new Date().getFullYear()} Ireland Fintax. All rights reserved.</p>
+          <p>Dublin</p>
         </div>
       </div>
     </footer>

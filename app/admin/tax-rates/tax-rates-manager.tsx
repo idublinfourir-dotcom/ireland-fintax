@@ -2,7 +2,7 @@
 
 /* Admin editor for the Ireland income tax calculator: one card per tax year,
    covering income tax bands/credits, USC, PRSI and pension relief. Saving
-   upserts the year's JSONB row in tax_rates and revalidates the public
+   upserts the year's document in tax_rates and revalidates the public
    calculator — no deploy. Percentages are shown and entered as percent
    (20, 0.5) and stored as fractions (0.2, 0.005). */
 

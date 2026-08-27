@@ -4,7 +4,7 @@
    The UI (ireland-mortgage-calculator.tsx) imports these so the figures
    stay in one auditable place.
 
-   Live products and policy come from Postgres (mortgage_products /
+   Live products and policy come from MongoDB (mortgage_products /
    mortgage_settings, editable in /admin/mortgage-rates — see
    mortgage-data.ts). LENDER_PRODUCTS and DEFAULT_POLICY below are the
    seed data and the fallback when the DB is unreachable. Monthly
@@ -352,7 +352,7 @@ function remainingBalance(
 
 /* Policy numbers live in the mortgage_settings DB row so a rule change is an
    admin edit, not a deploy. These defaults double as the fallback when the DB
-   is unreachable and as the seed values in db/schema.sql. */
+   is unreachable and as the seed values in scripts/db-seed.mjs. */
 export interface MortgagePolicy {
   ltiFirstTime: number;
   ltiTradingUp: number;

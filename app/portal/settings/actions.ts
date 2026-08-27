@@ -13,9 +13,9 @@ import {
 
 export type SettingsState = { ok?: string; error?: string };
 
-/** Update the client's display name. One write now that the account and the
- *  profile are the same document — the two stores that used to be kept in
- *  sync (auth user_metadata and public.profiles) are one. */
+/** Update the client's display name. A single write: the credentials and the
+ *  profile live in one account document, so there is nothing to keep in
+ *  sync. */
 export async function updateNameAction(
   _prev: SettingsState,
   formData: FormData,

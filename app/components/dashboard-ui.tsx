@@ -88,12 +88,12 @@ export function DashboardShell({
           href="/"
           className="flex h-16 items-center gap-2.5 border-b border-white/10 px-5 transition-colors duration-200 hover:bg-white/5"
         >
-          <span className="grid h-8 w-8 shrink-0 place-items-center rounded-none bg-primary-500 font-display text-[10px] font-semibold tracking-tight text-white">
-            AIBN
+          <span className="grid h-8 w-8 shrink-0 place-items-center rounded-none bg-primary-500 font-display text-xs font-semibold tracking-tight text-white">
+            IF
           </span>
           <span className="flex flex-col leading-tight">
             <span className="font-display text-base font-semibold tracking-tight">
-              AIBN
+              Ireland Fintax
             </span>
             <span className="text-[11px] font-medium uppercase tracking-[0.16em] text-white/40">
               {title}
@@ -132,8 +132,8 @@ export function DashboardShell({
         {/* Topbar */}
         <header className="sticky top-0 z-20 flex h-16 items-center justify-between gap-4 border-b border-line bg-white px-5 sm:px-8">
           <div className="flex items-center gap-3">
-            <span className="grid h-8 w-8 shrink-0 place-items-center rounded-none bg-navy-900 font-display text-[10px] font-semibold tracking-tight text-primary-400 md:hidden">
-              AIBN
+            <span className="grid h-8 w-8 shrink-0 place-items-center rounded-none bg-navy-900 font-display text-xs font-semibold tracking-tight text-primary-400 md:hidden">
+              IF
             </span>
             <h1 className="font-display text-lg font-semibold tracking-tight text-ink">
               {title}

@@ -1,7 +1,7 @@
-# AIBN Chartered Accountants Ltd
+# Ireland Fintax
 
 Marketing site, client portal and admin console for a partner-led Irish
-chartered accountancy practice. Next.js 16 (App Router), React 19, TypeScript,
+finance and tax practice. Next.js 16 (App Router), React 19, TypeScript,
 Tailwind v4, **MongoDB** and **Auth.js v5**.
 
 Working rules for the codebase live in [`AGENTS.md`](./AGENTS.md). The database
@@ -112,37 +112,6 @@ do it on every route.
 **All data access goes through `app/lib/collections.ts`**, which names every
 collection and types every document. There is no client-side database access
 and no public database API.
-
----
-
-## Backend history: Supabase → MongoDB
-
-This project began as a clone of a sibling site that used Supabase (Postgres via
-`pg`, plus Supabase Auth). The **entire backend was replaced with MongoDB and
-Auth.js**; the frontend was deliberately left untouched — no markup, class or
-copy changes.
-
-What that means when reading older code, or the sibling project:
-
-| Was | Now |
-| --- | --- |
-| `pg` pool, `db/schema.sql`, raw SQL | `mongodb` driver, `db/schema.md`, `app/lib/collections.ts` |
-| Supabase Auth, `@supabase/ssr` cookie sessions | Auth.js v5, JWT sessions |
-| `public.profiles` joined to `auth.users` | one `users` document |
-| `handle_new_user` trigger picked the admin | `ADMIN_EMAILS` env allow-list |
-| `custom_access_token_hook` stamped the role claim | the `jwt` callback in `auth.config.ts` |
-| RLS deny-all on 11 tables | not needed — no public database API exists |
-| Supabase sent the confirmation email and verified the OTP | the app issues its own single-use token and emails it via EmailJS |
-| Google OAuth redirected to `https://<ref>.supabase.co/auth/v1/callback` | redirects to this app's `/api/auth/callback/google` |
-| `enquiries.id` (bigint identity) | `enquiries.ref` (counter) — still renders as `Ref #0042` |
-
-Two things were dropped because nothing read them: the `toolkit_resources`
-table and `enquiries.status` (superseded by the read-tracking timestamps).
-
-One behaviour was fixed rather than reproduced: "Mark reviewed" on the CGT
-calculator now upserts. The SQL `UPDATE ... WHERE id = 1` it replaced silently
-did nothing when no row existed, so on a fresh database the review reminder
-could never be dismissed. It now matches the other five calculators.
 
 ---
 

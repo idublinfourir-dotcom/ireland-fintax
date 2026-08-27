@@ -47,10 +47,10 @@ export async function recordAudit(e: RateAuditEntry): Promise<void> {
 /**
  * Recent changes for an area, newest first.
  *
- * `areaLike` keeps the SQL LIKE patterns the six rate editors already pass
- * ("cgt-%", "vat%", …). Every one of them is a prefix match, so a trailing `%`
- * becomes an anchored regex and the prefix itself is escaped — an area name is
- * a literal, never a pattern.
+ * `areaLike` accepts the trailing-`%` prefix patterns the six rate editors
+ * pass ("cgt-%", "vat%", …). Every one is a prefix match, so the `%` becomes
+ * an anchored regex and the prefix itself is escaped — an area name is a
+ * literal, never a pattern.
  */
 export async function getRecentAudit(
   areaLike: string,

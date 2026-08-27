@@ -1,7 +1,7 @@
 # Database — MongoDB
 
-Replaces the old `db/schema.sql`. MongoDB creates a collection on first write,
-so there is no DDL to apply: the only structure to declare is the indexes.
+MongoDB creates a collection on first write, so there is no DDL to apply: the
+only structure to declare is the indexes.
 
 ```bash
 node scripts/db-check.mjs     # connectivity + document counts
@@ -17,11 +17,11 @@ This page is the map and the reasoning.
 
 ## Conventions
 
-- Fields are **camelCase** (the SQL was snake_case). Mapping to the shapes the
-  UI consumes happens in each feature module, never in a page.
+- Fields are **camelCase**. Mapping to the shapes the UI consumes happens in
+  each feature module, never in a page.
 - Timestamps are real BSON `Date`s, never strings.
-- Rates and money are BSON doubles. The Postgres `numeric` columns arrived as
-  strings and every caller wrapped them in `Number(...)`; that is gone.
+- Rates and money are BSON doubles — numbers in, numbers out. No caller should
+  ever need to wrap a stored value in `Number(...)`.
 - Where a natural key exists it **is** the `_id` (a calculator slug, a tax year,
   a CGT year key, the singleton `1`). Everything else uses an ObjectId.
 
@@ -38,25 +38,24 @@ This page is the map and the reasoning.
 | `sessions` | ObjectId | Created by the adapter; unused — sessions are JWTs |
 | `email_verification_tokens` | ObjectId | Signup confirmation links |
 
-`users` merges Supabase's `auth.users` **and** the app's `public.profiles` into
-one document, so a role lookup is no longer a second query:
+`users` holds the credentials **and** the profile in one document, so a role
+lookup is never a second query:
 
 ```js
 {
   _id: ObjectId,
-  name: "Ada Lovelace" | null,   // Auth.js field. Was profiles.full_name
+  name: "Ada Lovelace" | null,   // Auth.js field. Display name
   email: "ada@example.ie",       // lowercased; unique index is the account boundary
   emailVerified: Date | null,    // Auth.js field. null = address not yet proved
   image: "https://…" | null,     // Auth.js field. Google avatar
-  role: "client" | "admin",      // ours. Was profiles.role
+  role: "client" | "admin",      // ours. Set once, at account creation
   passwordHash: "$2b$12$…" | null, // ours. null for Google-only accounts
-  createdAt: Date,               // ours. Was profiles.created_at
+  createdAt: Date,               // ours
 }
 ```
 
-**Roles.** `ADMIN_EMAILS` (comma-separated, case-insensitive) is the allow-list,
-replacing the `handle_new_user` trigger. It is applied once, at account
-creation, on every sign-in path — password or Google. Nothing in the app writes
+**Roles.** `ADMIN_EMAILS` (comma-separated, case-insensitive) is the allow-list.
+It is applied once, at account creation, on every sign-in path — password or Google. Nothing in the app writes
 `role` afterwards, so a client cannot self-promote. To change an existing
 account:
 
@@ -65,7 +64,12 @@ db.users.updateOne({ email: "someone@example.ie" }, { $set: { role: "admin" } })
 ```
 
 The role rides in the session JWT, so it takes effect on that user's **next
-sign-in** — the same trade Supabase's `custom_access_token_hook` made.
+sign-in** — the price of not re-reading the account on every request.
+
+Auth.js creates and links OAuth accounts with `emailVerified: null`; the
+`signIn` event in `auth.ts` stamps it for the `google` provider, since Google
+verifies addresses. Without that a Google account can never sign in with a
+password set later on the settings page.
 
 `email_verification_tokens` stores only the SHA-256 of the token that went out
 in the link, so a database dump cannot be replayed into a confirmed account.
@@ -97,10 +101,9 @@ Two things to know:
   number. It comes from the `counters` collection via `nextSequence`, which uses
   an atomic `$inc` — two submissions in the same millisecond cannot collide.
 - **`lastClientMessageAt` / `lastAdminMessageAt` are maintained on write**
-  (`addThreadMessage`), never recomputed. The SQL derived the same value with a
-  correlated subquery per row on every list, count and filter; here the unread
-  test is a field comparison that the list query, the unread count and the
-  in-memory row flag all share. `lastClientMessageAt` is seeded to `createdAt`
+  (`addThreadMessage`), never recomputed. That makes the unread test a field
+  comparison — shared by the list query, the unread count and the in-memory row
+  flag — rather than a scan of the thread on every list, count and filter. `lastClientMessageAt` is seeded to `createdAt`
   because the opening message is the first thing the client said.
 
 `enquiry_messages` — the replies, keyed by the enquiry's public `ref`:
@@ -128,10 +131,10 @@ unproved address is not an ownership boundary.
 | `mortgage_settings` | `1` | Central Bank policy + the "rates as of" label |
 
 Configs are stored as **subdocuments, not JSON strings**, so they come back
-already parsed — the same as the `jsonb` columns they replace. One thing carried
-over deliberately: BSON can hold `Infinity`, but the open-ended upper bounds in
-`tax_rates` are still written as `null` (`yearRatesToJson`) and converted back on
-read, so an exported config stays portable.
+already parsed and stay queryable. One deliberate restriction: BSON can hold
+`Infinity`, but the open-ended upper bounds in `tax_rates` are written as `null`
+(`yearRatesToJson`) and converted back on read, so an exported config stays
+portable JSON.
 
 Every calculator falls back to its versioned code default when its document is
 missing, invalid, or unreadable, so **an empty database renders today's correct
@@ -152,19 +155,18 @@ authoritative.
 | `counters` | name (`"enquiries"`) | Sequence source for public ids |
 
 `request_rate_limits` keys the whole window triple into `_id`, so one
-`findOneAndUpdate` with `$inc` + `upsert` is atomic — the same guarantee the
-SQL's `insert … on conflict … returning count` gave. Only SHA-256 identifiers
-are stored; raw IPs and email addresses never are. A TTL index on `windowStart`
-reaps old windows, which replaces the periodic `DELETE` the SQL version ran on
-every single check.
+`findOneAndUpdate` with `$inc` + `upsert` is atomic and concurrent requests in
+a window increment the same document rather than racing. Only SHA-256
+identifiers are stored; raw IPs and email addresses never are. A TTL index on
+`windowStart` reaps old windows, so nothing has to sweep them.
 
 ---
 
 ## Case-insensitive email lookups
 
-Two queries were `where lower(email) = lower($1)`: claiming guest enquiries, and
-the Founders Hub per-address throttle. Both use a **collation** (`{ locale: "en",
-strength: 2 }`, exported as `CASE_INSENSITIVE`).
+Two queries have to ignore case: claiming guest enquiries, and the Founders Hub
+per-address throttle. Both use a **collation** (`{ locale: "en", strength: 2 }`,
+exported as `CASE_INSENSITIVE`).
 
 The collation has to be passed on the **query** as well as on the index. A query
 that omits it will not use the collated index and will match case-sensitively
@@ -176,14 +178,14 @@ looks accounts up by exact match.
 
 ---
 
-## What is gone
+## Why there is no policy layer
 
-- **`toolkit_resources`** — was already legacy in the SQL schema, read and
-  written by nothing. Not recreated. The Founders Hub catalogue is
-  `app/lib/toolkit-content.ts`, and the site still hosts no files.
-- **`enquiries.status`** (`new`/`in_progress`/`resolved`) — superseded by the
-  read-tracking timestamps and read by no code.
-- **RLS, policies, `private.is_admin()`, the JWT claim hook, `handle_new_user`** —
-  Postgres mechanisms with no MongoDB equivalent and no longer needed. There is
-  no public database API to defend: every read and write goes through server
-  code, and the role now lives in the session token.
+Every read and write goes through server code in `app/lib/`, behind a session
+check. Nothing in the browser holds a database credential and no database API is
+exposed to the network, so access control lives in the guards
+(`lib/auth/guards.ts`) and in the queries themselves — portal reads match on
+`userId`, admin routes go through `requireAdmin`. Keep it that way: the moment
+any client talks to the cluster directly, this stops being true.
+
+The Founders Hub catalogue is a code constant (`app/lib/toolkit-content.ts`) and
+the site hosts no files, so there is no resource collection to secure either.

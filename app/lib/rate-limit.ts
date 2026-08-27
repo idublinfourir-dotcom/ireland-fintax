@@ -28,9 +28,8 @@ async function requestIp(): Promise<string> {
  *
  * The counter document is keyed by the whole (action, keyHash, windowStart)
  * triple, so `findOneAndUpdate` with `$inc` and `upsert` is a single atomic
- * server-side operation — the same guarantee the SQL's
- * `insert … on conflict … do update … returning count` gave. Concurrent
- * requests in one window increment the same document rather than racing.
+ * server-side operation: concurrent requests in one window increment the same
+ * document rather than racing.
  *
  * The field order in that composite _id is significant: MongoDB compares
  * embedded documents by exact shape, so it must always be built here.
@@ -51,7 +50,7 @@ async function consume(
     {
       $inc: { count: 1 },
       // Duplicated out of the _id so the TTL index has a top-level field to
-      // sweep on. That index replaces the periodic DELETE the SQL version ran.
+      // sweep on — that index is what keeps this collection bounded.
       $setOnInsert: { windowStart },
     },
     { upsert: true, returnDocument: "after" },

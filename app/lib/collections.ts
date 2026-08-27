@@ -6,30 +6,29 @@ import { getDb } from "./mongodb";
  *
  * One place that names every collection and spells out what a document holds,
  * so a field rename is a compile error rather than a silent `undefined`. This
- * is the MongoDB counterpart of the old db/schema.sql — see db/schema.md for
- * the narrative version, and scripts/db-indexes.mjs for the indexes.
+ * file is the authoritative schema — see db/schema.md for the narrative
+ * version, and scripts/db-indexes.mjs for the indexes.
  *
  * Conventions:
- *  - Fields are camelCase (the SQL was snake_case); the mapping to the shapes
- *    the UI consumes happens in each feature module, never in a page.
+ *  - Fields are camelCase; the mapping to the shapes the UI consumes happens
+ *    in each feature module, never in a page.
  *  - Timestamps are real BSON Dates, never strings.
- *  - Money/rate values are BSON doubles. Postgres `numeric` arrived as a
- *    string and every caller did `Number(...)`; here they are numbers already.
+ *  - Money and rate values are BSON doubles — numbers in, numbers out. No
+ *    caller should ever need to wrap a stored value in `Number(...)`.
  */
 
 /* ── auth ──────────────────────────────────────────────────────────────────
- * `users` merges what used to be two tables: Supabase's `auth.users` and the
- * app's `public.profiles`. Auth.js owns `name`/`email`/`emailVerified`/`image`
- * (its adapter reads and writes them by those exact names); `role`,
- * `passwordHash` and `createdAt` are ours. One document means role lookups no
- * longer need the second query the pg pool used to do.
+ * One document per account, holding both the credentials and the profile.
+ * Auth.js owns `name`/`email`/`emailVerified`/`image` (its adapter reads and
+ * writes them by those exact names); `role`, `passwordHash` and `createdAt`
+ * are ours. Keeping them together means a role lookup is never a second query.
  */
 
 export type UserRole = "client" | "admin";
 
 export interface UserDoc {
   _id: ObjectId;
-  /** Display name. Was profiles.full_name / user_metadata.full_name. */
+  /** Display name, as the user entered it at signup or as Google reports it. */
   name: string | null;
   /** Always stored lowercased — the unique index is the account boundary. */
   email: string;
@@ -81,10 +80,10 @@ export interface VerificationTokenDoc {
  * ObjectId would surface as 24 characters of hex. See `nextSequence`.
  *
  * `lastClientMessageAt` / `lastAdminMessageAt` are denormalised: they are the
- * newest message from each side, maintained on every insert. The SQL computed
- * this with a correlated subquery per row (ADMIN_UNREAD_SQL); keeping it on the
- * document turns the unread test into a plain field comparison, which both the
- * list query and the unread count can use directly.
+ * newest message from each side, maintained on every insert. Keeping them on
+ * the document turns the unread test into a plain field comparison that the
+ * list query and the unread count can both use directly, instead of scanning
+ * the thread once per row.
  */
 export interface EnquiryDoc {
   _id: ObjectId;
@@ -223,7 +222,7 @@ export interface RateAuditDoc {
 /**
  * Fixed-window throttle counters for public actions.
  *
- * `_id` is the composite the SQL used as its primary key, so an upsert is
+ * `_id` is the whole (action, keyHash, windowStart) triple, so an upsert is
  * atomic without a second unique index. Identifiers are SHA-256 hashes — raw
  * IPs and email addresses are never stored. A TTL index on `windowStart` keeps
  * the collection bounded without a scheduler.
@@ -258,7 +257,7 @@ export interface CounterDoc {
 }
 
 /**
- * Collation for the email lookups that used to be `where lower(email) = lower($1)`.
+ * Collation for the email lookups that must ignore case.
  *
  * Strength 2 compares case-insensitively. It has to be passed on the QUERY as
  * well as the index — a query without it will not use a collated index and
@@ -281,7 +280,7 @@ export function toObjectId(id: string | null | undefined): ObjectId | null {
 
 /**
  * Parse an enquiry's public reference number, or null when it is not one.
- * Mirrors the `/^\d+$/` check the server actions ran against the old bigint id.
+ * Every server action validates a submitted ref through here.
  */
 export function toEnquiryRef(value: string | null | undefined): number | null {
   if (!value || !/^\d+$/.test(value)) return null;

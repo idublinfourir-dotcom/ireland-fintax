@@ -5,7 +5,7 @@
    the rate (33%, or 10% Entrepreneur Relief / 40% / 15%) gives the CGT due.
 
    The rates and the indexation multiplier table are passed in as props — the
-   server page reads them from Supabase (editable at /admin/cgt-rates) and falls
+   server page reads them from MongoDB (editable at /admin/cgt-rates) and falls
    back to the code defaults. All maths live in ../lib/ireland-cgt. */
 
 import { useMemo, useState } from "react";

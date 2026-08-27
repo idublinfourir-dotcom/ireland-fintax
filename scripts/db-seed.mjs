@@ -15,7 +15,7 @@ import { mongoUri, dbName } from "./load-env.mjs";
 const OWNER = ["first-time", "trading-up", "switch"];
 const INVESTMENT = ["investment"];
 
-// The July 2026 snapshot, transcribed from the retired db/schema.sql seed.
+// The July 2026 snapshot.
 // revertRatePercent = the variable rate a fixed product rolls to;
 // cashbackPercent   = cashback as a percentage of the loan at drawdown.
 const PRODUCTS = [

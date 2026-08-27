@@ -1,4 +1,4 @@
-/* Curated, verified Unsplash photography for the AIBN Chartered Accountants Ltd site.
+/* Curated, verified Unsplash photography for the Ireland Fintax site.
    Used as CSS background-image (full-bleed, art-directed with overlays),
    so no next/image remote config is needed. Swap the IDs to rebrand. */
 

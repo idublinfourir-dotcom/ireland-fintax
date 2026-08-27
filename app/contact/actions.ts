@@ -64,6 +64,50 @@ async function sendEnquiryEmail(values: {
   });
 }
 
+/**
+ * Acknowledge the enquiry to the person who sent it: "we have it, we'll be in
+ * touch". Separate template from the notification above, because the two are
+ * written for opposite readers — that one is an internal work item, this one is
+ * a reply to a stranger.
+ *
+ * Optional. With no template configured the enquiry still lands in the admin
+ * inbox and the notification still goes out; the sender simply gets no
+ * acknowledgement, which is the behaviour before this existed. Best-effort like
+ * every other mail here: sendTemplateEmail never throws.
+ *
+ * Note `company` is the FIRM here, not the enquirer's employer — this email is
+ * addressed to them, so it follows the signup template's convention. The
+ * notification template uses the same name for the other meaning.
+ */
+async function sendEnquiryAutoReply(values: {
+  name: string;
+  email: string;
+  service: string;
+  message: string;
+}) {
+  const templateId = process.env.EmailJs_AutoReply_Template_KEY;
+  if (!templateId) {
+    console.warn(
+      "[enquiry-reply] EmailJs_AutoReply_Template_KEY is not set — skipping the acknowledgement",
+    );
+    return;
+  }
+
+  await sendTemplateEmail({
+    templateId,
+    toEmail: values.email,
+    toName: values.name,
+    logPrefix: "enquiry-reply",
+    params: {
+      name: values.name,
+      company: site.name,
+      title: values.service || "your enquiry",
+      // Echoed back so the sender can see what actually reached us.
+      message: values.message,
+    },
+  });
+}
+
 export async function submitEnquiry(
   _prev: EnquiryState,
   formData: FormData,
@@ -141,9 +185,14 @@ export async function submitEnquiry(
     return { status: "error", values };
   }
 
-  // Send the notification email AFTER the response is returned, so the form
-  // submission isn't blocked by the mail round-trip (best-effort).
-  after(() => sendEnquiryEmail(values));
+  /* Both mails go out AFTER the response is returned, so the form submission is
+     never blocked by a mail round-trip. Sequential rather than parallel: the
+     team's notification is the one that matters, so it goes first and the
+     acknowledgement cannot delay it. Neither can throw. */
+  after(async () => {
+    await sendEnquiryEmail(values);
+    await sendEnquiryAutoReply(values);
+  });
 
   return { status: "success" };
 }

@@ -75,12 +75,11 @@ export async function getThreadsFor(
 /* Is an enquiry unread for the ADMIN? True when the client has posted (the
    original message counts) more recently than the admin last opened the thread.
 
-   The SQL this replaces recomputed `max(client message time)` with a correlated
-   subquery on every row. `lastClientMessageAt` holds that value on the enquiry
-   itself — seeded to createdAt so the opening message counts, and advanced by
-   addThreadMessage — which turns the test into a field comparison the list
-   query and the unread count can share. `$expr` is what allows one field to be
-   compared against another. */
+   `lastClientMessageAt` holds the newest client message on the enquiry itself
+   — seeded to createdAt so the opening message counts, and advanced by
+   addThreadMessage — so the test is a field comparison the list query and the
+   unread count can share, rather than a scan of the thread per row. `$expr` is
+   what allows one field to be compared against another. */
 export const ADMIN_UNREAD_FILTER: Filter<EnquiryDoc> = {
   $expr: {
     $gt: ["$lastClientMessageAt", { $ifNull: ["$adminLastReadAt", new Date(0)] }],

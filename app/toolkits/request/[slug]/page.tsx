@@ -8,7 +8,7 @@ import { TOOLKIT_CATEGORY_LABELS } from "../../../lib/toolkit-types";
 export const metadata: Metadata = {
   title: "Request a copy — Founders Hub",
   description:
-    "Request a copy of an AIBN Founders Hub resource and we will email it to you.",
+    "Request a copy of an Ireland Fintax Founders Hub resource and we will email it to you.",
   robots: { index: false, follow: true },
 };
 

@@ -22,7 +22,7 @@ export async function setRequestStatusAction(
 ): Promise<ActionState> {
   await requireAdmin();
 
-  // Requests are keyed by ObjectId now, not by a bigint sequence.
+  // Requests are keyed by ObjectId; toObjectId rejects anything else.
   const id = String(formData.get("id") ?? "").trim();
   const status = String(formData.get("status") ?? "").trim();
   if (!toObjectId(id) || (status !== "pending" && status !== "sent")) {

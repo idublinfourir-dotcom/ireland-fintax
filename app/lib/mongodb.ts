@@ -6,7 +6,7 @@ import { MONGODB_DB, mongoUri } from "./db-config";
  * Importing this module must never throw or open a connection — `next build`
  * collects page data for static routes (e.g. /_not-found) that touch no
  * database, and a throw at import time crashes that pass. So the client is
- * built lazily on first use, exactly like the pg pool it replaces.
+ * built lazily on first use.
  *
  * The connect promise (not the client) is cached, so concurrent first calls
  * share one handshake instead of racing to open several. Caching on

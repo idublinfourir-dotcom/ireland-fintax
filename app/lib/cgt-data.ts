@@ -50,9 +50,9 @@ export async function getCgtData(): Promise<CgtData> {
     const config = parseCgtConfig(settingsDoc?.config) ?? CGT_CONFIG_DEFAULT;
     const reviewedAt = settingsDoc?.reviewedAt?.toISOString() ?? null;
 
-    // Multipliers are stored as numbers (the pg numeric column arrived as a
-    // string), but a hand-edited document could still hold anything — drop
-    // rows that are not a usable multiplier rather than rendering NaN.
+    // Multipliers are stored as numbers, but a hand-edited document could
+    // hold anything — drop rows that are not a usable multiplier rather than
+    // rendering NaN.
     let multipliers: CgtMultiplier[] = CGT_MULTIPLIERS_DEFAULT;
     if (multiplierDocs.length > 0) {
       const parsed = multiplierDocs

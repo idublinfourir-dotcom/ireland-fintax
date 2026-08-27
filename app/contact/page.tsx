@@ -6,7 +6,7 @@ import { site } from "../lib/content";
 export const metadata: Metadata = {
   title: "Contact",
   description:
-    "Book a free 30-minute consultation with a chartered accountant. We reply within one business day.",
+    "Book a free 30-minute consultation with our team. We reply within one business day.",
 };
 
 const nextSteps = [

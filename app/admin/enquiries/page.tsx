@@ -87,8 +87,8 @@ export default async function EnquiriesPage({
   const conditions: Filter<EnquiryDoc>[] = [];
   if (filter === "unread") conditions.push(ADMIN_UNREAD_FILTER);
   if (q) {
-    // Unanchored + case-insensitive is what `ilike '%q%'` meant. Like the SQL
-    // it replaces, this is a scan; the inbox caps at 100 rows.
+    // Unanchored and case-insensitive: a substring match anywhere in the
+    // field. This is a collection scan, so the inbox caps at 100 rows.
     const term = { $regex: escapeRegExp(q), $options: "i" };
     conditions.push({
       $or: [
@@ -397,7 +397,7 @@ export default async function EnquiriesPage({
                   composerFooterStart={
                     <a
                       href={`mailto:${selected.email}?subject=${encodeURIComponent(
-                        `Re: ${selected.service ?? "your enquiry"} - AIBN Chartered Accountants Ltd`,
+                        `Re: ${selected.service ?? "your enquiry"} - Ireland Fintax`,
                       )}`}
                       className="inline-flex h-9 items-center gap-2 rounded-none border border-line px-3.5 text-xs font-semibold text-ink-body transition-colors duration-200 hover:border-ink/30 hover:text-ink"
                     >

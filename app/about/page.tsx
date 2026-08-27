@@ -9,11 +9,10 @@ import { images } from "../lib/images";
 export const metadata: Metadata = {
   title: "About",
   description:
-    "A partner-led chartered accountancy practice with a deliberately short client list. Meet the team behind AIBN Chartered Accountants Ltd.",
+    "A partner-led finance and tax practice with a deliberately short client list. Meet the team behind Ireland Fintax.",
 };
 
 const credentials = [
-  "Chartered Accountants Ireland member firm",
   "Xero Platinum Partner",
   "QuickBooks ProAdvisor",
   "ACCA approved employer",
@@ -25,7 +24,7 @@ export default function AboutPage() {
       <PageHero
         eyebrow="The firm"
         title="Accountants who act like partners."
-        lede="AIBN Chartered Accountants Ltd was founded on a simple complaint: most firms only call when the invoice is due. We built the practice we wished existed: close to the numbers, ahead of the deadlines, honest about the fees."
+        lede="Ireland Fintax was founded on a simple complaint: most firms only call when the invoice is due. We built the practice we wished existed: close to the numbers, ahead of the deadlines, honest about the fees."
         image="office"
       />
 

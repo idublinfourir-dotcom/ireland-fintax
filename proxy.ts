@@ -10,8 +10,8 @@ import { isAuthConfigured } from "./app/lib/auth/config";
  * VERIFY the session JWT, which is all the gate needs; role checks happen in
  * the /admin and /portal layouts, which run in the Node runtime.
  *
- * Unlike the Supabase version this replaces, there is no session to refresh
- * here — the JWT is self-contained, so the middleware only reads it. */
+ * There is no session to refresh here — the JWT is self-contained, so the
+ * middleware only ever reads it. */
 
 const { auth } = NextAuth(authConfig);
 
