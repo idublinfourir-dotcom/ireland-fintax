@@ -7,9 +7,11 @@ export const site = {
   // NOTE: this mailbox needs email forwarding (or a mail plan) configured at the
   // registrar before launch, or enquiries to it bounce.
   email: "hello@irelandfintax.ie",
-  phone: "+353 (0)1 234 5678",
-  phoneHref: "tel:+35312345678",
-  address: ["The Chase, Carmanhall Road", "Sandyford, Dublin 18, D18 Y3X2"],
+  phone: "+353 89 951 9986",
+  // Digits only, no spaces or parentheses — a tel: href with either is not
+  // dialable from some mobile browsers.
+  phoneHref: "tel:+353899519986",
+  address: ["River Walk", "Citywest Business Campus"],
   hours: "Mon–Fri, 9:00–17:30",
 };
 
