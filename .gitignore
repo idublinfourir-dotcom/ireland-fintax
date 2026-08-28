@@ -58,9 +58,6 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# brochure — local only, not published
-/brochure/
-
 # Generated Founders Hub documents. The site hosts no files: /admin/toolkits
 # only tracks who asked for what, and a team member attaches the document from
 # their own mailbox. These stay local, out of the repo.
