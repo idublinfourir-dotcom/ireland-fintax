@@ -30,7 +30,7 @@ const quickActions = [
     body: "Message the team: same-day reply.",
   },
   {
-    href: "/tools/ireland",
+    href: "/tools/ireland-income-tax",
     icon: "calculator",
     title: "Tax calculators",
     body: "Income tax, VAT, CT and more.",
@@ -165,7 +165,7 @@ export default async function PortalPage() {
                 New enquiry
               </Link>
               <Link
-                href="/tools/ireland"
+                href="/tools/ireland-income-tax"
                 className="inline-flex h-11 items-center justify-center gap-2 rounded-none border border-white/20 px-5 text-sm font-semibold text-white/80 transition-colors duration-200 hover:border-white/45 hover:text-white"
               >
                 <Icon name="calculator" className="h-4 w-4" />

@@ -28,6 +28,8 @@ Commands: `npm run dev` · `npm run build` · `npm run lint`
 ```
 app/
   page.tsx, about/, contact/, services/   # marketing routes
+  tools/             # Accountants Hub — the 7 Ireland tax calculators
+  personal/          # Personal Hub — mortgage/, investment/
   _pricing/          # hidden route — see "Hidden for now" below
   login/, signup/, portal/, admin/, auth/{confirm,callback}/  # auth routes
   components/      # UI, layout, sections + motion primitives
@@ -88,6 +90,23 @@ Whenever anything else gets hidden rather than deleted, add a row here.
 - SEO: use `metadata` exports on pages; site URL + defaults in `app/layout.tsx`.
 - Minimize scope — match existing patterns; no refactor of unrelated files.
 - No new dependencies unless task clearly needs them.
+
+### Hubs & navigation
+
+- The nav has **two tool hubs, and they are audience splits, not topic splits**:
+  **Accountants Hub** (`/tools/*`, business/practice tax calculators) and
+  **Personal Hub** (`/personal/*`, personal finance). Mortgage moved from the
+  first to the second on 2026-08-31; `/tools/ireland` is a permanent redirect in
+  `next.config.ts`, so don't delete it and don't re-add mortgage to
+  `CALCULATOR_TOOLS`.
+- Each hub's entries live in **one array** that drives both its header dropdown
+  and its on-page switcher — `CALCULATOR_TOOLS` in `calculator-tabs.tsx`,
+  `PERSONAL_TOOLS` in `personal-tabs.tsx`. Adding a tool = adding an entry
+  there, plus a `sitemap.ts` line. Both switchers render through the shared
+  `ToolTabs`; keep them visually identical.
+- The desktop nav row is **full at 6 top-level links** in the `max-w-7xl`
+  container. A seventh needs the row re-designed (or a link demoted into a
+  dropdown), not another entry appended.
 
 ### Motion & imagery
 

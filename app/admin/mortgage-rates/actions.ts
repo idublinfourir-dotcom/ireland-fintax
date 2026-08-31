@@ -31,7 +31,7 @@ const RATE_TYPES = [
 const AUDIENCES = ["first-time", "trading-up", "switch", "investment"] as const;
 
 function revalidate() {
-  revalidatePath("/tools/ireland");
+  revalidatePath("/personal/mortgage");
   revalidatePath("/admin/mortgage-rates");
 }
 
