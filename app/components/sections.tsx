@@ -180,51 +180,6 @@ export function QuickEntry() {
   );
 }
 
-/* ---------- client strip ---------- */
-
-const clients = [
-  "Northfield & Co",
-  "Hartley Dairy",
-  "Bloom Studio",
-  "Cedar Logistics",
-  "Marrow Kitchen",
-  "Atlas Crane",
-];
-
-export function LogoStrip() {
-  return (
-    <section className="border-b border-line bg-white">
-      <Container className="flex flex-col items-center gap-7 py-12">
-        <p className="text-center text-xs font-medium uppercase tracking-[0.18em] text-muted">
-          Trusted by founders, family firms and growing teams
-        </p>
-        {/* accessible static list for screen readers */}
-        <ul className="sr-only">
-          {clients.map((name) => (
-            <li key={name}>{name}</li>
-          ))}
-        </ul>
-        {/* animated marquee — linear, pauses on hover, masked at the edges */}
-        <div
-          aria-hidden="true"
-          className="group relative w-full overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]"
-        >
-          <div className="flex w-max animate-marquee items-center group-hover:[animation-play-state:paused]">
-            {[...clients, ...clients].map((name, index) => (
-              <span
-                key={index}
-                className="mx-7 whitespace-nowrap font-display text-lg font-medium text-ink/35 transition-colors duration-200 hover:text-ink/60 sm:mx-10"
-              >
-                {name}
-              </span>
-            ))}
-          </div>
-        </div>
-      </Container>
-    </section>
-  );
-}
-
 /* ---------- services ---------- */
 
 export function Services() {
@@ -556,67 +511,6 @@ export function Process() {
             </li>
           ))}
         </ol>
-        </Reveal>
-      </Container>
-    </section>
-  );
-}
-
-/* ---------- testimonials ---------- */
-
-const testimonials = [
-  {
-    quote:
-      "Ireland Fintax took our year-end from a three-week scramble to a non-event. The books are just… done.",
-    name: "Priya Shah",
-    role: "Founder, Bloom Studio",
-  },
-  {
-    quote:
-      "They found €40k in R&D credits our previous accountant never mentioned. They’ve paid for themselves many times over.",
-    name: "Marcus Hale",
-    role: "Director, Cedar Logistics",
-  },
-  {
-    quote:
-      "Proper partner-led service. I message our accountant and get an answer the same day, not a ticket number.",
-    name: "Hannah Okafor",
-    role: "COO, Marrow Kitchen",
-  },
-];
-
-export function Testimonials() {
-  return (
-    <section id="testimonials" className="scroll-mt-24 bg-canvas">
-      <Container className="py-20 sm:py-28">
-        <Reveal>
-        <SectionHeading eyebrow="Client stories" title="Don’t take our word for it." />
-        <div className="mt-14 grid gap-5 lg:grid-cols-3">
-          {testimonials.map((testimonial) => (
-            <figure
-              key={testimonial.name}
-              className="group flex flex-col border-t-2 border-primary-400 bg-surface p-8 shadow-sm shadow-navy-900/5 transition-all duration-300 ease-snappy hover:-translate-y-1 hover:bg-navy-900 hover:shadow-xl hover:shadow-navy-900/20"
-            >
-              <span
-                aria-hidden="true"
-                className="font-display text-5xl leading-none text-primary-400/40 transition-colors duration-300 group-hover:text-primary-300"
-              >
-                “
-              </span>
-              <blockquote className="mt-3 flex-1 font-display text-lg leading-8 text-ink transition-colors duration-300 group-hover:text-white">
-                {testimonial.quote}
-              </blockquote>
-              <figcaption className="mt-6 border-t border-line pt-5 text-sm transition-colors duration-300 group-hover:border-white/15">
-                <span className="font-semibold text-ink transition-colors duration-300 group-hover:text-white">
-                  {testimonial.name}
-                </span>
-                <span className="block text-muted transition-colors duration-300 group-hover:text-white/70">
-                  {testimonial.role}
-                </span>
-              </figcaption>
-            </figure>
-          ))}
-        </div>
         </Reveal>
       </Container>
     </section>

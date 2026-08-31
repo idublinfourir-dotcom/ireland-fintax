@@ -6,7 +6,6 @@ import { images } from "../lib/images";
 const firmLinks = [
   { label: "Services", href: "/services" },
   { label: "About the firm", href: "/about" },
-  { label: "Client stories", href: "/#testimonials" },
   { label: "FAQ", href: "/#faq" },
   { label: "Contact", href: "/contact" },
 ];
