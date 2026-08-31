@@ -16,7 +16,7 @@ export const PERSONAL_TOOLS = [
   {
     href: "/personal/investment",
     label: "Personal investment",
-    desc: "How investment returns are taxed in Ireland",
+    desc: "Compare options by return after Irish tax",
   },
 ] as const;
 
