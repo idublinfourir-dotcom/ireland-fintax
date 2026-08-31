@@ -1,13 +1,11 @@
 import {
   Hero,
   QuickEntry,
-  LogoStrip,
   Services,
   PromoBanner,
   AiBand,
   Industries,
   Process,
-  Testimonials,
   Faq,
   ContactCta,
 } from "./components/sections";
@@ -17,7 +15,6 @@ export default function Home() {
     <>
       <Hero />
       <QuickEntry />
-      <LogoStrip />
       <Services />
       <PromoBanner
         eyebrow="Beyond compliance"
@@ -39,7 +36,6 @@ export default function Home() {
         reverse
       />
       <Process />
-      <Testimonials />
       <Faq />
       <ContactCta />
     </>

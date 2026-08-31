@@ -165,7 +165,7 @@ export interface ServiceCategory {
   context?: string;
 }
 
-export const serviceCategories: ServiceCategory[] = [
+const allServiceCategories: ServiceCategory[] = [
   {
     slug: "account-bookkeeping",
     title: "Accounting and Bookkeeping",
@@ -1014,6 +1014,25 @@ export const serviceCategories: ServiceCategory[] = [
     ],
   },
 ];
+
+/* Retired from the service line-up. Filtering here rather than at each call
+   site is the point: the home grid, the Services mega-menu, /services, the
+   footer, the contact-form dropdown and the sitemap all read
+   `serviceCategories`, so one line retires a category everywhere at once, and
+   getCategory/getServiceParams stop resolving its detail routes.
+
+   Only "Crypto and Digital Assets" is retired. Digital Transformation is a
+   separate service and stays — do not read the "Digital" in that category's
+   title as referring to it.
+
+   The category data itself is left in `allServiceCategories` above — deleting
+   it would throw away real written copy, and this is one line to reverse. The
+   old URLs are redirected to /services in next.config.ts so nothing 404s. */
+const RETIRED_SERVICES = new Set(["crypto"]);
+
+export const serviceCategories: ServiceCategory[] = allServiceCategories.filter(
+  (category) => !RETIRED_SERVICES.has(category.slug),
+);
 
 export function getCategory(slug: string): ServiceCategory | undefined {
   return serviceCategories.find((category) => category.slug === slug);
