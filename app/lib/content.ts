@@ -99,13 +99,6 @@ export const pricingAddons = [
   { name: "R&D credit claim", note: "Included on Growth, else from €750" },
 ];
 
-export const team = [
-  { name: "Niaz Morshed", role: "Managing Partner", credential: "FCA" },
-  { name: "Sarah Whitfield", role: "Audit Partner", credential: "ACA" },
-  { name: "Tom Adeyemi", role: "Tax Director", credential: "CTA" },
-  { name: "Emily Carter", role: "Practice Manager", credential: "ATI" },
-];
-
 export const values = [
   {
     title: "Plain English, always",
