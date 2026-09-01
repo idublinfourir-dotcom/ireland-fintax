@@ -3,21 +3,25 @@ import Link from "next/link";
 import { Breadcrumbs, Button, Container, PageHero } from "../../components/ui";
 import { ContactCta } from "../../components/sections";
 import { PersonalTabs } from "../../components/personal-tabs";
+import { IrelandInvestmentPlanner } from "../../components/ireland-investment-planner";
+import { DATA_AS_OF, SOURCES } from "../../lib/ireland-investment";
 
-/* Personal investment — scaffolded ahead of the tool that will live here.
+/* Personal investment — the options planner plus the tax explainer behind it.
  *
- * Deliberately carries NO rates or thresholds. The firm advises on the TAX of an
- * investment, not on the investment itself, and the fund/exit-tax regime is
- * mid-change, so every figure on this page would need a review cycle it does
- * not have yet. Where a number is genuinely needed the page links to the
- * calculator that already owns it (CGT, CAT) rather than restating it here.
- * When the planned calculator lands, follow the DB-first-with-code-fallback
- * pattern in AGENTS.md — do not hardcode rates into this page. */
+ * No rate, threshold or return figure is written into this page: they all live
+ * in app/lib/ireland-investment.ts, which is pure, unit-tested and carries the
+ * source for every number. Keep it that way — a figure inlined here is one
+ * nobody will find when the Budget moves it.
+ *
+ * The firm advises on the TAX of an investment, not on the investment itself.
+ * The tool ranks option types by return after Irish tax and must never be
+ * phrased as a personal recommendation; the disclaimers in the planner and at
+ * the foot of this page are load-bearing, not boilerplate. */
 
 export const metadata: Metadata = {
   title: "Personal Investment Tax in Ireland: What You Owe and When",
   description:
-    "How personal investments are taxed in Ireland: shares, funds and ETFs, deposit interest, rental income and pensions, and which return goes on which return.",
+    "Compare where to invest in Ireland by return after tax: State Savings, deposits, pensions, ETFs, shares, property and private markets, filtered by timeframe and risk.",
 };
 
 /* What the finished section will cover. Each row is a distinct Irish tax
@@ -114,7 +118,7 @@ export default function PersonalInvestmentPage() {
           />
         }
         title="Personal investment"
-        lede="How personal investments are taxed in Ireland — and which return each one belongs on. An interactive tool for this section is in development."
+        lede={`Where €1 can go in Ireland, ranked by what is left after tax. Thirty-two options across the State-backed and private sectors, current at ${DATA_AS_OF}.`}
         action={
           <Button href="/contact" variant="outlineLight">
             Talk to us about your position
@@ -125,7 +129,11 @@ export default function PersonalInvestmentPage() {
       <Container className="py-16 sm:py-20">
         <PersonalTabs current="/personal/investment" />
 
-        <div className="max-w-3xl">
+        <div className="rounded-none border border-line bg-canvas p-6 sm:p-8 lg:p-10">
+          <IrelandInvestmentPlanner />
+        </div>
+
+        <div className="mt-16 max-w-3xl border-t border-line pt-12">
           <h2 className="font-display text-3xl font-bold leading-tight tracking-[-0.02em] text-ink sm:text-4xl">
             The wrapper decides the tax, not the asset
           </h2>
@@ -182,9 +190,8 @@ export default function PersonalInvestmentPage() {
             Calculators that already cover part of this
           </h2>
           <p className="mt-3 max-w-2xl text-base leading-7 text-muted">
-            The dedicated personal investment tool is still being built. In the
-            meantime these run the numbers on the pieces of it that are already
-            settled.
+            The planner compares options. These put a number on the tax that
+            falls due once you have picked one.
           </p>
           <div className="mt-8 grid gap-6 sm:grid-cols-2">
             {related.map((item) => (
@@ -205,6 +212,33 @@ export default function PersonalInvestmentPage() {
               </Link>
             ))}
           </div>
+        </div>
+
+        <div className="mt-16 border-t border-line pt-12">
+          <h2 className="font-display text-2xl font-semibold tracking-tight text-ink sm:text-3xl">
+            Where these figures come from
+          </h2>
+          <p className="mt-3 max-w-2xl text-base leading-7 text-muted">
+            Every rate, limit and yield in the planner, with the source it was
+            taken from. All checked at {DATA_AS_OF}.
+          </p>
+          <ul className="mt-8 grid gap-x-8 gap-y-4 sm:grid-cols-2">
+            {SOURCES.map((source) => (
+              <li key={source.url} className="border-t border-line pt-3">
+                <span className="block text-sm font-medium text-ink">
+                  {source.topic}
+                </span>
+                <a
+                  href={source.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-1 block text-sm leading-6 text-muted underline-offset-4 transition-colors duration-200 hover:text-primary-500 hover:underline"
+                >
+                  {source.source}
+                </a>
+              </li>
+            ))}
+          </ul>
         </div>
 
         <p className="mt-12 max-w-3xl border-t border-line pt-6 text-sm leading-6 text-muted">

@@ -3,13 +3,13 @@ import { Container, Eyebrow, PageHero, SectionHeading } from "../components/ui";
 import { ContactCta } from "../components/sections";
 import { Reveal } from "../components/reveal";
 import { ClipReveal } from "../components/clip-reveal";
-import { team, values } from "../lib/content";
+import { values } from "../lib/content";
 import { images } from "../lib/images";
 
 export const metadata: Metadata = {
   title: "About",
   description:
-    "A partner-led finance and tax practice with a deliberately short client list. Meet the team behind Ireland Fintax.",
+    "A partner-led finance and tax practice with a deliberately short client list. How Ireland Fintax works, and what we stand for.",
 };
 
 const credentials = [
@@ -75,45 +75,6 @@ export default function AboutPage() {
           ))}
         </Reveal>
       </Container>
-
-      <section className="border-y border-line bg-surface-muted">
-        <Container className="py-16 sm:py-20">
-          <Reveal>
-          <SectionHeading
-            eyebrow="The team"
-            title="Small team. Senior people."
-            lede="No juniors learning on your books. Every client team is led by a qualified accountant with a decade or more in practice."
-          />
-          <ul className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            {team.map((member) => (
-              <li
-                key={member.name}
-                className="rounded-none border border-line bg-surface p-6"
-              >
-                <span
-                  aria-hidden="true"
-                  className="grid h-14 w-14 place-items-center rounded-none bg-navy-900 font-display text-lg font-semibold text-primary-300"
-                >
-                  {member.name
-                    .split(" ")
-                    .map((part) => part[0])
-                    .join("")}
-                </span>
-                <h3 className="mt-4 font-display text-lg font-medium tracking-tight text-ink">
-                  {member.name}
-                </h3>
-                <p className="mt-1 text-sm text-muted">
-                  {member.role}
-                  <span className="mt-0.5 block text-xs font-semibold uppercase tracking-wide text-primary-500">
-                    {member.credential}
-                  </span>
-                </p>
-              </li>
-            ))}
-          </ul>
-          </Reveal>
-        </Container>
-      </section>
 
       <section>
         <Container className="py-16 sm:py-20">

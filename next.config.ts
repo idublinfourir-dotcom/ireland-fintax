@@ -63,6 +63,12 @@ const nextConfig: NextConfig = {
       // Hub. Permanent so the indexed URL passes its ranking to the new one;
       // the page had been live and linked from the portal, so it cannot 404.
       { source: "/tools/ireland", destination: "/personal/mortgage", permanent: true },
+      /* "Crypto and Digital Assets" was retired from the service line-up (see
+         RETIRED_SERVICES in app/lib/content.ts), so its routes no longer
+         resolve. Send the category and every sub-service beneath it to the
+         index rather than to a 404. */
+      { source: "/services/crypto", destination: "/services", permanent: true },
+      { source: "/services/crypto/:slug*", destination: "/services", permanent: true },
     ];
   },
 };

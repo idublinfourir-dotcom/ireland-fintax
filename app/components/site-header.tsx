@@ -270,9 +270,11 @@ export function SiteHeader({ user }: { user: SessionUser | null }) {
             Entrepreneur Toolkits link was added, and Personal Hub took most of
             what was left. Another top-level link needs the row re-thought,
             not another entry. */}
+        {/* `relative`: the Services mega-menu is positioned against this nav
+            rather than against its own trigger — see the panel below. */}
         <nav
           aria-label="Main"
-          className="mx-auto flex h-[4.5rem] w-full max-w-7xl items-center justify-between px-5 sm:px-8"
+          className="relative mx-auto flex h-[4.5rem] w-full max-w-7xl items-center justify-between px-5 sm:px-8"
         >
           <Logo onClick={closeMobile} />
 
@@ -282,9 +284,15 @@ export function SiteHeader({ user }: { user: SessionUser | null }) {
               avatar pill is ~120px wider than the Sign in button and the row
               was down to its last few pixels at xl. */}
           <div className="hidden items-center gap-5 xl:flex">
-            {/* Services mega-menu (CSS hover + focus-within) */}
+            {/* Services mega-menu (CSS hover + focus-within).
+                No `relative` here on purpose: the panel is 64rem wide and
+                Services is the leftmost link, so centring it on this trigger
+                pushed it off the left of the viewport. It is positioned
+                against the <nav> instead. The other three dropdowns are
+                narrower and sit further right, so they still centre on their
+                own trigger. */}
             <div
-              className="group relative"
+              className="group"
               onMouseEnter={() => setServicesClosed(false)}
               onFocus={() => setServicesClosed(false)}
             >
@@ -310,7 +318,7 @@ export function SiteHeader({ user }: { user: SessionUser | null }) {
               </Link>
 
               <div
-                className={`invisible absolute left-1/2 top-full z-50 w-[min(64rem,calc(100vw-2rem))] -translate-x-1/2 pt-4 opacity-0 transition-all duration-200 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100 ${
+                className={`invisible absolute left-1/2 top-full z-50 w-[min(64rem,calc(100vw-2rem))] -translate-x-1/2 pt-2 opacity-0 transition-all duration-200 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100 ${
                   servicesClosed
                     ? "!invisible !opacity-0"
                     : ""
