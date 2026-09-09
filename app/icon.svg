@@ -1,4 +1,13 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <rect width="64" height="64" rx="14" fill="#0b231b"/>
-  <text x="32" y="42" font-family="Georgia, 'Times New Roman', serif" font-size="26" font-weight="600" text-anchor="middle" fill="#dcc18f">CA</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Ireland Fintax">
+  <!-- Sharp corners on purpose: the site is rounded-none throughout. Ground is
+       navy-900, the accent bar is primary-300 (the on-dark accent the Eyebrow
+       uses), which clears 5.4:1 against it. Drawn as rects, not text, so the
+       mark is identical everywhere — favicon text renders inconsistently. -->
+  <rect width="64" height="64" fill="#0b0d14"/>
+  <g fill="#ffffff">
+    <rect x="14" y="16" width="7" height="32"/>
+    <rect x="28" y="16" width="7" height="32"/>
+    <rect x="35" y="16" width="15" height="7"/>
+  </g>
+  <rect x="35" y="28" width="11" height="7" fill="#6f83d6"/>
 </svg>
