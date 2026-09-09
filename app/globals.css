@@ -19,32 +19,32 @@
 }
 
 @theme {
-  /* Ireland Fintax — vibrant white base + signal green (#26890d) accent, near-black ink */
+  /* Ireland Fintax — white base + deep indigo (#2540a8) accent, ink-blue near-black */
   --color-canvas: #ffffff;
   --color-surface: #ffffff;
-  --color-surface-muted: #f2f6ef;
-  --color-ink: #0b0b0c;
-  --color-ink-body: #2b2f33;
-  --color-muted: #62686e;
-  --color-line: #e2e4e5;
+  --color-surface-muted: #f0f2f8;
+  --color-ink: #0b0d14;
+  --color-ink-body: #272c3a;
+  --color-muted: #5f6577;
+  --color-line: #e0e3ec;
 
-  /* signal green — the one bold accent */
-  --color-primary-50: #e8f3df;
-  --color-primary-300: #6fae3d;
-  --color-primary-400: #4f9e1f;
-  --color-primary-500: #26890d;
-  --color-primary-600: #1d6b09;
+  /* deep indigo — the one bold accent */
+  --color-primary-50: #e4e8f7;
+  --color-primary-300: #6f83d6;
+  --color-primary-400: #3f56bd;
+  --color-primary-500: #2540a8;
+  --color-primary-600: #1a2f80;
 
-  /* secondary — aligned to the #26890d green, grounds the brand */
-  --color-secondary-50: #eaf3e3;
-  --color-secondary-400: #6fae3d;
-  --color-secondary-500: #26890d;
-  --color-secondary-600: #1d6b09;
+  /* secondary — aligned to the #2540a8 indigo, grounds the brand */
+  --color-secondary-50: #e7eaf8;
+  --color-secondary-400: #3f56bd;
+  --color-secondary-500: #2540a8;
+  --color-secondary-600: #1a2f80;
 
-  /* charcoal — dark sections */
-  --color-navy-700: #2a2d31;
-  --color-navy-800: #161719;
-  --color-navy-900: #0b0b0c;
+  /* ink blue — dark sections */
+  --color-navy-700: #262b3a;
+  --color-navy-800: #14171f;
+  --color-navy-900: #0b0d14;
 
   /* Strong custom easing (Emil Kowalski) — built-in curves are too weak */
   --ease-snappy: cubic-bezier(0.23, 1, 0.32, 1);
