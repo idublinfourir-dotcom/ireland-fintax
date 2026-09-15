@@ -4,6 +4,7 @@
  * config imports this, and anything it pulls in has to be edge-safe. */
 
 import { isDbConfigured } from "../db-config";
+import { isMailerConfigured } from "../mail-config";
 
 /**
  * Is there an authentication backend at all?
@@ -39,7 +40,7 @@ export function isGoogleEnabled(): boolean {
  *
  * Signing up by email is a two-part transaction: create the account, then mail
  * a link that proves the address. Mail is best-effort everywhere else in this
- * app — a failed enquiry notification still leaves the enquiry stored — but
+ * app — a failed enquiry acknowledgement still leaves the enquiry stored — but
  * here the link IS the second half of the flow. Without it the account can
  * never be confirmed, and `authorize` refuses to sign in an unconfirmed
  * account, so the person is left holding an address they cannot use.
@@ -49,12 +50,7 @@ export function isGoogleEnabled(): boolean {
  * to check an inbox nothing was sent to.
  */
 export function isSignupEmailConfigured(): boolean {
-  return Boolean(
-    process.env.EmailJs_Gmail_serviceid_KEY?.trim() &&
-      process.env.EmailJs_PUBLIC_KEY?.trim() &&
-      process.env.EmailJs_Private_KEY?.trim() &&
-      process.env.EmailJs_Verify_Template_KEY?.trim(),
-  );
+  return isMailerConfigured();
 }
 
 /**

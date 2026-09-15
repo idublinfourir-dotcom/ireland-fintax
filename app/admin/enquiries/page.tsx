@@ -9,7 +9,7 @@ import {
 import { requireAdmin } from "../../lib/auth/guards";
 import { sendAdminMessageAction } from "./actions";
 import { Icon } from "../../components/dashboard-icons";
-import { ChatPanel } from "../../components/chat-panel";
+import { ChatPanel, EmailCopyToggle } from "../../components/chat-panel";
 import {
   ADMIN_UNREAD_FILTER,
   getThreadMessages,
@@ -394,17 +394,7 @@ export default async function EnquiriesPage({
                   action={sendAdminMessageAction}
                   placeholder="Write a reply to the client…"
                   submitLabel="Send reply"
-                  composerFooterStart={
-                    <a
-                      href={`mailto:${selected.email}?subject=${encodeURIComponent(
-                        `Re: ${selected.service ?? "your enquiry"} - Ireland Fintax`,
-                      )}`}
-                      className="inline-flex h-9 items-center gap-2 rounded-none border border-line px-3.5 text-xs font-semibold text-ink-body transition-colors duration-200 hover:border-ink/30 hover:text-ink"
-                    >
-                      <Icon name="arrowUpRight" className="h-3.5 w-3.5" />
-                      Reply by email
-                    </a>
-                  }
+                  composerFooterStart={<EmailCopyToggle />}
                 />
               </>
             )}

@@ -137,6 +137,13 @@ function SuccessCard() {
         Your enquiry is in. A partner, not an autoresponder, will reply within
         one business day.
       </p>
+      {/* The acknowledgement is a first message from a new sender, which is
+          the kind a spam filter holds back. Say so here rather than leaving
+          someone to assume the form silently failed. */}
+      <p className="text-sm leading-6 text-muted">
+        We&apos;ve emailed you a confirmation. If it isn&apos;t in your inbox,
+        check your spam or junk folder.
+      </p>
     </div>
   );
 }

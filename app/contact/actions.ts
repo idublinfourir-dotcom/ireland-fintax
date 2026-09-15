@@ -9,7 +9,8 @@ import {
 } from "../lib/collections";
 import { getUser } from "../lib/auth/guards";
 import { allowPublicAction } from "../lib/rate-limit";
-import { sendTemplateEmail } from "../lib/emailjs";
+import { sendMail } from "../lib/mailer";
+import { ackHtml, ackSubject, ackText } from "../lib/enquiry-email";
 import { site } from "../lib/content";
 
 export interface EnquiryState {
@@ -22,90 +23,37 @@ export interface EnquiryState {
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 /**
- * Send the enquiry as an email (server-side, so the private key never reaches
- * the browser). Best-effort: the stored enquiry is the source of truth, so a
- * failed email is logged but doesn't fail the submission.
- */
-async function sendEnquiryEmail(values: {
-  name: string;
-  email: string;
-  company: string;
-  service: string;
-  message: string;
-}) {
-  // The firm's monitored inbox. Deployment-specific, so it lives in env rather
-  // than in the source — pointing the app at a new mailbox must not need a code
-  // change.
-  const toEmail = process.env.ENQUIRY_TO_EMAIL;
-  if (!toEmail) {
-    console.warn("[enquiry] ENQUIRY_TO_EMAIL is not set — skipping email");
-    return;
-  }
-
-  await sendTemplateEmail({
-    templateId: process.env.EmailJs_Template_KEY,
-    toEmail,
-    toName: site.name,
-    logPrefix: "enquiry",
-    // Superset of params so any template variant renders. The form collects
-    // name/email/company/service/message; service is also exposed as
-    // {{budget}} and {{title}} for templates that use those names.
-    params: {
-      name: values.name,
-      email: values.email,
-      // to_email is the firm's monitored inbox; reply_to is the enquirer.
-      reply_to: values.email,
-      company: values.company || "—",
-      service: values.service || "—",
-      budget: values.service || "—",
-      title: values.service || "your enquiry",
-      message: values.message,
-    },
-  });
-}
-
-/**
- * Acknowledge the enquiry to the person who sent it: "we have it, we'll be in
- * touch". Separate template from the notification above, because the two are
- * written for opposite readers — that one is an internal work item, this one is
- * a reply to a stranger.
+ * Acknowledge the enquiry to the person who sent it.
  *
- * Optional. With no template configured the enquiry still lands in the admin
- * inbox and the notification still goes out; the sender simply gets no
- * acknowledgement, which is the behaviour before this existed. Best-effort like
- * every other mail here: sendTemplateEmail never throws.
+ * It goes to the CUSTOMER, and there is deliberately no second mail to the
+ * firm: new enquiries surface in /admin/enquiries with an unread badge, which
+ * is how the team sees them. Reply-To is left at the default (the firm's own
+ * mailbox), so answering the acknowledgement still reaches a human.
  *
- * Note `company` is the FIRM here, not the enquirer's employer — this email is
- * addressed to them, so it follows the signup template's convention. The
- * notification template uses the same name for the other meaning.
+ * Best-effort: the stored enquiry is the source of truth, so a failed email is
+ * logged and the submission still succeeded. sendMail never throws.
  */
-async function sendEnquiryAutoReply(values: {
+async function sendEnquiryAck(values: {
   name: string;
   email: string;
   service: string;
   message: string;
 }) {
-  const templateId = process.env.EmailJs_AutoReply_Template_KEY;
-  if (!templateId) {
-    console.warn(
-      "[enquiry-reply] EmailJs_AutoReply_Template_KEY is not set — skipping the acknowledgement",
-    );
-    return;
-  }
+  const input = {
+    name: values.name,
+    message: values.message,
+    service: values.service || null,
+    firmName: site.name,
+  };
 
-  await sendTemplateEmail({
-    templateId,
-    toEmail: values.email,
-    toName: values.name,
-    logPrefix: "enquiry-reply",
-    params: {
-      name: values.name,
-      company: site.name,
-      title: values.service || "your enquiry",
-      // Echoed back so the sender can see what actually reached us.
-      message: values.message,
-    },
+  const sent = await sendMail({
+    to: values.email,
+    subject: ackSubject(),
+    html: ackHtml(input),
+    text: ackText(input),
+    logPrefix: "[enquiry]",
   });
+  if (sent) console.info("[enquiry] acknowledgement emailed");
 }
 
 export async function submitEnquiry(
@@ -117,7 +65,11 @@ export async function submitEnquiry(
     email: String(formData.get("email") ?? "").trim(),
     company: String(formData.get("company") ?? "").trim(),
     service: String(formData.get("service") ?? "").trim(),
-    message: String(formData.get("message") ?? "").trim(),
+    // Capped where it is read, not only where it is stored, so the enquiry
+    // document and the acknowledgement always carry the same text.
+    message: String(formData.get("message") ?? "")
+      .trim()
+      .slice(0, 4000),
   };
 
   const errors: EnquiryState["errors"] = {};
@@ -170,7 +122,7 @@ export async function submitEnquiry(
       email: values.email,
       company: values.company || null,
       service: values.service || null,
-      message: values.message.slice(0, 4000),
+      message: values.message,
       userId,
       adminLastReadAt: null,
       clientLastReadAt: null,
@@ -185,14 +137,9 @@ export async function submitEnquiry(
     return { status: "error", values };
   }
 
-  /* Both mails go out AFTER the response is returned, so the form submission is
-     never blocked by a mail round-trip. Sequential rather than parallel: the
-     team's notification is the one that matters, so it goes first and the
-     acknowledgement cannot delay it. Neither can throw. */
-  after(async () => {
-    await sendEnquiryEmail(values);
-    await sendEnquiryAutoReply(values);
-  });
+  // Acknowledge AFTER the response is returned, so the form submission is
+  // never blocked by the SMTP round-trip.
+  after(() => sendEnquiryAck(values));
 
   return { status: "success" };
 }

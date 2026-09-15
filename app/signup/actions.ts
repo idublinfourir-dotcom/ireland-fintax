@@ -13,27 +13,37 @@ import {
   isSignupEmailConfigured,
   roleForEmail,
 } from "../lib/auth/config";
-import { sendTemplateEmail } from "../lib/emailjs";
+import { sendMail } from "../lib/mailer";
+import {
+  confirmHtml,
+  confirmSubject,
+  confirmText,
+} from "../lib/signup-email";
+import { resolveEmailOrigin } from "../lib/site-origin";
 import { site } from "../lib/content";
 
 export interface SignupState {
   error?: string;
   checkEmail?: boolean;
+  /** The address was already registered and unconfirmed, so nothing was
+      created and the existing account's confirmation link was sent again. */
+  resent?: boolean;
   values?: { email?: string; fullName?: string };
 }
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-/** Where the confirmation link points. The Origin header adapts to whatever
-    host the form was posted from (localhost, preview, prod); the fallbacks are
-    only reached when a client omits it. */
+/** Where the confirmation link points. AUTH_URL wins when it is set, so a
+    deployed link always carries the canonical host; the Origin header is the
+    local fallback. See resolveEmailOrigin for why that order and not the
+    reverse. */
 async function siteOrigin(): Promise<string> {
   const headerStore = await headers();
-  return (
-    headerStore.get("origin") ??
-    process.env.AUTH_URL?.replace(/\/$/, "") ??
-    site.url
-  );
+  return resolveEmailOrigin({
+    configured: process.env.AUTH_URL,
+    originHeader: headerStore.get("origin"),
+    fallback: site.url,
+  });
 }
 
 /**
@@ -52,20 +62,18 @@ async function sendConfirmationEmail(
   const token = await createVerificationToken(userId);
   const origin = await siteOrigin();
 
-  await sendTemplateEmail({
-    templateId: process.env.EmailJs_Verify_Template_KEY,
-    toEmail: email,
-    toName: fullName,
-    logPrefix: "signup",
-    params: {
-      name: fullName,
-      verify_url: `${origin}/auth/confirm?token=${token}`,
-      // Some template variants render the firm rather than the recipient.
-      company: site.name,
-      title: "Confirm your email address",
-      message:
-        "Confirm your email address to finish setting up your client account.",
-    },
+  const input = {
+    name: fullName,
+    verifyUrl: `${origin}/auth/confirm?token=${token}`,
+    firmName: site.name,
+  };
+
+  await sendMail({
+    to: email,
+    subject: confirmSubject(),
+    html: confirmHtml(input),
+    text: confirmText(input),
+    logPrefix: "[signup]",
   });
 }
 
@@ -130,16 +138,27 @@ export async function signup(
     }
 
     if (existing) {
-      /* The address was registered but never confirmed, so no one holds a
-         session for it and nothing has been claimed under it. Treat this as a
-         retry of the original signup — refresh the details, reissue the link —
-         rather than a dead end the real owner cannot get past. */
-      await users.updateOne(
-        { _id: existing._id },
-        { $set: { name: fullName, passwordHash: await hashPassword(password) } },
+      /* Registered but never confirmed. No second account is created, and the
+         name and password hash on this one are deliberately left ALONE.
+
+         Overwriting them, which is what this did originally, is an account
+         takeover primitive. Whoever submits this form has not proved they own
+         the address: Mallory submits Alice's address with a password Mallory
+         chooses, the hash on Alice's pending account becomes Mallory's, Alice
+         gets a confirmation mail that looks like the one she was waiting for
+         and clicks it, and confirmation stamps emailVerified. Mallory can now
+         sign in as Alice with the password she set. Reissuing the link is safe
+         because it only ever goes to the address on the account; rewriting the
+         credentials is not.
+
+         So the remedy is the resend alone, which is also exactly what the real
+         owner needs when the first message went to spam. */
+      await sendConfirmationEmail(
+        existing._id,
+        normalisedEmail,
+        existing.name ?? fullName,
       );
-      await sendConfirmationEmail(existing._id, normalisedEmail, fullName);
-      return { checkEmail: true, values };
+      return { checkEmail: true, resent: true, values };
     }
 
     const userId = new ObjectId();
