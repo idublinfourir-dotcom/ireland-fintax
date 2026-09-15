@@ -155,6 +155,17 @@ Whenever anything else gets hidden rather than deleted, add a row here.
   just `isMailerConfigured`): mail is best-effort everywhere else in this app,
   but here the link is the second half of the transaction, and creating an
   account nobody can ever confirm is worse than declining.
+- **An address that already has an account cannot sign up again.** A confirmed
+  account is refused outright. An UNCONFIRMED one does not create a second
+  account and, importantly, does not have its name or password hash rewritten:
+  the action only reissues the confirmation link and reports `resent`. The
+  overwrite this replaced was an account-takeover primitive, because whoever
+  posts the form has not proved they own the address. Mallory posts Alice's
+  address with a password of her choosing, Alice clicks the confirmation mail
+  she was already expecting, `emailVerified` is stamped, and Mallory signs in
+  with the password she set. Never restore the `$set` on `passwordHash` here.
+  Note there is no password-reset flow yet, so the real owner who forgets which
+  password they used needs an admin or Google sign-in.
 - **The emailed confirmation link's host comes from `AUTH_URL`, not from the
   request.** `resolveEmailOrigin` (`app/lib/site-origin.ts`, pure and tested)
   puts AUTH_URL first and the `Origin` header second. The reverse, which is

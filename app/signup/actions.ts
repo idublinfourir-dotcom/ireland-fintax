@@ -25,6 +25,9 @@ import { site } from "../lib/content";
 export interface SignupState {
   error?: string;
   checkEmail?: boolean;
+  /** The address was already registered and unconfirmed, so nothing was
+      created and the existing account's confirmation link was sent again. */
+  resent?: boolean;
   values?: { email?: string; fullName?: string };
 }
 
@@ -135,16 +138,27 @@ export async function signup(
     }
 
     if (existing) {
-      /* The address was registered but never confirmed, so no one holds a
-         session for it and nothing has been claimed under it. Treat this as a
-         retry of the original signup — refresh the details, reissue the link —
-         rather than a dead end the real owner cannot get past. */
-      await users.updateOne(
-        { _id: existing._id },
-        { $set: { name: fullName, passwordHash: await hashPassword(password) } },
+      /* Registered but never confirmed. No second account is created, and the
+         name and password hash on this one are deliberately left ALONE.
+
+         Overwriting them, which is what this did originally, is an account
+         takeover primitive. Whoever submits this form has not proved they own
+         the address: Mallory submits Alice's address with a password Mallory
+         chooses, the hash on Alice's pending account becomes Mallory's, Alice
+         gets a confirmation mail that looks like the one she was waiting for
+         and clicks it, and confirmation stamps emailVerified. Mallory can now
+         sign in as Alice with the password she set. Reissuing the link is safe
+         because it only ever goes to the address on the account; rewriting the
+         credentials is not.
+
+         So the remedy is the resend alone, which is also exactly what the real
+         owner needs when the first message went to spam. */
+      await sendConfirmationEmail(
+        existing._id,
+        normalisedEmail,
+        existing.name ?? fullName,
       );
-      await sendConfirmationEmail(existing._id, normalisedEmail, fullName);
-      return { checkEmail: true, values };
+      return { checkEmail: true, resent: true, values };
     }
 
     const userId = new ObjectId();
