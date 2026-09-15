@@ -39,14 +39,15 @@ Optional, but each gates a feature:
   Cloud console is **this app's own** callback, one entry per host:
   `http://localhost:3000/api/auth/callback/google` and the production
   equivalent.
-- `EmailJs_*` + `ENQUIRY_TO_EMAIL` — three templates, each optional and each
-  written for a different reader: `EmailJs_Template_KEY` (+ `ENQUIRY_TO_EMAIL`)
-  notifies the firm of an enquiry, `EmailJs_AutoReply_Template_KEY`
-  acknowledges it to the person who sent it, and `EmailJs_Verify_Template_KEY`
-  carries the signup confirmation link. Every one needs `{{to_email}}` in the
-  template's "To email" field or EmailJS rejects the send with a 422; the verify
-  template also needs `{{verify_url}}`. With the verify template unset, email
-  signup is refused up front rather than creating an account nobody can confirm.
+- `SMTP_HOST` / `SMTP_PORT` / `SMTP_USER` / `SMTP_PASS`, plus optional
+  `MAIL_FROM` and `MAIL_REPLY_TO` (both default to `SMTP_USER`) — outbound
+  mail. Three messages go out, all composed in this repo (`app/lib/*-email.ts`)
+  rather than in a provider dashboard: an acknowledgement to whoever submitted
+  the contact form, an admin's reply to a client, and the signup confirmation
+  link. With SMTP unset, sending is a logged no-op: enquiries are still stored
+  and admin replies still land in the portal, but email signup is refused up
+  front rather than creating an account nobody can confirm. Check a mailbox
+  with `node scripts/mail-check.mjs [recipient]`.
 
 **An empty database is fine.** Every calculator falls back to a versioned code
 default, so the marketing site and all eight tax tools render correct numbers

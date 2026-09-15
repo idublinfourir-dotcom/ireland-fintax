@@ -13,7 +13,12 @@ import {
   isSignupEmailConfigured,
   roleForEmail,
 } from "../lib/auth/config";
-import { sendTemplateEmail } from "../lib/emailjs";
+import { sendMail } from "../lib/mailer";
+import {
+  confirmHtml,
+  confirmSubject,
+  confirmText,
+} from "../lib/signup-email";
 import { site } from "../lib/content";
 
 export interface SignupState {
@@ -52,20 +57,18 @@ async function sendConfirmationEmail(
   const token = await createVerificationToken(userId);
   const origin = await siteOrigin();
 
-  await sendTemplateEmail({
-    templateId: process.env.EmailJs_Verify_Template_KEY,
-    toEmail: email,
-    toName: fullName,
-    logPrefix: "signup",
-    params: {
-      name: fullName,
-      verify_url: `${origin}/auth/confirm?token=${token}`,
-      // Some template variants render the firm rather than the recipient.
-      company: site.name,
-      title: "Confirm your email address",
-      message:
-        "Confirm your email address to finish setting up your client account.",
-    },
+  const input = {
+    name: fullName,
+    verifyUrl: `${origin}/auth/confirm?token=${token}`,
+    firmName: site.name,
+  };
+
+  await sendMail({
+    to: email,
+    subject: confirmSubject(),
+    html: confirmHtml(input),
+    text: confirmText(input),
+    logPrefix: "[signup]",
   });
 }
 

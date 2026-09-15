@@ -40,7 +40,9 @@ app/
   lib/db-config.ts # connection-string env reads, driver-free (edge-safe)
   lib/collections.ts # every collection: document types + typed accessors
   lib/auth/        # config (roles, feature flags), guards, password, tokens
-  lib/emailjs.ts   # shared EmailJS REST sender
+  lib/mail-config.ts # SMTP env reads, nodemailer-free (edge-safe)
+  lib/mailer.ts    # SMTP transport + sendMail (server only)
+  lib/*-email.ts   # the message layouts: enquiry ack, admin reply, signup
   globals.css      # brand tokens, easing/animation tokens, base styles
 auth.ts            # Auth.js: adapter + Credentials + Google (Node runtime only)
 auth.config.ts     # edge-safe half: session strategy, callbacks, Google
@@ -149,8 +151,8 @@ Whenever anything else gets hidden rather than deleted, add a row here.
   proved and signs the user in. `authorize` refuses to sign in an account whose
   `emailVerified` is still null. Never relax that: confirmation is the boundary
   that lets guest enquiries be claimed by address. The action refuses up front
-  when the `EmailJs_*` keys that send the link are missing
-  (`isSignupEmailConfigured`) — mail is best-effort everywhere else in this app,
+  when no SMTP backend is configured (`isSignupEmailConfigured`, which is now
+  just `isMailerConfigured`): mail is best-effort everywhere else in this app,
   but here the link is the second half of the transaction, and creating an
   account nobody can ever confirm is worse than declining.
 - **Google OAuth** is Auth.js' own provider. Google's authorized redirect URI is
@@ -203,7 +205,7 @@ Whenever anything else gets hidden rather than deleted, add a row here.
   committed **`.env.example`** template (values never committed):
   `MONGODB_URI` **or** `DB_USER`/`DB_PASSWORD`/`DB_CLUSTER`, `MONGODB_DB`,
   **`AUTH_SECRET`**, `AUTH_URL` (prod), `ADMIN_EMAILS`, `AUTH_GOOGLE_ID`/
-  `AUTH_GOOGLE_SECRET`, `ENQUIRY_TO_EMAIL` and the `EmailJs_*` keys. Same keys
+  `AUTH_GOOGLE_SECRET`, and the `SMTP_*` / `MAIL_*` keys. Same keys
   set in the hosting provider's project env for prod. Never echo or commit them.
 - **Security headers** set in `next.config.ts` (`headers()`, all routes): CSP, HSTS
   (prod), X-Frame-Options DENY, nosniff, Referrer-Policy, Permissions-Policy. CSP allows
@@ -241,37 +243,69 @@ Whenever anything else gets hidden rather than deleted, add a row here.
     reference: `ireland-cat.ts` + `cat-data.ts` + `admin/cat-rates/*`, added
     2026-07) — do not invent a new storage shape.
 
-### Contact email (EmailJS)
+### Outbound email (SMTP)
 
-- `app/contact/actions.ts` saves the enquiry, then sends email through
-  `app/lib/emailjs.ts` (the shared **EmailJS REST** sender, also used by the
-  signup confirmation link), wrapped in Next's `after()` so it never blocks the
-  form response (best-effort — failures logged, not surfaced). Shared keys:
-  `EmailJs_Gmail_serviceid_KEY`, `EmailJs_PUBLIC_KEY`, `EmailJs_Private_KEY`.
-  **Three separate templates**, each written for a different reader, each
-  independently optional:
-  - `EmailJs_Template_KEY` + `ENQUIRY_TO_EMAIL` — the notification to the firm.
-    Either one unset skips it; the enquiry document is still written.
-  - `EmailJs_AutoReply_Template_KEY` — the acknowledgement to the enquirer.
-  - `EmailJs_Verify_Template_KEY` — the signup confirmation link. Unset makes
-    email signup refuse up front (see the signup bullet above).
+- **EmailJS is gone.** Everything this site sends goes over plain SMTP through
+  `app/lib/mailer.ts` (nodemailer). `sendMail` is best-effort: it returns
+  `false` and logs on a missing config or a refused send, and never throws, so
+  a mail problem can never take down the database write that preceded it. It is
+  server-only.
+- Config is `SMTP_HOST` / `SMTP_PORT` / `SMTP_USER` / `SMTP_PASS`, plus optional
+  `MAIL_FROM` and `MAIL_REPLY_TO` (both default to `SMTP_USER`). With none set,
+  sending is a logged no-op and the app still works. The env reads live in
+  `app/lib/mail-config.ts`, **free of the nodemailer import on purpose**:
+  `lib/auth/config.ts` reads `isMailerConfigured` for the signup gate and is
+  pulled into the edge middleware bundle, exactly like `db-config.ts` is kept
+  free of the MongoDB driver. Do not collapse the two mail modules into one.
+- Currently pointed at the **AIBN Chartered Accountants Zoho mailbox**
+  (`smtp.zoho.com:465`), the account already proven from the CA Farm project,
+  with `MAIL_FROM` carrying the Ireland Fintax display name in front of it.
+  Zoho wants a 12-character **app password**, not the login password, and
+  `smtppro.zoho.com` answers `554 5.7.8 Access Restricted` for this account on
+  both 465 and 587: do not "fix" the host to it. `node scripts/mail-check.mjs
+  [recipient]` authenticates, and optionally sends, without touching the app.
+- All three message bodies are composed in this repo, so their layout is
+  reviewable and changes in a commit: `app/lib/reply-email.ts` (admin reply to
+  a client), `app/lib/enquiry-email.ts` (acknowledgement to whoever submitted
+  the contact form) and `app/lib/signup-email.ts` (the confirmation link). They
+  share one shell, `app/lib/email-layout.ts`, because three hand-maintained
+  copies of the same table drift. Email clients are hostile: tables for
+  structure, inline styles only, no `<style>` blocks, 600px width. Every
+  interpolated value goes through `escapeHtml`, and every message ships a
+  plain-text alternative (its absence is a spam signal). All four modules are
+  pure and unit-tested.
+- **Enquiries**: `app/contact/actions.ts` writes the document, then
+  acknowledges to the **customer** under `after()` so the send never blocks the
+  form response. There is deliberately **no notification email to the firm**:
+  new enquiries surface in `/admin/enquiries` with an unread badge, which is
+  how the team sees them. `ENQUIRY_TO_EMAIL` is gone with the EmailJS keys.
+- **Admin replies**: `app/admin/enquiries/actions.ts` posts the reply into the
+  thread, then emails the client under `after()`. The composer carries an "Also
+  email the client" checkbox (`EmailCopyToggle` in `chat-panel.tsx`, ticked by
+  default). Unticked, the reply is portal-only and no send is attempted. It
+  reads as `formData.get("email_copy") !== null`, because an unchecked checkbox
+  is absent from FormData rather than false. The toggle lives in the chat-panel
+  module, not the admin page, because it needs `useFormStatus` and that only
+  works inside the form.
+- Recipient is the **account's** email when the enquiry has been claimed,
+  falling back to the address typed on the form for guest enquiries, so a
+  client who changed their address still gets the reply.
+- There is deliberately **no "Reply by email" mailto button** any more. It was
+  removed when the composer started emailing: two routes to the same action
+  meant replies sent from a mail client never appeared in the thread.
+- The reply email is **greeting + the admin's text + firm name, and nothing
+  else**: no quoted enquiry, no portal link, no timestamp. That is a product
+  decision, not an oversight. Do not "helpfully" append context to it.
+- The reply email is a copy, not a channel: nothing parses inbound mail, so a
+  client replying from their mail app reaches the mailbox but not the thread.
+  Two-way would need an inbound provider writing a `sender: "client"` message.
 
-  Every template's "To email" field must be `{{to_email}}` or EmailJS returns
-  422; the app always passes the recipient under that name, whoever it is. Note
-  `company` means the FIRM in the acknowledgement and confirmation templates and
-  the ENQUIRER'S employer in the notification template — same variable, opposite
-  meanings, because each addresses a different reader. Never hardcode the
-  recipient back into the source.
+### Contact form
+
 - Public signup and contact submissions use DB-backed fixed-window throttling
   from `app/lib/rate-limit.ts` (per IP + per normalised email). Only SHA-256
   identifiers are stored in `request_rate_limits`; never store raw IP/email
   throttle keys or replace this with per-process memory on serverless.
-- **The template's "To email" field is `{{to_email}}`** — `template_params`
-  MUST include `to_email` (+ `to_name`) or EmailJS returns HTTP 422 "recipients
-  address is corrupted" and the notification silently never sends (the
-  best-effort `after()` call only logs it). `reply_to` is the enquirer;
-  `to_email` is the firm's monitored inbox. This broke once in production
-  silently — if you touch `template_params`, keep `to_email` in it.
 - `app/components/contact-form.tsx` is a 3-step wizard (topic → enquiry →
   details) but posts as **one native form**: every step's `<fieldset>` stays
   mounted and toggles via the `hidden` attribute, never conditional render —
