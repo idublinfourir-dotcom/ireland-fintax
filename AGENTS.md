@@ -155,6 +155,15 @@ Whenever anything else gets hidden rather than deleted, add a row here.
   just `isMailerConfigured`): mail is best-effort everywhere else in this app,
   but here the link is the second half of the transaction, and creating an
   account nobody can ever confirm is worse than declining.
+- **The emailed confirmation link's host comes from `AUTH_URL`, not from the
+  request.** `resolveEmailOrigin` (`app/lib/site-origin.ts`, pure and tested)
+  puts AUTH_URL first and the `Origin` header second. The reverse, which is
+  what this did originally, means a link built on a dev server reads
+  `http://localhost:3000` and is dead on every device except that one, which
+  most mail clients will not even hyperlink. It is also the wrong shape on
+  principle: the host of a link this app puts in someone's inbox should not
+  come from a request header. Keep the header as the local fallback, since
+  there is no AUTH_URL locally and the header is then exactly right.
 - **Google OAuth** is Auth.js' own provider. Google's authorized redirect URI is
   **this app's** `<origin>/api/auth/callback/google`, one entry per host.
   `allowDangerousEmailAccountLinking` is on deliberately: Google verifies

@@ -19,6 +19,7 @@ import {
   confirmSubject,
   confirmText,
 } from "../lib/signup-email";
+import { resolveEmailOrigin } from "../lib/site-origin";
 import { site } from "../lib/content";
 
 export interface SignupState {
@@ -29,16 +30,17 @@ export interface SignupState {
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-/** Where the confirmation link points. The Origin header adapts to whatever
-    host the form was posted from (localhost, preview, prod); the fallbacks are
-    only reached when a client omits it. */
+/** Where the confirmation link points. AUTH_URL wins when it is set, so a
+    deployed link always carries the canonical host; the Origin header is the
+    local fallback. See resolveEmailOrigin for why that order and not the
+    reverse. */
 async function siteOrigin(): Promise<string> {
   const headerStore = await headers();
-  return (
-    headerStore.get("origin") ??
-    process.env.AUTH_URL?.replace(/\/$/, "") ??
-    site.url
-  );
+  return resolveEmailOrigin({
+    configured: process.env.AUTH_URL,
+    originHeader: headerStore.get("origin"),
+    fallback: site.url,
+  });
 }
 
 /**
