@@ -5,15 +5,11 @@ import { AuthError } from "next-auth";
 import { signIn } from "../../auth";
 import { usersCollection } from "../lib/collections";
 import { AUTH_NOT_CONFIGURED, isAuthConfigured } from "../lib/auth/config";
+import { safeRedirectPath } from "../lib/safe-redirect";
 
 export interface AuthState {
   error?: string;
   values?: { email?: string };
-}
-
-/** Only same-origin relative paths — blocks open-redirects via `next`. */
-function isSafe(path: string) {
-  return path.startsWith("/") && !path.startsWith("//");
 }
 
 export async function login(
@@ -68,11 +64,13 @@ export async function login(
     };
   }
 
-  // Honor an explicit, safe redirect (set when the user was gated). Otherwise
-  // route by role: admins land on /admin, everyone else on /portal.
-  if (requestedNext && isSafe(requestedNext)) {
-    redirect(requestedNext);
-  }
+  /* Honour an explicit, safe redirect (set when the user was gated). Otherwise
+     route by role: admins land on /admin, everyone else on /portal.
+
+     This redirect is RELATIVE, so the destination has to be validated by
+     parsing rather than by pattern: see safeRedirectPath. */
+  const target = safeRedirectPath(requestedNext);
+  if (target) redirect(target);
 
   redirect(account?.role === "admin" ? "/admin" : "/portal");
 }
