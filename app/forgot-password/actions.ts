@@ -91,9 +91,15 @@ async function issueAndSend(email: string): Promise<void> {
     logPrefix: "[reset]",
   });
 
-  // Loudly, because the user is told nothing: to them a refused send and a
-  // delivered one look the same, by design.
-  if (!sent) {
+  /* Both outcomes are logged, and the failure loudly, because the user is told
+     nothing either way: to them a refused send and a delivered one look the
+     same, by design. That makes this log the ONLY way to tell afterwards
+     whether a message actually went out, so silence must never be the success
+     case. The address is recorded; the code never is, because it is a live
+     credential for its whole window. */
+  if (sent) {
+    console.info("[reset] code emailed to:", email);
+  } else {
     console.error("[reset] a code was issued but the email was NOT sent:", email);
   }
 }
