@@ -1,7 +1,8 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { updateSession } from "../../../auth";
+import { AuthError } from "next-auth";
+import { signIn, updateSession } from "../../../auth";
 import { requireClient } from "../../lib/auth/guards";
 import { toObjectId, usersCollection } from "../../lib/collections";
 import { hashPassword } from "../../lib/auth/password";
@@ -72,11 +73,36 @@ export async function updatePasswordAction(
     // what "set a password" means for those users.
     await users.updateOne(
       { _id: id },
-      { $set: { passwordHash: await hashPassword(password) } },
+      {
+        $set: {
+          passwordHash: await hashPassword(password),
+          /* Ends every session opened before now, the same way a reset does.
+             Changing your password is what someone does when they think
+             another person has their account, and without this stamp that
+             remedy did nothing: the other session kept working until its token
+             expired, up to 30 days. See the jwt callback in auth.ts. */
+          passwordChangedAt: new Date(),
+        },
+      },
     );
   } catch (err) {
     console.error("[settings] password update failed:", err);
     return { error: "Couldn't update your password. Please try again." };
+  }
+
+  /* Re-mint THIS browser's session, or the stamp above would sign the author
+     out along with everyone else the moment the next check ran. Minting after
+     the write means the new token is the only one that survives it. Signing
+     in again is how the reset flow does this, and the password is already in
+     hand here, so there is nothing to prompt for.
+
+     Best-effort: the password has already changed, which is the part that
+     matters. A failure here costs a re-login, not the update. */
+  try {
+    await signIn("credentials", { email: user.email, password, redirect: false });
+  } catch (err) {
+    if (!(err instanceof AuthError)) throw err;
+    console.error("[settings] password changed but re-signing in failed:", err.type);
   }
 
   return { ok: "Password updated." };
