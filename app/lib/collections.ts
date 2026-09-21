@@ -39,6 +39,17 @@ export interface UserDoc {
   role: UserRole;
   /** bcrypt hash. Null for accounts that only ever signed in with Google. */
   passwordHash: string | null;
+  /**
+   * When a password reset last completed. Absent on accounts that never had
+   * one, so treat it as optional everywhere.
+   *
+   * Sessions are JWTs with no server-side row to delete, so this is what
+   * revokes them: the jwt callback in auth.ts compares it against the value
+   * the token carries from its own sign-in, and any token older than the
+   * reset stops validating. A reset assumes the old password may be in
+   * someone else's hands, so leaving their session alive would defeat it.
+   */
+  passwordChangedAt?: Date;
   createdAt: Date;
 }
 
