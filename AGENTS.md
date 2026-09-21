@@ -199,6 +199,25 @@ Whenever anything else gets hidden rather than deleted, add a row here.
   - A **Google-only account can set a password here** (approved decision), so
     it ends up with both sign-in methods. Gate step 1 on `passwordHash` if that
     is ever reversed.
+- **A JWT session is checked against the database once a minute, and that is
+  the only database read in the session path.** `auth.config.ts` reads it
+  never, on purpose, because `proxy.ts` imports that file and a query there
+  pulls the MongoDB driver onto the edge. So the check is layered on in
+  `auth.ts` and covers two things, both of which end the session by returning
+  null from the `jwt` callback:
+  - **The account no longer exists.** Without this a deleted account keeps
+    working until its token expires, 30 days by default, so deleting a user
+    would not actually revoke their access. It also catches a token minted
+    against a different `MONGODB_DB` on the same cluster, which is easy to do
+    locally and otherwise presents as a phantom signed-in user with no account
+    row. Note the role then reads as `client`, because the `session` callback
+    does `token.role === "admin" ? "admin" : "client"` and anything that is not
+    exactly `"admin"` falls through to client. That default is silent.
+  - **The password was reset after the token was minted** (see below).
+
+  Revocation is therefore **not instant**: up to a minute, the cost of JWT
+  sessions with no row to delete. A database error fails open and keeps the
+  session, which is the only branch that keeps one it could not verify.
 - **A reset revokes older sessions via `passwordChangedAt`.** Sessions are
   JWTs with no row to delete, so the stamp on the account is the mechanism:
   the `jwt` callback in `auth.ts` compares it against the `pwdAt` the token

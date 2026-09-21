@@ -83,19 +83,29 @@ function epochMs(value: number | Date | undefined): number {
 }
 
 /**
- * Has this account's password been reset since the token was minted?
+ * Should this session be ended? Two reasons, one query.
  *
- * Compares against the value the token carries from its own sign-in rather
- * than against the token's `iat`. `iat` moves forward every time the token is
- * re-stamped, which would leave a narrow race where a reset landing between a
- * clean check and the re-stamp is never noticed. `pwdAt` never moves.
+ * 1. **The account no longer exists.** Sessions here are JWTs with no
+ *    server-side row, and nothing else in the session path reads the database,
+ *    so without this a deleted account keeps working until its token expires
+ *    (30 days by default). Deleting a user has to actually revoke their
+ *    access. This also catches a token minted against a different database on
+ *    the same cluster, which is easy to do locally by changing MONGODB_DB and
+ *    otherwise presents as a phantom signed-in user with no account.
+ * 2. **The password was reset after this token was minted.** Compared against
+ *    the value the token carries from its own sign-in rather than its `iat`,
+ *    which moves forward on every re-stamp and would leave a narrow race where
+ *    a reset landing between a clean check and the re-stamp is never noticed.
+ *    `pwdAt` never moves.
  */
-async function passwordResetSince(
+async function sessionRevoked(
   userId: string,
   mintedWith: number,
 ): Promise<boolean> {
+  // A subject that is not an account id cannot belong to a live session: both
+  // sign-in paths set it from the account's own ObjectId.
   const id = toObjectId(userId);
-  if (!id) return false;
+  if (!id) return true;
 
   const users = await usersCollection();
   const account = await users.findOne(
@@ -103,7 +113,9 @@ async function passwordResetSince(
     { projection: { passwordChangedAt: 1 } },
   );
 
-  const changed = account?.passwordChangedAt;
+  if (!account) return true;
+
+  const changed = account.passwordChangedAt;
   return changed instanceof Date && changed.getTime() > mintedWith;
 }
 
@@ -123,12 +135,13 @@ export const {
     ...authConfig.callbacks,
 
     /**
-     * The edge-safe callback from auth.config.ts, plus the one thing it cannot
-     * do: notice that the password was reset in another browser.
+     * The edge-safe callback from auth.config.ts, plus the two things it
+     * cannot do: notice that the password was reset in another browser, and
+     * notice that the account behind the token is gone.
      *
-     * Sessions here are JWTs, so there is no session row to delete and a
-     * reset would otherwise leave every existing session signed in. Since a
-     * reset assumes the old password may be in someone else's hands, that is
+     * Sessions here are JWTs, so there is no session row to delete and either
+     * event would otherwise leave every existing session signed in. A reset
+     * assumes the old password may be in someone else's hands, so that is
      * exactly the session that should stop working. Returning null ends it.
      *
      * Wrapped here and NOT moved into auth.config.ts: that file is imported by
@@ -151,14 +164,15 @@ export const {
       if (Date.now() - since < PASSWORD_CHECK_INTERVAL_MS) return token;
 
       try {
-        if (token.sub && (await passwordResetSince(token.sub, token.pwdAt ?? 0))) {
+        if (!token.sub || (await sessionRevoked(token.sub, token.pwdAt ?? 0))) {
           return null;
         }
       } catch (err) {
         /* Fail open, matching the rest of this file: the database being
            briefly unreachable must not sign the whole site out. The window it
-           widens is bounded by the token's own expiry. */
-        console.error("[auth] could not check for a password reset:", err);
+           widens is bounded by the token's own expiry. Note this is the only
+           branch that keeps a session it could not verify. */
+        console.error("[auth] could not verify the session:", err);
       }
 
       token.pwdCheckedAt = Date.now();
