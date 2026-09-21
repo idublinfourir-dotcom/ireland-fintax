@@ -155,8 +155,20 @@ Whenever anything else gets hidden rather than deleted, add a row here.
   just `isMailerConfigured`): mail is best-effort everywhere else in this app,
   but here the link is the second half of the transaction, and creating an
   account nobody can ever confirm is worse than declining.
+- **Signup answers identically for every address.** A new account, an
+  existing unconfirmed one whose link is reissued, and an existing CONFIRMED
+  one all end on the same screen. Each used to be distinguishable, and each
+  answered "is this address registered with this firm?": the confirmed case
+  said "an account with this email already exists", the unconfirmed case said
+  so on the check-your-email screen via a `resent` flag, and a duplicate-key
+  race said it a third way. A confirmed address is instead told by email
+  (`lib/signup-existing-email.ts`) that no second account was made, with
+  sign-in and reset links, so someone who genuinely forgot is not left waiting
+  for a confirmation that will never arrive. The password is hashed **before**
+  the lookup so the create path is not measurably slower than the others.
+  Don't reintroduce a branch that reports which case happened.
 - **An address that already has an account cannot sign up again.** A confirmed
-  account is refused outright. An UNCONFIRMED one does not create a second
+  account gets no second account. An UNCONFIRMED one does not create a second
   account and, importantly, does not have its name or password hash rewritten:
   the action only reissues the confirmation link and reports `resent`. The
   overwrite this replaced was an account-takeover primitive, because whoever
@@ -176,9 +188,8 @@ Whenever anything else gets hidden rather than deleted, add a row here.
     refused SMTP send and a database error all render the same screen and are
     logged instead. A reset form that answers differently is an
     account-enumeration oracle, and what it leaks here is "this person is a
-    client of this firm". Note the **signup form still leaks exactly this**
-    ("An account with this email already exists"), which is separate work;
-    leaking there is not a reason to leak here too.
+    client of this firm". The **signup and sign-in forms were both closed the
+    same way** (Sep 2026) — see below; all three now answer identically.
   - The send is **best-effort**, unlike signup's. There is no half-made
     account to roll back, and surfacing a send failure would confirm the
     address exists.
