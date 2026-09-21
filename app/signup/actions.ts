@@ -19,15 +19,21 @@ import {
   confirmSubject,
   confirmText,
 } from "../lib/signup-email";
+import {
+  existingAccountHtml,
+  existingAccountSubject,
+  existingAccountText,
+} from "../lib/signup-existing-email";
 import { resolveEmailOrigin } from "../lib/site-origin";
 import { site } from "../lib/content";
 
 export interface SignupState {
   error?: string;
+  /** Every address that got as far as the lookup ends here, whether an account
+      was created, an existing unconfirmed one had its link reissued, or a
+      confirmed one was told by email that it already exists. The three are
+      deliberately indistinguishable: see the note on `signup`. */
   checkEmail?: boolean;
-  /** The address was already registered and unconfirmed, so nothing was
-      created and the existing account's confirmation link was sent again. */
-  resent?: boolean;
   values?: { email?: string; fullName?: string };
 }
 
@@ -73,6 +79,38 @@ async function sendConfirmationEmail(
     subject: confirmSubject(),
     html: confirmHtml(input),
     text: confirmText(input),
+    logPrefix: "[signup]",
+  });
+}
+
+/**
+ * Tell the address itself that it already has an account.
+ *
+ * The form cannot say this, so the detail goes where only the owner can read
+ * it. They submitted a signup form and are owed an explanation for why the
+ * password they just chose will not work.
+ *
+ * Best-effort, like the confirmation link: the caller shows the same screen
+ * either way, because a visible send failure would confirm the address exists
+ * just as loudly as the old error message did.
+ */
+async function sendExistingAccountEmail(
+  email: string,
+  name: string,
+): Promise<void> {
+  const origin = await siteOrigin();
+  const input = {
+    name,
+    loginUrl: `${origin}/login`,
+    resetUrl: `${origin}/forgot-password`,
+    firmName: site.name,
+  };
+
+  await sendMail({
+    to: email,
+    subject: existingAccountSubject(),
+    html: existingAccountHtml(input),
+    text: existingAccountText(input),
     logPrefix: "[signup]",
   });
 }
@@ -126,15 +164,26 @@ export async function signup(
   // boundary, and Auth.js' adapter looks accounts up by exact match.
   const normalisedEmail = email.toLowerCase();
 
+  /* Hashed BEFORE the lookup, so every branch below pays the same ~250ms.
+     Doing it only on the create path made a new address measurably slower
+     than a registered one, which is the same fact the error messages used to
+     give away, just told by the clock instead. */
+  const passwordHash = await hashPassword(password);
+
   try {
     const users = await usersCollection();
     const existing = await users.findOne({ email: normalisedEmail });
 
+    /* Already registered and confirmed. No second account, and the form says
+       nothing about it: the old "an account with this email already exists"
+       answered a stranger's question about who banks with this firm. The real
+       owner is told the same thing by email, where only they can read it. */
     if (existing?.emailVerified) {
-      return {
-        error: "An account with this email already exists. Try signing in.",
-        values,
-      };
+      await sendExistingAccountEmail(
+        normalisedEmail,
+        existing.name ?? fullName,
+      );
+      return { checkEmail: true, values };
     }
 
     if (existing) {
@@ -158,7 +207,9 @@ export async function signup(
         normalisedEmail,
         existing.name ?? fullName,
       );
-      return { checkEmail: true, resent: true, values };
+      // Same screen as a brand-new signup. Saying "already registered but not
+      // confirmed" named the address just as precisely as the error above did.
+      return { checkEmail: true, values };
     }
 
     const userId = new ObjectId();
@@ -172,24 +223,24 @@ export async function signup(
       emailVerified: null,
       image: null,
       role: roleForEmail(normalisedEmail),
-      passwordHash: await hashPassword(password),
+      passwordHash,
       createdAt: new Date(),
     });
 
     await sendConfirmationEmail(userId, normalisedEmail, fullName);
     return { checkEmail: true, values };
   } catch (err) {
-    // 11000 = duplicate key: two signups for the same address raced and the
-    // unique index caught the loser. The winner's confirmation email is out.
+    /* 11000 = duplicate key: two signups for the same address raced and the
+       unique index caught the loser. The winner's confirmation email is out,
+       so this reports exactly what the winner reported. It used to answer with
+       the "already exists" error, which made a race a third way to ask whether
+       an address is registered. */
     if (
       typeof err === "object" &&
       err !== null &&
       (err as { code?: number }).code === 11000
     ) {
-      return {
-        error: "An account with this email already exists. Try signing in.",
-        values,
-      };
+      return { checkEmail: true, values };
     }
     console.error("[signup] could not create the account:", err);
     return {

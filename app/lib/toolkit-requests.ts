@@ -6,7 +6,6 @@
 
 import { ObjectId } from "mongodb";
 import {
-  CASE_INSENSITIVE,
   toObjectId,
   toolkitRequestsCollection,
   type ToolkitRequestDoc,
@@ -40,22 +39,6 @@ const fromDoc = (r: ToolkitRequestDoc): ToolkitRequest => ({
   sentAt: r.sentAt,
   createdAt: r.createdAt,
 });
-
-/** How many requests one address may submit per hour. */
-export const REQUEST_RATE_LIMIT = 5;
-
-export async function countRecentRequests(email: string): Promise<number> {
-  const requests = await toolkitRequestsCollection();
-  return requests.countDocuments(
-    {
-      email,
-      createdAt: { $gt: new Date(Date.now() - 60 * 60 * 1000) },
-    },
-    // Addresses are stored as the requester typed them, so the match has to
-    // ignore case. The collation must match the collated index.
-    { collation: CASE_INSENSITIVE },
-  );
-}
 
 export async function createRequest(input: {
   resourceTitle: string;

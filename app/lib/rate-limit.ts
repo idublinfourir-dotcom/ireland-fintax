@@ -7,6 +7,20 @@ interface PublicActionLimits {
   identity: string;
   ip: { max: number; windowSeconds: number };
   identityLimit: { max: number; windowSeconds: number };
+  /**
+   * Deny when the limiter itself cannot be read, instead of allowing.
+   *
+   * The default is to fail OPEN, which is right for a contact form: a
+   * transient database fault should not take the site's own functionality
+   * down, and the worst case is some extra rows.
+   *
+   * It is the wrong default where this counter IS the security boundary. A
+   * password guess and a reset-code guess are only safe because the attempts
+   * are capped, so a limiter that answers "allow" when it is broken hands an
+   * attacker unlimited tries at exactly the moment nobody is watching. Those
+   * callers pass true and take the outage instead.
+   */
+  failClosed?: boolean;
 }
 
 function hashIdentifier(value: string): string {
@@ -61,15 +75,20 @@ async function consume(
 
 /**
  * Apply both per-IP and per-identity limits. Identifiers are hashed before
- * storage. Database errors fail open to avoid turning a transient metadata
- * failure into a site-wide outage; the protected action still performs its
- * normal validation and database/auth checks.
+ * storage.
+ *
+ * Database errors fail OPEN by default, so a transient metadata failure does
+ * not turn into a site-wide outage; the protected action still performs its
+ * normal validation and database/auth checks. Callers for which this counter
+ * is itself the security boundary pass `failClosed` and get the opposite
+ * trade: see the note on that field.
  */
 export async function allowPublicAction({
   action,
   identity,
   ip,
   identityLimit,
+  failClosed = false,
 }: PublicActionLimits): Promise<boolean> {
   try {
     const clientIp = await requestIp();
@@ -88,7 +107,10 @@ export async function allowPublicAction({
 
     return ipAllowed && identityAllowed;
   } catch (err) {
-    console.error(`[rate-limit:${action}] check failed open:`, err);
-    return true;
+    console.error(
+      `[rate-limit:${action}] check failed ${failClosed ? "CLOSED" : "open"}:`,
+      err,
+    );
+    return !failClosed;
   }
 }

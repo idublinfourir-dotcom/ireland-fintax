@@ -1,6 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { auth } from "../../../auth";
 import { isAuthConfigured } from "../../lib/auth/config";
+import { safeRedirectPath } from "../../lib/safe-redirect";
 
 /**
  * Post-Google landing route: routes by role, admins to /admin and everyone
@@ -15,9 +16,7 @@ import { isAuthConfigured } from "../../lib/auth/config";
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url);
 
-  const rawNext = searchParams.get("next") ?? "";
-  const next =
-    rawNext.startsWith("/") && !rawNext.startsWith("//") ? rawNext : "";
+  const next = safeRedirectPath(searchParams.get("next"));
 
   // No backend: nothing can have issued a session. Bounce to the same notice
   // screen every other OAuth failure lands on.

@@ -2,6 +2,7 @@ import { type NextRequest, NextResponse } from "next/server";
 import { AuthError } from "next-auth";
 import { signIn } from "../../../auth";
 import { isAuthConfigured } from "../../lib/auth/config";
+import { safeRedirectOr } from "../../lib/safe-redirect";
 
 /**
  * Email-confirmation landing route. The signup email links here with a
@@ -14,9 +15,7 @@ import { isAuthConfigured } from "../../lib/auth/config";
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url);
   const token = searchParams.get("token");
-  const next = searchParams.get("next") ?? "/portal";
-  const safeNext =
-    next.startsWith("/") && !next.startsWith("//") ? next : "/portal";
+  const safeNext = safeRedirectOr(searchParams.get("next"), "/portal");
 
   // No backend: no token could have been issued, so there is nothing to verify.
   if (!isAuthConfigured()) {

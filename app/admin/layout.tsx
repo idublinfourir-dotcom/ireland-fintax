@@ -20,6 +20,7 @@ const navItems: DashNavItem[] = [
   { href: "/admin/vat-rates", label: "VAT rates", icon: "calculator", prefix: true },
   { href: "/admin/rd-rates", label: "R&D tax credit", icon: "trendUp", prefix: true },
   { href: "/admin/capital-allowances-rates", label: "Capital allowances", icon: "cube", prefix: true },
+  { href: "/admin/settings", label: "Settings", icon: "settings", prefix: true },
 ];
 
 export default async function AdminLayout({

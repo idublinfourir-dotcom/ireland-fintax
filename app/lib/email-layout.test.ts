@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {
   button,
+  codeBlock,
   emailShell,
   escapeHtml,
   greetingName,
@@ -68,4 +69,21 @@ test("the greeting falls back to something that still reads as a sentence", () =
 
 test("the sign-off escapes the firm name", () => {
   assert.match(signOff("Smith & Co"), /Smith &amp; Co/);
+});
+
+test("a code block escapes its content and offers nothing to click", () => {
+  const html = codeBlock("<b>0123</b>");
+  assert.match(html, /&lt;b&gt;0123&lt;\/b&gt;/);
+  assert.doesNotMatch(html, /<b>/);
+  // Nothing clickable: a code email is the one a phisher imitates.
+  assert.doesNotMatch(html, /<a\b|href=/);
+});
+
+test("a code block keeps the digits apart and inlines every style", () => {
+  const html = codeBlock("04871523");
+  assert.match(html, /letter-spacing:/);
+  assert.match(html, /monospace/);
+  // Inline styles only: Gmail strips <style> blocks.
+  assert.doesNotMatch(html, /<style/);
+  assert.match(html, /^<p style="/);
 });

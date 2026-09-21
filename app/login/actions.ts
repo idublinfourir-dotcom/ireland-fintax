@@ -5,16 +5,26 @@ import { AuthError } from "next-auth";
 import { signIn } from "../../auth";
 import { usersCollection } from "../lib/collections";
 import { AUTH_NOT_CONFIGURED, isAuthConfigured } from "../lib/auth/config";
+import { allowPublicAction } from "../lib/rate-limit";
+import { safeRedirectPath } from "../lib/safe-redirect";
 
 export interface AuthState {
   error?: string;
   values?: { email?: string };
 }
 
-/** Only same-origin relative paths — blocks open-redirects via `next`. */
-function isSafe(path: string) {
-  return path.startsWith("/") && !path.startsWith("//");
-}
+/* Said for a wrong password, an unknown address and an unconfirmed one alike.
+
+   The confirmation hint is given to EVERYONE rather than only to accounts that
+   really are unconfirmed. Naming that case was friendlier and was an
+   enumeration oracle: a different message for "this address exists but is not
+   confirmed" confirms the address is registered. On a practice's site the fact
+   that leaks is "this person is a client of this firm", so the hint is worth
+   keeping only if it costs nothing to say, which it does when it is
+   unconditional. `authorize` is written to be silent for the same reason; this
+   is the other half of that. */
+const LOGIN_REJECTED =
+  "Invalid login credentials. If you've just signed up, check your inbox (and your spam folder) for the confirmation link.";
 
 export async function login(
   _prev: AuthState,
@@ -30,6 +40,31 @@ export async function login(
 
   if (!isAuthConfigured()) {
     return { error: AUTH_NOT_CONFIGURED, values: { email } };
+  }
+
+  /* The brute-force cap on the front door. bcrypt at cost 12 makes each guess
+     expensive but not prohibitive, and nothing else limited this: signup, the
+     contact form and both halves of the password reset were throttled while
+     the login form itself was not.
+
+     Counts every attempt, not only failures, which is how the rest of the app
+     uses this helper. The per-identity cap is deliberately the looser of the
+     two so a stranger cannot cheaply lock a real client out of their own
+     account by burning it; the window is short for the same reason. */
+  const allowed = await allowPublicAction({
+    action: "login",
+    identity: email,
+    ip: { max: 50, windowSeconds: 15 * 60 },
+    identityLimit: { max: 10, windowSeconds: 15 * 60 },
+    // This counter is the only thing capping password guesses, so a limiter
+    // that cannot be read must refuse rather than wave everything through.
+    failClosed: true,
+  });
+  if (!allowed) {
+    return {
+      error: "Too many sign-in attempts. Please wait a few minutes and try again.",
+      values: { email },
+    };
   }
 
   /* `authorize` returns null for a wrong password, an unknown address and an
@@ -49,30 +84,27 @@ export async function login(
     failed = true;
   }
 
-  // One lookup, used either way: to say WHICH failure it was, or to route by
-  // role. Reading the account directly rather than re-reading the session keeps
-  // this independent of the cookie that was just written.
+  /* Answer before looking anything up. The old code read the account first so
+     it could say which failure it was, which is exactly the leak described on
+     LOGIN_REJECTED. Nothing about the account is needed to reject. */
+  if (failed) return { error: LOGIN_REJECTED, values: { email } };
+
+  // Only now, on success, and only for the role. Reading the account directly
+  // rather than re-reading the session keeps this independent of the cookie
+  // that was just written.
   const users = await usersCollection();
   const account = await users.findOne(
     { email: email.toLowerCase() },
-    { projection: { role: 1, emailVerified: 1 } },
+    { projection: { role: 1 } },
   );
 
-  if (failed) {
-    return {
-      error:
-        account && !account.emailVerified
-          ? "Email not confirmed. Check your inbox for the confirmation link."
-          : "Invalid login credentials.",
-      values: { email },
-    };
-  }
+  /* Honour an explicit, safe redirect (set when the user was gated). Otherwise
+     route by role: admins land on /admin, everyone else on /portal.
 
-  // Honor an explicit, safe redirect (set when the user was gated). Otherwise
-  // route by role: admins land on /admin, everyone else on /portal.
-  if (requestedNext && isSafe(requestedNext)) {
-    redirect(requestedNext);
-  }
+     This redirect is RELATIVE, so the destination has to be validated by
+     parsing rather than by pattern: see safeRedirectPath. */
+  const target = safeRedirectPath(requestedNext);
+  if (target) redirect(target);
 
   redirect(account?.role === "admin" ? "/admin" : "/portal");
 }
