@@ -175,13 +175,16 @@ export async function resetPasswordWithCode(
 
   /* THE brute-force cap. A code short enough to type is only safe while the
      attempts are capped, and this is the visible half of that. The other half
-     is the per-code counter in lib/auth/reset-tokens.ts, which exists because
-     allowPublicAction fails OPEN when the database errors. */
+     is the per-code counter in lib/auth/reset-tokens.ts, which lives in the
+     same write path as the redemption and so cannot be bypassed by a limiter
+     outage. Both halves now refuse rather than allow when they cannot be
+     read. */
   const allowed = await allowPublicAction({
     action: "password-reset-verify",
     identity: email,
     ip: { max: 15, windowSeconds: 60 * 60 },
     identityLimit: { max: 5, windowSeconds: 60 * 60 },
+    failClosed: true,
   });
   if (!allowed) {
     return {

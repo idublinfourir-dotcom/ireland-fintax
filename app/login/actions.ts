@@ -56,6 +56,9 @@ export async function login(
     identity: email,
     ip: { max: 50, windowSeconds: 15 * 60 },
     identityLimit: { max: 10, windowSeconds: 15 * 60 },
+    // This counter is the only thing capping password guesses, so a limiter
+    // that cannot be read must refuse rather than wave everything through.
+    failClosed: true,
   });
   if (!allowed) {
     return {
