@@ -164,8 +164,52 @@ Whenever anything else gets hidden rather than deleted, add a row here.
   address with a password of her choosing, Alice clicks the confirmation mail
   she was already expecting, `emailVerified` is stamped, and Mallory signs in
   with the password she set. Never restore the `$set` on `passwordHash` here.
-  Note there is no password-reset flow yet, so the real owner who forgets which
-  password they used needs an admin or Google sign-in.
+  A real owner who has forgotten their password uses `/forgot-password`, not
+  this form.
+- **Password reset is a code, not a link.** `/forgot-password` has two server
+  actions on two separate throttle keys, because asking for a code is an
+  email-volume problem and submitting one is a brute-force problem. Step 1
+  emails an 8-digit single-use code (`lib/auth/reset-tokens.ts`, SHA-256 at
+  rest, 15-minute window, burnt after 5 wrong guesses); step 2 redeems it,
+  sets the password and signs the user in. Things that are load-bearing:
+  - **Step 1 answers identically for every address.** Unknown, unconfirmed, a
+    refused SMTP send and a database error all render the same screen and are
+    logged instead. A reset form that answers differently is an
+    account-enumeration oracle, and what it leaks here is "this person is a
+    client of this firm". Note the **signup form still leaks exactly this**
+    ("An account with this email already exists"), which is separate work;
+    leaking there is not a reason to leak here too.
+  - The send is **best-effort**, unlike signup's. There is no half-made
+    account to roll back, and surfacing a send failure would confirm the
+    address exists.
+  - The password is validated **before** the code is redeemed. The code is
+    single-use, so the other order burns it on a password the form could have
+    rejected for free. It uses `validatePassword` from `account-validation.ts`,
+    the same one the settings page uses.
+  - **No digit count appears in any user-visible copy**, and `looksLikeCode`
+    accepts a range rather than the generator's current length. Pinning either
+    would reject codes already in an inbox the moment that constant moved.
+    `reset-email.test.ts` enforces the copy rule; assert on the word `digit`,
+    never on a spelled-out number, since `/eight/` matches `font-weight`.
+  - An **unconfirmed** address gets no code. A password would not help, since
+    `authorize` refuses unconfirmed accounts, and treating the code as proof of
+    the address would make reset a second route to `emailVerified`. That field
+    is what lets guest enquiries be claimed, and reset deliberately does **not**
+    call `claimVerifiedGuestEnquiries`.
+  - A **Google-only account can set a password here** (approved decision), so
+    it ends up with both sign-in methods. Gate step 1 on `passwordHash` if that
+    is ever reversed.
+- **A reset revokes older sessions via `passwordChangedAt`.** Sessions are
+  JWTs with no row to delete, so the stamp on the account is the mechanism:
+  the `jwt` callback in `auth.ts` compares it against the `pwdAt` the token
+  carries from its own sign-in and returns null when the token is older. It
+  compares against `pwdAt` and **not** the token's `iat`, which moves forward
+  on every re-stamp and would leave a race. The check is layered on in
+  `auth.ts`, never in `auth.config.ts`, which `proxy.ts` imports and which must
+  never reach for the database. It is rate-limited to one query per session per
+  minute, so revocation is not instant: a session can survive up to a minute.
+  The settings page's own password change does **not** stamp this, so it does
+  not sign the user out of their current session.
 - **The emailed confirmation link's host comes from `AUTH_URL`, not from the
   request.** `resolveEmailOrigin` (`app/lib/site-origin.ts`, pure and tested)
   puts AUTH_URL first and the `Origin` header second. The reverse, which is
