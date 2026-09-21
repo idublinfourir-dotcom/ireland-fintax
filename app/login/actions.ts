@@ -13,6 +13,19 @@ export interface AuthState {
   values?: { email?: string };
 }
 
+/* Said for a wrong password, an unknown address and an unconfirmed one alike.
+
+   The confirmation hint is given to EVERYONE rather than only to accounts that
+   really are unconfirmed. Naming that case was friendlier and was an
+   enumeration oracle: a different message for "this address exists but is not
+   confirmed" confirms the address is registered. On a practice's site the fact
+   that leaks is "this person is a client of this firm", so the hint is worth
+   keeping only if it costs nothing to say, which it does when it is
+   unconditional. `authorize` is written to be silent for the same reason; this
+   is the other half of that. */
+const LOGIN_REJECTED =
+  "Invalid login credentials. If you've just signed up, check your inbox (and your spam folder) for the confirmation link.";
+
 export async function login(
   _prev: AuthState,
   formData: FormData,
@@ -68,24 +81,19 @@ export async function login(
     failed = true;
   }
 
-  // One lookup, used either way: to say WHICH failure it was, or to route by
-  // role. Reading the account directly rather than re-reading the session keeps
-  // this independent of the cookie that was just written.
+  /* Answer before looking anything up. The old code read the account first so
+     it could say which failure it was, which is exactly the leak described on
+     LOGIN_REJECTED. Nothing about the account is needed to reject. */
+  if (failed) return { error: LOGIN_REJECTED, values: { email } };
+
+  // Only now, on success, and only for the role. Reading the account directly
+  // rather than re-reading the session keeps this independent of the cookie
+  // that was just written.
   const users = await usersCollection();
   const account = await users.findOne(
     { email: email.toLowerCase() },
-    { projection: { role: 1, emailVerified: 1 } },
+    { projection: { role: 1 } },
   );
-
-  if (failed) {
-    return {
-      error:
-        account && !account.emailVerified
-          ? "Email not confirmed. Check your inbox for the confirmation link."
-          : "Invalid login credentials.",
-      values: { email },
-    };
-  }
 
   /* Honour an explicit, safe redirect (set when the user was gated). Otherwise
      route by role: admins land on /admin, everyone else on /portal.
