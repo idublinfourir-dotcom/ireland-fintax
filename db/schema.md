@@ -37,6 +37,7 @@ This page is the map and the reasoning.
 | `accounts` | ObjectId | Auth.js adapter: one per linked OAuth provider |
 | `sessions` | ObjectId | Created by the adapter; unused — sessions are JWTs |
 | `email_verification_tokens` | ObjectId | Signup confirmation links |
+| `password_reset_tokens` | ObjectId | Password-reset codes, one live per account |
 
 `users` holds the credentials **and** the profile in one document, so a role
 lookup is never a second query:
@@ -75,6 +76,31 @@ password set later on the settings page.
 in the link, so a database dump cannot be replayed into a confirmed account.
 Redemption is a `findOneAndDelete`, which makes it single-use even if the link
 is clicked twice at once.
+
+`password_reset_tokens` is the same idea for the forgot-password flow, kept in
+its own collection rather than as a flag on the one above. Issuing either kind
+drops the account's previous one, and sharing a collection would let a resent
+confirmation link silently void a reset code the same person is part-way
+through typing.
+
+```js
+{
+  _id: ObjectId,
+  userId: ObjectId,
+  codeHash: "…",     // SHA-256 of the emailed code; the code itself is never stored
+  attempts: 0,       // wrong guesses spent; the code is burnt at 5
+  expiresAt: Date,   // 15 minutes
+  createdAt: Date,
+}
+```
+
+The difference from a confirmation token is the threat model. That one is 256
+bits and safe because it cannot be guessed. A reset code has to be typed, so it
+is short, so it **is** guessable given unlimited tries: `attempts` is what
+makes it safe. It is counted here as well as in `request_rate_limits` because
+that limiter fails *open* on a database error, whereas this counter shares a
+write path with the redemption, so if it cannot be read the redemption cannot
+happen either.
 
 ### Enquiries
 

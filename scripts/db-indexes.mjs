@@ -34,6 +34,18 @@ const INDEXES = {
     // expireAfterSeconds 0 means "expire at the time in this field".
     [{ expiresAt: 1 }, { expireAfterSeconds: 0, name: "verification_ttl" }],
   ],
+  password_reset_tokens: [
+    // Every read and write is scoped to one account: issuing drops the
+    // previous code, redeeming matches (userId, codeHash), and a wrong guess
+    // increments the attempt count. Not unique: issuing is a delete followed
+    // by an insert, and two requests racing there would fail the second
+    // insert rather than simply leaving a spare row the TTL reaps.
+    [{ userId: 1 }, { name: "password_reset_user_idx" }],
+    // Codes are short-lived by design, so this sweeps most of them. Expiry is
+    // re-checked on redemption: TTL runs about once a minute and is
+    // housekeeping, not the boundary.
+    [{ expiresAt: 1 }, { expireAfterSeconds: 0, name: "password_reset_ttl" }],
+  ],
 
   // ── enquiries ───────────────────────────────────────────────────────────
   enquiries: [

@@ -70,6 +70,31 @@ export interface VerificationTokenDoc {
   createdAt: Date;
 }
 
+/**
+ * Single-use password-reset codes. One per account at a time.
+ *
+ * A separate collection from the signup tokens above, not a flag on them.
+ * Issuing a signup link does `deleteMany({ userId })` to invalidate the
+ * previous one, and sharing a collection would let a resent confirmation
+ * silently void a reset code the same person is mid-way through typing.
+ *
+ * Only the SHA-256 of the code is stored. The code is short enough to be
+ * typed, so unlike the 256-bit signup token it is guessable given unlimited
+ * tries: `attempts` is what makes it safe, and it is counted here rather than
+ * only in the rate limiter because that limiter fails OPEN on a database
+ * error. This counter lives in the same write path as the redemption, so if it
+ * cannot be read the redemption cannot happen either.
+ */
+export interface PasswordResetTokenDoc {
+  _id: ObjectId;
+  userId: ObjectId;
+  codeHash: string;
+  /** Wrong guesses spent against this code. Burnt once it hits the cap. */
+  attempts: number;
+  expiresAt: Date;
+  createdAt: Date;
+}
+
 /* ── enquiries ─────────────────────────────────────────────────────────── */
 
 /**
@@ -295,6 +320,7 @@ export const COLLECTIONS = {
   accounts: "accounts",
   sessions: "sessions",
   verificationTokens: "email_verification_tokens",
+  passwordResetTokens: "password_reset_tokens",
   enquiries: "enquiries",
   enquiryMessages: "enquiry_messages",
   taxRates: "tax_rates",
@@ -322,6 +348,8 @@ export const accountsCollection = () =>
   collection<AccountDoc>(COLLECTIONS.accounts);
 export const verificationTokensCollection = () =>
   collection<VerificationTokenDoc>(COLLECTIONS.verificationTokens);
+export const passwordResetTokensCollection = () =>
+  collection<PasswordResetTokenDoc>(COLLECTIONS.passwordResetTokens);
 export const enquiriesCollection = () =>
   collection<EnquiryDoc>(COLLECTIONS.enquiries);
 export const enquiryMessagesCollection = () =>
