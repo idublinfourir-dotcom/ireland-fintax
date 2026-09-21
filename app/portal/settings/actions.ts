@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { AuthError } from "next-auth";
 import { signIn, updateSession } from "../../../auth";
-import { requireClient } from "../../lib/auth/guards";
+import { requireUser } from "../../lib/auth/guards";
 import { toObjectId, usersCollection } from "../../lib/collections";
 import { hashPassword } from "../../lib/auth/password";
 import { AUTH_NOT_CONFIGURED, isAuthConfigured } from "../../lib/auth/config";
@@ -14,6 +14,16 @@ import {
 
 export type SettingsState = { ok?: string; error?: string };
 
+/* Guarded with requireUser, not requireClient.
+ *
+ * Every write here is scoped to the caller's OWN account id, so the role is
+ * irrelevant to what can be changed, and requireClient bounced admins to
+ * /admin. That left an admin with no way to set or rotate their own password
+ * anywhere in the app: the one account type that can edit published tax rates
+ * was also the one that could not fix a password it thought was compromised.
+ * The area pages still guard their own access; this only decides who may edit
+ * themselves, which is everyone. */
+
 /** Update the client's display name. A single write: the credentials and the
  *  profile live in one account document, so there is nothing to keep in
  *  sync. */
@@ -21,7 +31,7 @@ export async function updateNameAction(
   _prev: SettingsState,
   formData: FormData,
 ): Promise<SettingsState> {
-  const user = await requireClient();
+  const user = await requireUser();
   const fullName = String(formData.get("full_name") ?? "").trim();
 
   const invalid = validateDisplayName(fullName);
@@ -46,6 +56,7 @@ export async function updateNameAction(
 
   revalidatePath("/portal/settings");
   revalidatePath("/portal");
+  revalidatePath("/admin/settings");
   return { ok: "Name updated." };
 }
 
@@ -55,7 +66,7 @@ export async function updatePasswordAction(
   _prev: SettingsState,
   formData: FormData,
 ): Promise<SettingsState> {
-  const user = await requireClient();
+  const user = await requireUser();
   const password = String(formData.get("password") ?? "");
   const confirm = String(formData.get("confirm") ?? "");
 
