@@ -32,23 +32,18 @@ export function SignupForm({ googleEnabled }: { googleEnabled: boolean }) {
           Check your email
         </h2>
         <p className="text-[15px] leading-7 text-muted">
-          {/* Said out loud when the address was already registered: no second
-              account was made, and the person is owed an explanation for why
-              their new password is not the one that will work. */}
-          {state.resent ? (
-            <>
-              That address is already registered but not confirmed yet, so
-              we&apos;ve sent the confirmation link to{" "}
-              <span className="font-medium text-ink">{state.values?.email}</span>{" "}
-              again. Your original password still applies.
-            </>
-          ) : (
-            <>
-              We sent a confirmation link to{" "}
-              <span className="font-medium text-ink">{state.values?.email}</span>
-              . Click it to activate your account and open the client portal.
-            </>
-          )}
+          {/* Deliberately the same sentence for all three outcomes: a new
+              account, an existing unconfirmed one whose link was reissued, and
+              an address that already has a confirmed account. Naming which of
+              them happened told whoever typed the address whether it banks
+              here, which is the same thing the old error message gave away.
+              Whatever the reader needs to know is in the message itself, where
+              only the address's owner can read it. */}
+          <>
+            We&apos;ve sent a message to{" "}
+            <span className="font-medium text-ink">{state.values?.email}</span>.
+            Open it to finish setting up your account.
+          </>
         </p>
         {/* Said plainly because it is the most common outcome, not an edge
             case: a first message from a new sender, carrying a link, is
