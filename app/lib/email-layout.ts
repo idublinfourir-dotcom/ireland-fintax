@@ -130,3 +130,19 @@ export function greetingName(name: string): string {
 export function signOff(firmName: string): string {
   return `<p style="margin:24px 0 0;font-size:15px;line-height:24px;color:${INK}">${escapeHtml(firmName)}</p>`;
 }
+
+/**
+ * A one-time code, set out on its own so it survives being read on a phone.
+ *
+ * Its own block rather than a sentence for two reasons: a code buried in a
+ * paragraph is hard to transcribe, and the wide letter-spacing stops adjacent
+ * digits running together in the condensed fonts some clients substitute.
+ * Monospace with a generic fallback, because a mail client that lacks the
+ * first family must not reflow this into a proportional face.
+ *
+ * Deliberately NOT a `button`: there is nothing to click in a code email, and
+ * anything that looks clickable is the shape a phisher imitates.
+ */
+export function codeBlock(code: string): string {
+  return `<p style="margin:0 0 16px;padding:16px 20px;background:${CANVAS};border:1px solid ${LINE};font-family:Consolas,'Courier New',monospace;font-size:26px;letter-spacing:0.18em;text-align:center;color:${INK}">${escapeHtml(code)}</p>`;
+}
