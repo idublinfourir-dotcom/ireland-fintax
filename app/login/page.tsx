@@ -12,6 +12,10 @@ const NOTICES: Record<string, string> = {
   confirm: "We couldn't confirm that link. Try signing in, or request a new one.",
   confirmed: "Email confirmed. You can sign in now.",
   oauth: "Couldn't complete Google sign-in. Please try again.",
+  /* The forgot-password flow signs the user in itself, so this is only the
+     fallback for when that last step fails after the password has already
+     changed. The new password is live either way. */
+  reset: "Password updated. You can sign in now.",
 };
 
 export default async function LoginPage({

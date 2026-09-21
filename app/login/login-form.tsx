@@ -88,15 +88,29 @@ export function LoginForm({
           {isPending ? "Signing in…" : "Sign in"}
         </button>
 
-        <p className="text-sm text-muted">
-          New client?{" "}
-          <Link
-            href="/signup"
-            className="font-medium text-primary-500 transition-colors duration-200 hover:text-primary-600"
-          >
-            Create an account
-          </Link>
-        </p>
+        {/* Both entry points live in this footer row. "Forgot your password?"
+            is deliberately NOT beside the password label: there it competes
+            with the label for attention and gets clicked by people who have
+            simply mistyped. */}
+        <div className="flex flex-col gap-1.5 text-sm text-muted">
+          <p>
+            New client?{" "}
+            <Link
+              href="/signup"
+              className="font-medium text-primary-500 transition-colors duration-200 hover:text-primary-600"
+            >
+              Create an account
+            </Link>
+          </p>
+          <p>
+            <Link
+              href="/forgot-password"
+              className="font-medium text-primary-500 transition-colors duration-200 hover:text-primary-600"
+            >
+              Forgot your password?
+            </Link>
+          </p>
+        </div>
       </form>
     </div>
   );
