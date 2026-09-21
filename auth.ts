@@ -48,6 +48,16 @@ function mongoAdapter(): Adapter {
   };
 }
 
+/**
+ * A bcrypt digest of a random string that was generated once and never kept.
+ *
+ * Not a secret and not a credential: no password can match it, and its only
+ * job is to cost the same as a real comparison. Cost 12 so it matches
+ * hashPassword; change both together or the timing it exists to hide comes
+ * back.
+ */
+const DECOY_HASH = "$2b$12$jnTSMO7kLjuSahZj92CDtuheKwyGxaAXuuecC/yGx9StbqWBV/1y6";
+
 /** The session shape the two credentials providers hand to the jwt callback. */
 function sessionUserFrom(user: UserDoc) {
   return {
@@ -257,8 +267,24 @@ export const {
 
         const users = await usersCollection();
         const user = await users.findOne({ email });
-        if (!user || !user.emailVerified) return null;
-        if (!(await verifyPassword(password, user.passwordHash))) return null;
+
+        /* Spend the same work whichever way this goes.
+           
+           Returning early for an unknown address skips bcrypt entirely and
+           answers in about a millisecond, where a registered address costs
+           ~250ms. That gap is a reliable oracle for which addresses have
+           accounts, and it defeats the single null return this function is
+           built around: the message is identical but the clock is not. A
+           Google-only account leaked the same way, having no hash to check.
+
+           So the comparison always runs, against a decoy when there is nothing
+           real to compare. */
+        const stored =
+          user?.emailVerified && user.passwordHash ? user.passwordHash : DECOY_HASH;
+        const matches = await verifyPassword(password, stored);
+
+        if (!user || !user.emailVerified || !user.passwordHash) return null;
+        if (!matches) return null;
 
         return sessionUserFrom(user);
       },
