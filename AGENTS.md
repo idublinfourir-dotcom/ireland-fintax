@@ -322,6 +322,11 @@ Whenever anything else gets hidden rather than deleted, add a row here.
   - CGT is the one exception with extra state: it also keeps a
     `cgt_multipliers` collection (indexation multipliers) alongside
     `cgt_settings`, and its own two-collection loader.
+  - Its CSV import has **no row or size cap, deliberately** (owner's call,
+    Sep 2026). The route is admin-only and the rows are re-validated after the
+    round-trip, so the cap would only ever limit a trusted user pasting a large
+    legitimate file. A security pass will flag this as unbounded input: it is
+    not an oversight, leave it.
   - Adding a **new** editable calculator = clone this file set (cheapest
     reference: `ireland-cat.ts` + `cat-data.ts` + `admin/cat-rates/*`, added
     2026-07) — do not invent a new storage shape.
