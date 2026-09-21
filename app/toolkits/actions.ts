@@ -6,16 +6,13 @@
    Nothing is emailed automatically: a team member reads the request in
    /admin/toolkits and sends the file by hand, then marks it sent.
 
-   Deliberately public (no auth). Abuse is bounded by a per-address hourly
-   limit, and the request only ever records what was typed in. */
+   Deliberately public (no auth). Abuse is bounded per address AND per IP, and
+   the request only ever records what was typed in. */
 
 import { revalidatePath } from "next/cache";
 import { findRequestableResourceBySlug } from "../lib/toolkit-content";
-import {
-  countRecentRequests,
-  createRequest,
-  REQUEST_RATE_LIMIT,
-} from "../lib/toolkit-requests";
+import { createRequest } from "../lib/toolkit-requests";
+import { allowPublicAction } from "../lib/rate-limit";
 
 export interface RequestState {
   status: "idle" | "sent" | "error";
@@ -109,16 +106,26 @@ export async function submitResourceRequestAction(
     };
   }
 
-  try {
-    if ((await countRecentRequests(email)) >= REQUEST_RATE_LIMIT) {
-      return {
-        status: "error",
-        message: "That is a lot of requests in one go. Please try again later.",
-      };
-    }
-  } catch (err) {
-    // A failed rate-limit read should not block a genuine request.
-    console.error("[toolkits] rate-limit check failed:", err);
+  /* Capped per address and per IP, using the same helper as the contact form
+     and signup. Counting only by address, which is what this did, bounded
+     nothing: the address is chosen by whoever is submitting, so varying it
+     made the limit disappear entirely. The IP axis is the one that actually
+     costs an abuser something.
+
+     Fails open on purpose. Nothing here is a credential, so a transient
+     database fault should cost a few spare rows rather than turn away
+     genuine requests. */
+  const allowed = await allowPublicAction({
+    action: "toolkit-request",
+    identity: email,
+    ip: { max: 20, windowSeconds: 60 * 60 },
+    identityLimit: { max: 5, windowSeconds: 60 * 60 },
+  });
+  if (!allowed) {
+    return {
+      status: "error",
+      message: "That is a lot of requests in one go. Please try again later.",
+    };
   }
 
   try {
