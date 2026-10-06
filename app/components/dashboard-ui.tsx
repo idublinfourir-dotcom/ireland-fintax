@@ -78,7 +78,7 @@ export function DashboardShell({
   children: ReactNode;
 }) {
   const initials = initialsOf(user.name, user.email);
-  const badgeLabel = badge === "admin" ? "Admin" : "Client";
+  const badgeLabel = badge === "admin" ? "Admin" : "Member";
 
   return (
     <div className="flex min-h-screen bg-surface-muted">

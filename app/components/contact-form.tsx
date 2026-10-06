@@ -1,7 +1,9 @@
 "use client";
 
-/* Contact enquiry — a 3-step wizard (Topic → Enquiry → Details) that posts to
-   the unchanged submitEnquiry server action. Rebuilt in the site's design
+/* Contact enquiry, framed as a question: a 3-step wizard (Topic → Question →
+   Details) that posts to the unchanged submitEnquiry server action. Topics are
+   the subjects the site teaches (the calculators and hubs), not the hidden
+   Services categories; the pick still travels in the `service` field. Rebuilt in the site's design
    system (no shadcn/lucide).
 
    Mechanism (see spec 2026-07-09-contact-wizard-design): ONE <form noValidate>.
@@ -14,27 +16,35 @@
 
 import { useActionState, useEffect, useRef, useState } from "react";
 import { submitEnquiry, type EnquiryState } from "../contact/actions";
-import { serviceCategories } from "../lib/content";
+import { CALCULATOR_TOOLS } from "./calculator-tabs";
+import { PERSONAL_TOOLS } from "./personal-tabs";
 import { getRelatedFaqs } from "../lib/contact-faqs";
 
 const initialState: EnquiryState = { status: "idle" };
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+const TOPICS = [
+  "Not sure yet",
+  ...CALCULATOR_TOOLS.map((t) => t.label),
+  ...PERSONAL_TOOLS.map((t) => t.label),
+  "Starting a company",
+];
+
 const STEP_META = [
   {
     title: "Topic",
-    prompt: "What can we help you with?",
-    sub: "Pick the closest area: you can explain in detail next.",
+    prompt: "What's your question about?",
+    sub: "Pick the closest topic: you can ask your question next.",
   },
   {
-    title: "Your enquiry",
-    prompt: "How can we help?",
-    sub: "A sentence or two on where things stand and what you want to happen.",
+    title: "Your question",
+    prompt: "What would you like to know?",
+    sub: "A sentence or two is plenty. Ask it the way you'd ask a friend.",
   },
   {
     title: "Your details",
-    prompt: "How should we contact you?",
-    sub: "A partner reads every enquiry and replies within one business day.",
+    prompt: "Where should we send the answer?",
+    sub: "A real person reads every question and replies by email.",
   },
 ];
 
@@ -134,8 +144,8 @@ function SuccessCard() {
         Thank you, we’ve got it.
       </h2>
       <p className="text-[15px] leading-7 text-muted">
-        Your enquiry is in. A partner, not an autoresponder, will reply within
-        one business day.
+        Your question is in. A real person, not an autoresponder, will reply
+        by email.
       </p>
       {/* The acknowledgement is a first message from a new sender, which is
           the kind a spam filter holds back. Say so here rather than leaving
@@ -238,7 +248,7 @@ export function ContactForm() {
       <fieldset hidden={step !== 1} className="border-0 p-0">
         <legend className="sr-only">Choose a topic</legend>
         <div className="flex flex-wrap gap-2.5">
-          {["Not sure yet", ...serviceCategories.map((c) => c.title)].map((t) => {
+          {TOPICS.map((t) => {
             const selected = service === t;
             return (
               <button
@@ -261,11 +271,11 @@ export function ContactForm() {
         <input type="hidden" name="service" value={service} />
       </fieldset>
 
-      {/* Step 2 — the enquiry + related FAQs */}
+      {/* Step 2: the question + related FAQs */}
       <fieldset hidden={step !== 2} className="flex flex-col gap-3 border-0 p-0">
-        <legend className="sr-only">Describe your enquiry</legend>
+        <legend className="sr-only">Ask your question</legend>
         <label htmlFor="message" className="block text-sm font-medium text-ink">
-          Your enquiry
+          Your question
         </label>
         <textarea
           id="message"
@@ -276,7 +286,7 @@ export function ContactForm() {
           aria-invalid={Boolean(serverErrors.message)}
           aria-describedby={serverErrors.message ? "message-error" : undefined}
           className={`${inputClasses} resize-y`}
-          placeholder="Where are your books today, and what’s the goal?"
+          placeholder="e.g. How is capital gains tax worked out when I sell shares?"
         />
         <FieldError id="message-error" message={serverErrors.message} />
 
@@ -396,12 +406,12 @@ export function ContactForm() {
                   <path d="M21 12a9 9 0 0 0-9-9" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
                 </svg>
               )}
-              {isPending ? "Sending…" : "Send enquiry"}
+              {isPending ? "Sending…" : "Send question"}
             </button>
           )}
         </div>
         <p className="text-xs text-muted">
-          A partner replies within one business day. No newsletters, no spam.
+          Free. We reply by email: no newsletters, no spam.
         </p>
       </div>
     </form>

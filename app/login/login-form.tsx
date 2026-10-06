@@ -94,7 +94,7 @@ export function LoginForm({
             simply mistyped. */}
         <div className="flex flex-col gap-1.5 text-sm text-muted">
           <p>
-            New client?{" "}
+            New here?{" "}
             <Link
               href="/signup"
               className="font-medium text-primary-500 transition-colors duration-200 hover:text-primary-600"

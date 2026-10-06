@@ -10,12 +10,12 @@ const base = {
 };
 
 test("the acknowledgement says when we will reply", () => {
-  assert.match(ackText(base), /within one working day/);
-  assert.match(ackHtml(base), /within one working day/);
+  assert.match(ackText(base), /will reply by email/);
+  assert.match(ackHtml(base), /will reply by email/);
 });
 
 test("the subject reads as a confirmation, not as an alert", () => {
-  assert.equal(ackSubject(), "We've received your enquiry");
+  assert.equal(ackSubject(), "We've received your question");
 });
 
 test("the enquiry is echoed back so the sender can see what arrived", () => {

@@ -360,7 +360,7 @@ function QuoteCard({ quote }: { quote: ProductQuote }) {
         {/* CTA + details toggle */}
         <div className="flex items-center gap-4 sm:flex-col sm:items-end sm:gap-2 sm:justify-self-end">
           <Link href="/contact" className={`${btnPrimary} !h-10 !px-5 !text-xs`}>
-            Enquire Now →
+            Ask about this →
           </Link>
           <button
             type="button"

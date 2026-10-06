@@ -22,7 +22,7 @@ const notes = [
   },
   {
     title: "2026 vs 2025",
-    body: "Shows both tax years side by side and the year-on-year change, so clients can see the impact of the Budget changes in USC bands and the PRSI rate.",
+    body: "Shows both tax years side by side and the year-on-year change, so you can see the impact of the Budget changes in USC bands and the PRSI rate.",
   },
 ];
 

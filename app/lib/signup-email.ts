@@ -37,7 +37,7 @@ export function confirmText(input: ConfirmEmailInput): string {
   return [
     `Hi ${greetingName(input.name)},`,
     "",
-    "Confirm your email address to finish setting up your client account:",
+    "Confirm your email address to finish setting up your account:",
     input.verifyUrl,
     "",
     EXPIRY_LINE,
@@ -53,7 +53,7 @@ export function confirmHtml(input: ConfirmEmailInput): string {
     bodyHtml: [
       paragraph(`Hi ${greetingName(input.name)},`),
       paragraph(
-        "Confirm your email address to finish setting up your client account.",
+        "Confirm your email address to finish setting up your account.",
       ),
       button(input.verifyUrl, "Confirm my email"),
       paragraph(

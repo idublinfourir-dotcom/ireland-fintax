@@ -1,56 +1,74 @@
 import type { Metadata } from "next";
-import { Container, Eyebrow, PageHero, SectionHeading } from "../components/ui";
+import Link from "next/link";
+import { Container, PageHero, SectionHeading } from "../components/ui";
 import { ContactCta } from "../components/sections";
 import { Reveal } from "../components/reveal";
 import { ClipReveal } from "../components/clip-reveal";
-import { values } from "../lib/content";
 import { images } from "../lib/images";
 
 export const metadata: Metadata = {
   title: "About",
   description:
-    "A partner-led finance and tax practice with a deliberately short client list. How Ireland Fintax works, and what we stand for.",
+    "Ireland Fintax is a free place to learn how Irish tax and personal finance work, with calculators, guides and templates in plain English.",
 };
 
-const credentials = [
-  "Xero Platinum Partner",
-  "QuickBooks ProAdvisor",
-  "ACCA approved employer",
+/* What is actually on the site, each pointing at it. No firm story, team or
+   credentials: this is a free learning platform. */
+const sections = [
+  {
+    title: "Accountants Hub",
+    description:
+      "Calculators for income tax, VAT, corporation tax, the R&D credit, capital allowances, CGT and CAT, using Irish rates.",
+    href: "/tools/ireland-income-tax",
+  },
+  {
+    title: "Personal Hub",
+    description:
+      "Work out a mortgage, and compare investment options side by side on risk, tax and access to your money.",
+    href: "/personal/mortgage",
+  },
+  {
+    title: "Founders Hub",
+    description:
+      "Memos, templates, tax and VAT forms and setup guides for starting and running a company.",
+    href: "/toolkits",
+  },
+  {
+    title: "Ask a question",
+    description:
+      "Stuck on something the tools don’t cover? Ask it in your own words and get a plain-English answer by email.",
+    href: "/contact",
+  },
 ];
 
 export default function AboutPage() {
   return (
     <>
       <PageHero
-        eyebrow="The firm"
-        title="Accountants who act like partners."
-        lede="Ireland Fintax was founded on a simple complaint: most firms only call when the invoice is due. We built the practice we wished existed: close to the numbers, ahead of the deadlines, honest about the fees."
+        eyebrow="About"
+        title="Learn how the money side works."
+        lede="Ireland Fintax is a free learning platform for Irish tax and personal finance: plain-English explanations and calculators you can run yourself."
         image="office"
       />
 
       <Container className="grid gap-14 py-16 sm:py-20 lg:grid-cols-[1.1fr_0.9fr] lg:items-start">
         <Reveal>
-          <SectionHeading
-            eyebrow="Our story"
-            title="Twenty years of tending other people's numbers."
-          />
+          <SectionHeading eyebrow="Why it exists" title="Tax shouldn’t need a translator." />
           <div className="mt-6 flex flex-col gap-5 text-[15px] leading-7 text-ink-body">
             <p>
-              We started in a single room above a farm shop. The first clients
-              were rural businesses that needed more than a year-end filing:
-              they needed someone who understood seasonality, capital spend
-              and what a bad harvest does to cash flow.
+              Most people meet tax and money questions at the worst moment: a
+              first payslip, selling shares, buying a home, starting a company.
+              The rules are public, but they are written for specialists.
             </p>
             <p>
-              The practice has grown into six service lines and five hundred
-              clients, but the operating principle is unchanged: every client
-              gets a partner who knows their business, books that are never
-              out of date, and advice in plain English before decisions are
-              made, not after.
+              This site puts them in plain English and lets you try your own
+              numbers, so you understand what is going on before you decide
+              anything. Everything here is free.
             </p>
             <p>
-              We cap each partner’s client list on purpose. Growth that costs
-              the existing clients their service is not growth we want.
+              It is general information, not advice. Rates and rules change and
+              your own situation matters, so check with Revenue or a qualified,
+              regulated adviser before acting on a big decision.
             </p>
           </div>
         </Reveal>
@@ -60,39 +78,22 @@ export default function AboutPage() {
             url={images.teamLaptops}
             className="h-48 w-full rounded-none"
           />
-          {values.map((value) => (
-            <div
-              key={value.title}
-              className="border-l-2 border-primary-400 bg-surface py-1 pl-5"
+          {sections.map((section) => (
+            <Link
+              key={section.title}
+              href={section.href}
+              className="group border-l-2 border-primary-400 bg-surface py-1 pl-5"
             >
-              <h3 className="font-display text-lg font-medium tracking-tight text-ink">
-                {value.title}
+              <h3 className="font-display text-lg font-medium tracking-tight text-ink transition-colors duration-200 group-hover:text-primary-500">
+                {section.title} <span aria-hidden="true">→</span>
               </h3>
               <p className="mt-2 text-sm leading-6 text-muted">
-                {value.description}
+                {section.description}
               </p>
-            </div>
+            </Link>
           ))}
         </Reveal>
       </Container>
-
-      <section>
-        <Container className="py-16 sm:py-20">
-          <div className="flex flex-col items-center gap-6 text-center">
-            <Eyebrow>Credentials</Eyebrow>
-            <ul className="flex flex-wrap items-center justify-center gap-3">
-              {credentials.map((credential) => (
-                <li
-                  key={credential}
-                  className="rounded-none border border-line bg-surface px-5 py-2.5 text-sm font-medium text-ink-body"
-                >
-                  {credential}
-                </li>
-              ))}
-            </ul>
-          </div>
-        </Container>
-      </section>
 
       <ContactCta />
     </>

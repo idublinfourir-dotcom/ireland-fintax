@@ -1,6 +1,5 @@
-/* The acknowledgement sent to someone who submits the contact form:
-   confirmation that their enquiry arrived and that a person will come back to
-   them.
+/* The acknowledgement sent to someone who asks a question on the contact
+   form: confirmation that it arrived and that a person will come back to them.
 
    It goes to the CUSTOMER, not to the firm. New enquiries surface in
    /admin/enquiries with an unread badge, which is how the firm sees them.
@@ -28,14 +27,14 @@ export interface EnquiryAckInput {
 }
 
 export function ackSubject(): string {
-  return "We've received your enquiry";
+  return "We've received your question";
 }
 
 /** The one line of substance, shared by both parts so they cannot drift. It
-    promises a reply within one working day: that is a commitment made to every
-    enquirer, so change the service level here, not the copy around it. */
+    promises a reply but no turnaround: the site is free, so it makes no service
+    level. If one is ever promised, it goes here and nowhere else. */
 const ACK_LINE =
-  "Thanks for getting in touch. We've received your enquiry and will reply within one working day.";
+  "Thanks for your question. It has reached us, and a real person will reply by email.";
 
 export function ackText(input: EnquiryAckInput): string {
   return [

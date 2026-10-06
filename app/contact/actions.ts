@@ -93,7 +93,7 @@ export async function submitEnquiry(
     return {
       status: "error",
       formError:
-        "Too many enquiries have been sent recently. Please wait an hour or contact us by email.",
+        "Too many questions have been sent recently. Please wait an hour or email us.",
       values,
     };
   }

@@ -35,7 +35,7 @@ export default async function RequestResourcePage({
           />
         }
         title="Request a copy"
-        lede="Tell us where to send it and one of our team will email the file over."
+        lede="Tell us where to send it and we’ll email the file over. It’s free."
       />
 
       <Container className="py-16 sm:py-20">

@@ -1,10 +1,10 @@
 import type { MetadataRoute } from "next";
-import { serviceCategories, site } from "./lib/content";
+import { site } from "./lib/content";
 
+// No /services pages: the section is hidden (see next.config.ts redirects).
 export default function sitemap(): MetadataRoute.Sitemap {
-  const staticPages = [
+  return [
     "",
-    "/services",
     "/personal/mortgage",
     "/personal/investment",
     "/tools/ireland-income-tax",
@@ -23,21 +23,4 @@ export default function sitemap(): MetadataRoute.Sitemap {
     changeFrequency: "monthly" as const,
     priority: path === "" ? 1 : 0.8,
   }));
-
-  const servicePages = serviceCategories.flatMap((category) => [
-    {
-      url: `${site.url}/services/${category.slug}`,
-      lastModified: new Date(),
-      changeFrequency: "monthly" as const,
-      priority: 0.7,
-    },
-    ...category.items.map((item) => ({
-      url: `${site.url}/services/${category.slug}/${item.slug}`,
-      lastModified: new Date(),
-      changeFrequency: "monthly" as const,
-      priority: 0.6,
-    })),
-  ]);
-
-  return [...staticPages, ...servicePages];
 }

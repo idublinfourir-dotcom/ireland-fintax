@@ -4,26 +4,24 @@ import { ContactForm } from "../components/contact-form";
 import { site } from "../lib/content";
 
 export const metadata: Metadata = {
-  title: "Contact",
+  title: "Ask a question",
   description:
-    "Book a free 30-minute consultation with our team. We reply within one business day.",
+    "Ask a question about Irish tax or personal finance and get a plain-English answer by email. Free.",
 };
 
 const nextSteps = [
-  "We reply within one business day to arrange a call.",
-  "A free 30-minute conversation about where things stand.",
-  // Fee wording hidden for now; was "A fixed-fee proposal in writing: take it
-  // or leave it."
-  "A proposal in writing with the scope set out: take it or leave it.",
+  "Pick a topic and ask it in your own words.",
+  "A real person reads it and replies by email, in plain English.",
+  "Ask while signed in and your questions and answers stay in your account.",
 ];
 
 export default function ContactPage() {
   return (
     <>
       <PageHero
-        eyebrow="Contact"
-        title="Start the conversation."
-        lede="Tell us where your books stand. A partner reads every enquiry: you will not be handed to a sales team."
+        eyebrow="Ask a question"
+        title="Ask us anything about tax and money."
+        lede="No question is too basic. Ask it the way you’d ask a friend and we’ll explain it in plain English. It’s free."
         image="teamMeeting"
       />
 
@@ -51,27 +49,14 @@ export default function ContactPage() {
 
           <div className="rounded-none border border-line bg-surface p-6">
             <h2 className="text-xs font-semibold uppercase tracking-[0.18em] text-muted">
-              Prefer to call or visit?
+              Prefer email?
             </h2>
-            <address className="mt-4 text-sm not-italic leading-7 text-ink-body">
-              {site.address[0]}
-              <br />
-              {site.address[1]}
-              <br />
-              <a
-                href={`mailto:${site.email}`}
-                className="mt-3 block font-medium text-primary-500 transition-colors duration-200 hover:text-primary-600"
-              >
-                {site.email}
-              </a>
-              <a
-                href={site.phoneHref}
-                className="font-medium text-primary-500 transition-colors duration-200 hover:text-primary-600"
-              >
-                {site.phone}
-              </a>
-            </address>
-            <p className="mt-3 text-sm text-muted">{site.hours}</p>
+            <a
+              href={`mailto:${site.email}`}
+              className="mt-4 block text-sm font-medium text-primary-500 transition-colors duration-200 hover:text-primary-600"
+            >
+              {site.email}
+            </a>
           </div>
         </aside>
       </Container>

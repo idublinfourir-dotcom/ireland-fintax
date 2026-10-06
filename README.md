@@ -88,7 +88,8 @@ sign-in, not immediately.
 
 ```
 app/
-  page.tsx, about/, contact/, services/, toolkits/           # public
+  page.tsx, about/, contact/, toolkits/           # public
+  _services/, _pricing/         # parked, not routed (/services redirects home)
   tools/                        # Accountants Hub — Ireland tax calculators
   personal/                     # Personal Hub — mortgage, investment
   login/, signup/, auth/{confirm,callback}/                  # auth entry points

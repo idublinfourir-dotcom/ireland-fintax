@@ -6,13 +6,13 @@ import { ToolkitBrowser } from "../components/toolkit-browser";
 export const metadata: Metadata = {
   title: "Founders Hub: memos, templates, tax & VAT forms",
   description:
-    "Practical resources for founders and business owners: memos, templates, tax forms, VAT forms and business setup guides for Ireland and the UK, prepared by our team.",
+    "Free resources for founders and business owners: memos, templates, tax forms, VAT forms and business setup guides for Ireland and the UK.",
 };
 
 const notes = [
   {
-    title: "Prepared by accountants",
-    body: "Every memo, template and walkthrough is drafted and reviewed by our team, the same standards we apply to client work.",
+    title: "Free to use",
+    body: "Every memo, template and walkthrough is free. Tell us which one you need and we'll email it over.",
   },
   {
     title: "Ireland & UK focused",
@@ -35,7 +35,7 @@ export default function FoundersHubPage() {
           />
         }
         title="Founders Hub"
-        lede="Memos, templates, tax and VAT forms, and step-by-step business setup guides: practical resources prepared by our accountants for founders in Ireland and the UK."
+        lede="Memos, templates, tax and VAT forms, and step-by-step business setup guides: free, practical resources for founders in Ireland and the UK."
       />
 
       <Container className="py-16 sm:py-20">

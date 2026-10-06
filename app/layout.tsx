@@ -23,11 +23,11 @@ const geistSans = Geist({
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
   title: {
-    default: "Ireland Fintax — Audit, Tax & Business Advisory",
+    default: "Ireland Fintax: free tax and money learning",
     template: "%s — Ireland Fintax",
   },
   description:
-    "Ireland Fintax is a partner-led finance and tax practice. Audit, tax, bookkeeping, payroll and advisory for founders, family firms and growing teams.",
+    "Free calculators, guides and templates that explain Irish tax and personal finance in plain English: income tax, VAT, CGT, mortgages, investing and starting a company.",
   openGraph: {
     siteName: "Ireland Fintax",
     type: "website",

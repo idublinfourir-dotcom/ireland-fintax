@@ -41,6 +41,12 @@ const nextConfig: NextConfig = {
       // Hub. Permanent so the indexed URL passes its ranking to the new one;
       // the page had been live and linked from the portal, so it cannot 404.
       { source: "/tools/ireland", destination: "/personal/mortgage", permanent: true },
+      /* The whole Services section is hidden site-wide: its pages are parked
+         in app/_services (unrouted, like app/_pricing) and every /services URL
+         goes home. Temporary on purpose, so browsers don't cache it and the
+         section can come back by deleting this line and renaming the folder.
+         It matches first, so the crypto lines below only apply again then. */
+      { source: "/services/:path*", destination: "/", permanent: false },
       /* "Crypto and Digital Assets" was retired from the service line-up (see
          RETIRED_SERVICES in app/lib/content.ts), so its routes no longer
          resolve. Send the category and every sub-service beneath it to the

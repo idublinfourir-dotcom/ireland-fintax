@@ -5,16 +5,16 @@ import { isGoogleEnabled } from "../lib/auth/config";
 
 export const metadata: Metadata = {
   title: "Create an account",
-  description: "Create your Ireland Fintax client account.",
+  description: "Create a free Ireland Fintax account.",
 };
 
 export default function SignupPage() {
   return (
     <>
       <PageHero
-        eyebrow="Client area"
+        eyebrow="Your account"
         title="Create your account."
-        lede="Set up access to your Ireland Fintax client area in under a minute."
+        lede="Free, and takes under a minute. Keep the questions you ask and our answers in one place."
         image="tower"
       />
       <Container className="py-16 sm:py-20">

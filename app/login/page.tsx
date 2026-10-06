@@ -4,8 +4,8 @@ import { LoginForm } from "./login-form";
 import { isGoogleEnabled } from "../lib/auth/config";
 
 export const metadata: Metadata = {
-  title: "Client login",
-  description: "Sign in to the Ireland Fintax client area.",
+  title: "Sign in",
+  description: "Sign in to your free Ireland Fintax account.",
 };
 
 const NOTICES: Record<string, string> = {
@@ -28,9 +28,9 @@ export default async function LoginPage({
   return (
     <>
       <PageHero
-        eyebrow="Client area"
+        eyebrow="Your account"
         title="Sign in."
-        lede="Access your Ireland Fintax client area. A partner-led practice: your books, in one place."
+        lede="See the questions you have asked and our answers, all in one place."
         image="tower"
       />
       <Container className="py-16 sm:py-20">

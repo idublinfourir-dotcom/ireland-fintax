@@ -4,8 +4,8 @@ import { DashboardShell } from "../components/dashboard-ui";
 import type { DashNavItem } from "../components/dashboard-nav";
 
 export const metadata: Metadata = {
-  title: "Client portal",
-  description: "Your Ireland Fintax client area.",
+  title: "Your account",
+  description: "Your Ireland Fintax account.",
 };
 
 const navItems: DashNavItem[] = [
@@ -20,8 +20,8 @@ export default async function PortalLayout({
 
   return (
     <DashboardShell
-      title="Client portal"
-      areaLabel="Client portal"
+      title="Your account"
+      areaLabel="Your account"
       badge="client"
       navItems={navItems}
       user={{ email: user.email, name: user.name }}

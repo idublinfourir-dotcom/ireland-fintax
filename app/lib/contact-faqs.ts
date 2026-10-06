@@ -4,8 +4,8 @@
 
    Each FAQ links to the page or calculator that answers it, so the contact form
    can quietly deflect a common question to a real answer while the user types.
-   Content is drawn from the site's own service copy (audit exemption, VAT,
-   payroll auto-enrolment) and the tax tools. */
+   Every entry points at a tax tool: the Services pages are hidden, so nothing
+   here may link into /services. */
 
 export interface ContactFaq {
   /** The question, as a user might phrase it. */
@@ -19,12 +19,6 @@ export interface ContactFaq {
 }
 
 export const CONTACT_FAQS: ContactFaq[] = [
-  {
-    q: "Do I need an audit?",
-    a: "Many companies are audit-exempt: under two of turnover €15m, balance sheet €7.5m and 50 employees, filed on time.",
-    href: "/services/account-bookkeeping/audit-assurance",
-    keywords: ["audit", "exemption", "assurance", "statutory"],
-  },
   {
     q: "Do I have to register for VAT?",
     a: "The thresholds are €85,000 for goods and €42,500 for services in any 12 months. Our VAT tool shows your net position.",
@@ -42,12 +36,6 @@ export const CONTACT_FAQS: ContactFaq[] = [
     a: "Capital Acquisitions Tax at 33% above your group threshold, with agricultural and business relief. Try the CAT calculator.",
     href: "/tools/ireland-cat",
     keywords: ["gift", "inheritance", "inherit", "cat", "estate", "family farm", "bequest"],
-  },
-  {
-    q: "Can you run our payroll?",
-    a: "Full cycle, payslips, PAYE Modernisation, pensions and year-end, and we keep you ahead of auto-enrolment (My Future Fund).",
-    href: "/services/account-bookkeeping/payroll",
-    keywords: ["payroll", "paye", "pension", "auto-enrolment", "auto enrolment", "wages", "employees"],
   },
   {
     q: "What Corporation Tax rate applies?",

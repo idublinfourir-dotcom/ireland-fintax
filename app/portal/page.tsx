@@ -26,8 +26,8 @@ const quickActions = [
   {
     href: "/contact",
     icon: "chat",
-    title: "Start an enquiry",
-    body: "Message the team: same-day reply.",
+    title: "Ask a question",
+    body: "Get a plain-English answer by email.",
   },
   {
     href: "/tools/ireland-income-tax",
@@ -113,7 +113,7 @@ export default async function PortalPage() {
 
   const heroStats = [
     {
-      label: "Enquiries sent",
+      label: "Questions asked",
       value: String(totalEnquiries),
       hint: totalEnquiries === 0 ? "None yet" : "All time",
     },
@@ -144,7 +144,7 @@ export default async function PortalPage() {
         <div className="relative px-6 pt-8 sm:px-10 sm:pt-10">
           <p className="flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.2em] text-primary-300">
             <span aria-hidden="true" className="h-px w-7 bg-current opacity-60" />
-            Client portal
+            Your account
           </p>
           <div className="mt-3 flex flex-wrap items-end justify-between gap-6">
             <div>
@@ -152,7 +152,7 @@ export default async function PortalPage() {
                 {firstName ? `Welcome back, ${firstName}` : "Welcome back"}
               </h2>
               <p className="mt-2 max-w-xl text-sm leading-6 text-white/60">
-                Track your enquiries, run the tax calculators and keep
+                Track your questions, run the calculators and keep
                 everything about your account in one place.
               </p>
             </div>
@@ -162,7 +162,7 @@ export default async function PortalPage() {
                 className="inline-flex h-11 items-center justify-center gap-2 rounded-none bg-primary-500 px-5 text-sm font-semibold text-white transition-colors duration-200 hover:bg-primary-400"
               >
                 <Icon name="plus" className="h-4 w-4" />
-                New enquiry
+                New question
               </Link>
               <Link
                 href="/tools/ireland-income-tax"
@@ -230,7 +230,7 @@ export default async function PortalPage() {
           <div className="flex flex-wrap items-end justify-between gap-2">
             <div>
               <h3 className="font-display text-xl font-semibold tracking-tight text-ink">
-                Your enquiries
+                Your questions
               </h3>
               {totalEnquiries > 0 && (
                 <p className="mt-0.5 text-xs text-muted">
@@ -247,7 +247,7 @@ export default async function PortalPage() {
               href="/contact"
               className="text-sm font-semibold text-primary-600 transition-colors duration-200 hover:text-primary-500"
             >
-              New enquiry →
+              New question →
             </Link>
           </div>
 
@@ -257,17 +257,17 @@ export default async function PortalPage() {
                 <Icon name="chat" className="h-6 w-6" />
               </span>
               <p className="mt-4 text-[15px] font-medium text-ink">
-                No enquiries yet
+                No questions yet
               </p>
               <p className="mt-1 text-sm text-muted">
-                When you send us a message it&apos;ll show here, and the team&apos;s
-                replies land in the same thread.
+                When you ask a question it&apos;ll show here, and our answers
+                land in the same thread.
               </p>
               <Link
                 href="/contact"
                 className="mt-5 inline-flex h-11 items-center justify-center rounded-none bg-primary-500 px-6 text-sm font-semibold text-white transition-colors duration-200 hover:bg-primary-600"
               >
-                Start an enquiry
+                Ask a question
               </Link>
             </div>
           ) : (
@@ -276,7 +276,7 @@ export default async function PortalPage() {
                 <li key={enquiry.id}>
                   <PortalConversation
                     enquiryId={enquiry.id}
-                    service={enquiry.service ?? "General enquiry"}
+                    service={enquiry.service ?? "General question"}
                     refLabel={`Ref #${enquiry.id.padStart(4, "0")}`}
                     dateLabel={fmt.format(new Date(enquiry.created_at))}
                     openingMessage={enquiry.message}
@@ -327,24 +327,9 @@ export default async function PortalPage() {
               </div>
               <div className="flex items-center justify-between gap-3">
                 <dt className="text-muted">Account type</dt>
-                <dd className="font-medium text-ink">Client</dd>
+                <dd className="font-medium text-ink">Member</dd>
               </div>
             </dl>
-          </Panel>
-
-          <Panel className="p-6">
-            <div className="flex items-center justify-between gap-3">
-              <h3 className="text-xs font-semibold uppercase tracking-[0.18em] text-muted">
-                Documents
-              </h3>
-              <span className="rounded-none bg-secondary-50 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-secondary-500">
-                Coming soon
-              </span>
-            </div>
-            <p className="mt-3 text-sm leading-6 text-muted">
-              Statements, returns and signed accounts will appear here once your
-              accountant shares them.
-            </p>
           </Panel>
 
           <Panel className="p-6">
@@ -352,14 +337,14 @@ export default async function PortalPage() {
               Need a hand?
             </h3>
             <p className="mt-3 text-sm leading-6 text-muted">
-              Questions about tax, VAT or your accounts: the team replies the
-              same working day.
+              Stuck on tax or money? Ask in your own words and we&apos;ll reply
+              by email.
             </p>
             <Link
               href="/contact"
               className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-primary-600 transition-colors duration-200 hover:text-primary-500"
             >
-              Contact the team
+              Ask a question
               <Icon name="arrowUpRight" className="h-3.5 w-3.5" />
             </Link>
           </Panel>

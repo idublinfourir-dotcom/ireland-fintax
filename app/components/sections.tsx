@@ -6,7 +6,7 @@ import { ClipReveal } from "./clip-reveal";
 import { Accordion } from "./accordion";
 import { HeroVideo } from "./hero-video";
 import { images } from "../lib/images";
-import { industries, serviceCategories, site } from "../lib/content";
+import { serviceCategories } from "../lib/content";
 
 function bg(url: string): CSSProperties {
   return { backgroundImage: `url(${url})` };
@@ -57,21 +57,22 @@ export function Hero() {
         <div className="max-w-4xl">
           <span className="animate-fade-up block">
             <Eyebrow tone="dark">
-              Finance, Tax &amp; Advisory · Ireland
+              Free finance learning · Ireland
             </Eyebrow>
           </span>
           <h1 className="animate-fade-up mt-7 font-display text-5xl font-bold leading-[0.95] tracking-[-0.03em] text-balance [animation-delay:80ms] sm:text-6xl lg:text-7xl">
-            Accountancy,{" "}
-            <em className="text-primary-300 not-italic">rebuilt around AI.</em>
+            Understand tax and money,{" "}
+            <em className="text-primary-300 not-italic">in plain English.</em>
           </h1>
           <p className="animate-fade-up mt-7 max-w-xl text-lg leading-8 text-white/80 [animation-delay:150ms] sm:text-xl">
-            Partner-led tax, audit and advisory across Ireland, with AI doing
-            the heavy lifting.
+            Free calculators, guides and templates for Irish tax, mortgages,
+            investing and starting a company. Learn how it works, then run
+            your own numbers.
           </p>
           <div className="animate-fade-up mt-10 flex flex-col items-start gap-3 [animation-delay:220ms] sm:flex-row sm:items-center sm:gap-4">
-            <Button href="/contact">Book a free consultation</Button>
-            <Button href="/services/ai" variant="outlineLight">
-              See how we use AI
+            <Button href="/tools/ireland-income-tax">Try the calculators</Button>
+            <Button href="/contact" variant="outlineLight">
+              Ask a question
             </Button>
           </div>
         </div>
@@ -135,28 +136,28 @@ const quickEntries: {
   href: string;
 }[] = [
   {
+    icon: "chip",
+    title: "Tax calculators",
+    note: "Income tax, VAT, CGT, CAT and more, for Ireland.",
+    href: "/tools/ireland-income-tax",
+  },
+  {
     icon: "user",
-    title: "For individuals",
-    note: "Tax planning built around your profession.",
-    href: "/services/personal-finance",
+    title: "Personal finance",
+    note: "Work out a mortgage and compare ways to invest.",
+    href: "/personal/mortgage",
   },
   {
     icon: "building",
-    title: "For business",
-    note: "Books, VAT, payroll and accounts, handled.",
-    href: "/services/account-bookkeeping",
+    title: "Starting a company",
+    note: "Memos, templates and setup guides for founders.",
+    href: "/toolkits",
   },
   {
     icon: "compass",
-    title: "Advisory and CFO",
-    note: "A finance leader on call, without the headcount.",
-    href: "/services/cfo-service",
-  },
-  {
-    icon: "chip",
-    title: "Digital and AI",
-    note: "Modernise and automate the finance function.",
-    href: "/services/digital-transformation",
+    title: "Ask a question",
+    note: "Stuck on something? Ask, and we’ll explain it.",
+    href: "/contact",
   },
 ];
 
@@ -189,6 +190,77 @@ export function QuickEntry() {
             </span>
           </Link>
         ))}
+      </Container>
+    </section>
+  );
+}
+
+/* ---------- who we are ---------- */
+
+/* Says what the platform is and how it works, never who runs it: no names,
+   faces or credentials until real ones are supplied (see CLAUDE.md on the
+   invented team this replaced). */
+const principles = [
+  {
+    title: "Free, for everyone",
+    note: "Every calculator, guide and template is free, and you don’t need an account to start.",
+  },
+  {
+    title: "Plain English",
+    note: "The rules explained the way you’d explain them to a friend, without the jargon.",
+  },
+  {
+    title: "Built on public sources",
+    note: "The calculators use Revenue’s published rates and link to where each figure comes from.",
+  },
+  {
+    title: "Information, not advice",
+    note: "We help you understand. For a decision that hinges on your situation, see a regulated adviser.",
+  },
+];
+
+export function WhoWeAre() {
+  return (
+    <section className="bg-white">
+      <Container className="grid gap-14 py-20 sm:py-28 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
+        <Reveal>
+          <SectionHeading
+            eyebrow="Who we are"
+            title="A free place to learn how Irish tax and money work."
+          />
+          <div className="mt-6 flex flex-col gap-5 text-[15px] leading-7 text-ink-body">
+            <p>
+              Ireland Fintax is a free learning platform. We explain Irish tax
+              and personal finance in plain English, and give you calculators
+              to try your own numbers, so you understand what is going on
+              before you decide anything.
+            </p>
+            <p>No fees, nothing to sell you, and no sign-up to get started.</p>
+          </div>
+          <Link
+            href="/about"
+            className="mt-6 inline-block text-sm font-semibold text-primary-500 transition-colors duration-200 hover:text-primary-600"
+          >
+            More about us <span aria-hidden="true">→</span>
+          </Link>
+          <ClipReveal
+            // Not deskFinance: that photo is IRS forms and a dollar bill.
+            url={images.teamLaptops}
+            className="mt-10 hidden h-56 w-full rounded-none lg:block"
+          />
+        </Reveal>
+        <Reveal delay={120}>
+          <ul className="grid gap-px overflow-hidden border border-line bg-line sm:grid-cols-2">
+            {principles.map((p) => (
+              <li key={p.title} className="bg-surface p-6">
+                <h3 className="font-display text-lg font-medium tracking-tight text-ink">
+                  {p.title}
+                </h3>
+                <p className="mt-2 text-sm leading-6 text-muted">{p.note}</p>
+              </li>
+            ))}
+          </ul>
+        </Reveal>
       </Container>
     </section>
   );
@@ -360,19 +432,19 @@ function AiGlyph({ name }: { name: AiIcon }) {
 
 const aiCapabilities: { icon: AiIcon; title: string; note: string }[] = [
   {
+    icon: "tax",
+    title: "Learn",
+    note: "Plain-English memos and guides on the things people actually get stuck on.",
+  },
+  {
     icon: "forecast",
-    title: "Forecasting & insight",
-    note: "See what’s coming: cash-flow forecasts, anomaly detection, live reporting.",
+    title: "Try",
+    note: "Put your own figures into the calculators and see what changes.",
   },
   {
     icon: "automate",
-    title: "Automation",
-    note: "Invoice capture, reconciliations and approvals that run themselves.",
-  },
-  {
-    icon: "tax",
-    title: "Tax intelligence",
-    note: "Spot reliefs you’re missing, checked by our team.",
+    title: "Ask",
+    note: "Still unsure? Ask in your own words and get an answer by email.",
   },
 ];
 
@@ -390,13 +462,14 @@ export function AiBand() {
       <Container className="py-24 sm:py-32">
         <Reveal>
           <div className="max-w-2xl border-l-2 border-primary-400 pl-6 sm:pl-8">
-            <Eyebrow tone="dark">AI, applied</Eyebrow>
+            <Eyebrow tone="dark">How to learn here</Eyebrow>
             <h2 className="mt-6 font-display text-4xl font-bold leading-[1.03] tracking-[-0.02em] text-balance sm:text-5xl">
-              AI in the work,{" "}
-              <em className="text-primary-300 not-italic">not bolted on after.</em>
+              Learn it, try it,{" "}
+              <em className="text-primary-300 not-italic">ask about it.</em>
             </h2>
             <p className="mt-6 text-lg leading-8 text-white/80">
-              Where AI earns its place, we use it. Where it doesn’t, we say so.
+              Start wherever suits you. Most people read a little, run their
+              own numbers, and only ask when something still doesn’t add up.
             </p>
           </div>
           <div className="mt-14 grid grid-cols-1 gap-px overflow-hidden border border-white/12 bg-white/12 sm:grid-cols-3">
@@ -417,16 +490,48 @@ export function AiBand() {
               </div>
             ))}
           </div>
-          <div className="mt-12">
-            <Button href="/services/ai">Explore our AI services</Button>
-          </div>
         </Reveal>
       </Container>
     </section>
   );
 }
 
-/* ---------- industries ---------- */
+/* ---------- who it's for (was: industries) ---------- */
+
+/* Life situations the site actually covers, each pointing at its tool. Was the
+   firm's sector list (`industries` in content.ts, now unused). */
+const audiences = [
+  {
+    name: "Employees",
+    note: "See your take-home pay and what the Budget changes mean for it.",
+    href: "/tools/ireland-income-tax",
+  },
+  {
+    name: "Sole traders",
+    note: "When to register for VAT, which rate applies, and the returns cycle.",
+    href: "/tools/ireland-vat",
+  },
+  {
+    name: "Company founders",
+    note: "Corporation tax, the R&D credit, capital allowances and setup guides.",
+    href: "/tools/ireland-corporation-tax",
+  },
+  {
+    name: "Investors and landlords",
+    note: "Capital gains on shares or property, and investment options compared.",
+    href: "/tools/ireland-cgt",
+  },
+  {
+    name: "Families",
+    note: "Gifts and inheritances, and the tax-free thresholds that apply.",
+    href: "/tools/ireland-cat",
+  },
+  {
+    name: "Homebuyers",
+    note: "Work out a mortgage before you talk to a lender.",
+    href: "/personal/mortgage",
+  },
+];
 
 export function Industries() {
   return (
@@ -434,9 +539,9 @@ export function Industries() {
       <Container className="grid gap-14 py-20 sm:py-28 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
         <Reveal>
           <SectionHeading
-            eyebrow="Who we serve"
-            title="Deep benches in the sectors we know best."
-            lede="Every industry has its own tax quirks and rhythms. These are the ones we work in every day."
+            eyebrow="Who it’s for"
+            title="Whatever you’re dealing with, start here."
+            lede="Tax and money questions tend to arrive with life events. These are the ones the site covers today."
           />
           <ClipReveal
             url={images.meeting}
@@ -445,24 +550,19 @@ export function Industries() {
         </Reveal>
         <Reveal delay={120}>
         <ul className="grid gap-px overflow-hidden border border-line bg-line sm:grid-cols-2">
-          {industries.map((industry, i) => {
-            // last card spans both columns when the count is odd — no orphan cell
-            const spanFull =
-              industries.length % 2 === 1 && i === industries.length - 1;
-            return (
-              <li
-                key={industry.name}
-                className={`bg-surface p-6 ${spanFull ? "sm:col-span-2" : ""}`}
+          {audiences.map((a) => (
+            <li key={a.name}>
+              <Link
+                href={a.href}
+                className="group block h-full bg-surface p-6 transition-colors duration-200 hover:bg-secondary-50/50"
               >
-                <h3 className="font-display text-lg font-medium tracking-tight text-ink">
-                  {industry.name}
+                <h3 className="font-display text-lg font-medium tracking-tight text-ink transition-colors duration-200 group-hover:text-primary-500">
+                  {a.name} <span aria-hidden="true">→</span>
                 </h3>
-                <p className="mt-2 text-sm leading-6 text-muted">
-                  {industry.note}
-                </p>
-              </li>
-            );
-          })}
+                <p className="mt-2 text-sm leading-6 text-muted">{a.note}</p>
+              </Link>
+            </li>
+          ))}
         </ul>
         </Reveal>
       </Container>
@@ -474,22 +574,20 @@ export function Industries() {
 
 const steps = [
   {
-    title: "Discovery call",
-    description: "A free 30 minutes on where you stand. No pitch.",
+    title: "Pick a topic",
+    description: "Income tax, VAT, a mortgage, starting a company: whatever it’s about.",
   },
   {
-    // Fee wording hidden for now; was "Fixed-fee proposal" /
-    // "Clear scope, fixed monthly fee. No surprises."
-    title: "Written proposal",
-    description: "Clear scope, agreed upfront. No surprises.",
+    title: "Ask in your own words",
+    description: "No jargon needed. Ask it the way you’d ask a friend.",
   },
   {
-    title: "Painless onboarding",
-    description: "We handle the handover. You sign one letter.",
+    title: "Get a plain-English answer",
+    description: "A real person reads it and replies by email.",
   },
   {
-    title: "Year-round care",
-    description: "Monthly numbers and proactive planning, not a January scramble.",
+    title: "Keep it in one place",
+    description: "Ask while signed in and every answer stays in your free account.",
   },
 ];
 
@@ -502,9 +600,9 @@ export function Process() {
       <Container className="py-20 sm:py-28">
         <Reveal>
         <SectionHeading
-          eyebrow="How we work"
-          title="A simple path to tidy books."
-          lede="Switching accountants sounds painful. We’ve made it four steps, and we do the heavy lifting."
+          eyebrow="Ask a question"
+          title="Got a question? Here’s what happens."
+          lede="If the calculators and guides don’t cover it, ask. It’s free, and there’s no such thing as too basic."
         />
         <ol className="mt-14 grid gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-4">
           {steps.map((step, index) => (
@@ -535,32 +633,24 @@ export function Process() {
 
 const faqs = [
   {
-    question: "How hard is it to switch accountants?",
+    question: "Is it really free?",
     answer:
-      "Not hard at all, for you. You sign one letter of engagement; we contact your previous accountant, collect handover records and pick up mid-year without missing a deadline.",
-  },
-  /* Pricing FAQ hidden while the fee model is being decided — restore this
-     entry when pricing goes back up:
-  {
-    question: "How does your pricing work?",
-    answer:
-      "A fixed monthly fee, scoped upfront based on your size and what you need. No hourly billing, and the scope is reviewed together once a year, not whenever we feel like it.",
-  },
-  */
-  {
-    question: "Which accounting software do you support?",
-    answer:
-      "We’re certified partners on Xero and QuickBooks and also work with FreeAgent. If you’re on spreadsheets, we’ll migrate you and train your team as part of onboarding.",
+      "Yes. Every calculator, guide and template here is free to use, and so is asking a question.",
   },
   {
-    question: "Do you work with businesses like mine?",
+    question: "Is this financial or tax advice?",
     answer:
-      "Our clients range from sole traders to €20m-turnover companies. Startups and SaaS, hospitality, retail, healthcare and professional services are our deepest benches.",
+      "No. Everything here is general information to help you understand how things work. Rates and rules change and your own situation matters, so check with Revenue or a qualified, regulated adviser before acting on a big decision.",
   },
   {
-    question: "I’ve already missed deadlines. Can you help?",
+    question: "Do I need an account?",
     answer:
-      "Yes. Penalty triage is routine work for us: we bring filings up to date, deal with Revenue correspondence on your behalf and appeal surcharges where there are grounds.",
+      "No. The calculators and guides are open to everyone. A free account is only useful for questions: ask while signed in and your questions and our answers stay together in one place.",
+  },
+  {
+    question: "Is it only about Ireland?",
+    answer:
+      "Mostly. The calculators use Irish rates and rules, and some of the founder resources also cover the UK.",
   },
 ];
 
@@ -653,24 +743,18 @@ export function ContactCta({ children }: { children?: ReactNode }) {
           />
           <div className="px-6 py-16 text-center sm:px-16 sm:py-20">
             <Eyebrow tone="dark" align="center">
-              Free 30-minute consultation
+              Ask a question
             </Eyebrow>
             <h2 className="mx-auto mt-5 max-w-2xl font-display text-3xl font-medium leading-[1.12] tracking-tight text-balance sm:text-4xl">
-              {children ?? "Ready to put your books on solid ground?"}
+              {children ?? "Stuck on something?"}
             </h2>
             <p className="mx-auto mt-4 max-w-xl leading-7 text-white/75">
-              Tell us where things stand and we’ll tell you exactly what we’d do,
-              what it costs and what you’d get back. No obligation, no jargon.
+              Ask about tax or money the way you’d ask a friend, and we’ll reply
+              by email with a plain-English answer. It’s free.
             </p>
             <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
-              <Button href="/contact">Start the conversation</Button>
-              <Button href={site.phoneHref} variant="outlineLight" external>
-                {site.phone}
-              </Button>
+              <Button href="/contact">Ask a question</Button>
             </div>
-            <p className="mt-6 text-sm text-white/50">
-              We reply within one business day.
-            </p>
           </div>
         </div>
       </Container>

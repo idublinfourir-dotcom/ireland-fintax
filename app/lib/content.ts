@@ -1020,7 +1020,11 @@ const allServiceCategories: ServiceCategory[] = [
 
    The category data itself is left in `allServiceCategories` above — deleting
    it would throw away real written copy, and this is one line to reverse. The
-   old URLs are redirected to /services in next.config.ts so nothing 404s. */
+   old URLs are redirected to /services in next.config.ts so nothing 404s.
+
+   The whole Services section is currently hidden on top of this: nothing
+   renders or links these categories, and every /services URL redirects home
+   (see next.config.ts). The data stays here for when it comes back. */
 const RETIRED_SERVICES = new Set(["crypto"]);
 
 export const serviceCategories: ServiceCategory[] = allServiceCategories.filter(

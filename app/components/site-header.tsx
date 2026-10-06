@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { serviceCategories, site } from "../lib/content";
 import { CALCULATOR_TOOLS } from "./calculator-tabs";
 import { PERSONAL_TOOLS } from "./personal-tabs";
 import type { SessionUser } from "../lib/auth/guards";
@@ -29,14 +28,6 @@ function isActive(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
-function SoonTag() {
-  return (
-    <span className="rounded-none bg-secondary-50 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-secondary-500">
-      Soon
-    </span>
-  );
-}
-
 function Chevron({ className = "" }: { className?: string }) {
   return (
     <svg
@@ -57,52 +48,6 @@ function Chevron({ className = "" }: { className?: string }) {
     </svg>
   );
 }
-
-function UtilIcon({ children }: { children: React.ReactNode }) {
-  return (
-    <svg
-      width="14"
-      height="14"
-      viewBox="0 0 16 16"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.4"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-      className="shrink-0 text-primary-300"
-    >
-      {children}
-    </svg>
-  );
-}
-
-const PhoneIcon = (
-  <UtilIcon>
-    <path d="M5.5 2.5 3 3c-.3 2 .6 4.4 2.3 6.1S9 12.3 11 12l.5-2.5-2.3-1.1-1 1.1A8 8 0 0 1 5.6 6.8l1.1-1L5.5 2.5Z" />
-  </UtilIcon>
-);
-
-const ClockIcon = (
-  <UtilIcon>
-    <circle cx="8" cy="8" r="5.5" />
-    <path d="M8 5v3l2 1.3" />
-  </UtilIcon>
-);
-
-const MailIcon = (
-  <UtilIcon>
-    <rect x="2" y="3.5" width="12" height="9" rx="1.5" />
-    <path d="m2.5 4.5 5.5 4 5.5-4" />
-  </UtilIcon>
-);
-
-const PinIcon = (
-  <UtilIcon>
-    <path d="M8 14s4.5-4 4.5-7.5a4.5 4.5 0 1 0-9 0C3.5 10 8 14 8 14Z" />
-    <circle cx="8" cy="6.5" r="1.5" />
-  </UtilIcon>
-);
 
 function Avatar({ user, size = 36 }: { user: SessionUser; size?: number }) {
   const initial = (user.name ?? user.email).trim().charAt(0).toUpperCase();
@@ -150,11 +95,9 @@ function Logo({ onClick }: { onClick?: () => void }) {
 
 export function SiteHeader({ user }: { user: SessionUser | null }) {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [mobileServicesOpen, setMobileServicesOpen] = useState(false);
   const [mobileToolsOpen, setMobileToolsOpen] = useState(false);
   const [mobilePersonalOpen, setMobilePersonalOpen] = useState(false);
   const [mobileFoundersOpen, setMobileFoundersOpen] = useState(false);
-  const [servicesClosed, setServicesClosed] = useState(false);
   const [toolsClosed, setToolsClosed] = useState(false);
   const [personalClosed, setPersonalClosed] = useState(false);
   const [foundersClosed, setFoundersClosed] = useState(false);
@@ -162,17 +105,12 @@ export function SiteHeader({ user }: { user: SessionUser | null }) {
   const [hidden, setHidden] = useState(false);
   const lastY = useRef(0);
   const pathname = usePathname();
-  const servicesActive = isActive(pathname, "/services");
   const toolsActive = isActive(pathname, "/tools");
   const personalActive = isActive(pathname, "/personal");
   const foundersActive = isActive(pathname, "/toolkits");
 
   // Force an open dropdown shut after a link is clicked (otherwise the clicked
   // link keeps focus / hover and the panel stays open on the new page).
-  function closeServices(e: React.MouseEvent<HTMLElement>) {
-    setServicesClosed(true);
-    e.currentTarget.blur();
-  }
   function closeTools(e: React.MouseEvent<HTMLElement>) {
     setToolsClosed(true);
     e.currentTarget.blur();
@@ -211,7 +149,6 @@ export function SiteHeader({ user }: { user: SessionUser | null }) {
 
   function closeMobile() {
     setMenuOpen(false);
-    setMobileServicesOpen(false);
     setMobileToolsOpen(false);
     setMobilePersonalOpen(false);
     setMobileFoundersOpen(false);
@@ -223,41 +160,8 @@ export function SiteHeader({ user }: { user: SessionUser | null }) {
         hidden ? "-translate-y-full" : "translate-y-0"
       }`}
     >
-      {/* tier 1 — contact bar (navy, desktop only) */}
-      <div className="hidden bg-navy-900 text-[13px] text-white/70 md:block">
-        <div className="mx-auto flex h-10 w-full max-w-7xl items-center justify-between px-5 sm:px-8">
-          <div className="flex items-center gap-4">
-            <a
-              href={site.phoneHref}
-              className="flex items-center gap-2 font-medium text-white/90 transition-colors duration-200 hover:text-white"
-            >
-              {PhoneIcon}
-              {site.phone}
-            </a>
-            <span className="h-3.5 w-px bg-white/15" aria-hidden="true" />
-            <span className="flex items-center gap-2 text-white/55">
-              {ClockIcon}
-              {site.hours}
-            </span>
-          </div>
-          <div className="flex items-center gap-4">
-            <span className="hidden items-center gap-2 text-white/55 lg:flex">
-              {PinIcon}
-              {site.address[1]}
-            </span>
-            <span className="hidden h-3.5 w-px bg-white/15 lg:block" aria-hidden="true" />
-            <a
-              href={`mailto:${site.email}`}
-              className="flex items-center gap-2 text-white/90 transition-colors duration-200 hover:text-white"
-            >
-              {MailIcon}
-              {site.email}
-            </a>
-          </div>
-        </div>
-      </div>
-
-      {/* tier 2 — main nav (warm paper) */}
+      {/* main nav (warm paper). The navy office-details bar that sat above it
+          went with the firm: this is a learning site now. */}
       <div
         className={`border-b backdrop-blur-md transition-all duration-300 ease-snappy ${
           scrolled
@@ -270,8 +174,6 @@ export function SiteHeader({ user }: { user: SessionUser | null }) {
             Entrepreneur Toolkits link was added, and Personal Hub took most of
             what was left. Another top-level link needs the row re-thought,
             not another entry. */}
-        {/* `relative`: the Services mega-menu is positioned against this nav
-            rather than against its own trigger — see the panel below. */}
         <nav
           aria-label="Main"
           className="relative mx-auto flex h-[4.5rem] w-full max-w-7xl items-center justify-between px-5 sm:px-8"
@@ -284,93 +186,6 @@ export function SiteHeader({ user }: { user: SessionUser | null }) {
               avatar pill is ~120px wider than the Sign in button and the row
               was down to its last few pixels at xl. */}
           <div className="hidden items-center gap-5 xl:flex">
-            {/* Services mega-menu (CSS hover + focus-within).
-                No `relative` here on purpose: the panel is 64rem wide and
-                Services is the leftmost link, so centring it on this trigger
-                pushed it off the left of the viewport. It is positioned
-                against the <nav> instead. The other three dropdowns are
-                narrower and sit further right, so they still centre on their
-                own trigger. */}
-            <div
-              className="group"
-              onMouseEnter={() => setServicesClosed(false)}
-              onFocus={() => setServicesClosed(false)}
-            >
-              <Link
-                href="/services"
-                aria-current={servicesActive ? "page" : undefined}
-                onClick={closeServices}
-                className={`relative flex items-center gap-1 whitespace-nowrap text-sm font-medium transition-colors duration-200 ${
-                  servicesActive
-                    ? "text-primary-600"
-                    : "text-ink-body hover:text-ink"
-                }`}
-              >
-                Services
-                <Chevron className="text-muted transition-transform duration-200 group-hover:rotate-180 group-focus-within:rotate-180" />
-                <span
-                  className={`pointer-events-none absolute -bottom-1.5 left-0 h-0.5 w-full origin-left bg-primary-500 transition-transform duration-200 ease-snappy ${
-                    servicesActive
-                      ? "scale-x-100"
-                      : "scale-x-0 group-hover:scale-x-100"
-                  }`}
-                />
-              </Link>
-
-              <div
-                className={`invisible absolute left-1/2 top-full z-50 w-[min(64rem,calc(100vw-2rem))] -translate-x-1/2 pt-2 opacity-0 transition-all duration-200 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100 ${
-                  servicesClosed
-                    ? "!invisible !opacity-0"
-                    : ""
-                }`}
-              >
-                <div className="rounded-none border border-line bg-white p-6 shadow-2xl shadow-navy-900/15">
-                  <div className="grid grid-cols-2 gap-x-8 gap-y-6 lg:grid-cols-4">
-                    {serviceCategories.map((category) => (
-                      <div key={category.slug}>
-                        <Link
-                          href={`/services/${category.slug}`}
-                          onClick={closeServices}
-                          className="flex items-center gap-2 font-display text-sm font-semibold text-ink transition-colors duration-200 hover:text-primary-500"
-                        >
-                          {category.title}
-                          {category.status === "coming-soon" && <SoonTag />}
-                        </Link>
-                        {category.items.length > 0 ? (
-                          <ul className="mt-2.5 flex flex-col gap-1.5">
-                            {category.items.map((item) => (
-                              <li key={item.slug}>
-                                <Link
-                                  href={`/services/${category.slug}/${item.slug}`}
-                                  onClick={closeServices}
-                                  className="text-[13px] leading-5 text-muted transition-colors duration-200 hover:text-primary-500"
-                                >
-                                  {item.title}
-                                </Link>
-                              </li>
-                            ))}
-                          </ul>
-                        ) : (
-                          <p className="mt-1.5 text-[13px] leading-5 text-muted">
-                            {category.blurb}
-                          </p>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                  <div className="mt-6 border-t border-line pt-4">
-                    <Link
-                      href="/services"
-                      onClick={closeServices}
-                      className="text-sm font-semibold text-primary-500 transition-colors duration-200 hover:text-primary-600"
-                    >
-                      View all services <span aria-hidden="true">→</span>
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            </div>
-
             {/* Tools dropdown (CSS hover + focus-within) */}
             <div
               className="group relative"
@@ -434,7 +249,7 @@ export function SiteHeader({ user }: { user: SessionUser | null }) {
               </div>
             </div>
 
-            {/* Founders Hub mega-menu (matches Services) */}
+            {/* Founders Hub mega-menu */}
             <div
               className="group relative"
               onMouseEnter={() => setFoundersClosed(false)}
@@ -621,7 +436,7 @@ export function SiteHeader({ user }: { user: SessionUser | null }) {
               href="/contact"
               className="hidden h-10 cursor-pointer items-center rounded-none bg-primary-500 px-5 text-sm font-semibold text-white transition-colors duration-200 hover:bg-primary-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500 sm:inline-flex"
             >
-              Book a consultation
+              Ask a question
             </Link>
             <button
               type="button"
@@ -658,47 +473,6 @@ export function SiteHeader({ user }: { user: SessionUser | null }) {
             className="max-h-[calc(100vh-4.75rem)] overflow-y-auto border-t border-line bg-canvas px-5 py-4 xl:hidden"
           >
             <div className="flex flex-col gap-1">
-              {/* Services accordion */}
-              <button
-                type="button"
-                aria-expanded={mobileServicesOpen}
-                onClick={() => setMobileServicesOpen((open) => !open)}
-                className={`flex items-center justify-between rounded-none px-3 py-2.5 text-[15px] font-medium transition-colors duration-200 ${
-                  servicesActive
-                    ? "bg-secondary-50 font-semibold text-primary-500"
-                    : "text-ink-body hover:bg-secondary-50"
-                }`}
-              >
-                Services
-                <Chevron
-                  className={`text-muted transition-transform duration-200 ${
-                    mobileServicesOpen ? "rotate-180" : ""
-                  }`}
-                />
-              </button>
-              {mobileServicesOpen && (
-                <div className="mb-1 ml-3 flex flex-col gap-0.5 border-l border-line pl-3">
-                  <Link
-                    href="/services"
-                    onClick={closeMobile}
-                    className="rounded-none px-3 py-2 text-sm font-medium text-ink-body transition-colors duration-200 hover:bg-secondary-50"
-                  >
-                    All services
-                  </Link>
-                  {serviceCategories.map((category) => (
-                    <Link
-                      key={category.slug}
-                      href={`/services/${category.slug}`}
-                      onClick={closeMobile}
-                      className="flex items-center gap-2 rounded-none px-3 py-2 text-sm text-muted transition-colors duration-200 hover:bg-secondary-50 hover:text-primary-500"
-                    >
-                      {category.title}
-                      {category.status === "coming-soon" && <SoonTag />}
-                    </Link>
-                  ))}
-                </div>
-              )}
-
               {/* Tools accordion */}
               <button
                 type="button"
@@ -815,19 +589,12 @@ export function SiteHeader({ user }: { user: SessionUser | null }) {
                   {link.label}
                 </Link>
               ))}
-              <a
-                href={site.phoneHref}
-                className="rounded-none px-3 py-2.5 text-[15px] font-medium text-ink-body transition-colors duration-200 hover:bg-secondary-50"
-                onClick={closeMobile}
-              >
-                {site.phone}
-              </a>
               <Link
                 href="/contact"
                 className="mt-2 inline-flex h-11 items-center justify-center rounded-none bg-primary-500 px-5 text-sm font-semibold text-white"
                 onClick={closeMobile}
               >
-                Book a consultation
+                Ask a question
               </Link>
             </div>
           </div>

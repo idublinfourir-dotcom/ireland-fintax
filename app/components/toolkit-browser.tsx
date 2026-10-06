@@ -164,9 +164,9 @@ export function ToolkitBrowser() {
       {items.length > 0 && (
         <section className="mt-8">
           <p className="mb-4 text-sm leading-6 text-muted">
-            Nothing to download here: tell us which one you need and one of our
-            accountants emails it to you, so you get the current version and can
-            ask us about it.
+            Nothing to download here: tell us which one you need and we email it
+            to you, free, so you get the current version and can ask us about
+            it.
           </p>
           <StarterList items={items} />
         </section>

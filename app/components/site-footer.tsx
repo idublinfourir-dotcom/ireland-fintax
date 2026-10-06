@@ -1,13 +1,16 @@
 import Link from "next/link";
-import { serviceCategories, site } from "../lib/content";
+import { site } from "../lib/content";
 import { images } from "../lib/images";
 
-/* Pricing link hidden site-wide for now — see app/_pricing. */
-const firmLinks = [
-  { label: "Services", href: "/services" },
-  { label: "About the firm", href: "/about" },
+/* Pricing and Services stay hidden (app/_pricing, app/_services): this is a
+   free learning site, not a firm. */
+const exploreLinks = [
+  { label: "Tax calculators", href: "/tools/ireland-income-tax" },
+  { label: "Personal finance", href: "/personal/mortgage" },
+  { label: "Founders Hub", href: "/toolkits" },
+  { label: "About", href: "/about" },
   { label: "FAQ", href: "/#faq" },
-  { label: "Contact", href: "/contact" },
+  { label: "Ask a question", href: "/contact" },
 ];
 
 export function SiteFooter() {
@@ -30,7 +33,7 @@ export function SiteFooter() {
         className="absolute inset-x-0 top-0 -z-10 h-px bg-gradient-to-r from-transparent via-primary-400/60 to-transparent"
       />
       <div className="mx-auto w-full max-w-6xl px-5 py-16 sm:px-8">
-        <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1.2fr]">
+        <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1.2fr]">
           <div>
             <Link href="/" className="flex items-center gap-2.5">
               <span className="grid h-9 w-9 shrink-0 place-items-center rounded-none bg-white/10 font-display text-[13px] font-semibold tracking-tight text-primary-300">
@@ -46,35 +49,17 @@ export function SiteFooter() {
               </span>
             </Link>
             <p className="mt-4 max-w-xs text-sm leading-6 text-white/60">
-              A partner-led finance and tax practice helping founders and
-              family businesses across Ireland grow on solid financial ground.
+              Free calculators, guides and templates that explain Irish tax
+              and personal finance in plain English.
             </p>
           </div>
 
-          <nav aria-label="Services">
+          <nav aria-label="Explore">
             <h3 className="text-xs font-semibold uppercase tracking-[0.18em] text-primary-300">
-              Services
+              Explore
             </h3>
             <ul className="mt-4 flex flex-col gap-2.5 text-sm text-white/70">
-              {serviceCategories.map((category) => (
-                <li key={category.slug}>
-                  <Link
-                    href={`/services/${category.slug}`}
-                    className="transition-colors duration-200 hover:text-white"
-                  >
-                    {category.title}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </nav>
-
-          <nav aria-label="Firm">
-            <h3 className="text-xs font-semibold uppercase tracking-[0.18em] text-primary-300">
-              Firm
-            </h3>
-            <ul className="mt-4 flex flex-col gap-2.5 text-sm text-white/70">
-              {firmLinks.map((link) => (
+              {exploreLinks.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
@@ -91,32 +76,18 @@ export function SiteFooter() {
             <h3 className="text-xs font-semibold uppercase tracking-[0.18em] text-primary-300">
               Get in touch
             </h3>
-            <address className="mt-4 text-sm not-italic leading-6 text-white/70">
-              {site.address.map((line) => (
-                <span key={line} className="block">
-                  {line}
-                </span>
-              ))}
-              <a
-                href={`mailto:${site.email}`}
-                className="mt-3 block transition-colors duration-200 hover:text-white"
-              >
-                {site.email}
-              </a>
-              <a
-                href={site.phoneHref}
-                className="transition-colors duration-200 hover:text-white"
-              >
-                {site.phone}
-              </a>
-            </address>
-            <p className="mt-3 text-sm text-white/45">{site.hours}</p>
+            <a
+              href={`mailto:${site.email}`}
+              className="mt-4 block text-sm text-white/70 transition-colors duration-200 hover:text-white"
+            >
+              {site.email}
+            </a>
           </div>
         </div>
 
         <div className="mt-14 flex flex-col gap-2 border-t border-white/10 pt-6 text-xs text-white/45 sm:flex-row sm:items-center sm:justify-between">
           <p>© {new Date().getFullYear()} Ireland Fintax. All rights reserved.</p>
-          <p>Dublin</p>
+          <p>General information only, not financial, tax or legal advice.</p>
         </div>
       </div>
     </footer>
