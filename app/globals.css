@@ -18,6 +18,13 @@
   --font-display: "AmpUpright", var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
 }
 
+/* Archivo's word space is narrow, and the tight tracking every heading uses
+   takes more off it: after a "k" it all but vanishes, so "Ask a question" read
+   as "Aska question". Widen it once here, for every display heading. */
+.font-display {
+  word-spacing: 0.12em;
+}
+
 @theme {
   /* Ireland Fintax — white base + deep indigo (#2540a8) accent, ink-blue near-black */
   --color-canvas: #ffffff;
