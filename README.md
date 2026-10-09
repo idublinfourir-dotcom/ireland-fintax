@@ -27,7 +27,7 @@ that must be set before anything works:
 | Key | What it is |
 | --- | --- |
 | `MONGODB_URI` **or** `DB_USER`+`DB_PASSWORD`+`DB_CLUSTER` | Connection. `DB_CLUSTER` is the host only — `cluster0.abcde.mongodb.net`, no scheme. |
-| `MONGODB_DB` | Database name inside the cluster. Defaults to `aibn`. |
+| `MONGODB_DB` | Database name inside the cluster. Defaults to `irelandfintax`. |
 | `AUTH_SECRET` | Signs the session JWT. `openssl rand -base64 32`. Changing it signs everyone out. |
 | `ADMIN_EMAILS` | Comma-separated allow-list. Signing up with one of these gets the admin role. |
 | `AUTH_URL` | Canonical origin. **Production only** — pins the OAuth callback and the emailed confirmation links so they don't depend on a forwarded host header. |

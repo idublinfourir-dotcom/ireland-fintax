@@ -31,6 +31,7 @@ app/
   _services/, _pricing/  # parked: unrouted, every /services URL redirects home
   tools/             # Accountants Hub — the 7 Ireland tax calculators
   personal/          # Personal Hub — mortgage/, investment/
+  blog/              # public blog: /blog index + /blog/[slug] posts
   _pricing/          # hidden route — see "Hidden for now" below
   login/, signup/, portal/, admin/, auth/{confirm,callback}/  # auth routes
   components/      # UI, layout, sections + motion primitives
@@ -40,6 +41,9 @@ app/
   lib/mongodb.ts   # lazy MongoClient singleton + getDb()
   lib/db-config.ts # connection-string env reads, driver-free (edge-safe)
   lib/collections.ts # every collection: document types + typed accessors
+  lib/posts.ts     # blog posts: publishedFilter, public + admin reads/writes
+  lib/post-blocks.ts # the blocks a post is built from: parse, pages, contents
+  lib/media.ts     # uploaded blog pictures (MongoDB `media`), served at /media
   lib/auth/        # config (roles, feature flags), guards, password, tokens
   lib/mail-config.ts # SMTP env reads, nodemailer-free (edge-safe)
   lib/mailer.ts    # SMTP transport + sendMail (server only)
@@ -415,10 +419,13 @@ Whenever anything else gets hidden rather than deleted, add a row here.
 
 ### Founders Hub (`/toolkits`)
 
-- **The site never hosts a file.** No upload form, no storage bucket, no public
+- **The Founders Hub never hosts a file.** No upload form, no storage bucket, no public
   download link — for memos, templates, tax/VAT forms, setup guides or anything
   else. This is a product decision, not a missing feature: do not add an upload
   path, an object store or a direct download link back.
+  (Blog pictures are the one exception, approved Oct 2026: they are uploaded
+  in the post editor and stored in MongoDB. See "Blog" below. That does not
+  open the door to documents.)
 - The catalogue **is** `app/lib/toolkit-content.ts` (a pure module, no DB).
   Adding a resource = adding an entry there. `toolkit-types.ts` holds the
   categories and the title→slug helper both the browser and the request route
@@ -430,6 +437,71 @@ Whenever anything else gets hidden rather than deleted, add a row here.
   spinner and a confirmation so the click is never silent).
 - `toolkit_resources` and `toolkit_requests.resource_id` are **gone**: they were
   already read and written by nothing, and were not recreated in MongoDB.
+
+### Blog (`/blog`)
+
+- Posts are rows in `posts`, written in `/admin/posts` with a **block editor**
+  (`app/admin/posts/block-editor.tsx`): paragraph, heading, picture, gallery,
+  quote, key point, list, table, section break and page break. Draft,
+  publish, unpublish and delete re-check `requireAdmin` and are logged with
+  `recordAudit` (area `posts`; uploads under `media`). Public pages are
+  `/blog` and `/blog/[slug]` (`?page=N` when a post has page breaks).
+- **`publishedFilter` in `lib/posts.ts` is the one definition of public.**
+  Never query `posts` for a public page without it. Same lesson as
+  `RETIRED_SERVICES`: a filter repeated per call site is the one that gets
+  missed, and here the miss leaks a draft.
+- **The body is typed blocks, never HTML.** `lib/post-blocks.ts` defines the
+  blocks and `parseBlocks` rebuilds every one on save. Text inside blocks may
+  use `**bold**`, `*italic*` and `[links](…)`, parsed by
+  `lib/inline-format.ts`; `components/post-body.tsx` renders everything as
+  React elements, so React escapes every character. Links are limited to
+  http(s), mailto, site paths and anchors. Do not add a rich-text library that
+  stores or emits HTML: it would need `dangerouslySetInnerHTML` and a
+  sanitiser, and nothing in this app writes raw HTML. The editor's preview
+  uses the same renderer, so the preview is the public page.
+- **The editor's formatting cues are cosmetic.** Formatted text fields draw a
+  faded copy of the text under a transparent textarea. Colour, underline and
+  background only, never weight or slant, or the caret drifts off the
+  glyphs.
+- **Pictures**: a curated key from `lib/images.ts`, an `images.unsplash.com`
+  address, or an upload. Uploads are shrunk in the browser (2,000px and 900px
+  copies), POSTed to `app/admin/posts/images/route.ts` (a route handler, so
+  the big body limit does not apply to every public server action; it does
+  its own admin and same-origin checks), checked from their bytes in
+  `lib/media.ts` and stored in `media`. `/media/[id]` serves them with an
+  immutable cache header. All three sources are inside the CSP's `img-src`
+  (`'self'` and Unsplash); keep it that way rather than widening the policy.
+- **The reading layout is `.post-grid` in `globals.css`**: a ~42rem column
+  with up to 7rem either side that `.post-wide` pictures and galleries step
+  into. The side "On this page" list lives in the left margin only at `xl`
+  and up; below that it is a collapsible box above the text.
+- **A slug locks once the post has been live** (`publishedAt` set and in the
+  past), because someone may have linked to it. `publishedAt` is stamped on
+  first publish and kept through an unpublish, so republishing does not
+  re-date a post.
+- The disclaimer under every post is `POST_DISCLAIMER`, not per-post copy, and
+  the byline is the site, not a person. Do not add invented authors. Share
+  buttons are plain links to each service's share page: no third-party
+  script loads.
+- **Saving a post does not call `revalidatePath`, on purpose.** Every page
+  here renders per request, so there is nothing cached to clear, and the
+  editor updates itself from the action's result. With revalidation, Next
+  folded a re-render of the editor page into the save's reply and about one
+  save in twenty left the editor stuck on "Saving…" although the save had
+  gone through (Next 16.2.9; 0 hangs in 120 saves without it). Don't add it
+  back. Delete still revalidates, since it redirects anyway.
+- **Drag-and-drop arms the row, not the handle.** A block row becomes
+  `draggable` only while its handle is held down: a draggable `<button>`
+  never starts a drag in Firefox, and an always-draggable row would turn text
+  selection in its fields into a drag. The ▲▼ buttons are the keyboard way.
+  `onDragOver` also sets `dropEffect = "move"`: Safari cancels the drop
+  unless it matches the `effectAllowed` set on dragstart (Chrome and Firefox
+  are lenient). Tested in Chromium, Firefox and WebKit (Oct 2026).
+- Public reads never throw: no database means an empty blog, logged. The
+  sitemap is `force-dynamic` so it lists posts published after a deploy and
+  the build does not need the database.
+- "Blog" took the nav slot the Services mega-menu freed. The row is full at
+  six top-level links again.
 
 ### Testing
 

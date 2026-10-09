@@ -79,6 +79,27 @@ const INDEXES = {
   ],
   cgt_multipliers: [[{ sortOrder: 1 }, { name: "cgt_multipliers_order_idx" }]],
 
+  // ── blog ────────────────────────────────────────────────────────────────
+  posts: [
+    // The public URL, so uniqueness is load-bearing: a duplicate slug is
+    // refused here and reported on the editor's slug field.
+    [{ slug: 1 }, { unique: true, name: "posts_slug_unique" }],
+    // /blog filtered to one category: published, newest first.
+    [
+      { status: 1, category: 1, publishedAt: -1 },
+      { name: "posts_category_idx" },
+    ],
+    // /blog unfiltered, the sitemap and "keep reading".
+    [{ status: 1, publishedAt: -1 }, { name: "posts_published_idx" }],
+    // The admin list, most recently edited first.
+    [{ updatedAt: -1 }, { name: "posts_updated_idx" }],
+  ],
+  media: [
+    // The same picture uploaded twice is stored once: saveUpload looks the
+    // hash up first, and this catches two uploads racing.
+    [{ sha256: 1 }, { unique: true, name: "media_sha256_unique" }],
+  ],
+
   // ── operational ─────────────────────────────────────────────────────────
   rate_audit: [
     [{ area: 1, changedAt: -1 }, { name: "rate_audit_area_idx" }],

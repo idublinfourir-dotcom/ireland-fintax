@@ -171,6 +171,91 @@ editor can only edit rows that exist.
 calculator reviewed without overriding anything, and the code default stays
 authoritative.
 
+### Blog
+
+`posts`: one document per blog post, written in `/admin/posts` and read at
+`/blog` and `/blog/<slug>`.
+
+```js
+{
+  _id: ObjectId,
+  slug: "budget-2027-explained",   // public URL segment; unique index
+  title, excerpt,                  // excerpt = card text + meta description
+  blocks: [                        // the body, in order (app/lib/post-blocks.ts)
+    { id, type: "paragraph", text },
+    { id, type: "heading", level: 2 | 3, text },
+    { id, type: "image", image, alt, caption, size: "normal" | "wide" },
+    { id, type: "gallery", items: [{ image, alt }], caption },
+    { id, type: "quote", text, cite },
+    { id, type: "callout", title, text },
+    { id, type: "list", style: "bullet" | "number", items: [String] },
+    { id, type: "table", rows: [[String]] },   // rows[0] is the header
+    { id, type: "divider" },
+    { id, type: "pagebreak" },                 // splits the post into pages
+  ],
+  category: "tax" | "personal-finance" | "investing" | "property" | "business" | "news",
+  cover: image,
+  readingMinutes: 6,               // denormalised on every save
+  status: "draft" | "published",
+  publishedAt: Date | null,        // first time it went live; kept on unpublish
+  createdAt: Date,
+  updatedAt: Date,
+}
+
+// every `image` above is one of:
+{ kind: "curated", key: "deskFinance" }                  // app/lib/images.ts
+{ kind: "unsplash", url: "https://images.unsplash.com/…" }
+{ kind: "upload", id: "<media _id>", width, height }    // size copied from media
+```
+
+Things to know:
+
+- **Public pages read through `publishedFilter`** in `app/lib/posts.ts`
+  (`status: "published"` and `publishedAt <= now`), never a hand-written
+  query, so a draft cannot leak through a missed condition.
+- **`publishedAt` is set once.** It is stamped the first time a post is
+  published and survives an unpublish, so a republished post keeps its date.
+  A non-null value in the past also **locks the slug**: once a URL has been
+  live it may be linked to, so the editor stops letting it change.
+- **The body is typed blocks, never HTML.** The editor sends them as JSON and
+  `parseBlocks` rebuilds each one field by field with length caps, so nothing
+  extra the browser adds is stored. Text in a block may carry `**bold**`,
+  `*italic*` and `[links](…)`, parsed by `app/lib/inline-format.ts`, and
+  everything is rendered as React elements.
+- **Uploaded pictures are checked on save**: every `upload` id in the blocks
+  and the cover must exist in `media`, and its width and height are copied
+  from there, not taken from the browser.
+- `readingMinutes` lives on the document so the listing can leave `blocks`
+  out of its projection.
+
+`media`: pictures uploaded in the post editor, served at `/media/<id>` and
+`/media/<id>?size=small`.
+
+```js
+{
+  _id: ObjectId,
+  type: "image/webp" | "image/jpeg" | "image/png", width, height, data: BinData,
+  smallType, smallWidth, smallHeight, small: BinData,
+  bytes: 154786,         // both copies together
+  sha256: "…",           // of the large copy; unique index
+  uploadedBy: "admin@…",
+  createdAt: Date,
+}
+```
+
+- **Shrunk in the browser, checked on the server.** The editor sends a copy up
+  to 2,000px and one up to 900px; the server reads the real type and size from
+  the bytes (`app/lib/image-info.ts`), refuses anything but JPEG, PNG and WebP
+  (SVG especially, since it can carry script), refuses a copy larger than its
+  edge, and caps the bytes. A typical photo is 100 to 300KB stored.
+- **Never changes after insert**, which is why `/media` sends a year-long
+  immutable cache header. Uploading the same picture again finds it by
+  `sha256` and reuses it.
+- **Nothing deletes media yet.** Deleting a post or replacing a picture leaves
+  the file in place, so a picture used in two posts can never vanish from one
+  of them. Unused files can be found by checking `media` ids against every
+  post's blocks and cover.
+
 ### Operational
 
 | Collection | `_id` | Notes |
@@ -213,5 +298,7 @@ exposed to the network, so access control lives in the guards
 `userId`, admin routes go through `requireAdmin`. Keep it that way: the moment
 any client talks to the cluster directly, this stops being true.
 
-The Founders Hub catalogue is a code constant (`app/lib/toolkit-content.ts`) and
-the site hosts no files, so there is no resource collection to secure either.
+The Founders Hub catalogue is a code constant (`app/lib/toolkit-content.ts`)
+and hosts no files. The one stored file type is blog pictures (`media`): only
+an admin can write one, through `app/admin/posts/images/route.ts`, and reading
+is public by design because every picture is part of a page.

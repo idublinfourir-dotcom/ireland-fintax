@@ -11,6 +11,7 @@ export const metadata: Metadata = {
 const navItems: DashNavItem[] = [
   { href: "/admin", label: "Dashboard", icon: "home" },
   { href: "/admin/enquiries", label: "Enquiries", icon: "inbox", prefix: true },
+  { href: "/admin/posts", label: "Blog posts", icon: "newspaper", prefix: true },
   { href: "/admin/toolkits", label: "Toolkits", icon: "document", prefix: true },
   { href: "/admin/mortgage-rates", label: "Mortgage rates", icon: "banknotes", prefix: true },
   { href: "/admin/tax-rates", label: "Tax rates", icon: "receiptPercent", prefix: true },

@@ -35,4 +35,4 @@ export function mongoUri() {
   )}@${cluster}/?retryWrites=true&w=majority`;
 }
 
-export const dbName = process.env.MONGODB_DB?.trim() || "aibn";
+export const dbName = process.env.MONGODB_DB?.trim() || "irelandfintax";
