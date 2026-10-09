@@ -176,8 +176,10 @@ export function SiteHeader({ user }: { user: SessionUser | null }) {
             ~1235px — it stopped fitting the 6xl container when the
             Entrepreneur Toolkits link was added, and Personal Hub took most of
             what was left. Blog is the sixth link now, in the slot Services
-            left. Another top-level link needs the row re-thought, not another
-            entry. */}
+            left. The hub names were lengthened in Oct 2026 (Tax Calculation
+            Hub, Accounts and Finance, Personal Finance Tools), which is why the
+            signed-in pill drops its name at xl. Another top-level link needs
+            the row re-thought, not another entry. */}
         <nav
           aria-label="Main"
           className="relative mx-auto flex h-[4.5rem] w-full max-w-7xl items-center justify-between px-5 sm:px-8"
@@ -204,7 +206,7 @@ export function SiteHeader({ user }: { user: SessionUser | null }) {
                   toolsActive ? "text-primary-600" : "text-ink-body hover:text-ink"
                 }`}
               >
-                Accountants Hub
+                Tax Calculation Hub
                 <Chevron className="text-muted transition-transform duration-200 group-hover:rotate-180 group-focus-within:rotate-180" />
                 <span
                   className={`pointer-events-none absolute -bottom-1.5 left-0 h-0.5 w-full origin-left bg-primary-500 transition-transform duration-200 ease-snappy ${
@@ -267,7 +269,7 @@ export function SiteHeader({ user }: { user: SessionUser | null }) {
                   foundersActive ? "text-primary-600" : "text-ink-body hover:text-ink"
                 }`}
               >
-                Founders Hub
+                Accounts and Finance
                 <Chevron className="text-muted transition-transform duration-200 group-hover:rotate-180 group-focus-within:rotate-180" />
                 <span
                   className={`pointer-events-none absolute -bottom-1.5 left-0 h-0.5 w-full origin-left bg-primary-500 transition-transform duration-200 ease-snappy ${
@@ -308,7 +310,7 @@ export function SiteHeader({ user }: { user: SessionUser | null }) {
                       onClick={closeFounders}
                       className="text-sm font-semibold text-primary-500 transition-colors duration-200 hover:text-primary-600"
                     >
-                      Browse the Founders Hub <span aria-hidden="true">→</span>
+                      Browse Accounts and Finance <span aria-hidden="true">→</span>
                     </Link>
                   </div>
                 </div>
@@ -333,7 +335,7 @@ export function SiteHeader({ user }: { user: SessionUser | null }) {
                     : "text-ink-body hover:text-ink"
                 }`}
               >
-                Personal Hub
+                Personal Finance Tools
                 <Chevron className="text-muted transition-transform duration-200 group-hover:rotate-180 group-focus-within:rotate-180" />
                 <span
                   className={`pointer-events-none absolute -bottom-1.5 left-0 h-0.5 w-full origin-left bg-primary-500 transition-transform duration-200 ease-snappy ${
@@ -378,7 +380,7 @@ export function SiteHeader({ user }: { user: SessionUser | null }) {
                       onClick={closePersonal}
                       className="text-sm font-semibold text-primary-500 transition-colors duration-200 hover:text-primary-600"
                     >
-                      Open the Personal Hub <span aria-hidden="true">→</span>
+                      Open Personal Finance Tools <span aria-hidden="true">→</span>
                     </Link>
                   </div>
                 </div>
@@ -414,12 +416,16 @@ export function SiteHeader({ user }: { user: SessionUser | null }) {
                 aria-label={
                   user.role === "admin" ? "Admin dashboard" : "My dashboard"
                 }
-                className="group flex items-center gap-2.5 rounded-full border border-line bg-surface py-1 pl-1 pr-1.5 shadow-sm transition-all duration-200 hover:border-primary-300 hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500 sm:pr-4"
+                title={`${firstName}: ${user.role === "admin" ? "Admin dashboard" : "My dashboard"}`}
+                className="group flex items-center gap-2.5 rounded-full border border-line bg-surface py-1 pl-1 pr-1.5 shadow-sm transition-all duration-200 hover:border-primary-300 hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500 sm:pr-4 xl:pr-1.5"
               >
                 <span className="rounded-full ring-2 ring-primary-300/60 ring-offset-2 ring-offset-surface">
                   <Avatar user={user} size={34} />
                 </span>
-                <span className="hidden flex-col pr-1 leading-tight sm:flex">
+                {/* The name is hidden at xl, where the full nav row is shown: with
+                    the longer hub names (Oct 2026) the row has no room for it
+                    when signed in. It stays in the title and aria-label. */}
+                <span className="hidden flex-col pr-1 leading-tight sm:flex xl:hidden">
                   <span className="text-sm font-semibold text-ink">
                     {firstName}
                   </span>
@@ -488,7 +494,7 @@ export function SiteHeader({ user }: { user: SessionUser | null }) {
                     : "text-ink-body hover:bg-secondary-50"
                 }`}
               >
-                Accountants Hub
+                Tax Calculation Hub
                 <Chevron
                   className={`text-muted transition-transform duration-200 ${
                     mobileToolsOpen ? "rotate-180" : ""
@@ -522,7 +528,7 @@ export function SiteHeader({ user }: { user: SessionUser | null }) {
                     : "text-ink-body hover:bg-secondary-50"
                 }`}
               >
-                Founders Hub
+                Accounts and Finance
                 <Chevron
                   className={`text-muted transition-transform duration-200 ${
                     mobileFoundersOpen ? "rotate-180" : ""
@@ -555,7 +561,7 @@ export function SiteHeader({ user }: { user: SessionUser | null }) {
                     : "text-ink-body hover:bg-secondary-50"
                 }`}
               >
-                Personal Hub
+                Personal Finance Tools
                 <Chevron
                   className={`text-muted transition-transform duration-200 ${
                     mobilePersonalOpen ? "rotate-180" : ""

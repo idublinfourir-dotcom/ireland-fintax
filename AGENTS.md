@@ -100,6 +100,13 @@ Whenever anything else gets hidden rather than deleted, add a row here.
 
 ### Hubs & navigation
 
+- **Display names (Oct 2026):** the hubs are shown to visitors as **Tax
+  Calculation Hub** (`/tools/*`), **Accounts and Finance** (`/toolkits`) and
+  **Personal Finance Tools** (`/personal/*`). Code, comments and the notes
+  below still use the older internal names (Accountants Hub, Founders Hub,
+  Personal Hub); the URLs did not change. The longer names fill the desktop
+  nav row, so the signed-in account pill shows only the avatar at `xl`.
+
 - The nav has **two tool hubs, and they are audience splits, not topic splits**:
   **Accountants Hub** (`/tools/*`, business/practice tax calculators) and
   **Personal Hub** (`/personal/*`, personal finance). Mortgage moved from the

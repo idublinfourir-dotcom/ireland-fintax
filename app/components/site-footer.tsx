@@ -7,7 +7,7 @@ import { images } from "../lib/images";
 const exploreLinks = [
   { label: "Tax calculators", href: "/tools/ireland-income-tax" },
   { label: "Personal finance", href: "/personal/mortgage" },
-  { label: "Founders Hub", href: "/toolkits" },
+  { label: "Accounts and Finance", href: "/toolkits" },
   { label: "Blog", href: "/blog" },
   { label: "About", href: "/about" },
   { label: "FAQ", href: "/#faq" },

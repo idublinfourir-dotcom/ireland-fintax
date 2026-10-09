@@ -39,7 +39,7 @@ export default async function AdminToolkitsPage() {
     <div className="mx-auto max-w-5xl">
       <header className="mb-8">
         <h2 className="font-display text-2xl font-semibold text-ink">
-          Founders Hub
+          Accounts and Finance
         </h2>
         <p className="mt-1 text-sm text-muted">
           Requests for the memos, templates, tax and VAT forms and setup guides
@@ -48,7 +48,7 @@ export default async function AdminToolkitsPage() {
             href="/toolkits"
             className="font-medium text-primary-600 transition-colors duration-200 hover:text-primary-500"
           >
-            public Founders Hub page
+            public Accounts and Finance page
           </a>
           . Nothing is uploaded or emailed by the site: attach the file in your
           own mailbox, send it to the address below, then mark the request sent.
