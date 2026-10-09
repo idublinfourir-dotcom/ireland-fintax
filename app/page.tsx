@@ -30,11 +30,11 @@ export default function Home() {
       <AiBand />
       <Industries />
       <PromoBanner
-        eyebrow="Founders Hub"
+        eyebrow="Accounts and Finance"
         title="Starting a company? Start here."
         body="Memos, templates, tax and VAT forms and step-by-step setup guides for Ireland and the UK. All free: tell us which one you need and we’ll email it over."
         ctaHref="/toolkits"
-        ctaLabel="Browse the Founders Hub"
+        ctaLabel="Browse Accounts and Finance"
         image="office"
         reverse
       />

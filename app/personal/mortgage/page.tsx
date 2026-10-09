@@ -37,7 +37,7 @@ export default async function IrelandMortgagePage() {
           <Breadcrumbs
             items={[
               { label: "Home", href: "/" },
-              { label: "Personal Hub", href: "/personal/mortgage" },
+              { label: "Personal Finance Tools", href: "/personal/mortgage" },
               { label: "Ireland mortgage" },
             ]}
           />

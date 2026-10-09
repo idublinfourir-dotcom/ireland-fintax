@@ -6,9 +6,9 @@ import { findRequestableResourceBySlug } from "../../../lib/toolkit-content";
 import { TOOLKIT_CATEGORY_LABELS } from "../../../lib/toolkit-types";
 
 export const metadata: Metadata = {
-  title: "Request a copy — Founders Hub",
+  title: "Request a copy from Accounts and Finance",
   description:
-    "Request a copy of an Ireland Fintax Founders Hub resource and we will email it to you.",
+    "Request a copy of an Ireland Fintax Accounts and Finance resource and we will email it to you.",
   robots: { index: false, follow: true },
 };
 
@@ -29,7 +29,7 @@ export default async function RequestResourcePage({
           <Breadcrumbs
             items={[
               { label: "Home", href: "/" },
-              { label: "Founders Hub", href: "/toolkits" },
+              { label: "Accounts and Finance", href: "/toolkits" },
               { label: "Request a copy" },
             ]}
           />

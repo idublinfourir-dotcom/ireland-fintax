@@ -4,7 +4,7 @@ import { ContactCta } from "../components/sections";
 import { ToolkitBrowser } from "../components/toolkit-browser";
 
 export const metadata: Metadata = {
-  title: "Founders Hub: memos, templates, tax & VAT forms",
+  title: "Accounts and Finance: memos, templates, tax & VAT forms",
   description:
     "Free resources for founders and business owners: memos, templates, tax forms, VAT forms and business setup guides for Ireland and the UK.",
 };
@@ -31,10 +31,10 @@ export default function FoundersHubPage() {
         image="office"
         breadcrumb={
           <Breadcrumbs
-            items={[{ label: "Home", href: "/" }, { label: "Founders Hub" }]}
+            items={[{ label: "Home", href: "/" }, { label: "Accounts and Finance" }]}
           />
         }
-        title="Founders Hub"
+        title="Accounts and Finance"
         lede="Memos, templates, tax and VAT forms, and step-by-step business setup guides: free, practical resources for founders in Ireland and the UK."
       />
 

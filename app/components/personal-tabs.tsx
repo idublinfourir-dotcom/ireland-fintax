@@ -23,6 +23,6 @@ export const PERSONAL_TOOLS = [
 /** The Personal Hub switcher. */
 export function PersonalTabs({ current }: { current: string }) {
   return (
-    <ToolTabs heading="Personal Hub" tools={PERSONAL_TOOLS} current={current} />
+    <ToolTabs heading="Personal Finance Tools" tools={PERSONAL_TOOLS} current={current} />
   );
 }

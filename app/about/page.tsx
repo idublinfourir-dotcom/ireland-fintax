@@ -16,19 +16,19 @@ export const metadata: Metadata = {
    credentials: this is a free learning platform. */
 const sections = [
   {
-    title: "Accountants Hub",
+    title: "Tax Calculation Hub",
     description:
       "Calculators for income tax, VAT, corporation tax, the R&D credit, capital allowances, CGT and CAT, using Irish rates.",
     href: "/tools/ireland-income-tax",
   },
   {
-    title: "Personal Hub",
+    title: "Personal Finance Tools",
     description:
       "Work out a mortgage, and compare investment options side by side on risk, tax and access to your money.",
     href: "/personal/mortgage",
   },
   {
-    title: "Founders Hub",
+    title: "Accounts and Finance",
     description:
       "Memos, templates, tax and VAT forms and setup guides for starting and running a company.",
     href: "/toolkits",

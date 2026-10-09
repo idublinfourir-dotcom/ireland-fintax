@@ -3,7 +3,7 @@ export const site = {
   // Canonical host. `www` is canonical: the apex 308-redirects to it in Vercel,
   // so this must carry the www prefix or every canonical URL and sitemap entry
   // points at a redirect. Drives metadataBase, sitemap.xml and robots.txt.
-  url: "https://www.irelandfintax.ie",
+  url: "https://www.irishfintax.ie",
   // NOTE: this mailbox needs email forwarding (or a mail plan) configured at the
   // registrar before launch, or enquiries to it bounce.
   email: "hello@irelandfintax.ie",

@@ -108,7 +108,7 @@ function ThankYouDialog() {
           href="/toolkits"
           className="mt-6 inline-flex h-11 items-center justify-center rounded-none bg-primary-500 px-6 text-sm font-semibold text-white transition-colors duration-200 hover:bg-primary-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500"
         >
-          Back to Founders Hub
+          Back to Accounts and Finance
         </Link>
       </div>
     </div>
