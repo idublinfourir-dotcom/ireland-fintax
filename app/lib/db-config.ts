@@ -8,7 +8,7 @@
  * app/lib/mongodb.ts is the counterpart that actually opens a connection. */
 
 /** Database name — one definition so the app and the scripts agree. */
-export const MONGODB_DB = process.env.MONGODB_DB?.trim() || "aibn";
+export const MONGODB_DB = process.env.MONGODB_DB?.trim() || "irelandfintax";
 
 /**
  * The connection string, or null when no backend is wired up yet.
