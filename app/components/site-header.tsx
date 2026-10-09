@@ -8,8 +8,11 @@ import { PERSONAL_TOOLS } from "./personal-tabs";
 import type { SessionUser } from "../lib/auth/guards";
 
 /* Pricing is hidden site-wide while the fee model is being decided; restore
-   { href: "/pricing", label: "Pricing" } here to bring it back. */
+   { href: "/pricing", label: "Pricing" } here to bring it back.
+   Blog took the top-level slot the Services mega-menu freed, which makes the
+   row full again at six links (see the note on <nav> below). */
 const secondaryLinks = [
+  { href: "/blog", label: "Blog" },
   { href: "/about", label: "About" },
   { href: "/contact", label: "Contact" },
 ];
@@ -172,8 +175,9 @@ export function SiteHeader({ user }: { user: SessionUser | null }) {
         {/* max-w-7xl: the nav row (logo + 6 links + sign-in + CTA) needs
             ~1235px — it stopped fitting the 6xl container when the
             Entrepreneur Toolkits link was added, and Personal Hub took most of
-            what was left. Another top-level link needs the row re-thought,
-            not another entry. */}
+            what was left. Blog is the sixth link now, in the slot Services
+            left. Another top-level link needs the row re-thought, not another
+            entry. */}
         <nav
           aria-label="Main"
           className="relative mx-auto flex h-[4.5rem] w-full max-w-7xl items-center justify-between px-5 sm:px-8"

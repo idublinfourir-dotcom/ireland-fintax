@@ -107,3 +107,27 @@ summary::-webkit-details-marker {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Blog post layout: a reading column of about 42rem with up to 7rem either
+   side that a wide picture or gallery (`.post-wide`) steps out into. Plain
+   CSS because the named grid lines this needs do not fit a utility class. On
+   a phone the side columns collapse to nothing and everything is full width
+   inside the page gutter. */
+.post-grid {
+  display: grid;
+  grid-template-columns:
+    [full-start] minmax(1.25rem, 1fr)
+    [wide-start] minmax(0, 7rem)
+    [content-start] min(42rem, 100% - 2.5rem)
+    [content-end] minmax(0, 7rem)
+    [wide-end] minmax(1.25rem, 1fr)
+    [full-end];
+}
+
+.post-grid > * {
+  grid-column: content;
+}
+
+.post-grid > .post-wide {
+  grid-column: wide;
+}

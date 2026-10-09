@@ -1,6 +1,9 @@
 import { ObjectId } from "mongodb";
-import type { Collection } from "mongodb";
+import type { Binary, Collection } from "mongodb";
 import { getDb } from "./mongodb";
+import type { Block } from "./post-blocks";
+import type { ImageType } from "./image-info";
+import type { PostCategory, PostImage, PostStatus } from "./post-types";
 
 /* Typed collection accessors and document shapes. SERVER ONLY.
  *
@@ -242,6 +245,66 @@ export interface MortgageSettingsDoc {
   updatedAt: Date;
 }
 
+/* ── blog ──────────────────────────────────────────────────────────────── */
+
+/**
+ * A blog post, written in /admin/posts.
+ *
+ * Public pages only ever read posts through `publishedFilter` in
+ * lib/posts.ts, so a draft cannot leak through a forgotten condition.
+ *
+ * `publishedAt` is set the first time a post goes live and kept through an
+ * unpublish, so republishing does not re-date it, and a non-null value in the
+ * past is also what locks `slug`: a URL that has been live may be linked to.
+ * `readingMinutes` is denormalised on every save so the listing can leave
+ * `blocks` out of its projection.
+ */
+export interface PostDoc {
+  _id: ObjectId;
+  /** The public URL segment. Unique index. */
+  slug: string;
+  title: string;
+  /** Card text and meta description. */
+  excerpt: string;
+  /** The body, as typed blocks; see lib/post-blocks.ts. */
+  blocks: Block[];
+  category: PostCategory;
+  cover: PostImage;
+  readingMinutes: number;
+  status: PostStatus;
+  publishedAt: Date | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+/**
+ * A picture uploaded in the post editor, served at /media/<id>.
+ *
+ * Stored twice, both already shrunk in the browser: up to 2,000px for the
+ * page and up to 900px for cards and thumbnails. `type` and the sizes are
+ * read from the bytes on upload (lib/image-info.ts), never taken from the
+ * browser, and are what the picture is served with. `sha256` is of the large
+ * copy and is unique, so uploading the same picture twice reuses the first.
+ * A document never changes after insert, which is what lets /media send it
+ * with an immutable cache header.
+ */
+export interface MediaDoc {
+  _id: ObjectId;
+  type: ImageType;
+  width: number;
+  height: number;
+  data: Binary;
+  smallType: ImageType;
+  smallWidth: number;
+  smallHeight: number;
+  small: Binary;
+  /** Bytes of both copies together, for keeping an eye on storage. */
+  bytes: number;
+  sha256: string;
+  uploadedBy: string;
+  createdAt: Date;
+}
+
 /* ── operational ───────────────────────────────────────────────────────── */
 
 /** Best-effort history of every admin rate change. */
@@ -340,6 +403,8 @@ export const COLLECTIONS = {
   cgtMultipliers: "cgt_multipliers",
   mortgageProducts: "mortgage_products",
   mortgageSettings: "mortgage_settings",
+  posts: "posts",
+  media: "media",
   rateAudit: "rate_audit",
   rateLimits: "request_rate_limits",
   toolkitRequests: "toolkit_requests",
@@ -377,6 +442,8 @@ export const mortgageProductsCollection = () =>
   collection<MortgageProductDoc>(COLLECTIONS.mortgageProducts);
 export const mortgageSettingsCollection = () =>
   collection<MortgageSettingsDoc>(COLLECTIONS.mortgageSettings);
+export const postsCollection = () => collection<PostDoc>(COLLECTIONS.posts);
+export const mediaCollection = () => collection<MediaDoc>(COLLECTIONS.media);
 export const rateAuditCollection = () =>
   collection<RateAuditDoc>(COLLECTIONS.rateAudit);
 export const rateLimitsCollection = () =>

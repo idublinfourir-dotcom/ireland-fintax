@@ -8,6 +8,7 @@ const exploreLinks = [
   { label: "Tax calculators", href: "/tools/ireland-income-tax" },
   { label: "Personal finance", href: "/personal/mortgage" },
   { label: "Founders Hub", href: "/toolkits" },
+  { label: "Blog", href: "/blog" },
   { label: "About", href: "/about" },
   { label: "FAQ", href: "/#faq" },
   { label: "Ask a question", href: "/contact" },
