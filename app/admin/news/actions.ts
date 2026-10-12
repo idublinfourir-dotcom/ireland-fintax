@@ -5,7 +5,13 @@
 
 import { revalidatePath } from "next/cache";
 import { requireAdmin } from "../../lib/auth/guards";
-import { dismissRateCheck, dispatchNewsAgent, isRunInProgress } from "../../lib/news-admin";
+import {
+  dismissRateCheck,
+  dispatchNewsAgent,
+  isRunInProgress,
+  latestNewsRun,
+  type LatestRun,
+} from "../../lib/news-admin";
 import { allowPublicAction } from "../../lib/rate-limit";
 import { recordAudit } from "../../lib/rate-audit";
 
@@ -44,10 +50,19 @@ export async function runNewsAgentAction(): Promise<RunNowState> {
     summary: "Started the news agent from the admin",
     changedBy: user.email,
   });
-  return {
-    status: "started",
-    message: "Started. A run takes a few minutes; refresh this page to see it below. New drafts appear under Blog posts.",
-  };
+  return { status: "started" };
+}
+
+/** Polled by the Run now button while a run is on its way, so the page can
+    refresh itself when the run finishes. */
+export async function latestNewsRunAction(): Promise<LatestRun | null> {
+  await requireAdmin();
+  try {
+    return await latestNewsRun();
+  } catch (err) {
+    console.error("[news] latest run read failed:", err);
+    return null;
+  }
 }
 
 export async function dismissRateCheckAction(formData: FormData): Promise<void> {
