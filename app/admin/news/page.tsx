@@ -87,7 +87,22 @@ export default async function NewsAgentPage() {
             . Nothing goes live until you check it and publish it.
           </>
         }
-        actions={<RunNowButton configured={isDispatchConfigured()} />}
+        actions={
+          <RunNowButton
+            configured={isDispatchConfigured()}
+            latest={
+              runs[0]
+                ? {
+                    id: runs[0].id,
+                    status: runs[0].status,
+                    startedAt: runs[0].startedAt.toISOString(),
+                    drafts: runs[0].drafts,
+                    problems: runs[0].errors.length,
+                  }
+                : null
+            }
+          />
+        }
       />
 
       {loadError && (

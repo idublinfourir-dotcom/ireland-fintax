@@ -26,6 +26,32 @@ export async function listNewsRuns(limit = 12): Promise<NewsRunRow[]> {
   return docs.map(({ _id, postIds, ...rest }) => ({ ...rest, id: _id.toHexString(), drafts: postIds.length }));
 }
 
+/** The newest run, in the small shape the Run now button polls for. */
+export interface LatestRun {
+  id: string;
+  status: NewsRunDoc["status"];
+  startedAt: string;
+  drafts: number;
+  problems: number;
+}
+
+export async function latestNewsRun(): Promise<LatestRun | null> {
+  const runs = await newsRunsCollection();
+  const doc = await runs.findOne(
+    {},
+    { sort: { startedAt: -1 }, projection: { status: 1, startedAt: 1, postIds: 1, errors: 1 } },
+  );
+  return doc
+    ? {
+        id: doc._id.toHexString(),
+        status: doc.status,
+        startedAt: doc.startedAt.toISOString(),
+        drafts: doc.postIds.length,
+        problems: doc.errors.length,
+      }
+    : null;
+}
+
 /** When a scheduled run is overdue. Runs are Tuesday and Friday, so a gap of
     five days means one was missed (a disabled schedule, a failing secret). */
 export const STALE_AFTER_DAYS = 5;
