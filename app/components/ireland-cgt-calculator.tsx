@@ -2,7 +2,8 @@
 
 /* Ireland Capital Gains Tax calculator. Proceeds less the indexed allowable
    cost gives the gain; PPR relief, losses and the €1,270 exemption reduce it;
-   the rate (33%, or 10% Entrepreneur Relief / 40% / 15%) gives the CGT due.
+   the rate (31% from 7 Oct 2026, or 10% Entrepreneur Relief / 40% / 15%)
+   gives the CGT due.
 
    The rates and the indexation multiplier table are passed in as props — the
    server page reads them from MongoDB (editable at /admin/cgt-rates) and falls

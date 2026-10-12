@@ -17,10 +17,11 @@
      RANGE, and real outcomes can be negative.
 
    Rates move (State Savings changed on 30 Aug 2026, exit tax fell to 38% on
-   1 Jan 2026). Update DATA_AS_OF whenever a figure below changes.
+   1 Jan 2026, CGT fell to 31% on 7 Oct 2026). Update DATA_AS_OF whenever a
+   figure below changes.
    ────────────────────────────────────────────────────────────────────────── */
 
-export const DATA_AS_OF = "28 August 2026";
+export const DATA_AS_OF = "12 October 2026";
 
 /* ---------- Irish tax constants (2026) ---------- */
 
@@ -29,8 +30,9 @@ export const TAX = {
   dirt: 0.33,
   /** Exit tax on funds/ETFs/life policies. Cut from 41% on 1 Jan 2026. */
   exit: 0.38,
-  /** Capital gains tax. */
-  cgt: 0.33,
+  /** Capital gains tax. Cut from 33% for disposals on or after 7 Oct 2026
+      (Budget 2027, Revenue eBrief No. 142/26). The workbook predates it. */
+  cgt: 0.31,
   /** Annual CGT personal exemption, per person, does not carry forward. */
   cgtExemption: 1270,
   /** Revised Entrepreneur Relief — lifetime limit raised to €1.5m in 2026. */
@@ -592,7 +594,7 @@ export const INVESTMENT_OPTIONS: InvestmentOption[] = [
     risk: 4,
     grossLow: 0.05,
     grossHigh: 0.09,
-    taxTreatment: "CGT 33% on gains; dividends at marginal rate",
+    taxTreatment: "CGT 31% on gains; dividends at marginal rate",
     effectiveTax: 0.43,
     liquidity: "Daily",
     lockYears: 0,
@@ -636,7 +638,7 @@ export const INVESTMENT_OPTIONS: InvestmentOption[] = [
     risk: 4,
     grossLow: 0.05,
     grossHigh: 0.08,
-    taxTreatment: "CGT 33%; no deemed disposal",
+    taxTreatment: "CGT 31%; no deemed disposal",
     effectiveTax: TAX.cgt,
     liquidity: "Daily",
     lockYears: 0,
@@ -644,7 +646,7 @@ export const INVESTMENT_OPTIONS: InvestmentOption[] = [
     cap: "None",
     guarantee: "none",
     lumpSum: true,
-    note: "Closed-ended companies listed on an exchange, so generally taxed as shares at 33% CGT with losses offsettable and no eight-year event — the standard Irish workaround for the fund regime. Confirm the specific trust's treatment with a tax adviser, as the offshore-fund rules can catch some structures.",
+    note: "Closed-ended companies listed on an exchange, so generally taxed as shares at 31% CGT with losses offsettable and no eight-year event — the standard Irish workaround for the fund regime. Confirm the specific trust's treatment with a tax adviser, as the offshore-fund rules can catch some structures.",
     link: {
       label: "CCPC — investments",
       url: "https://www.ccpc.ie/manage-your-money/saving-and-investments/investments",
@@ -680,7 +682,7 @@ export const INVESTMENT_OPTIONS: InvestmentOption[] = [
     risk: 3,
     grossLow: 0.035,
     grossHigh: 0.048,
-    taxTreatment: "Coupon at marginal rate; CGT 33% on gains",
+    taxTreatment: "Coupon at marginal rate; CGT 31% on gains",
     effectiveTax: "marginal",
     liquidity: "Daily but thin",
     lockYears: 0,
@@ -702,7 +704,7 @@ export const INVESTMENT_OPTIONS: InvestmentOption[] = [
     risk: 4,
     grossLow: 0.04,
     grossHigh: 0.08,
-    taxTreatment: "Distributions at marginal rate (25% DWT credit); CGT 33%",
+    taxTreatment: "Distributions at marginal rate (25% DWT credit); CGT 31%",
     effectiveTax: 0.48,
     liquidity: "Daily",
     lockYears: 0,
@@ -724,7 +726,7 @@ export const INVESTMENT_OPTIONS: InvestmentOption[] = [
     risk: 4,
     grossLow: 0.04,
     grossHigh: 0.077,
-    taxTreatment: "Rent at marginal rate up to 52%; CGT 33% on sale",
+    taxTreatment: "Rent at marginal rate up to 52%; CGT 31% on sale",
     effectiveTax: 0.5,
     liquidity: "Months to sell",
     lockYears: 5,
@@ -769,7 +771,7 @@ export const INVESTMENT_OPTIONS: InvestmentOption[] = [
     risk: 5,
     grossLow: 0.05,
     grossHigh: 0.15,
-    taxTreatment: "30–50% income tax relief; gains CGT 33%",
+    taxTreatment: "30–50% income tax relief; gains CGT 31%",
     effectiveTax: TAX.cgt,
     liquidity: "4 years minimum",
     lockYears: 4,
@@ -800,7 +802,7 @@ export const INVESTMENT_OPTIONS: InvestmentOption[] = [
     cap: "€10m lifetime relieved gain",
     guarantee: "none",
     lumpSum: true,
-    note: "16% CGT instead of 33% on certified innovative companies under seven years old. Minimum €20,000, or €10,000 if you take 5% or more, and the relieved gain is capped at twice your investment. The shares must be held before 31 December 2026, which is a live deadline. Most start-ups fail, so invest only what you can lose entirely.",
+    note: "16% CGT instead of the standard 31% on certified innovative companies under seven years old. Minimum €20,000, or €10,000 if you take 5% or more, and the relieved gain is capped at twice your investment. The shares must be held before 31 December 2026, which is a live deadline. Most start-ups fail, so invest only what you can lose entirely.",
     link: {
       label: "Revenue — CGT and reliefs",
       url: "https://www.revenue.ie/en/gains-gifts-and-inheritance/index.aspx",
@@ -814,7 +816,7 @@ export const INVESTMENT_OPTIONS: InvestmentOption[] = [
     risk: 5,
     grossLow: 0.08,
     grossHigh: 0.15,
-    taxTreatment: "Depends on structure — usually CGT 33%",
+    taxTreatment: "Depends on structure — usually CGT 31%",
     effectiveTax: TAX.cgt,
     liquidity: "8–12 year lock-up",
     lockYears: 8,
@@ -903,7 +905,7 @@ export const INVESTMENT_OPTIONS: InvestmentOption[] = [
     risk: 4,
     grossLow: 0.02,
     grossHigh: 0.06,
-    taxTreatment: "Usually CGT 33% (physically-backed ETCs)",
+    taxTreatment: "Usually CGT 31% (physically-backed ETCs)",
     effectiveTax: TAX.cgt,
     liquidity: "Daily",
     lockYears: 0,
@@ -925,7 +927,7 @@ export const INVESTMENT_OPTIONS: InvestmentOption[] = [
     risk: 5,
     grossLow: -0.3,
     grossHigh: 0.3,
-    taxTreatment: "CGT 33%; no deemed disposal",
+    taxTreatment: "CGT 31%; no deemed disposal",
     effectiveTax: TAX.cgt,
     liquidity: "Instant",
     lockYears: 0,
@@ -933,7 +935,7 @@ export const INVESTMENT_OPTIONS: InvestmentOption[] = [
     cap: "None",
     guarantee: "none",
     lumpSum: true,
-    note: "Taxed as an asset at 33% CGT, with every trade a disposal and full record-keeping required. Extreme volatility, no cash flow and no intrinsic yield. If it is included at all, keep it to a percentage you would shrug off losing entirely.",
+    note: "Taxed as an asset at 31% CGT, with every trade a disposal and full record-keeping required. Extreme volatility, no cash flow and no intrinsic yield. If it is included at all, keep it to a percentage you would shrug off losing entirely.",
     link: {
       label: "Revenue — crypto-assets",
       url: "https://www.revenue.ie/en/companies-and-charities/financial-services/crypto-assets/index.aspx",
@@ -1153,6 +1155,11 @@ export function grossEquivalent(taxFreeRate: number, taxRate: number): number {
 /* ---------- sources ---------- */
 
 export const SOURCES: { topic: string; source: string; url: string }[] = [
+  {
+    topic: "CGT standard rate 31% from 7 October 2026",
+    source: "Revenue — eBrief No. 142/26, Capital Gains Tax rate of charge",
+    url: "https://www.revenue.ie/en/tax-professionals/ebrief/2026/no-1422026.aspx",
+  },
   {
     topic: "State Savings rates from 30 August 2026",
     source: "NTMA — NTMA to increase Ireland State Savings rates",

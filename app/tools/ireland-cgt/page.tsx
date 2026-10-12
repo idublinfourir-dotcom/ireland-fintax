@@ -7,9 +7,9 @@ import { getCgtData } from "../../lib/cgt-data";
 import { CGT_LAST_REVIEWED } from "../../lib/ireland-cgt";
 
 export const metadata: Metadata = {
-  title: "Ireland Capital Gains Tax Calculator: 33% CGT with Indexation Relief",
+  title: "Ireland Capital Gains Tax Calculator: 31% CGT with Indexation Relief",
   description:
-    "Estimate Irish Capital Gains Tax: proceeds less the indexed acquisition cost, PPR and Entrepreneur reliefs, allowable losses and the €1,270 exemption at 33%. Includes Revenue's indexation multipliers 1974–2002 for older assets. Republic of Ireland.",
+    "Estimate Irish Capital Gains Tax: proceeds less the indexed acquisition cost, PPR and Entrepreneur reliefs, allowable losses and the €1,270 exemption at 31%. Includes Revenue's indexation multipliers 1974–2002 for older assets. Republic of Ireland.",
 };
 
 const notes = [
@@ -19,7 +19,7 @@ const notes = [
   },
   {
     title: "Reliefs and rates",
-    body: "Standard CGT is 33%. Entrepreneur Relief gives 10% on qualifying business gains up to a €1.5m lifetime cap; Principal Private Residence relief exempts the main-home proportion. Each disposal also gets a €1,270 annual exemption.",
+    body: "Standard CGT is 31% on disposals from 7 October 2026 (it was 33% before). Entrepreneur Relief gives 10% on qualifying business gains up to a €1.5m lifetime cap; Principal Private Residence relief exempts the main-home proportion. Each disposal also gets a €1,270 annual exemption.",
   },
   {
     title: "Editable, verified rates",
