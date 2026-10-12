@@ -200,6 +200,15 @@ authoritative.
   publishedAt: Date | null,        // first time it went live; kept on unpublish
   createdAt: Date,
   updatedAt: Date,
+  origin?: {                       // ONLY on posts the news agent drafted
+    kind: "ai", runId: ObjectId, provider: "groq", model: "openai/gpt-oss-120b",
+    promptVersion: "news-v1", format: "single" | "roundup", generatedAt: Date,
+    sources: [{ url, title, publisher, publishedAt, attribution }],
+    flags: [String],               // what the reviewer must check
+    affects: ["cgt", …],           // calculators the story may change
+    reviewedBy: String | null,     // stamped on first publish
+    reviewedAt: Date | null,
+  },
 }
 
 // every `image` above is one of:
@@ -227,6 +236,13 @@ Things to know:
   from there, not taken from the browser.
 - `readingMinutes` lives on the document so the listing can leave `blocks`
   out of its projection.
+- **`origin` marks an AI draft** (see "News agent" below). The save action
+  `$set`s only the editor's fields, so it survives every edit. Publishing an
+  AI draft the first time needs the "I checked this against the sources" box,
+  enforced in the save action, and stamps `reviewedBy`/`reviewedAt`.
+  `origin.sources` is rendered under the public post with each licence's
+  attribution and an AI disclosure, from the document, so no edit removes
+  them. A partial index (`posts_ai_origin_idx`) covers only these posts.
 
 `media`: pictures uploaded in the post editor, served at `/media/<id>` and
 `/media/<id>?size=small`.
@@ -255,6 +271,44 @@ Things to know:
   the file in place, so a picture used in two posts can never vanish from one
   of them. Unused files can be found by checking `media` ids against every
   post's blocks and cover.
+
+### News agent
+
+`scripts/news-agent.ts` (GitHub Actions, Tuesday and Friday) writes AI drafts
+into `posts` with an `origin`, and keeps two collections of its own.
+
+`news_items`: every item the agent has seen, so nothing is triaged or drafted
+twice.
+
+```js
+{
+  _id: "<sha256 of the canonical URL>",   // "seen before?" is a key lookup
+  url, sourceId: "revenue-ebrief", title, publishedAt: Date | null,
+  status: "blocked" | "low" | "duplicate" | "over-cap" | "thin" | "failed"
+        | "drafted" | "published" | "rejected" | "expired",
+  score: 0..10 | null, reason: String | null,   // the model's triage
+  affects: [String],
+  postId: ObjectId | null,     // the draft it became
+  note: String | null,         // rejection reason, or what went wrong
+  attempts: Number,            // "failed" items are retried until 2
+  runId: ObjectId, firstSeenAt: Date, updatedAt: Date,
+}
+```
+
+- **Rejecting a draft** (in the editor, with a reason) deletes the post and
+  sets its item to `rejected`; rejected titles are fed to the next triage as
+  "do not repeat". Publishing sets `published`.
+- A TTL index drops rows 400 days after `firstSeenAt`. The agent only looks
+  10 days back, so an expired row can never come back as new.
+
+`news_runs`: one per run, for `/admin/news`: trigger (`schedule` / `manual` /
+`local`), the GitHub run URL, status (`running` / `ok` / `failed`), counts,
+per-source health, models used with calls and tokens, the post ids it
+drafted, and any errors. A run still `running` after two hours is marked
+`failed` by the next one.
+
+"Checked, no change" on a calculator rate check is not a collection: it is a
+`rate_audit` row with area `news-rate-check:<key>`.
 
 ### Operational
 

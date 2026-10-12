@@ -93,12 +93,37 @@ const INDEXES = {
     [{ status: 1, publishedAt: -1 }, { name: "posts_published_idx" }],
     // The admin list, most recently edited first.
     [{ updatedAt: -1 }, { name: "posts_updated_idx" }],
+    // AI drafts: the "awaiting review" count, the agent's expiry sweep and
+    // its recent-topics list. Partial, so admin-written posts cost nothing.
+    [
+      { "origin.kind": 1, status: 1, createdAt: -1 },
+      {
+        name: "posts_ai_origin_idx",
+        partialFilterExpression: { "origin.kind": "ai" },
+      },
+    ],
   ],
   media: [
     // The same picture uploaded twice is stored once: saveUpload looks the
     // hash up first, and this catches two uploads racing.
     [{ sha256: 1 }, { unique: true, name: "media_sha256_unique" }],
   ],
+
+  // ── news agent ──────────────────────────────────────────────────────────
+  news_items: [
+    // _id is the URL hash, so "seen before?" needs no index of its own.
+    // Rejected titles for the triage's duplicate check, newest first.
+    [{ status: 1, updatedAt: -1 }, { name: "news_items_status_idx" }],
+    // Publishing or rejecting a draft updates the item that produced it.
+    [{ postId: 1 }, { name: "news_items_post_idx" }],
+    // Far longer than the agent's lookback, so an expired row never returns
+    // as new; it only stops the collection growing for ever.
+    [
+      { firstSeenAt: 1 },
+      { expireAfterSeconds: 400 * 24 * 60 * 60, name: "news_items_ttl" },
+    ],
+  ],
+  news_runs: [[{ startedAt: -1 }, { name: "news_runs_started_idx" }]],
 
   // ── operational ─────────────────────────────────────────────────────────
   rate_audit: [

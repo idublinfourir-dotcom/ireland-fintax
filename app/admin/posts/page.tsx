@@ -14,20 +14,27 @@ export const metadata: Metadata = {
 export default async function AdminPostsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ deleted?: string }>;
+  searchParams: Promise<{ deleted?: string; rejected?: string; filter?: string }>;
 }) {
   await requireAdmin();
-  const { deleted } = await searchParams;
+  const { deleted, rejected, filter } = await searchParams;
 
-  let posts: AdminPostRow[] = [];
+  let all: AdminPostRow[] = [];
   let loadError = false;
   try {
-    posts = await listAllPosts();
+    all = await listAllPosts();
   } catch (err) {
     console.error("[blog] admin list failed:", err);
     loadError = true;
   }
-  const liveCount = posts.filter((p) => p.live).length;
+  const awaitingCount = all.filter((p) => p.awaitingReview).length;
+  const reviewOnly = filter === "review";
+  const posts = reviewOnly ? all.filter((p) => p.awaitingReview) : all;
+  const liveCount = all.filter((p) => p.live).length;
+  const tab = (active: boolean) =>
+    `inline-flex h-8 items-center gap-1.5 px-3 text-xs font-semibold transition-colors duration-200 ${
+      active ? "bg-navy-900 text-white" : "text-muted hover:text-ink"
+    }`;
 
   return (
     <div className="mx-auto max-w-5xl">
@@ -65,8 +72,32 @@ export default async function AdminPostsPage({
           Post deleted.
         </p>
       )}
+      {rejected && (
+        <p
+          role="status"
+          className="mb-6 border-l-2 border-primary-500 bg-white px-4 py-3 text-sm font-medium text-ink"
+        >
+          Draft rejected. The news agent will not draft that story again.
+        </p>
+      )}
 
-      {loadError ? (
+      {!loadError && (awaitingCount > 0 || reviewOnly) && (
+        <nav aria-label="Filter posts" className="mb-4 inline-flex border border-line bg-white">
+          <Link href="/admin/posts" className={tab(!reviewOnly)} aria-current={!reviewOnly ? "page" : undefined}>
+            All posts
+          </Link>
+          <Link href="/admin/posts?filter=review" className={tab(reviewOnly)} aria-current={reviewOnly ? "page" : undefined}>
+            Awaiting review
+            <span className="tabular-nums">({awaitingCount})</span>
+          </Link>
+        </nav>
+      )}
+
+      {reviewOnly && posts.length === 0 && !loadError ? (
+        <p className="rounded-none border border-dashed border-line bg-white p-6 text-center text-sm text-muted">
+          No AI drafts are waiting for review.
+        </p>
+      ) : loadError ? (
         <p className="rounded-none border border-dashed border-line bg-white p-6 text-center text-sm text-muted">
           Could not read the posts collection. Check the database connection and try again.
         </p>
@@ -90,7 +121,7 @@ export default async function AdminPostsPage({
         <Panel className="overflow-hidden">
           <div className="flex items-center gap-2.5 border-b border-line px-5 py-4">
             <h3 className="font-display text-base font-semibold text-ink">
-              All posts ({posts.length})
+              {reviewOnly ? "Awaiting review" : "All posts"} ({posts.length})
             </h3>
             <span className="rounded-none bg-primary-50 px-2 py-0.5 text-[11px] font-semibold tabular-nums text-primary-600">
               {liveCount} live
@@ -108,8 +139,25 @@ export default async function AdminPostsPage({
                   </Link>
                   <p className="mt-0.5 text-xs text-muted">
                     {POST_CATEGORY_LABELS[p.category]} · edited {timeAgo(p.updatedAt)}
+                    {p.awaitingReview && p.flagCount > 0 && (
+                      <span className="font-semibold text-primary-600">
+                        {" "}
+                        · {p.flagCount} {p.flagCount === 1 ? "thing" : "things"} to check
+                      </span>
+                    )}
                   </p>
                 </div>
+                {p.ai && (
+                  <span
+                    title={p.awaitingReview ? "Drafted by the news agent, not reviewed yet" : "Drafted by the news agent"}
+                    className={`inline-flex shrink-0 items-center gap-1 rounded-none px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide ${
+                      p.awaitingReview ? "bg-navy-900 text-white" : "bg-surface-muted text-muted"
+                    }`}
+                  >
+                    <Icon name="sparkles" className="h-3 w-3" />
+                    {p.awaitingReview ? "To review" : "AI"}
+                  </span>
+                )}
                 <span
                   className={`shrink-0 rounded-none px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide ${
                     p.live ? "bg-primary-500 text-white" : "bg-surface-muted text-muted"

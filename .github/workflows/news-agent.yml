@@ -1,0 +1,67 @@
+# The news agent (scripts/news-agent.ts): drafts posts about important
+# official tax and finance updates and leaves them for an admin to review in
+# /admin/posts. It never publishes anything.
+#
+# Runs Tuesday and Friday mornings, or on demand: the "Run now" button in
+# /admin/news, or Actions -> News agent -> Run workflow.
+#
+# This repository is PUBLIC, so this file and its run logs are public too.
+# The script logs counts and public source titles only, never draft text.
+# Keep it that way, and never add a pull_request trigger here: that would put
+# these secrets within reach of code from a fork.
+#
+# Secrets (Settings -> Secrets and variables -> Actions):
+#   required  DB_USER, DB_PASSWORD, DB_CLUSTER, MONGODB_DB (or MONGODB_URI),
+#             GROQ_API_KEY
+#   optional  OPENROUTER_API_KEY (fallback models), ADMIN_EMAILS + SMTP_HOST,
+#             SMTP_PORT, SMTP_USER, SMTP_PASS, MAIL_FROM (email the admins),
+#             AUTH_URL (the site origin used in that email's link)
+
+name: News agent
+
+on:
+  schedule:
+    # 06:17 UTC (07:17 Irish summer time). Off the hour on purpose: GitHub
+    # delays or drops scheduled runs when everyone's cron fires at :00.
+    - cron: "17 6 * * 2,5"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# One run at a time; a second request waits rather than racing the first.
+concurrency:
+  group: news-agent
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci --no-audit --no-fund
+
+      - name: Run the news agent
+        run: node scripts/news-agent.ts
+        env:
+          MONGODB_URI: ${{ secrets.MONGODB_URI }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_CLUSTER: ${{ secrets.DB_CLUSTER }}
+          MONGODB_DB: ${{ secrets.MONGODB_DB }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          ADMIN_EMAILS: ${{ secrets.ADMIN_EMAILS }}
+          SMTP_HOST: ${{ secrets.SMTP_HOST }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASS: ${{ secrets.SMTP_PASS }}
+          MAIL_FROM: ${{ secrets.MAIL_FROM }}
+          AUTH_URL: ${{ secrets.AUTH_URL }}

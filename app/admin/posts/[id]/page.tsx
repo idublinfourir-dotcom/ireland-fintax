@@ -4,8 +4,9 @@ import { notFound } from "next/navigation";
 import { requireAdmin } from "../../../lib/auth/guards";
 import { toObjectId } from "../../../lib/collections";
 import { getPostById, hasBeenLive } from "../../../lib/posts";
+import { getAffectedCalculator } from "../../../lib/news-sources";
 import { PageHeader } from "../../../components/dashboard-ui";
-import { PostEditor, type EditorPost } from "../post-editor";
+import { PostEditor, type AiReview, type EditorPost } from "../post-editor";
 
 export const metadata: Metadata = {
   title: "Edit post",
@@ -47,6 +48,29 @@ export default async function EditPostPage({
     slugLocked: hasBeenLive(doc, now),
   };
 
+  const origin = doc.origin;
+  const review: AiReview | null =
+    origin?.kind === "ai"
+      ? {
+          sources: origin.sources.map((s) => ({
+            url: s.url,
+            title: s.title,
+            publisher: s.publisher,
+            publishedAt: s.publishedAt ? s.publishedAt.toISOString() : null,
+          })),
+          flags: origin.flags,
+          affects: origin.affects.flatMap((key) => {
+            const calc = getAffectedCalculator(key);
+            return calc ? [{ label: calc.label, adminHref: calc.adminHref }] : [];
+          }),
+          model: origin.model,
+          format: origin.format,
+          generatedAt: origin.generatedAt.toISOString(),
+          reviewedBy: origin.reviewedBy,
+          reviewedAt: origin.reviewedAt ? origin.reviewedAt.toISOString() : null,
+        }
+      : null;
+
   return (
     <div className="mx-auto max-w-6xl">
       <PageHeader
@@ -66,6 +90,7 @@ export default async function EditPostPage({
       <PostEditor
         key={post.id}
         post={post}
+        review={review}
         notice={saved ? CREATED_NOTICE[saved] : undefined}
       />
     </div>

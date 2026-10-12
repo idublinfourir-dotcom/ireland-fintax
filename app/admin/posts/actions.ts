@@ -1,13 +1,13 @@
 "use server";
 
-/* Blog post admin actions: save (as a draft, publishing, or unpublishing) and
-   delete. Every action re-checks requireAdmin and is logged to the change
-   audit with area "posts". */
+/* Blog post admin actions: save (as a draft, publishing, or unpublishing),
+   delete, and reject an AI draft. Every action re-checks requireAdmin and is
+   logged to the change audit with area "posts". */
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireAdmin } from "../../lib/auth/guards";
-import { toObjectId, type PostDoc } from "../../lib/collections";
+import { newsItemsCollection, toObjectId, type NewsItemStatus, type PostDoc } from "../../lib/collections";
 import { recordAudit } from "../../lib/rate-audit";
 import {
   deletePost,
@@ -15,6 +15,7 @@ import {
   hasBeenLive,
   insertPost,
   isDuplicateKeyError,
+  markAiReviewed,
   updatePost,
 } from "../../lib/posts";
 import { getMediaSizes } from "../../lib/media";
@@ -42,6 +43,21 @@ export interface PostFormState {
 
 const field = (formData: FormData, name: string) =>
   String(formData.get(name) ?? "");
+
+/** Keeps the news agent's record of an item in step with its draft, so a
+    rejected story is never drafted again. Best-effort: the post change has
+    already happened and must not be undone by this. */
+async function setNewsItemStatus(postId: PostDoc["_id"], status: NewsItemStatus, note?: string) {
+  try {
+    const items = await newsItemsCollection();
+    await items.updateMany(
+      { postId },
+      { $set: { status, updatedAt: new Date(), ...(note === undefined ? {} : { note }) } },
+    );
+  } catch (err) {
+    console.error("[news] item status update failed:", err);
+  }
+}
 
 function revalidateBlog(slugs: string[]) {
   revalidatePath("/blog");
@@ -92,6 +108,18 @@ export async function savePostAction(
       : intent === "unpublish"
         ? "draft"
         : (existing?.status ?? "draft");
+
+  /* An AI draft goes live only after someone says they checked it. That
+     review is what exempts it from the AI Act's Art. 50(4) labelling duty,
+     so it is a real gate here, not just a disabled button in the browser. */
+  const needsReview =
+    status === "published" && existing?.origin?.kind === "ai" && !existing.origin.reviewedAt;
+  if (needsReview && formData.get("facts_checked") === null) {
+    return {
+      status: "error",
+      message: "Tick “I checked this against the sources” before publishing an AI draft.",
+    };
+  }
 
   const result = validatePostInput(
     {
@@ -193,6 +221,15 @@ export async function savePostAction(
 
   const wentLive = status === "published" && existing?.status !== "published";
   const wentOffline = status === "draft" && existing?.status === "published";
+
+  if (needsReview && existing) {
+    try {
+      await markAiReviewed(existing._id, user.email);
+    } catch (err) {
+      console.error("[blog] review stamp failed:", err);
+    }
+    await setNewsItemStatus(existing._id, "published");
+  }
   const action = wentLive
     ? "publish"
     : wentOffline
@@ -209,7 +246,7 @@ export async function savePostAction(
   await recordAudit({
     area: "posts",
     action,
-    summary: `${verb} "${post.title}"`,
+    summary: `${verb} "${post.title}"${needsReview ? " (AI draft, checked against its sources)" : ""}`,
     details: { id: savedId, slug, status },
     changedBy: user.email,
   });
@@ -278,4 +315,51 @@ export async function deletePostAction(
 
   // Already gone counts as done: the list is the right place either way.
   redirect("/admin/posts?deleted=1");
+}
+
+/**
+ * Rejects an AI draft: deletes it and records why against the story, so the
+ * news agent never drafts that story again and the reason shows in
+ * /admin/news. Only for AI drafts that have never been live; anything else
+ * goes through the ordinary delete.
+ */
+export async function rejectAiDraftAction(
+  _prev: DeleteState,
+  formData: FormData,
+): Promise<DeleteState> {
+  const user = await requireAdmin();
+
+  const id = toObjectId(field(formData, "id"));
+  if (!id) return { message: "Could not reject: bad request." };
+  const reason = field(formData, "reject_reason").replace(/\s+/g, " ").trim().slice(0, 300);
+  if (!reason) return { message: "Say briefly why, so the agent learns what to skip." };
+
+  let post: PostDoc | null;
+  try {
+    post = await getPostById(id);
+  } catch (err) {
+    console.error("[blog] post read failed:", err);
+    return { message: "Could not reach the database. Try again." };
+  }
+  if (!post) redirect("/admin/posts");
+  if (post.origin?.kind !== "ai" || post.status !== "draft" || post.publishedAt) {
+    return { message: "Only an unpublished AI draft can be rejected. Use Delete instead." };
+  }
+
+  try {
+    await deletePost(id);
+  } catch (err) {
+    console.error("[blog] post delete failed:", err);
+    return { message: "Could not reject. Try again." };
+  }
+  await setNewsItemStatus(id, "rejected", reason);
+  await recordAudit({
+    area: "posts",
+    action: "ai-reject",
+    summary: `Rejected AI draft "${post.title}": ${reason}`,
+    details: { id: id.toHexString(), reason, sources: post.origin.sources.map((s) => s.url) },
+    changedBy: user.email,
+  });
+  revalidatePath("/admin/posts");
+  redirect("/admin/posts?rejected=1");
 }
