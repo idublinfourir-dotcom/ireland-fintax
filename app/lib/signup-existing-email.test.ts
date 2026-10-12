@@ -8,15 +8,15 @@ import {
 
 const base = {
   name: "Cian Murphy",
-  loginUrl: "https://www.irelandfintax.ie/login",
-  resetUrl: "https://www.irelandfintax.ie/forgot-password",
+  loginUrl: "https://www.irishfintax.ie/login",
+  resetUrl: "https://www.irishfintax.ie/forgot-password",
   firmName: "Ireland Fintax",
 };
 
 test("both parts point at signing in and at resetting", () => {
   for (const part of [existingAccountText(base), existingAccountHtml(base)]) {
-    assert.match(part, /irelandfintax\.ie\/login/);
-    assert.match(part, /irelandfintax\.ie\/forgot-password/);
+    assert.match(part, /irishfintax\.ie\/login/);
+    assert.match(part, /irishfintax\.ie\/forgot-password/);
   }
 });
 
