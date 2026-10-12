@@ -269,8 +269,16 @@ Whenever anything else gets hidden rather than deleted, add a row here.
   accounts with `emailVerified: null` — it only stamps that field for its own
   Email provider — so the `signIn` event in `auth.ts` sets it for the `google`
   provider. Don't remove that: without it a password set later on the settings
-  page can never sign in, and signup mistakes a live Google account for an
-  abandoned registration and overwrites its credentials. `/auth/callback` is now only a
+  page can never sign in. **That same one-time stamp also clears
+  `passwordHash` and the account's pending confirmation links** (Oct 2026). An
+  unconfirmed account's password was set by whoever posted the signup form,
+  which proves nothing: without the clear, Mallory pre-registers Alice's
+  address, Alice later continues with Google, the account is linked by email
+  and verified, and Mallory's password now signs in to it (as an admin, if the
+  address is in `ADMIN_EMAILS`). Never drop the `passwordHash: null` from that
+  write. The `signIn` callback in `auth.config.ts` also refuses a Google
+  profile with `email_verified` not true, since the linking rests on it, and it
+  runs before Auth.js links anything. `/auth/callback` is now only a
   role-router (admins → /admin, else /portal); it does no code exchange.
   The button hides itself when `AUTH_GOOGLE_ID`/`AUTH_GOOGLE_SECRET` are unset —
   the flag is read server-side and threaded down as a prop, because the browser

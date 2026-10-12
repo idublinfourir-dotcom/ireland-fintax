@@ -44,6 +44,21 @@ export default {
 
   callbacks: {
     /**
+     * Refuses a Google profile whose address Google has not verified.
+     *
+     * allowDangerousEmailAccountLinking above, and the `emailVerified` stamp
+     * the signIn event in auth.ts applies to Google sign-ins, both rest on
+     * Google having proved the address. Google says so per profile, and an
+     * unverified one would otherwise be linked to whatever account already
+     * holds that address. Runs before Auth.js links anything. Every other
+     * provider decides for itself in its own `authorize`.
+     */
+    signIn({ account, profile }) {
+      if (account?.provider === "google") return profile?.email_verified === true;
+      return true;
+    },
+
+    /**
      * Runs on every request that touches the session, including in middleware.
      * `user` is present only on the sign-in that mints the token, so the DB is
      * read exactly once per session and the role rides along in the JWT

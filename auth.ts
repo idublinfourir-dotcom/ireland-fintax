@@ -5,7 +5,12 @@ import type { Adapter, AdapterUser } from "next-auth/adapters";
 
 import authConfig from "./auth.config";
 import { getMongoClient, MONGODB_DB } from "./app/lib/mongodb";
-import { toObjectId, usersCollection, type UserDoc } from "./app/lib/collections";
+import {
+  toObjectId,
+  usersCollection,
+  verificationTokensCollection,
+  type UserDoc,
+} from "./app/lib/collections";
 import { verifyPassword } from "./app/lib/auth/password";
 import { roleForEmail } from "./app/lib/auth/config";
 import { consumeVerificationToken } from "./app/lib/auth/tokens";
@@ -209,22 +214,39 @@ export const {
 
       /* Auth.js creates — and links — OAuth accounts with `emailVerified:
          null`; it only stamps that field for its own Email provider. Google
-         does verify addresses, which is the whole justification for
+         does verify addresses (the signIn callback in auth.config.ts refuses
+         a profile that says otherwise), which is the whole justification for
          allowDangerousEmailAccountLinking, so the proof is recorded here.
-         Without it two things break: a password set later on the settings page
-         can never be used to sign in (`authorize` below refuses an unverified
-         account), and the signup form mistakes a live Google account for an
-         abandoned registration and overwrites its name and password hash.
-         `emailVerified: null` in the filter makes this a one-time stamp. */
+         Without it a password set later on the settings page can never be
+         used to sign in: `authorize` below refuses an unverified account.
+         `emailVerified: null` in the filter makes this a one-time stamp.
+
+         The same write CLEARS the password hash, and that is load-bearing.
+         An unconfirmed account's password was chosen by whoever posted the
+         signup form, which proves nothing about the address. Mallory signs up
+         with Alice's address and a password of her own; the account sits
+         unconfirmed; Alice later clicks "Continue with Google", Auth.js links
+         Google to that account by email, and this stamp would otherwise turn
+         Mallory's password into a working credential for Alice's account,
+         complete with the guest enquiries claimed below. If the address is in
+         ADMIN_EMAILS the pre-registered account is already an admin. So the
+         first proof of ownership wipes whatever an unproved party set. A real
+         owner who signed up and then used Google before confirming loses
+         nothing but a password, which they can set again in settings. The
+         outstanding confirmation links go too: the address is proved now. */
       if (account.provider === "google") {
         try {
           const id = toObjectId(user.id);
           if (id) {
             const users = await usersCollection();
-            await users.updateOne(
+            const { modifiedCount } = await users.updateOne(
               { _id: id, emailVerified: null },
-              { $set: { emailVerified: new Date() } },
+              { $set: { emailVerified: new Date(), passwordHash: null } },
             );
+            if (modifiedCount > 0) {
+              const tokens = await verificationTokensCollection();
+              await tokens.deleteMany({ userId: id });
+            }
           }
         } catch (err) {
           console.error("[auth] could not mark the Google address verified:", err);
