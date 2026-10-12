@@ -68,8 +68,9 @@ test("reproduces the workbook's net returns", () => {
   assert.ok(Math.abs(netReturn(byId("state-savings-10yr-solidarity"), m) - 0.0266) < 1e-9);
   // Global equity ETF 6.5% mid less 38% exit tax = 4.03%
   assert.ok(Math.abs(netReturn(byId("global-equity-etf"), m) - 0.0403) < 1e-9);
-  // Investment trust 6.5% mid less 33% CGT = 4.355%
-  assert.ok(Math.abs(netReturn(byId("investment-trusts"), m) - 0.04355) < 1e-9);
+  // Investment trust 6.5% mid less 31% CGT = 4.485%. The workbook had 4.355%
+  // at 33%; CGT fell to 31% on 7 October 2026 (Budget 2027).
+  assert.ok(Math.abs(netReturn(byId("investment-trusts"), m) - 0.04485) < 1e-9);
   // Raisin 3.245% mid less 33% DIRT = 2.17415%
   assert.ok(Math.abs(netReturn(byId("raisin-fixed-term"), m) - 0.0217415) < 1e-9);
 });
@@ -98,7 +99,7 @@ test("reproduces the workbook's 10-year projection on 100,000", () => {
   assert.ok(Math.abs(route(0.0266, 0) - 130_020.73) < 0.5); // 10-year Solidarity Bond
   assert.ok(Math.abs(route(0.0339, 0.52) - 117_516.7) < 0.5); // Irish government bond
   assert.ok(Math.abs(route(0.065, TAX.exit) - 148_451.98) < 0.5); // global equity ETF
-  assert.ok(Math.abs(route(0.065, TAX.cgt) - 153_155.51) < 0.5); // investment trust
+  assert.ok(Math.abs(route(0.065, TAX.cgt) - 155_074.17) < 0.5); // investment trust (31% CGT; workbook 153,155.51 at 33%)
   assert.ok(Math.abs(route(0.065, 0) - 187_713.75) < 0.5); // the same equities in a pension
 });
 
@@ -109,9 +110,9 @@ test("the plan projects each option from its own mid-range net return", () => {
   assert.ok(etf && trust);
   // Both mid at 6.5% gross, so they meet the workbook's projection exactly.
   assert.ok(Math.abs(etf.projectedValue - 148_451.98) < 0.5);
-  assert.ok(Math.abs(trust.projectedValue - 153_155.51) < 0.5);
-  // The 33% CGT wrapper is worth this much more than the 38% fund wrapper.
-  assert.ok(trust.projectedValue - etf.projectedValue > 4_500);
+  assert.ok(Math.abs(trust.projectedValue - 155_074.17) < 0.5);
+  // The 31% CGT wrapper is worth this much more than the 38% fund wrapper.
+  assert.ok(trust.projectedValue - etf.projectedValue > 6_500);
 });
 
 test("grossEquivalent restates a tax-free rate for a DIRT payer", () => {

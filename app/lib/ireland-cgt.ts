@@ -24,8 +24,14 @@
      expenditure up to 31 Dec 2002; the multiplier for 2003 onward is 1.000
      (no uplift). Pre-6 April 1974 uses the 1974/75 factor (7.528).
 
-   Sources (verified July 2026):
-   - Rate 33%, €1,270 annual exemption, allowable deductions:
+   Sources (verified July 2026; standard rate October 2026):
+   - Standard rate 31% for disposals on or after 7 October 2026, cut from 33%
+     by Budget 2027 (Revenue eBrief No. 142/26, TDM Part 02-03-01A). The
+     calculator has no disposal date, so it applies 31% throughout; a
+     disposal before 7 October 2026 was taxed at 33%. Development land stays
+     at 33%, which this calculator does not model (see below).
+       revenue.ie/en/tax-professionals/ebrief/2026/no-1422026.aspx
+   - €1,270 annual exemption, allowable deductions:
        revenue.ie/en/gains-gifts-and-inheritance/what-do-you-pay-cgt-on/how-to-calculate-cgt
    - Indexation multiplier table (frozen "31 Dec 2004 et seq" column):
        revenue.ie/en/gains-gifts-and-inheritance/documents/cgtmult.pdf
@@ -49,7 +55,7 @@
    ────────────────────────────────────────────────────────────────────────── */
 
 /** When the rates/multipliers below were last checked against Revenue. */
-export const CGT_LAST_REVIEWED = "July 2026";
+export const CGT_LAST_REVIEWED = "October 2026";
 export const CGT_SOURCE_URL =
   "https://www.revenue.ie/en/gains-gifts-and-inheritance/what-do-you-pay-cgt-on/how-to-calculate-cgt.aspx";
 
@@ -65,7 +71,7 @@ export function round2(n: number): number {
 /* ---------- editable config (code fallback; live copy in cgt_settings) ------ */
 
 export interface CgtConfig {
-  /** Standard CGT rate, e.g. 33. */
+  /** Standard CGT rate, e.g. 31. */
   standardRatePercent: number;
   /** Annual personal exemption in euro, e.g. 1270. */
   annualExemptionEur: number;
@@ -76,7 +82,7 @@ export interface CgtConfig {
 }
 
 export const CGT_CONFIG_DEFAULT: CgtConfig = {
-  standardRatePercent: 33,
+  standardRatePercent: 31,
   annualExemptionEur: 1270,
   entrepreneurRatePercent: 10,
   entrepreneurLifetimeCapEur: 1_500_000,

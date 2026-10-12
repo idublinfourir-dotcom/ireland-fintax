@@ -27,7 +27,7 @@ export const CONTACT_FAQS: ContactFaq[] = [
   },
   {
     q: "How much Capital Gains Tax will I pay?",
-    a: "CGT is 33% with indexation relief on older assets. Estimate it with the CGT calculator.",
+    a: "CGT is 31% on disposals from 7 October 2026 (33% before), with indexation relief on older assets. Estimate it with the CGT calculator.",
     href: "/tools/ireland-cgt",
     keywords: ["capital gains", "cgt", "selling", "sold", "disposal", "shares"],
   },

@@ -4,7 +4,7 @@
    Covers indexation relief (per-year multiplier), enhancement indexed on its
    own year, disposal at a loss, PPR proportional relief (incl. the deemed
    last-12-months guard), losses before exemption, the exemption clamp, the
-   40%/15% special rates, the Entrepreneur Relief 10%/33% split at the €1.5m
+   40%/15% special rates, the Entrepreneur Relief 10%/31% split at the €1.5m
    lifetime cap, payment-date branch, edge inputs, and the multiplier table. */
 
 import { test } from "node:test";
@@ -133,8 +133,8 @@ test("entrepreneur relief splits at the €1.5m cap", () => {
   assert.equal(r.bands[0].amount, 1_500_000);
   assert.equal(r.bands[0].tax, 150_000); // 1.5m × 10%
   assert.equal(r.bands[1].amount, 500_000);
-  assert.equal(r.bands[1].tax, 165_000); // 0.5m × 33%
-  assert.equal(r.totalTax, 315_000);
+  assert.equal(r.bands[1].tax, 155_000); // 0.5m × 31%
+  assert.equal(r.totalTax, 305_000);
 });
 
 test("entrepreneur cap reduced by prior lifetime use", () => {
@@ -170,7 +170,7 @@ test("multiplier table has 29 rows, 1974/75 first at 7.528, 2002 last", () => {
 
 test("parseCgtConfig accepts a valid object", () => {
   const c = parseCgtConfig({
-    standardRatePercent: 33,
+    standardRatePercent: 31,
     annualExemptionEur: 1270,
     entrepreneurRatePercent: 10,
     entrepreneurLifetimeCapEur: 1_500_000,
