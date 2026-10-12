@@ -12,13 +12,60 @@ import {
   ShareLinks,
   TableOfContents,
 } from "../../components/blog";
-import { getPublishedPost, getRelatedPosts } from "../../lib/posts";
+import { getPublishedPost, getRelatedPosts, type Post } from "../../lib/posts";
 import { headingAnchors, splitPages, tableOfContents } from "../../lib/post-blocks";
 import { imageUrl, POST_DISCLAIMER } from "../../lib/post-types";
 import { site } from "../../lib/content";
 
 type Params = Promise<{ slug: string }>;
 type Search = Promise<{ page?: string | string[] }>;
+
+const sourceDate = new Intl.DateTimeFormat("en-IE", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" });
+
+/**
+ * Where a news-agent post came from. Rendered from the post's stored origin,
+ * like POST_DISCLAIMER, so no edit can drop it: the links and each licence's
+ * attribution are what the CC BY terms ask for, and the last line says plainly
+ * that AI drafted it and a person checked it.
+ */
+function PostSources({ sources }: { sources: NonNullable<Post["sources"]> }) {
+  const attributions = [...new Set(sources.map((s) => s.attribution).filter(Boolean))];
+  return (
+    <section aria-labelledby="post-sources" className="mb-10">
+      <h2 id="post-sources" className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted">
+        Sources
+      </h2>
+      <ul className="mt-3 space-y-2 text-sm leading-6">
+        {sources.map((s) => (
+          <li key={s.url}>
+            <a
+              href={s.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-medium text-primary-600 transition-colors duration-200 hover:text-primary-500"
+            >
+              {s.title}
+            </a>
+            <span className="text-muted">
+              {" "}
+              ({s.publisher}
+              {s.publishedAt && `, ${sourceDate.format(s.publishedAt)}`})
+            </span>
+          </li>
+        ))}
+      </ul>
+      {attributions.map((a) => (
+        <p key={a} className="mt-3 text-xs leading-5 text-muted">
+          {a}
+        </p>
+      ))}
+      <p className="mt-3 text-xs leading-5 text-muted">
+        Drafted with the help of AI from the official sources above, then checked and edited by a person before
+        publishing.
+      </p>
+    </section>
+  );
+}
 
 /* generateMetadata and the page both need the post; cache() makes that one
    database read per request instead of two. */
@@ -110,6 +157,7 @@ export default async function BlogPostPage({
             <PageNav slug={post.slug} page={page} pages={pages.length} />
 
             <div className="mt-14 border-t border-line pt-8">
+              {post.sources && post.sources.length > 0 && <PostSources sources={post.sources} />}
               <ShareLinks url={url} title={post.title} />
               <p className="mt-8 text-sm leading-6 text-muted">{POST_DISCLAIMER}</p>
             </div>

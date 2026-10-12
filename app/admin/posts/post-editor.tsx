@@ -38,12 +38,29 @@ import {
 import { POST_LIMITS, type PostField } from "../../lib/post-validation";
 import {
   deletePostAction,
+  rejectAiDraftAction,
   savePostAction,
   type DeleteState,
   type PostFormState,
 } from "./actions";
 import { BlockEditor, newId } from "./block-editor";
 import { ImagePicker } from "./image-picker";
+
+/** What the news agent left for the reviewer of an AI draft. */
+export interface AiReview {
+  sources: { url: string; title: string; publisher: string; publishedAt: string | null }[];
+  flags: string[];
+  /** Calculators whose rates the story may change, with their rate editors. */
+  affects: { label: string; adminHref: string }[];
+  model: string;
+  format: "single" | "roundup";
+  generatedAt: string;
+  reviewedBy: string | null;
+  reviewedAt: string | null;
+}
+
+// UTC, so the server render and the browser agree on the day.
+const reviewDate = new Intl.DateTimeFormat("en-IE", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
 
 export interface EditorPost {
   id: string;
@@ -99,11 +116,160 @@ function Grow(props: React.TextareaHTMLAttributes<HTMLTextAreaElement> & { value
 /** A new post starts with one empty paragraph, ready to type in. */
 const starterBlocks = (): Block[] => [{ id: newId(), type: "paragraph", text: "" }];
 
+/**
+ * The banner over an AI draft: where it came from, what to check, which
+ * calculators it may affect, and a way to reject it with a reason.
+ */
+function AiReviewPanel({
+  review,
+  reviewing,
+  rejectReason,
+  onRejectReason,
+  onReject,
+  busy,
+  rejecting,
+  rejectMessage,
+}: {
+  review: AiReview;
+  /** Still a draft nobody has signed off. */
+  reviewing: boolean;
+  rejectReason: string;
+  onRejectReason: (v: string) => void;
+  onReject: () => void;
+  busy: boolean;
+  rejecting: boolean;
+  rejectMessage?: string;
+}) {
+  const canReject = !busy && rejectReason.trim() !== "";
+  return (
+    <section
+      aria-label="AI draft review"
+      className="border border-l-2 border-line border-l-primary-500 bg-white lg:col-span-2"
+    >
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-line bg-primary-50/60 px-5 py-3">
+        <p className="text-sm font-semibold text-ink">
+          {reviewing ? "AI draft: check it against the sources before publishing" : "Drafted by the news agent"}
+        </p>
+        <p className="text-[11px] text-muted">
+          {review.format === "roundup" ? "Round-up · " : ""}
+          {review.model} · {reviewDate.format(new Date(review.generatedAt))}
+          {review.reviewedAt &&
+            ` · checked by ${review.reviewedBy ?? "an admin"} on ${reviewDate.format(new Date(review.reviewedAt))}`}
+        </p>
+      </div>
+
+      <div className="grid gap-6 px-5 py-4 md:grid-cols-2">
+        <div>
+          <h3 className={labelCls}>Things to check</h3>
+          {review.flags.length === 0 ? (
+            <p className="text-sm text-muted">
+              Nothing was flagged. Still read it against the sources: the checks catch invented figures and
+              links, not every misreading.
+            </p>
+          ) : (
+            <ul className="list-disc space-y-1.5 pl-5 text-sm leading-6 text-ink-body">
+              {review.flags.map((flag) => (
+                <li key={flag}>{flag}</li>
+              ))}
+            </ul>
+          )}
+          {review.affects.length > 0 && (
+            <>
+              <h3 className={`${labelCls} mt-4`}>May change calculator rates</h3>
+              <p className="text-sm leading-6 text-ink-body">
+                {review.affects.map((a, i) => (
+                  <span key={a.adminHref}>
+                    {i > 0 && ", "}
+                    <Link href={a.adminHref} className="font-semibold text-primary-600 hover:text-primary-500">
+                      {a.label}
+                    </Link>
+                  </span>
+                ))}
+                . If the story changes a rate, update the calculator too, or the site contradicts itself.
+              </p>
+            </>
+          )}
+        </div>
+
+        <div>
+          <h3 className={labelCls}>Sources</h3>
+          <ul className="space-y-2 text-sm leading-5">
+            {review.sources.map((s) => (
+              <li key={s.url}>
+                <a
+                  href={s.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-semibold text-primary-600 hover:text-primary-500"
+                >
+                  {s.title} <span aria-hidden="true">↗</span>
+                </a>
+                <span className="block text-xs text-muted">
+                  {s.publisher}
+                  {s.publishedAt && ` · ${reviewDate.format(new Date(s.publishedAt))}`}
+                </span>
+              </li>
+            ))}
+          </ul>
+
+          {reviewing && (
+            <div className="mt-5 border-t border-line pt-4">
+              <label htmlFor="reject_reason" className={labelCls}>
+                Not worth publishing?
+              </label>
+              <div className="flex flex-wrap gap-2">
+                <input
+                  id="reject_reason"
+                  name="reject_reason"
+                  value={rejectReason}
+                  onChange={(e) => onRejectReason(e.target.value)}
+                  onKeyDown={(e) => {
+                    // Enter here would otherwise submit the form through its
+                    // default button, which is Publish.
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      if (canReject) onReject();
+                    }
+                  }}
+                  maxLength={300}
+                  placeholder="Why, in a few words (e.g. too technical)"
+                  className="h-9 min-w-0 flex-1 border border-line bg-white px-3 text-sm text-ink focus:border-primary-400 focus:outline-none"
+                />
+                {/* type="button": as a submit button it would come first in
+                    the form and become the one Enter presses in any field. */}
+                <button
+                  type="button"
+                  onClick={onReject}
+                  disabled={!canReject}
+                  className="inline-flex h-9 cursor-pointer items-center border border-line px-4 text-xs font-semibold text-ink-body transition-colors duration-200 hover:border-ink/40 hover:text-ink disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {rejecting ? "Rejecting…" : "Reject draft"}
+                </button>
+              </div>
+              <p className="mt-1.5 text-[11px] text-muted">
+                Deletes the draft. The agent will not draft this story again.
+              </p>
+              {rejectMessage && (
+                <p role="alert" className="mt-2 text-xs font-medium text-primary-600">
+                  {rejectMessage}
+                </p>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 export function PostEditor({
   post,
+  review = null,
   notice,
 }: {
   post: EditorPost | null;
+  /** Set for a post the news agent drafted. */
+  review?: AiReview | null;
   /** One-off confirmation carried over from the first save of a new post. */
   notice?: string;
 }) {
@@ -121,6 +287,8 @@ export function PostEditor({
   );
   const [mode, setMode] = useState<"write" | "preview">("write");
   const [confirmingDelete, setConfirmingDelete] = useState(false);
+  const [factsChecked, setFactsChecked] = useState(false);
+  const [rejectReason, setRejectReason] = useState("");
 
   const values = { title, slug, excerpt, category, cover, blocks };
   const snapshot = JSON.stringify(values);
@@ -145,6 +313,7 @@ export function PostEditor({
 
   // Redirects to the list on success, so only a failure ever comes back.
   const [deleteState, deleteAction, deleting] = useActionState<DeleteState, FormData>(deletePostAction, {});
+  const [rejectState, rejectAction, rejecting] = useActionState<DeleteState, FormData>(rejectAiDraftAction, {});
 
   // Warn before a reload or a closed tab throws away unsaved writing.
   useEffect(() => {
@@ -160,7 +329,10 @@ export function PostEditor({
   const slugLocked = current?.slugLocked ?? false;
   const errors = state.status === "error" ? (state.errors ?? {}) : {};
   const invalid = (f: PostField) => (errors[f] ? true : undefined);
-  const busy = pending || deleting;
+  const busy = pending || deleting || rejecting;
+  // An AI draft nobody has signed off: Publish waits for the checkbox. The
+  // save action enforces the same rule; this only saves a wasted round trip.
+  const reviewing = Boolean(review && !review.reviewedAt && status !== "published");
 
   const note =
     state.status === "idle"
@@ -187,15 +359,35 @@ export function PostEditor({
     startTransition(() => formAction(formData));
   }
 
+  const formRef = useRef<HTMLFormElement>(null);
+  function onReject() {
+    if (!formRef.current) return;
+    const formData = new FormData(formRef.current);
+    startTransition(() => rejectAction(formData));
+  }
+
   const pages = splitPages(blocks);
   const anchors = headingAnchors(blocks);
 
   return (
-    <form onSubmit={onSubmit} noValidate className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_19rem]">
+    <form ref={formRef} onSubmit={onSubmit} noValidate className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_19rem]">
       {post && <input type="hidden" name="id" value={post.id} />}
       <input type="hidden" name="cover" value={JSON.stringify(cover)} />
       <input type="hidden" name="blocks" value={JSON.stringify(blocks)} />
       <input type="hidden" name="category" value={category} />
+
+      {review && (
+        <AiReviewPanel
+          review={review}
+          reviewing={reviewing}
+          rejectReason={rejectReason}
+          onRejectReason={setRejectReason}
+          onReject={onReject}
+          busy={busy}
+          rejecting={rejecting}
+          rejectMessage={rejectState.message}
+        />
+      )}
 
       {/* ── the document ── */}
       <div className="min-w-0 border border-line bg-white">
@@ -354,7 +546,25 @@ export function PostEditor({
               </>
             ) : (
               <>
-                <button type="submit" name="intent" value="publish" disabled={busy} className={primaryBtn}>
+                {reviewing && (
+                  <label className="mb-1 flex cursor-pointer items-start gap-2 text-xs leading-5 text-ink-body">
+                    <input
+                      type="checkbox"
+                      name="facts_checked"
+                      checked={factsChecked}
+                      onChange={(e) => setFactsChecked(e.target.checked)}
+                      className="mt-0.5 h-4 w-4 shrink-0 cursor-pointer accent-primary-500"
+                    />
+                    I checked this against the sources: the facts, figures and dates are right.
+                  </label>
+                )}
+                <button
+                  type="submit"
+                  name="intent"
+                  value="publish"
+                  disabled={busy || (reviewing && !factsChecked)}
+                  className={primaryBtn}
+                >
                   {pending ? "Saving…" : "Publish"}
                 </button>
                 <button type="submit" name="intent" value="save" disabled={busy} className={outlineBtn}>

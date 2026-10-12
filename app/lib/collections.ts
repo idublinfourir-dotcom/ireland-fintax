@@ -275,6 +275,47 @@ export interface PostDoc {
   publishedAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
+  /** Present only on posts the news agent drafted. Absent on every post an
+      admin wrote, so treat it as optional everywhere. */
+  origin?: PostOrigin;
+}
+
+/** A source the news agent wrote a post from. */
+export interface PostOriginSource {
+  url: string;
+  title: string;
+  publisher: string;
+  publishedAt: Date | null;
+  /** The licence's attribution statement, copied in at draft time so a
+      later change to the source list never rewrites an old post's credits. */
+  attribution: string;
+}
+
+/**
+ * Provenance of an AI-drafted post (scripts/news-agent.ts).
+ *
+ * The save action keeps it through edits: `updatePost` is a `$set` of the
+ * editor's fields only. `reviewedBy`/`reviewedAt` are stamped the first time
+ * the post is published, which needs the "facts checked" box ticked: that
+ * human review is what exempts the post from the EU AI Act's Art. 50(4)
+ * labelling duty, so it has to be a real step, not a default.
+ */
+export interface PostOrigin {
+  kind: "ai";
+  runId: ObjectId;
+  provider: string;
+  model: string;
+  /** PROMPT_VERSION in lib/news-sources.ts when it was drafted. */
+  promptVersion: string;
+  format: "single" | "roundup";
+  generatedAt: Date;
+  sources: PostOriginSource[];
+  /** What the reviewer must check: unmatched figures, empty picture slots. */
+  flags: string[];
+  /** AFFECTED_CALCULATORS keys whose rates this story may change. */
+  affects: string[];
+  reviewedBy: string | null;
+  reviewedAt: Date | null;
 }
 
 /**
@@ -303,6 +344,84 @@ export interface MediaDoc {
   sha256: string;
   uploadedBy: string;
   createdAt: Date;
+}
+
+/* ── news agent ────────────────────────────────────────────────────────── */
+
+export type NewsItemStatus =
+  /** Matched BLOCKED_TITLES; never sent to the model. */
+  | "blocked"
+  /** Scored under NEWS_LIMITS.minScore. */
+  | "low"
+  /** Repeats a recent post. */
+  | "duplicate"
+  /** Qualified, but past the per-run cap and the round-up's room. */
+  | "over-cap"
+  /** Too little source text to write from honestly. */
+  | "thin"
+  /** Drafting failed; retried on the next run while `attempts` < 2. */
+  | "failed"
+  | "drafted"
+  /** Its draft was published. */
+  | "published"
+  /** Its draft was rejected in the editor; `note` holds the reason. */
+  | "rejected"
+  /** Its draft was never opened and was removed after NEWS_LIMITS.expireDays. */
+  | "expired";
+
+/**
+ * Every item the news agent has seen, so nothing is triaged or drafted twice.
+ *
+ * `_id` is the SHA-256 of the canonical URL (`urlHash` in lib/news-parse.ts),
+ * so "have we seen this?" is a primary-key lookup and two runs cannot insert
+ * the same item. A TTL index on `firstSeenAt` keeps it bounded; the agent's
+ * lookback window is far shorter than the TTL, so an expired row can never
+ * come back as new.
+ */
+export interface NewsItemDoc {
+  _id: string;
+  url: string;
+  sourceId: string;
+  title: string;
+  publishedAt: Date | null;
+  status: NewsItemStatus;
+  score: number | null;
+  reason: string | null;
+  affects: string[];
+  postId: ObjectId | null;
+  /** Rejection reason, or what went wrong. */
+  note: string | null;
+  attempts: number;
+  runId: ObjectId;
+  firstSeenAt: Date;
+  updatedAt: Date;
+}
+
+export type NewsRunStatus = "running" | "ok" | "failed";
+
+/** One run of the news agent, for the history in /admin/news. */
+export interface NewsRunDoc {
+  _id: ObjectId;
+  trigger: "schedule" | "manual" | "local";
+  /** The GitHub Actions run, when it ran there. */
+  runUrl: string | null;
+  status: NewsRunStatus;
+  startedAt: Date;
+  finishedAt: Date | null;
+  counts: {
+    fetched: number;
+    fresh: number;
+    blocked: number;
+    triaged: number;
+    qualified: number;
+    drafted: number;
+    failed: number;
+  };
+  sources: { id: string; ok: boolean; items: number; error: string | null }[];
+  models: { provider: string; model: string; calls: number; tokens: number }[];
+  postIds: ObjectId[];
+  errors: string[];
+  promptVersion: string;
 }
 
 /* ── operational ───────────────────────────────────────────────────────── */
@@ -409,6 +528,8 @@ export const COLLECTIONS = {
   rateLimits: "request_rate_limits",
   toolkitRequests: "toolkit_requests",
   counters: "counters",
+  newsItems: "news_items",
+  newsRuns: "news_runs",
 } as const;
 
 async function collection<T extends { _id: unknown }>(
@@ -452,6 +573,10 @@ export const toolkitRequestsCollection = () =>
   collection<ToolkitRequestDoc>(COLLECTIONS.toolkitRequests);
 export const countersCollection = () =>
   collection<CounterDoc>(COLLECTIONS.counters);
+export const newsItemsCollection = () =>
+  collection<NewsItemDoc>(COLLECTIONS.newsItems);
+export const newsRunsCollection = () =>
+  collection<NewsRunDoc>(COLLECTIONS.newsRuns);
 
 /**
  * Allocate the next number in a named sequence.

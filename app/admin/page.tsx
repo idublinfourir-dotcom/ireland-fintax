@@ -3,6 +3,8 @@ import Link from "next/link";
 import { enquiriesCollection, usersCollection } from "../lib/collections";
 import { requireAdmin } from "../lib/auth/guards";
 import { loadReviewStatus } from "../lib/editable-calculators";
+import { countAwaitingReview } from "../lib/posts";
+import { STALE_AFTER_DAYS, loadRateChecks, newsHealth, type RateCheck } from "../lib/news-admin";
 import { markCalculatorReviewedAction } from "./review-actions";
 import {
   ADMIN_UNREAD_FILTER,
@@ -108,6 +110,21 @@ export default async function AdminPage() {
     unread: isUnreadForAdmin(e),
   }));
 
+  // The news agent's to-dos. Best-effort: the dashboard must render without
+  // them, so a failure here only hides the panel.
+  let news: { awaiting: number; rateChecks: RateCheck[]; stale: boolean } | null = null;
+  try {
+    const [awaiting, rateChecks, health] = await Promise.all([
+      countAwaitingReview(),
+      loadRateChecks(),
+      newsHealth(),
+    ]);
+    news = { awaiting, rateChecks, stale: health.stale };
+  } catch (err) {
+    console.error("[news] dashboard summary failed:", err);
+  }
+  const newsTodo = news && (news.awaiting > 0 || news.rateChecks.length > 0 || news.stale);
+
   const trend = dailySeries(trendRows);
   const dueReviews = reviews.filter((r) => r.due);
   const upToDate = reviews.length - dueReviews.length;
@@ -190,6 +207,61 @@ export default async function AdminPage() {
                 </li>
               );
             })}
+          </ul>
+        </Panel>
+      )}
+
+      {/* News agent: drafts to review, calculators a story may have outdated */}
+      {news && newsTodo && (
+        <Panel className="mb-8 overflow-hidden border-l-2 border-l-primary-500">
+          <div className="flex flex-wrap items-center gap-3 border-b border-line bg-primary-50/60 px-5 py-3.5">
+            <span className="grid h-9 w-9 shrink-0 place-items-center rounded-none bg-primary-500 text-white">
+              <Icon name="sparkles" className="h-[18px] w-[18px]" />
+            </span>
+            <div className="min-w-0">
+              <h3 className="font-display text-base font-semibold tracking-tight text-ink">News agent</h3>
+              <p className="text-xs text-muted">Nothing it drafts goes live until you publish it.</p>
+            </div>
+          </div>
+          <ul className="divide-y divide-line text-sm">
+            {news.awaiting > 0 && (
+              <li className="flex flex-wrap items-center justify-between gap-3 px-5 py-3">
+                <span className="font-semibold text-ink">
+                  {news.awaiting} AI {news.awaiting === 1 ? "draft is" : "drafts are"} waiting for review
+                </span>
+                <Link
+                  href="/admin/posts?filter=review"
+                  className="inline-flex h-8 items-center rounded-none border border-primary-500 px-3 text-xs font-semibold text-primary-600 transition-colors duration-200 hover:bg-primary-500 hover:text-white"
+                >
+                  Review
+                </Link>
+              </li>
+            )}
+            {news.rateChecks.map((c) => (
+              <li key={c.key} className="flex flex-wrap items-center justify-between gap-3 px-5 py-3">
+                <span className="min-w-0">
+                  <span className="font-semibold text-ink">{c.label} rates may be out of date</span>
+                  <span className="block text-xs text-muted">After “{c.storyTitle}”</span>
+                </span>
+                <Link
+                  href="/admin/news"
+                  className="inline-flex h-8 items-center rounded-none border border-line px-3 text-xs font-semibold text-ink-body transition-colors duration-200 hover:border-ink/30 hover:text-ink"
+                >
+                  Check
+                </Link>
+              </li>
+            ))}
+            {news.stale && (
+              <li className="flex flex-wrap items-center justify-between gap-3 px-5 py-3">
+                <span className="font-semibold text-ink">No successful run in {STALE_AFTER_DAYS} days</span>
+                <Link
+                  href="/admin/news"
+                  className="inline-flex h-8 items-center rounded-none border border-line px-3 text-xs font-semibold text-ink-body transition-colors duration-200 hover:border-ink/30 hover:text-ink"
+                >
+                  Open
+                </Link>
+              </li>
+            )}
           </ul>
         </Panel>
       )}

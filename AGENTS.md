@@ -57,6 +57,8 @@ auth.config.ts     # edge-safe half: session strategy, callbacks, Google
 proxy.ts           # (Next 16 middleware) gates /portal, /admin
 db/schema.md       # collections, indexes, and why each shape is what it is
 scripts/db-*.mjs   # check connectivity · create indexes · seed
+scripts/news-agent.ts  # the news agent (GitHub Actions); app/lib/news-*.ts
+.github/workflows/news-agent.yml  # its twice-weekly schedule
 ```
 
 - **Motion primitives** (client components, all reduced-motion safe):
@@ -326,6 +328,9 @@ Whenever anything else gets hidden rather than deleted, add a row here.
   **`AUTH_SECRET`**, `AUTH_URL` (prod), `ADMIN_EMAILS`, `AUTH_GOOGLE_ID`/
   `AUTH_GOOGLE_SECRET`, and the `SMTP_*` / `MAIL_*` keys. Same keys
   set in the hosting provider's project env for prod. Never echo or commit them.
+  The news agent's model keys (`GROQ_API_KEY`, `OPENROUTER_API_KEY`) live in
+  the **GitHub repository's Actions secrets** with the DB keys, since that is
+  where it runs; only `GITHUB_DISPATCH_TOKEN` goes in the hosting env.
 - **Security headers.** The request-independent ones (HSTS, X-Frame-Options
   DENY, nosniff, Referrer-Policy, Permissions-Policy) are set in
   `next.config.ts` (`headers()`, all routes). **CSP is NOT there**: it carries
@@ -529,6 +534,73 @@ Whenever anything else gets hidden rather than deleted, add a row here.
   the build does not need the database.
 - "Blog" took the nav slot the Services mega-menu freed. The row is full at
   six top-level links again.
+
+### News agent (AI drafts for the blog, Oct 2026)
+
+- `scripts/news-agent.ts` runs in GitHub Actions
+  (`.github/workflows/news-agent.yml`, Tuesday and Friday 06:17 UTC, plus
+  "Run now" in `/admin/news`). It reads the official sources in
+  `app/lib/news-sources.ts`, has a free model score each new item, and drafts
+  a `news` post for each important one: **at most 3 a run**; past that, the
+  last slot becomes one round-up. Drafts land in `posts` as `status: "draft"`
+  with an `origin` block. **Nothing it writes is ever published by it**: only
+  an admin's Publish does that.
+- **Publishing an AI draft needs "I checked this against the sources"**,
+  enforced in `savePostAction`, which then stamps `origin.reviewedBy/At`. That
+  substantive human review is what exempts the post from the EU AI Act's Art.
+  50(4) labelling duty (in force Aug 2026). Do not make the box pre-ticked,
+  optional, or a client-only check.
+- **Sources are official publishers whose licence was read**: Revenue
+  (CC BY 4.0, its own attribution line), the Central Bank (Irish PSI licence,
+  CC BY 4.0), the ECB (reuse with the source cited). Each source carries its
+  attribution, which is copied into the post and rendered under it with an
+  AI disclosure (`PostSources` in `app/blog/[slug]/page.tsx`). Adding a source
+  means reading its licence first. **Not used, on purpose**: press feeds (RTÉ,
+  Irish Times; the press publishers' right), Google News RSS (its terms
+  forbid this use) and gov.ie (its article pages answer bots with a WAF
+  challenge; the agent takes no for an answer and never routes around one).
+- **The model never writes stored blocks.** It fills a fixed outline under a
+  strict JSON schema (`DRAFT_SCHEMA`), and `draftToPost` in
+  `app/lib/news-draft.ts` builds the blocks, then runs the same `parseBlocks`
+  the editor uses. Checks there: links only to a source or a site calculator
+  (`scrubLinks`, both markdown and bare URLs, since inline-format renders
+  both); quotes only if word for word in the source; figures not found in
+  the source are flagged for the reviewer; advice, firm language ("our
+  clients") and AI talk reject the draft (one retry with the errors). The
+  model never picks pictures: it may ask for a slot, which is an empty
+  Picture block, and the existing validator refuses to publish until it is
+  filled or removed.
+- `BLOCKED_TITLES` keeps enforcement and court items (Central Bank warnings
+  on unauthorised firms, Revenue seizures and defaulters lists) away from the
+  model entirely: they name real firms and people, where a model error is a
+  defamation problem.
+- **Models are free tiers only**: Groq (`gpt-oss-120b`, then `qwen3.8-27b`,
+  then `gpt-oss-20b`, each with its own quota), then OpenRouter `:free`
+  models picked at run time from its model list (`app/lib/news-llm.ts`).
+  Groq's free tier allows 8K tokens a minute **including the reply and
+  reasoning**, so source text is capped at `NEWS_LIMITS.maxSourceChars`
+  and gpt-oss runs with `reasoning_effort: "low"`. GitHub Models was retired
+  on 2026-07-30; Gemini's free quotas change without notice; Cerebras and
+  Brave dropped their no-card tiers. Do not add any of them back.
+- **The repository is public, so Actions logs are too.** The agent logs
+  counts and public source titles only, never draft text. Never add a
+  `pull_request` trigger to that workflow (secrets plus fork code).
+- **Calculator rate checks.** A story's `origin.affects` lists calculators it
+  may change; `/admin/news` and the dashboard show a check until that
+  calculator is saved or reviewed, or "Checked, no change" is pressed (a
+  `rate_audit` row, area `news-rate-check:<key>`).
+- Rejecting a draft (editor, with a reason) deletes it and marks its
+  `news_items` row `rejected`, so it is never drafted again. Drafts nobody
+  opened are removed after 21 days; one an admin edited is kept.
+- "Run now" needs `GITHUB_DISPATCH_TOKEN` (fine-grained, this repo, Actions
+  read/write) in the hosting env. It re-enables the workflow before
+  dispatching, because GitHub silently disables scheduled workflows in a
+  public repo after 60 days without a commit.
+- Local: `node scripts/news-agent.ts --dry-run` prints drafts and writes
+  nothing. To test writes, point it at a scratch database
+  (`MONGODB_DB=irelandfintax_newsdev`; env beats `.env.local` in
+  `scripts/load-env.mjs`) and unset `ADMIN_EMAILS`, or a real "drafts are
+  waiting" email goes out.
 
 ### Testing
 

@@ -10,7 +10,7 @@
    the editor has to know a save did not happen. */
 
 import { ObjectId, type Filter } from "mongodb";
-import { postsCollection, type PostDoc } from "./collections";
+import { postsCollection, type PostDoc, type PostOriginSource } from "./collections";
 import type { Block } from "./post-blocks";
 import {
   POST_CATEGORIES,
@@ -34,6 +34,9 @@ export interface PostSummary {
 
 export interface Post extends PostSummary {
   blocks: Block[];
+  /** The official sources of a news-agent post, null for one an admin wrote.
+      Rendered under the post with each licence's attribution. */
+  sources: PostOriginSource[] | null;
 }
 
 /** Posts the public may see: published, and not dated in the future. */
@@ -110,7 +113,7 @@ export async function getPublishedPost(slug: string): Promise<Post | null> {
     const posts = await postsCollection();
     const doc = await posts.findOne({ ...publishedFilter(), slug });
     if (!doc) return null;
-    return { ...toSummary(doc), blocks: doc.blocks };
+    return { ...toSummary(doc), blocks: doc.blocks, sources: doc.origin?.sources ?? null };
   } catch (err) {
     console.error("[blog] post read failed:", err);
     return null;
@@ -177,7 +180,21 @@ export interface AdminPostRow {
   live: boolean;
   publishedAt: Date | null;
   updatedAt: Date;
+  /** Drafted by the news agent. */
+  ai: boolean;
+  /** An AI draft nobody has published yet. */
+  awaitingReview: boolean;
+  /** Things the agent asked the reviewer to check. */
+  flagCount: number;
 }
+
+/** The one definition of "an AI draft waiting for review", shared by the
+    posts list, its filter and the dashboard count. */
+export const AWAITING_REVIEW_FILTER: Filter<PostDoc> = {
+  "origin.kind": "ai",
+  status: "draft",
+  "origin.reviewedAt": null,
+};
 
 /** Every post, most recently edited first. */
 export async function listAllPosts(): Promise<AdminPostRow[]> {
@@ -196,7 +213,24 @@ export async function listAllPosts(): Promise<AdminPostRow[]> {
     live: doc.status === "published" && hasBeenLive(doc, now),
     publishedAt: doc.publishedAt,
     updatedAt: doc.updatedAt,
+    ai: doc.origin?.kind === "ai",
+    awaitingReview: doc.origin?.kind === "ai" && doc.status === "draft" && !doc.origin.reviewedAt,
+    flagCount: doc.origin?.flags.length ?? 0,
   }));
+}
+
+export async function countAwaitingReview(): Promise<number> {
+  const posts = await postsCollection();
+  return posts.countDocuments(AWAITING_REVIEW_FILTER);
+}
+
+/** Stamps who checked an AI draft, the first time it is published. */
+export async function markAiReviewed(id: ObjectId, reviewer: string): Promise<void> {
+  const posts = await postsCollection();
+  await posts.updateOne(
+    { _id: id, "origin.kind": "ai", "origin.reviewedAt": null },
+    { $set: { "origin.reviewedBy": reviewer, "origin.reviewedAt": new Date() } },
+  );
 }
 
 export async function getPostById(id: ObjectId): Promise<PostDoc | null> {

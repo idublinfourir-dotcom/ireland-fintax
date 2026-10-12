@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { requireAdmin } from "../lib/auth/guards";
 import { loadReviewStatus } from "../lib/editable-calculators";
+import { countAwaitingReview } from "../lib/posts";
 import { DashboardShell } from "../components/dashboard-ui";
 import type { DashNavItem } from "../components/dashboard-nav";
 
@@ -12,6 +13,7 @@ const navItems: DashNavItem[] = [
   { href: "/admin", label: "Dashboard", icon: "home" },
   { href: "/admin/enquiries", label: "Enquiries", icon: "inbox", prefix: true },
   { href: "/admin/posts", label: "Blog posts", icon: "newspaper", prefix: true },
+  { href: "/admin/news", label: "News agent", icon: "sparkles", prefix: true },
   { href: "/admin/toolkits", label: "Toolkits", icon: "document", prefix: true },
   { href: "/admin/mortgage-rates", label: "Mortgage rates", icon: "banknotes", prefix: true },
   { href: "/admin/tax-rates", label: "Tax rates", icon: "receiptPercent", prefix: true },
@@ -27,8 +29,14 @@ const navItems: DashNavItem[] = [
 export default async function AdminLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  const [user, reviews] = await Promise.all([requireAdmin(), loadReviewStatus()]);
+  const [user, reviews, awaiting] = await Promise.all([
+    requireAdmin(),
+    loadReviewStatus(),
+    // A nav dot, so a database hiccup just hides it rather than the console.
+    countAwaitingReview().catch(() => 0),
+  ]);
   const dueHrefs = reviews.filter((r) => r.due).map((r) => r.adminHref);
+  if (awaiting > 0) dueHrefs.push("/admin/posts");
 
   return (
     <DashboardShell
