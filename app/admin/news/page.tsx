@@ -87,16 +87,7 @@ export default async function NewsAgentPage() {
             . Nothing goes live until you check it and publish it.
           </>
         }
-        actions={
-          isDispatchConfigured() ? (
-            <RunNowButton />
-          ) : (
-            <p className="max-w-xs text-right text-xs text-muted">
-              Run now needs <code className="font-mono">GITHUB_DISPATCH_TOKEN</code> in the site&apos;s settings.
-              Scheduled runs work without it.
-            </p>
-          )
-        }
+        actions={<RunNowButton configured={isDispatchConfigured()} />}
       />
 
       {loadError && (
