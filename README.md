@@ -1,8 +1,8 @@
 # Ireland Fintax
 
-Marketing site, client portal and admin console for a partner-led Irish
-finance and tax practice. Next.js 16 (App Router), React 19, TypeScript,
-Tailwind v4, **MongoDB** and **Auth.js v5**.
+A free site for learning Irish tax and personal finance: calculators, guides
+and a client/admin area, with no firm, services or fees attached. Next.js 16
+(App Router), React 19, TypeScript, Tailwind v4, **MongoDB** and **Auth.js v5**.
 
 Working rules for the codebase live in [`AGENTS.md`](./AGENTS.md). The database
 shapes and the reasoning behind them live in [`db/schema.md`](./db/schema.md).
@@ -138,7 +138,8 @@ automatically, and there is no email provider wired into the app.
 
 Outstanding requests sort to the top and the heading shows a "to send" count.
 Mark sent shows a spinner and then a confirmation, so the click is never
-silent. Abuse is bounded by a five-per-hour limit per email address.
+silent. Abuse is bounded by a five-per-hour limit per address and a
+twenty-per-hour limit per IP.
 
 **There is no upload path, deliberately.** The site never hosts a Founders Hub
 file: no upload form, no storage bucket, no public download link. The catalogue

@@ -6,7 +6,10 @@ Git push/merge workflow: see `CLAUDE.md`.
 
 ## Project
 
-Marketing site for **Ireland Fintax** — partner-led finance and tax practice (audit, tax, bookkeeping, payroll, advisory). UK copy + tone: professional, plain English, no jargon.
+**Ireland Fintax** is a free learning platform for Irish tax and personal
+finance (Oct 2026 direction): calculators, guides and an "Ask a question"
+form, not a firm with services or fees. UK copy + tone: professional, plain
+English, no jargon. See "Direction: FREE LEARNING PLATFORM" in `CLAUDE.md`.
 
 
 
@@ -250,8 +253,10 @@ Whenever anything else gets hidden rather than deleted, add a row here.
   `auth.ts`, never in `auth.config.ts`, which `proxy.ts` imports and which must
   never reach for the database. It is rate-limited to one query per session per
   minute, so revocation is not instant: a session can survive up to a minute.
-  The settings page's own password change does **not** stamp this, so it does
-  not sign the user out of their current session.
+  The settings page's own password change stamps this too (since `f9eb056`),
+  so it revokes every other session. The one place that doesn't is the fresh
+  sign-in `updatePasswordAction` does right after, which re-mints THIS
+  browser's token so the author is not signed out by their own change.
 - **The emailed confirmation link's host comes from `AUTH_URL`, not from the
   request.** `resolveEmailOrigin` (`app/lib/site-origin.ts`, pure and tested)
   puts AUTH_URL first and the `Origin` header second. The reverse, which is
@@ -321,11 +326,17 @@ Whenever anything else gets hidden rather than deleted, add a row here.
   **`AUTH_SECRET`**, `AUTH_URL` (prod), `ADMIN_EMAILS`, `AUTH_GOOGLE_ID`/
   `AUTH_GOOGLE_SECRET`, and the `SMTP_*` / `MAIL_*` keys. Same keys
   set in the hosting provider's project env for prod. Never echo or commit them.
-- **Security headers** set in `next.config.ts` (`headers()`, all routes): CSP, HSTS
-  (prod), X-Frame-Options DENY, nosniff, Referrer-Policy, Permissions-Policy. CSP allows
-  `'unsafe-inline'` (no nonce yet) and dev-only `'unsafe-eval'` + localhost ws.
-  `connect-src` is `'self'` alone — the database is server-side only and Google
-  sign-in is a top-level redirect, not a cross-origin fetch.
+- **Security headers.** The request-independent ones (HSTS, X-Frame-Options
+  DENY, nosniff, Referrer-Policy, Permissions-Policy) are set in
+  `next.config.ts` (`headers()`, all routes). **CSP is NOT there**: it carries
+  a per-request nonce, so it is built and set in `proxy.ts` instead, on both
+  the request and the response. `script-src` is `'self' 'nonce-<random>'
+  'strict-dynamic'` (plus dev-only `'unsafe-eval'`), with no blanket
+  `'unsafe-inline'` on scripts since `9e499c7`. `style-src` keeps
+  `'unsafe-inline'` deliberately (React/Tailwind set inline styles at
+  runtime; nonces don't apply there). `connect-src` is `'self'` alone: the
+  database is server-side only and Google sign-in is a top-level redirect,
+  not a cross-origin fetch.
 
 ### Editable calculator rates (CGT, VAT, Corp Tax, R&D, Capital Allowances, CAT)
 
@@ -503,8 +514,9 @@ Whenever anything else gets hidden rather than deleted, add a row here.
   editor updates itself from the action's result. With revalidation, Next
   folded a re-render of the editor page into the save's reply and about one
   save in twenty left the editor stuck on "Saving…" although the save had
-  gone through (Next 16.2.9; 0 hangs in 120 saves without it). Don't add it
-  back. Delete still revalidates, since it redirects anyway.
+  gone through (reproduced on Next 16.2.9, before the 16.4 upgrade; 0 hangs in
+  120 saves without it). Don't add it back. Delete still revalidates, since
+  it redirects anyway.
 - **Drag-and-drop arms the row, not the handle.** A block row becomes
   `draggable` only while its handle is held down: a draggable `<button>`
   never starts a drag in Firefox, and an always-draggable row would turn text
