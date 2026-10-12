@@ -90,7 +90,7 @@ test("raw HTML is kept as literal text, and newlines become breaks", () => {
 
 test("safeHref allows http(s), mailto, relative paths and anchors only", () => {
   assert.ok(safeHref("https://www.revenue.ie/en/"));
-  assert.ok(safeHref("mailto:hello@irelandfintax.ie"));
+  assert.ok(safeHref("mailto:hello@irishfintax.ie"));
   assert.ok(safeHref("/blog"));
   assert.ok(safeHref("#tax-credits"));
   assert.equal(safeHref("javascript:alert(1)"), null);

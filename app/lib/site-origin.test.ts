@@ -2,18 +2,18 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { resolveEmailOrigin } from "./site-origin.ts";
 
-const fallback = "https://www.irelandfintax.ie";
+const fallback = "https://www.irishfintax.ie";
 
 test("a configured AUTH_URL beats the request's Origin header", () => {
   // The whole point: in production the emailed link must carry the canonical
   // host, not whatever host the form happened to be posted to.
   assert.equal(
     resolveEmailOrigin({
-      configured: "https://www.irelandfintax.ie",
+      configured: "https://www.irishfintax.ie",
       originHeader: "https://some-preview.vercel.app",
       fallback,
     }),
-    "https://www.irelandfintax.ie",
+    "https://www.irishfintax.ie",
   );
 });
 
@@ -41,11 +41,11 @@ test("the site URL is the last resort", () => {
 
 test("a trailing slash is stripped, so the link never doubles it", () => {
   assert.equal(
-    resolveEmailOrigin({ configured: "https://www.irelandfintax.ie/", originHeader: null, fallback }),
-    "https://www.irelandfintax.ie",
+    resolveEmailOrigin({ configured: "https://www.irishfintax.ie/", originHeader: null, fallback }),
+    "https://www.irishfintax.ie",
   );
   assert.equal(
-    resolveEmailOrigin({ configured: "https://www.irelandfintax.ie///", originHeader: null, fallback }),
-    "https://www.irelandfintax.ie",
+    resolveEmailOrigin({ configured: "https://www.irishfintax.ie///", originHeader: null, fallback }),
+    "https://www.irishfintax.ie",
   );
 });

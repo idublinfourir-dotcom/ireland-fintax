@@ -4,9 +4,12 @@ export const site = {
   // so this must carry the www prefix or every canonical URL and sitemap entry
   // points at a redirect. Drives metadataBase, sitemap.xml and robots.txt.
   url: "https://www.irishfintax.ie",
-  // NOTE: this mailbox needs email forwarding (or a mail plan) configured at the
-  // registrar before launch, or enquiries to it bounce.
-  email: "hello@irelandfintax.ie",
+  // On the live domain, which has an MX record (mail.irishfintax.ie). It used
+  // to be hello@irelandfintax.ie, a domain that is not registered at all, so
+  // mail to it bounced and whoever registered the name would have received it.
+  // The `hello` mailbox (or a forward) must exist on the irishfintax.ie mail
+  // host, or mail to it bounces.
+  email: "hello@irishfintax.ie",
   phone: "+353 89 951 9986",
   // Digits only, no spaces or parentheses — a tel: href with either is not
   // dialable from some mobile browsers.
