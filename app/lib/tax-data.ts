@@ -11,17 +11,20 @@
 
 import { taxRatesCollection } from "./collections";
 import { isDbConfigured } from "./db-config";
+import { cache } from "react";
 import {
-  RATES_2025,
-  RATES_2026,
+  RATES_BY_YEAR,
   type PensionAgeBand,
   type UscBand,
   type YearRates,
 } from "./ireland-income-tax";
 
-export const TAX_YEARS = [2026, 2025] as const;
-
-const FALLBACK: Record<number, YearRates> = { 2026: RATES_2026, 2025: RATES_2025 };
+/* The years come from the code configs, so adding a year is one entry in
+   RATES_BY_YEAR: the admin editor, the DB read and the fallback follow. */
+const FALLBACK: Record<number, YearRates> = RATES_BY_YEAR;
+export const TAX_YEARS: number[] = Object.keys(FALLBACK)
+  .map(Number)
+  .sort((a, b) => b - a);
 
 /* ---------- YearRates → JSON-safe object (Infinity → null) ---------- */
 
@@ -67,6 +70,13 @@ function obj(v: unknown): Record<string, unknown> {
   return v as Record<string, unknown>;
 }
 
+/** A field added after launch: rows saved before it exists take the code
+    fallback for that year instead of failing the whole year's validation. */
+function reqOr(v: unknown, fallback: number | undefined): number {
+  if (v === undefined && fallback !== undefined) return fallback;
+  return req(v);
+}
+
 function uscBands(v: unknown): UscBand[] {
   if (!Array.isArray(v) || v.length === 0) throw new BadRates();
   return v.map((b) => {
@@ -85,6 +95,8 @@ export function parseYearRates(year: number, raw: unknown): YearRates | null {
     const reduced = obj(usc.reduced);
     const prsi = obj(r.prsi);
     const pension = obj(r.pension);
+    const base = FALLBACK[year]?.incomeTax;
+    const rent = it.rentCredit === undefined ? {} : obj(it.rentCredit);
     const ageBandsRaw = pension.ageBands;
     if (!Array.isArray(ageBandsRaw) || ageBandsRaw.length === 0) throw new BadRates();
     const ageBands: PensionAgeBand[] = ageBandsRaw.map((b) => {
@@ -115,8 +127,15 @@ export function parseYearRates(year: number, raw: unknown): YearRates | null {
           spccc: req(credits.spccc),
           ageSingle: req(credits.ageSingle),
           ageMarried: req(credits.ageMarried),
+          homeCarer: reqOr(credits.homeCarer, base?.credits.homeCarer),
         },
         ageCreditThreshold: req(it.ageCreditThreshold),
+        homeCarerIncomeThreshold: reqOr(it.homeCarerIncomeThreshold, base?.homeCarerIncomeThreshold),
+        rentCredit: {
+          rate: reqOr(rent.rate, base?.rentCredit.rate),
+          maxSingle: reqOr(rent.maxSingle, base?.rentCredit.maxSingle),
+          maxJoint: reqOr(rent.maxJoint, base?.rentCredit.maxJoint),
+        },
       },
       usc: {
         exemptionThreshold: req(usc.exemptionThreshold),
@@ -150,7 +169,8 @@ export function parseYearRates(year: number, raw: unknown): YearRates | null {
 
 /* ---------- loader ---------- */
 
-export async function getTaxRates(): Promise<Record<number, YearRates>> {
+/* Cached per request, so a page and its metadata share one read. */
+export const getTaxRates = cache(async (): Promise<Record<number, YearRates>> => {
   // No backend configured: the versioned RATES_<year> configs ARE the answer.
   if (!isDbConfigured()) return { ...FALLBACK };
 
@@ -169,4 +189,4 @@ export async function getTaxRates(): Promise<Record<number, YearRates>> {
     console.error("[tax] DB read failed, using static rate configs:", err);
     return { ...FALLBACK };
   }
-}
+});

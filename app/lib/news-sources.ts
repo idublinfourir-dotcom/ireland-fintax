@@ -155,8 +155,9 @@ export interface AffectedCalculator {
   label: string;
   /** Public page, offered to the model as an internal link. */
   href: string;
-  /** Where the rates are edited. */
-  adminHref: string;
+  /** Where the rates are edited; absent when the page is not rate-editable
+      (a real change is a code edit). */
+  adminHref?: string;
 }
 
 /* Keys match EDITABLE_CALCULATORS where one exists, so the dashboard can
@@ -175,6 +176,11 @@ export const AFFECTED_CALCULATORS: AffectedCalculator[] = [
   { key: "cgt", label: "Capital gains tax", href: "/tools/ireland-cgt", adminHref: "/admin/cgt-rates" },
   { key: "cat", label: "Capital acquisitions tax", href: "/tools/ireland-cat", adminHref: "/admin/cat-rates" },
   { key: "mortgage", label: "Mortgage", href: "/personal/mortgage", adminHref: "/admin/mortgage-rates" },
+  /* Not rate-editable (no adminHref): its figures are code in
+     app/lib/budget-2027.ts. Listed so a story about a Budget 2027 measure
+     (the Finance Bill, a start date the page shows as "Not announced yet")
+     raises a check; "Checked, no change" clears it. */
+  { key: "budget-2027", label: "Budget 2027", href: "/budget/2027" },
 ];
 
 export const AFFECTED_KEYS = AFFECTED_CALCULATORS.map((c) => c.key);

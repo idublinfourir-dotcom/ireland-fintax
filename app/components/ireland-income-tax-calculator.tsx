@@ -1,21 +1,20 @@
 "use client";
 
 /* Deloitte-Ireland-style Income Tax Calculator (Income Tax + USC + PRSI).
-   Form → "Calculate Tax" → results screen (2026 vs 2025), in the site theme.
+   Form → "Calculate Tax" → results screen (current year vs prior year, 2026 vs
+   2025 unless the page says otherwise), in the site theme.
    All maths lives in ../lib/ireland-income-tax. Tax only — no mortgage here. */
 
 import { useEffect, useId, useRef, useState } from "react";
 import {
   compareYears,
+  eur,
   RATES_BY_YEAR,
   type IncomeTaxInput,
   type IncomeTaxResult,
   type YearComparison,
   type YearRates,
 } from "../lib/ireland-income-tax";
-
-const CURRENT_YEAR = 2026;
-const PRIOR_YEAR = 2025;
 
 /* Money in the results table: whole euros (rounded like Deloitte) shown as .00.
    Negatives come out as "-€4,987.00"; deduction rows wrap in parentheses. */
@@ -251,9 +250,13 @@ function AmountCell({ row, r }: { row: RowDef; r: IncomeTaxResult }) {
 function ResultsTable({
   comparison,
   rates,
+  currentYear,
+  priorYear,
 }: {
   comparison: YearComparison;
   rates: YearRates;
+  currentYear: number;
+  priorYear: number;
 }) {
   const { current, prior, delta } = comparison;
   const ROWS = buildRows(rates).filter(
@@ -273,10 +276,10 @@ function ResultsTable({
             <tr className="bg-surface-muted">
               <th className="px-4 py-3 text-left font-semibold text-muted" />
               <th className="px-4 py-3 text-right font-display text-base font-semibold text-primary-600">
-                {CURRENT_YEAR}
+                {currentYear}
               </th>
               <th className="px-4 py-3 text-right font-display text-base font-semibold text-ink">
-                {PRIOR_YEAR}
+                {priorYear}
               </th>
             </tr>
           </thead>
@@ -295,7 +298,7 @@ function ResultsTable({
       {/* difference block */}
       <div className="mt-8">
         <h3 className="text-center font-display text-base font-medium text-ink">
-          Total difference between {CURRENT_YEAR} and {PRIOR_YEAR}
+          Total difference between {currentYear} and {priorYear}
         </h3>
         <dl className="mx-auto mt-4 max-w-xl">
           {[
@@ -335,28 +338,42 @@ const DEFAULTS: IncomeTaxInput = {
   pensionContribution: 0,
   spouseEmploymentIncome: 0,
   spouseSelfEmploymentOrOtherIncome: 0,
+  rentPaid: 0,
+  claimHomeCarerCredit: false,
 };
 
 export function IrelandIncomeTaxCalculator({
   ratesByYear = RATES_BY_YEAR,
+  currentYear = 2026,
+  priorYear = 2025,
+  initialInput,
 }: {
   /** Admin-managed per-year rates from the DB (tax-data.ts); static fallback. */
   ratesByYear?: Record<number, YearRates>;
+  /** The two tax years compared. Both must have rates in `ratesByYear`. */
+  currentYear?: number;
+  priorYear?: number;
+  /** Starts filled in and calculated with these figures (the Budget page
+      hands over the visitor's own). */
+  initialInput?: IncomeTaxInput;
 }) {
-  const [form, setForm] = useState<IncomeTaxInput>(DEFAULTS);
-  const [result, setResult] = useState<YearComparison | null>(null);
+  const [form, setForm] = useState<IncomeTaxInput>(() => ({ ...DEFAULTS, ...initialInput }));
+  const [result, setResult] = useState<YearComparison | null>(() =>
+    initialInput ? compareYears(form, currentYear, priorYear, ratesByYear) : null,
+  );
   const resultsRef = useRef<HTMLDivElement>(null);
 
   // After results render, bring the results section into view (not the page top).
   useEffect(() => {
-    if (result) resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    // Smooth or instant follows globals.css, which honours reduced motion.
+    if (result) resultsRef.current?.scrollIntoView({ block: "start" });
   }, [result]);
 
   const set = <K extends keyof IncomeTaxInput>(key: K, value: IncomeTaxInput[K]) =>
     setForm((f) => ({ ...f, [key]: value }));
 
   const calculate = () => {
-    setResult(compareYears(form, CURRENT_YEAR, PRIOR_YEAR, ratesByYear));
+    setResult(compareYears(form, currentYear, priorYear, ratesByYear));
   };
 
   const newCalculation = () => {
@@ -367,7 +384,12 @@ export function IrelandIncomeTaxCalculator({
   if (result) {
     return (
       <div ref={resultsRef} className="scroll-mt-24">
-        <ResultsTable comparison={result} rates={ratesByYear[CURRENT_YEAR]} />
+        <ResultsTable
+          comparison={result}
+          rates={ratesByYear[currentYear]}
+          currentYear={currentYear}
+          priorYear={priorYear}
+        />
         <div className="mt-10 flex flex-wrap justify-center gap-4">
           <button type="button" className={btnOutline} onClick={() => setResult(null)}>
             ← Go Back
@@ -378,12 +400,13 @@ export function IrelandIncomeTaxCalculator({
         </div>
         <p className="mt-8 text-center text-xs leading-5 text-muted">
           Estimate for the Republic of Ireland. PRSI uses the flat rate at the start of each
-          year ({rateLabel(ratesByYear[CURRENT_YEAR].prsi.rate)} for {CURRENT_YEAR},{" "}
-          {rateLabel(ratesByYear[PRIOR_YEAR].prsi.rate)} for {PRIOR_YEAR}). Married couples are
-          jointly assessed with the second-income band increase; spouse USC and PRSI are
-          computed on the spouse&apos;s own income (spouse assumed in the same USC age band).
-          Excludes widowed bereavement-year uplift, medical-card USC relief and the 66+
-          state-pension PRSI exemption.
+          year ({rateLabel(ratesByYear[currentYear].prsi.rate)} for {currentYear},{" "}
+          {rateLabel(ratesByYear[priorYear].prsi.rate)} for {priorYear}). Married couples are
+          jointly assessed with the second-income band increase, or the Home Carer credit
+          where that is worth more; spouse USC and PRSI are computed on the spouse&apos;s own
+          income (spouse assumed in the same USC age band). The rent credit assumes your
+          tenancy qualifies. Excludes widowed bereavement-year uplift, medical-card USC
+          relief and the 66+ state-pension PRSI exemption.
         </p>
       </div>
     );
@@ -420,7 +443,7 @@ export function IrelandIncomeTaxCalculator({
           onChange={(v) => set("isPrincipalCarerOfDependentChild", v)}
         />
         <NumberField
-          label={`Your age attained during ${CURRENT_YEAR}`}
+          label={`Your age attained during ${currentYear}`}
           value={form.age}
           onChange={(v) => set("age", v)}
         />
@@ -453,10 +476,22 @@ export function IrelandIncomeTaxCalculator({
               label="Spouse self-employment / other income"
               value={form.spouseSelfEmploymentOrOtherIncome ?? 0}
               onChange={(v) => set("spouseSelfEmploymentOrOtherIncome", v)}
-              hint="Married couples are jointly assessed: a second income raises the 20% band by up to €35,000."
+              hint={`Married couples are jointly assessed: a second income raises the 20% band by up to ${eur(ratesByYear[currentYear].incomeTax.srcop.marriedBandIncrease)}.`}
+            />
+            <YesNoField
+              label="Does one of you work in the home caring for a child, someone aged 65 or over, or someone permanently incapacitated?"
+              value={form.claimHomeCarerCredit ?? false}
+              onChange={(v) => set("claimHomeCarerCredit", v)}
             />
           </>
         )}
+
+        <CurrencyField
+          label="Rent paid for your home in the year"
+          value={form.rentPaid ?? 0}
+          onChange={(v) => set("rentPaid", v)}
+          hint="For the Rent Tax Credit. Not available with HAP, RAS, Rent Supplement or an approved housing body, and the tenancy must be registered with the RTB where that is required."
+        />
 
         <CurrencyField
           label="Your pension contribution"

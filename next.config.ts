@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { LATEST_BUDGET } from "./app/lib/budgets";
 
 const isDev = process.env.NODE_ENV !== "production";
 
@@ -41,6 +42,10 @@ const nextConfig: NextConfig = {
       // Hub. Permanent so the indexed URL passes its ranking to the new one;
       // the page had been live and linked from the portal, so it cannot 404.
       { source: "/tools/ireland", destination: "/personal/mortgage", permanent: true },
+      // The newest Budget page (LATEST_BUDGET in app/lib/budgets.ts). Temporary,
+      // so /budget can point at the next one each October without browsers
+      // holding on to this year's.
+      { source: "/budget", destination: LATEST_BUDGET.href, permanent: false },
       /* The whole Services section is hidden site-wide: its pages are parked
          in app/_services (unrouted, like app/_pricing) and every /services URL
          goes home. Temporary on purpose, so browsers don't cache it and the

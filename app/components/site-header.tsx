@@ -5,16 +5,20 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { CALCULATOR_TOOLS } from "./calculator-tabs";
 import { PERSONAL_TOOLS } from "./personal-tabs";
+import { BUDGETS, LATEST_BUDGET } from "../lib/budgets";
 import type { SessionUser } from "../lib/auth/guards";
 
 /* Pricing is hidden site-wide while the fee model is being decided; restore
    { href: "/pricing", label: "Pricing" } here to bring it back.
    Blog took the top-level slot the Services mega-menu freed, which makes the
-   row full again at six links (see the note on <nav> below). */
+   row full again at six links (see the note on <nav> below).
+   Budget took Contact's slot (Oct 2026) as a dropdown of years (BUDGETS in
+   lib/budgets.ts): the "Ask a question" button beside the links, and at the
+   foot of the mobile menu, already goes to /contact, so the link was a
+   duplicate. */
 const secondaryLinks = [
   { href: "/blog", label: "Blog" },
   { href: "/about", label: "About" },
-  { href: "/contact", label: "Contact" },
 ];
 
 /* Founders Hub resource categories, shown in the nav dropdown. Each links to
@@ -101,9 +105,11 @@ export function SiteHeader({ user }: { user: SessionUser | null }) {
   const [mobileToolsOpen, setMobileToolsOpen] = useState(false);
   const [mobilePersonalOpen, setMobilePersonalOpen] = useState(false);
   const [mobileFoundersOpen, setMobileFoundersOpen] = useState(false);
+  const [mobileBudgetOpen, setMobileBudgetOpen] = useState(false);
   const [toolsClosed, setToolsClosed] = useState(false);
   const [personalClosed, setPersonalClosed] = useState(false);
   const [foundersClosed, setFoundersClosed] = useState(false);
+  const [budgetClosed, setBudgetClosed] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [hidden, setHidden] = useState(false);
   const lastY = useRef(0);
@@ -111,6 +117,7 @@ export function SiteHeader({ user }: { user: SessionUser | null }) {
   const toolsActive = isActive(pathname, "/tools");
   const personalActive = isActive(pathname, "/personal");
   const foundersActive = isActive(pathname, "/toolkits");
+  const budgetActive = isActive(pathname, "/budget");
 
   // Force an open dropdown shut after a link is clicked (otherwise the clicked
   // link keeps focus / hover and the panel stays open on the new page).
@@ -124,6 +131,10 @@ export function SiteHeader({ user }: { user: SessionUser | null }) {
   }
   function closeFounders(e: React.MouseEvent<HTMLElement>) {
     setFoundersClosed(true);
+    e.currentTarget.blur();
+  }
+  function closeBudget(e: React.MouseEvent<HTMLElement>) {
+    setBudgetClosed(true);
     e.currentTarget.blur();
   }
 
@@ -155,6 +166,7 @@ export function SiteHeader({ user }: { user: SessionUser | null }) {
     setMobileToolsOpen(false);
     setMobilePersonalOpen(false);
     setMobileFoundersOpen(false);
+    setMobileBudgetOpen(false);
   }
 
   return (
@@ -176,7 +188,8 @@ export function SiteHeader({ user }: { user: SessionUser | null }) {
             ~1235px — it stopped fitting the 6xl container when the
             Entrepreneur Toolkits link was added, and Personal Hub took most of
             what was left. Blog is the sixth link now, in the slot Services
-            left. The hub names were lengthened in Oct 2026 (Tax Calculation
+            left; Budget 2027 replaced Contact, which duplicated the "Ask a
+            question" button. The hub names were lengthened in Oct 2026 (Tax Calculation
             Hub, Accounts and Finance, Personal Finance Tools), which is why the
             signed-in pill drops its name at xl. Another top-level link needs
             the row re-thought, not another entry. */}
@@ -387,6 +400,57 @@ export function SiteHeader({ user }: { user: SessionUser | null }) {
               </div>
             </div>
 
+            {/* Budget dropdown: one entry per year, newest first. The label
+                stays "Budget" so the row never grows with the years. */}
+            <div
+              className="group relative"
+              onMouseEnter={() => setBudgetClosed(false)}
+              onFocus={() => setBudgetClosed(false)}
+            >
+              <Link
+                href={LATEST_BUDGET.href}
+                aria-current={budgetActive ? "page" : undefined}
+                onClick={closeBudget}
+                className={`relative flex items-center gap-1 whitespace-nowrap text-sm font-medium transition-colors duration-200 ${
+                  budgetActive ? "text-primary-600" : "text-ink-body hover:text-ink"
+                }`}
+              >
+                Budget
+                <Chevron className="text-muted transition-transform duration-200 group-hover:rotate-180 group-focus-within:rotate-180" />
+                <span
+                  className={`pointer-events-none absolute -bottom-1.5 left-0 h-0.5 w-full origin-left bg-primary-500 transition-transform duration-200 ease-snappy ${
+                    budgetActive ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100"
+                  }`}
+                />
+              </Link>
+              <div
+                className={`invisible absolute left-1/2 top-full z-50 w-[min(20rem,calc(100vw-2rem))] -translate-x-1/2 pt-4 opacity-0 transition-all duration-200 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100 ${
+                  budgetClosed ? "!invisible !opacity-0" : ""
+                }`}
+              >
+                <div className="rounded-none border border-line bg-white p-5 shadow-2xl shadow-navy-900/15">
+                  <div className="flex flex-col gap-4">
+                    {BUDGETS.map((b) => (
+                      <Link
+                        key={b.href}
+                        href={b.href}
+                        onClick={closeBudget}
+                        aria-current={pathname === b.href ? "page" : undefined}
+                        className="group/item block"
+                      >
+                        <span className="font-display text-sm font-semibold text-ink transition-colors duration-200 group-hover/item:text-primary-500">
+                          {b.label}
+                        </span>
+                        <span className="mt-0.5 block text-[13px] leading-5 text-muted">
+                          {b.desc}
+                        </span>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+
             {secondaryLinks.map((link) => {
               const active = isActive(pathname, link.href);
               return (
@@ -579,6 +643,40 @@ export function SiteHeader({ user }: { user: SessionUser | null }) {
                       className="rounded-none px-3 py-2 text-sm text-muted transition-colors duration-200 hover:bg-secondary-50 hover:text-primary-500"
                     >
                       {tool.label}
+                    </Link>
+                  ))}
+                </div>
+              )}
+
+              {/* Budget accordion: the years, newest first. */}
+              <button
+                type="button"
+                aria-expanded={mobileBudgetOpen}
+                onClick={() => setMobileBudgetOpen((open) => !open)}
+                className={`flex items-center justify-between rounded-none px-3 py-2.5 text-[15px] font-medium transition-colors duration-200 ${
+                  budgetActive
+                    ? "bg-secondary-50 font-semibold text-primary-500"
+                    : "text-ink-body hover:bg-secondary-50"
+                }`}
+              >
+                Budget
+                <Chevron
+                  className={`text-muted transition-transform duration-200 ${
+                    mobileBudgetOpen ? "rotate-180" : ""
+                  }`}
+                />
+              </button>
+              {mobileBudgetOpen && (
+                <div className="mb-1 ml-3 flex flex-col gap-0.5 border-l border-line pl-3">
+                  {BUDGETS.map((b) => (
+                    <Link
+                      key={b.href}
+                      href={b.href}
+                      onClick={closeMobile}
+                      aria-current={pathname === b.href ? "page" : undefined}
+                      className="rounded-none px-3 py-2 text-sm text-muted transition-colors duration-200 hover:bg-secondary-50 hover:text-primary-500"
+                    >
+                      {b.label}
                     </Link>
                   ))}
                 </div>

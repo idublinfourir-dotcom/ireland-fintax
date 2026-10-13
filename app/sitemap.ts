@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { site } from "./lib/content";
+import { BUDGETS } from "./lib/budgets";
 import { listPublishedSlugs } from "./lib/posts";
 
 /* Rendered per request, not at build time: it lists published posts, so a
@@ -12,6 +13,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const pages: MetadataRoute.Sitemap = [
     "",
     "/blog",
+    ...BUDGETS.map((b) => b.href),
     "/personal/mortgage",
     "/personal/investment",
     "/tools/ireland-income-tax",

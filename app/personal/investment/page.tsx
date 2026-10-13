@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Breadcrumbs, Button, Container, PageHero } from "../../components/ui";
+import { Breadcrumbs, BudgetNote, Button, Container, PageHero } from "../../components/ui";
 import { ContactCta } from "../../components/sections";
 import { PersonalTabs } from "../../components/personal-tabs";
 import { IrelandInvestmentPlanner } from "../../components/ireland-investment-planner";
@@ -13,7 +13,8 @@ import { DATA_AS_OF, SOURCES } from "../../lib/ireland-investment";
  * source for every number. Keep it that way — a figure inlined here is one
  * nobody will find when the Budget moves it.
  *
- * The firm advises on the TAX of an investment, not on the investment itself.
+ * The page explains the TAX of an investment, not the investment itself. It is
+ * a learning page, not a firm's: no "we advise", no "talk to us".
  * The tool ranks option types by return after Irish tax and must never be
  * phrased as a personal recommendation; the disclaimers in the planner and at
  * the foot of this page are load-bearing, not boilerplate. */
@@ -33,7 +34,7 @@ const coverage = [
   },
   {
     title: "Funds and ETFs",
-    body: "Irish and EU funds sit outside the CGT rules entirely. They carry their own exit tax, charged on a disposal and again on a deemed disposal every eight years even if you have sold nothing — the single most common surprise we see.",
+    body: "Irish and EU funds sit outside the CGT rules entirely. They carry their own exit tax, charged on a disposal and again on a deemed disposal every eight years even if you have sold nothing — the single most common surprise.",
   },
   {
     title: "Deposit interest",
@@ -53,8 +54,7 @@ const coverage = [
   },
 ];
 
-/* The order matters: this is the sequence a client is actually walked through
-   in a meeting, and the finished tool will follow it. */
+/* The order matters: each step depends on the one before it. */
 const approach = [
   {
     step: "01",
@@ -74,7 +74,7 @@ const approach = [
   {
     step: "04",
     title: "File the right return on time",
-    body: "Capital gains have payment dates that do not line up with the income tax return, and a deemed disposal has no cash proceeds behind it. We tell you what falls due and when.",
+    body: "Capital gains have payment dates that do not line up with the income tax return, and a deemed disposal has no cash proceeds behind it. Know what falls due, and when, before you invest.",
   },
 ];
 
@@ -94,7 +94,7 @@ const related = [
   {
     href: "/tools/ireland-income-tax",
     label: "Income tax calculator",
-    body: "Income tax, USC and PRSI — the marginal rate that dividends and rent are taxed at.",
+    body: "Income tax, USC and PRSI: the marginal rate that dividends and rent are taxed at.",
   },
   {
     href: "/personal/mortgage",
@@ -121,7 +121,7 @@ export default function PersonalInvestmentPage() {
         lede={`Where €1 can go in Ireland, ranked by what is left after tax. Thirty-two options across the State-backed and private sectors, current at ${DATA_AS_OF}.`}
         action={
           <Button href="/contact" variant="outlineLight">
-            Talk to us about your position
+            Ask a question
           </Button>
         }
       />
@@ -133,22 +133,25 @@ export default function PersonalInvestmentPage() {
           <IrelandInvestmentPlanner />
         </div>
 
+        <BudgetNote>
+          Budget 2027 cuts exit tax to 35% from 1 January 2027 and brings a new Investment Account from 1 July 2027.
+        </BudgetNote>
+
         <div className="mt-16 max-w-3xl border-t border-line pt-12">
           <h2 className="font-display text-3xl font-bold leading-tight tracking-[-0.02em] text-ink sm:text-4xl">
             The wrapper decides the tax, not the asset
           </h2>
           <p className="mt-5 text-lg leading-8 text-ink-body">
             Two people can hold the same index of shares and be taxed under
-            entirely different rules — one under capital gains tax, the other
+            entirely different rules: one under capital gains tax, the other
             under the exit tax regime that applies to funds. The rate, the
-            deadline, the form and the treatment of losses all change with it.
-            Before anything else, we work out which set of rules you are in.
+            deadline, the form and the treatment of losses all change with it,
+            so the first question is always which set of rules applies.
           </p>
           <p className="mt-4 text-base leading-7 text-muted">
-            We advise on the tax consequences of an investment you hold or are
-            considering. We are not investment advisers and we do not recommend
-            products — for that you need an authorised adviser, and we are happy
-            to work alongside yours.
+            This page explains how investments are taxed in Ireland. It does not
+            recommend products or tell you where to put your money: for that,
+            speak to an adviser authorised by the Central Bank of Ireland.
           </p>
         </div>
 
@@ -168,7 +171,7 @@ export default function PersonalInvestmentPage() {
 
         <div className="mt-16 border-t border-line pt-12">
           <h2 className="font-display text-2xl font-semibold tracking-tight text-ink sm:text-3xl">
-            How we work through it
+            How to work through it
           </h2>
           <div className="mt-8 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
             {approach.map((item) => (

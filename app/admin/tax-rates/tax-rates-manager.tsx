@@ -109,6 +109,15 @@ function YearForm({ rates }: { rates: YearRates }) {
         <Euro name="credit_spccc" value={it.credits.spccc} label="SPCCC" />
         <Euro name="credit_age_single" value={it.credits.ageSingle} label="Age — single" />
         <Euro name="credit_age_married" value={it.credits.ageMarried} label="Age — married" />
+        <Euro name="credit_home_carer" value={it.credits.homeCarer} label="Home carer" />
+        <Euro name="home_carer_threshold" value={it.homeCarerIncomeThreshold} label="Home carer full up to" />
+      </div>
+
+      <SectionTitle>Rent tax credit</SectionTitle>
+      <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <Pct name="rent_credit_rate" value={it.rentCredit.rate} label="Share of rent" />
+        <Euro name="rent_credit_max_single" value={it.rentCredit.maxSingle} label="Maximum, one person (€)" />
+        <Euro name="rent_credit_max_joint" value={it.rentCredit.maxJoint} label="Maximum, couple (€)" />
       </div>
 
       <SectionTitle>USC</SectionTitle>

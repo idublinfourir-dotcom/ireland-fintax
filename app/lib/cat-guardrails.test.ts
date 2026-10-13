@@ -7,7 +7,7 @@ import { CAT_CONFIG_DEFAULT } from "./ireland-cat.ts";
 
 const good: RawCatConfig = {
   ratePercent: 33,
-  thresholds: { groupA: 400_000, groupB: 40_000, groupC: 20_000 },
+  thresholds: { groupA: 420_000, groupB: 44_000, groupC: 22_000 },
   smallGiftExemptionEur: 3_000,
   reliefs: { agriculturalPercent: 90, businessPercent: 90, dwellingHousePercent: 100 },
 };

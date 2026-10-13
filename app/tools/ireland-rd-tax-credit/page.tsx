@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Breadcrumbs, Container, PageHero } from "../../components/ui";
+import { Breadcrumbs, BudgetNote, Container, PageHero } from "../../components/ui";
 import { ContactCta } from "../../components/sections";
 import { CalculatorTabs } from "../../components/calculator-tabs";
 import { IrelandRdTaxCreditCalculator } from "../../components/ireland-rd-tax-credit-calculator";
@@ -53,6 +53,10 @@ export default async function IrelandRdTaxCreditPage() {
         <div className="rounded-none border border-line bg-canvas p-6 sm:p-8 lg:p-10">
           <IrelandRdTaxCreditCalculator config={config} />
         </div>
+
+        <BudgetNote>
+          Budget 2027 announced a higher first-year payment (€87,500 to €105,000) and wider subcontracting limits. The Finance Act will set when they start, so this calculator still uses the current rules.
+        </BudgetNote>
 
         <div className="mt-12 grid gap-6 sm:grid-cols-3">
           {notes.map((note) => (

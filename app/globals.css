@@ -84,6 +84,13 @@
   }
 }
 
+/* A sticky action bar at the foot of the screen (data-sticky-actions) sits
+   where the back-to-top button floats: lift the button above it while one is
+   on the page, so the bar can keep its normal layout. */
+body:has([data-sticky-actions]) [data-back-to-top] {
+  bottom: 6.5rem;
+}
+
 body {
   background-color: var(--color-canvas);
   color: var(--color-ink-body);

@@ -17,19 +17,22 @@
      RANGE, and real outcomes can be negative.
 
    Rates move (State Savings changed on 30 Aug 2026, exit tax fell to 38% on
-   1 Jan 2026, CGT fell to 31% on 7 Oct 2026). Update DATA_AS_OF whenever a
-   figure below changes.
+   1 Jan 2026 and falls to 35% on 1 Jan 2027, CGT fell to 31% on 7 Oct 2026).
+   Update DATA_AS_OF whenever a figure below changes.
    ────────────────────────────────────────────────────────────────────────── */
 
-export const DATA_AS_OF = "12 October 2026";
+export const DATA_AS_OF = "13 October 2026";
 
 /* ---------- Irish tax constants (2026) ---------- */
 
 export const TAX = {
   /** Deposit Interest Retention Tax. Unchanged since 2013. */
   dirt: 0.33,
-  /** Exit tax on funds/ETFs/life policies. Cut from 41% on 1 Jan 2026. */
-  exit: 0.38,
+  /** Exit tax on funds/ETFs/life policies: 41% → 38% on 1 Jan 2026 → 35% on
+      1 Jan 2027 (Budget 2027, DoF Tax Policy Changes 2.2; the Minister's
+      Budget statement gives the date). The planner projects forward, so it
+      uses the 2027 rate. The deemed disposal is unchanged. */
+  exit: 0.35,
   /** Capital gains tax. Cut from 33% for disposals on or after 7 Oct 2026
       (Budget 2027, Revenue eBrief No. 142/26). The workbook predates it. */
   cgt: 0.31,
@@ -395,7 +398,7 @@ export const INVESTMENT_OPTIONS: InvestmentOption[] = [
     risk: 2,
     grossLow: 0.025,
     grossHigh: 0.033,
-    taxTreatment: "Exit tax 38% + 8-year deemed disposal",
+    taxTreatment: "Exit tax 35% + 8-year deemed disposal",
     effectiveTax: TAX.exit,
     liquidity: "Daily",
     lockYears: 0,
@@ -403,7 +406,7 @@ export const INVESTMENT_OPTIONS: InvestmentOption[] = [
     cap: "None",
     guarantee: "none",
     lumpSum: true,
-    note: "Diversified across euro-area issuers and convenient, but the fund wrapper drags it to 38% and the deemed-disposal clock applies. Direct bonds or a pension give the same exposure more efficiently.",
+    note: "Diversified across euro-area issuers and convenient, but the fund wrapper drags it to 35% exit tax and the deemed-disposal clock applies. Direct bonds or a pension give the same exposure more efficiently.",
     link: {
       label: "How ETFs are taxed in Ireland",
       url: "https://etf.ie/tax/",
@@ -602,7 +605,7 @@ export const INVESTMENT_OPTIONS: InvestmentOption[] = [
     cap: "None",
     guarantee: "none",
     lumpSum: true,
-    note: "The ISEQ 20 returned 32.97% in 2025 but 7.64% annualised over five years, on a 3.66% dividend yield. It is extremely concentrated: AIB 20%, Ryanair 19%, Bank of Ireland 18%, Kingspan 14% and Kerry 14% are 85% of the index. Direct shares avoid the 38% exit tax and the deemed disposal, and allow loss offset.",
+    note: "The ISEQ 20 returned 32.97% in 2025 but 7.64% annualised over five years, on a 3.66% dividend yield. It is extremely concentrated: AIB 20%, Ryanair 19%, Bank of Ireland 18%, Kingspan 14% and Kerry 14% are 85% of the index. Direct shares avoid the 35% exit tax and the deemed disposal, and allow loss offset.",
     link: {
       label: "Euronext Dublin",
       url: "https://live.euronext.com/en/markets/dublin",
@@ -616,7 +619,7 @@ export const INVESTMENT_OPTIONS: InvestmentOption[] = [
     risk: 4,
     grossLow: 0.05,
     grossHigh: 0.08,
-    taxTreatment: "Exit tax 38% + 8-year deemed disposal",
+    taxTreatment: "Exit tax 35% + 8-year deemed disposal",
     effectiveTax: TAX.exit,
     liquidity: "Daily",
     lockYears: 0,
@@ -624,7 +627,7 @@ export const INVESTMENT_OPTIONS: InvestmentOption[] = [
     cap: "None",
     guarantee: "none",
     lumpSum: true,
-    note: "The cheapest, most diversified equity exposure there is — and the worst treated by Irish tax: 38% on gains, no annual exemption, no loss offset, no step-up on death, and a forced tax event every eight years. Excellent inside a pension, painful outside one.",
+    note: "The cheapest, most diversified equity exposure there is, and the worst treated by Irish tax: 35% on gains (38% until the end of 2026), no annual exemption, no loss offset, no step-up on death, and a forced tax event every eight years. Excellent inside a pension, painful outside one.",
     link: {
       label: "How ETFs are taxed in Ireland",
       url: "https://etf.ie/tax/",
@@ -660,7 +663,7 @@ export const INVESTMENT_OPTIONS: InvestmentOption[] = [
     risk: 3,
     grossLow: 0.04,
     grossHigh: 0.07,
-    taxTreatment: "Exit tax 38% + 1% levy",
+    taxTreatment: "Exit tax 35% + 1% levy",
     effectiveTax: TAX.exit,
     liquidity: "Usually a 5-year exit penalty",
     lockYears: 5,
@@ -668,7 +671,7 @@ export const INVESTMENT_OPTIONS: InvestmentOption[] = [
     cap: "None",
     guarantee: "none",
     lumpSum: true,
-    note: "Simple, advised and well diversified — and expensive. A 1% government levy on the way in, typically 1%–1.75% annual management charge, plus 38% exit tax and the deemed disposal. Convenience has a real price here.",
+    note: "Simple, advised and well diversified, and expensive. A 1% government levy on the way in, typically 1% to 1.75% annual management charge, plus 35% exit tax and the deemed disposal. Convenience has a real price here.",
     link: {
       label: "CCPC — investments",
       url: "https://www.ccpc.ie/manage-your-money/saving-and-investments/investments",
@@ -1184,6 +1187,11 @@ export const SOURCES: { topic: string; source: string; url: string }[] = [
     topic: "Irish 10-year government bond yield",
     source: "Trading Economics — Ireland government bond yield",
     url: "https://tradingeconomics.com/ireland/government-bond-yield",
+  },
+  {
+    topic: "Exit tax cut to 35% from 1 January 2027",
+    source: "Department of Finance, Budget 2027 Tax Policy Changes, section 2.2",
+    url: "https://assets.gov.ie/static/documents/c6792805/Budget_2027_Tax_Policy_Changes_v2.pdf",
   },
   {
     topic: "Exit tax cut to 38%, deemed disposal",

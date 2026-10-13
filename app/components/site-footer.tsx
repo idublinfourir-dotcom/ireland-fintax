@@ -1,10 +1,12 @@
 import Link from "next/link";
 import { site } from "../lib/content";
 import { images } from "../lib/images";
+import { LATEST_BUDGET } from "../lib/budgets";
 
 /* Pricing and Services stay hidden (app/_pricing, app/_services): this is a
    free learning site, not a firm. */
 const exploreLinks = [
+  { label: "Budget", href: LATEST_BUDGET.href },
   { label: "Tax calculators", href: "/tools/ireland-income-tax" },
   { label: "Personal finance", href: "/personal/mortgage" },
   { label: "Accounts and Finance", href: "/toolkits" },

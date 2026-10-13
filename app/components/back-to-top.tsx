@@ -14,9 +14,10 @@ export function BackToTop() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  // Smooth or instant follows globals.css (`scroll-behavior: smooth` only
+  // under prefers-reduced-motion: no-preference).
   function toTop() {
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    window.scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" });
+    window.scrollTo({ top: 0 });
   }
 
   return (
@@ -24,6 +25,7 @@ export function BackToTop() {
       type="button"
       onClick={toTop}
       aria-label="Back to top"
+      data-back-to-top
       tabIndex={visible ? 0 : -1}
       className={`fixed bottom-6 right-6 z-40 grid h-11 w-11 cursor-pointer place-items-center rounded-none bg-navy-900 text-primary-300 shadow-lg shadow-navy-900/25 transition-all duration-300 hover:bg-navy-700 hover:text-primary-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500 ${
         visible

@@ -11,6 +11,8 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
+  compareYears,
+  comparisonYears,
   computeIrishTax,
   type IncomeTaxInput,
 } from "./ireland-income-tax.ts";
@@ -142,4 +144,137 @@ test("(e) spouse income ignored unless married", () => {
   assert.equal(round(r.grossIncome), 50_000, "Spouse income not counted");
   assert.equal(round(r.spouseIncome), 0);
   assert.equal(round(r.incomeTax.netTax), 7_200, "Same as single case (a)");
+});
+
+/* ---------- Budget 2027 ----------
+   Golden figures from the Department of Finance, "Budget 2027 Tax Policy
+   Changes" (6 Oct 2026): Table 2 (single PAYE), Tables 3 and 4, and the
+   illustrative Examples. Its PRSI blends the October rate rise, so only the
+   year-on-year gain (where PRSI moves by the same 0.15% either way), income
+   tax and USC are compared. */
+
+const person = (over: Partial<IncomeTaxInput>): IncomeTaxInput => ({
+  maritalStatus: "single",
+  hasChildOnChildBenefit: false,
+  isPrincipalCarerOfDependentChild: false,
+  age: 40,
+  employmentIncome: 0,
+  selfEmploymentOrOtherIncome: 0,
+  pensionContribution: 0,
+  ...over,
+});
+
+const taxBothYears = (input: IncomeTaxInput) => {
+  const a = computeIrishTax(input, 2026);
+  const b = computeIrishTax(input, 2027);
+  return {
+    it: [round(a.incomeTax.netTax), round(b.incomeTax.netTax)],
+    usc: [round(a.usc.total + a.spouseUsc.total), round(b.usc.total + b.spouseUsc.total)],
+  };
+};
+
+test("2027: DoF Table 2, single PAYE, yearly gain at every income", () => {
+  const gains: [number, number][] = [
+    [30_000, 218], [35_000, 214], [40_000, 206], [45_000, 399],
+    [50_000, 691], [55_000, 684], [65_000, 669], [75_000, 654],
+    [100_000, 616], [125_000, 579], [150_000, 541], [175_000, 504],
+  ];
+  for (const [gross, gain] of gains) {
+    const c = compareYears(person({ employmentIncome: gross }), 2027, 2026);
+    assert.equal(round(c.delta.annual), gain, `€${gross}`);
+  }
+});
+
+test("2027: DoF Examples 2 and 4, Table 4: income tax and USC", () => {
+  // Example 2: single parent, principal carer, €70,000.
+  assert.deepEqual(
+    taxBothYears(person({ employmentIncome: 70_000, hasChildOnChildBenefit: true, isPrincipalCarerOfDependentChild: true })),
+    { it: [12_500, 11_750], usc: [1_633, 1_617] },
+  );
+  // Example 4: single, €52,000.
+  assert.deepEqual(taxBothYears(person({ employmentIncome: 52_000 })), {
+    it: [8_000, 7_250],
+    usc: [1_093, 1_077],
+  });
+  // Table 4: self-employed single, €50,000.
+  assert.deepEqual(taxBothYears(person({ selfEmploymentOrOtherIncome: 50_000 })), {
+    it: [7_200, 6_450],
+    usc: [1_033, 1_017],
+  });
+});
+
+test("2027: DoF Example 8, married two incomes €90,000 + €37,500", () => {
+  assert.deepEqual(
+    taxBothYears(person({ maritalStatus: "married", employmentIncome: 90_000, spouseEmploymentIncome: 37_500 })),
+    { it: [25_400, 23_900], usc: [3_888, 3_856] },
+  );
+});
+
+test("2027: DoF Example 3, single €75,000 renting at €1,700 a month", () => {
+  assert.deepEqual(taxBothYears(person({ employmentIncome: 75_000, rentPaid: 1_700 * 12 })), {
+    it: [16_200, 15_300],
+    usc: [2_031, 2_015],
+  });
+});
+
+test("2027: DoF Table 3 and Examples 6 and 9, one income with the Home Carer credit", () => {
+  const homeCarer = (gross: number) =>
+    taxBothYears(person({ maritalStatus: "married", hasChildOnChildBenefit: true, employmentIncome: gross, claimHomeCarerCredit: true })).it;
+  assert.deepEqual(homeCarer(45_000), [1_050, 575], "Table 3, €45,000");
+  assert.deepEqual(homeCarer(65_000), [7_450, 6_475], "Table 3, €65,000");
+  assert.deepEqual(homeCarer(42_125), [475, 0], "Example 6");
+  assert.deepEqual(homeCarer(55_500), [3_650, 2_675], "Example 9");
+});
+
+test("Home Carer credit: taper on the carer's income", () => {
+  const credit = (spouseIncome: number) =>
+    computeIrishTax(
+      person({ maritalStatus: "married", employmentIncome: 35_000, spouseEmploymentIncome: spouseIncome, claimHomeCarerCredit: true }),
+      2026,
+    ).incomeTax.credits.find((c) => c.name === "Home Carer Tax Credit")?.amount ?? 0;
+  assert.equal(credit(7_200), 1_950, "full at the threshold");
+  assert.equal(credit(9_200), 950, "Revenue's 2026 table: €9,200 → €950");
+  assert.equal(credit(11_100), 0, "nil at €11,100");
+});
+
+test("Home Carer credit: the band increase is kept when it is worth more", () => {
+  // €60,000 + €9,200: the band increase (€9,200 at 20% instead of 40% =
+  // €1,840) beats the tapered credit (€950).
+  const r = computeIrishTax(
+    person({ maritalStatus: "married", employmentIncome: 60_000, spouseEmploymentIncome: 9_200, claimHomeCarerCredit: true }),
+    2026,
+  );
+  assert.equal(r.incomeTax.standardRateCutOff, 62_200);
+  assert.equal(r.incomeTax.credits.some((c) => c.name === "Home Carer Tax Credit"), false);
+});
+
+test("Home Carer credit: ignored unless married and claimed", () => {
+  const single = computeIrishTax(person({ employmentIncome: 40_000, claimHomeCarerCredit: true }), 2026);
+  assert.equal(single.incomeTax.credits.some((c) => c.name === "Home Carer Tax Credit"), false);
+  const notClaimed = computeIrishTax(person({ maritalStatus: "married", employmentIncome: 40_000 }), 2026);
+  assert.equal(notClaimed.incomeTax.credits.some((c) => c.name === "Home Carer Tax Credit"), false);
+});
+
+test("Rent credit: 20% of rent, capped, joint cap for a couple, never below zero tax", () => {
+  const rent = (input: Partial<IncomeTaxInput>, year: number) =>
+    computeIrishTax(person(input), year).incomeTax.credits.find((c) => c.name === "Rent Tax Credit")?.amount ?? 0;
+  assert.equal(rent({ employmentIncome: 50_000, rentPaid: 3_000 }, 2026), 600, "20% of €3,000");
+  assert.equal(rent({ employmentIncome: 50_000, rentPaid: 20_000 }, 2026), 1_000, "2026 cap");
+  assert.equal(rent({ employmentIncome: 50_000, rentPaid: 20_000 }, 2027), 1_150, "2027 cap");
+  assert.equal(
+    rent({ maritalStatus: "married", employmentIncome: 50_000, rentPaid: 20_000 }, 2027),
+    2_300,
+    "2027 couple cap",
+  );
+  const low = computeIrishTax(person({ employmentIncome: 15_000, rentPaid: 20_000 }), 2027);
+  assert.equal(low.incomeTax.netTax, 0, "credits cannot make tax negative");
+  assert.equal(computeIrishTax(person({ employmentIncome: 50_000 }), 2027).incomeTax.credits.some((c) => c.name === "Rent Tax Credit"), false);
+});
+
+test("comparisonYears: follows the calendar, held to years with rates", () => {
+  assert.deepEqual(comparisonYears(new Date("2026-10-13T12:00:00Z")), { current: 2026, prior: 2025 });
+  assert.deepEqual(comparisonYears(new Date("2026-12-31T23:59:59Z")), { current: 2026, prior: 2025 });
+  assert.deepEqual(comparisonYears(new Date("2027-01-01T00:00:00Z")), { current: 2027, prior: 2026 });
+  assert.deepEqual(comparisonYears(new Date("2028-06-01T00:00:00Z")), { current: 2027, prior: 2026 }, "no 2028 rates yet");
+  assert.deepEqual(comparisonYears(new Date("2024-06-01T00:00:00Z")), { current: 2026, prior: 2025 }, "never before the earliest pair");
 });

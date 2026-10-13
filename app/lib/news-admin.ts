@@ -90,7 +90,9 @@ export async function listRecentRejections(limit = 8) {
 export interface RateCheck {
   key: string;
   label: string;
-  adminHref: string;
+  /** The rate editor, or the public page when there is no editor. */
+  href: string;
+  editable: boolean;
   storyId: string;
   storyTitle: string;
   storyAt: Date;
@@ -157,7 +159,8 @@ export async function loadRateChecks(): Promise<RateCheck[]> {
       {
         key: calc.key,
         label: calc.label,
-        adminHref: calc.adminHref,
+        href: calc.adminHref ?? calc.href,
+        editable: calc.adminHref !== undefined,
         storyId: story._id.toHexString(),
         storyTitle: story.title,
         storyAt: story.createdAt,
