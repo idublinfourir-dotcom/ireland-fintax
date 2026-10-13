@@ -26,7 +26,9 @@
    - TODO: R&D tax credit (35% — now a standalone calculator, ireland-rd-tax-credit.ts)
    - TODO: Knowledge Development Box (10% effective rate since 1 Oct 2023)
    - TODO: close company surcharge on undistributed investment/professional income
-   - TODO: Section 486C start-up relief (first-3-years relief capped by employer PRSI)
+   - TODO: Section 486C start-up relief (first five years of trading; full relief
+           where CT is €40,000 or less, marginal to €60,000; capped by PRSI paid;
+           extended to 31 Dec 2030 by Budget 2027, DoF Tax Policy Changes 4.4)
    - TODO: chargeable gains (effective 33%; no annual exemption for companies;
            participation exemption on qualifying share disposals, development-land CGT)
    ────────────────────────────────────────────────────────────────────────── */

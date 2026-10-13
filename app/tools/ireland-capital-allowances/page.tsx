@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Breadcrumbs, Container, PageHero } from "../../components/ui";
+import { Breadcrumbs, BudgetNote, Container, PageHero } from "../../components/ui";
 import { ContactCta } from "../../components/sections";
 import { CalculatorTabs } from "../../components/calculator-tabs";
 import { CapitalAllowancesTool } from "../../components/capital-allowances-tool";
@@ -35,6 +35,10 @@ export default async function IrelandCapitalAllowancesPage() {
       <Container className="py-16 sm:py-20">
         <CalculatorTabs current="/tools/ireland-capital-allowances" />
         <CapitalAllowancesTool config={config} />
+
+        <BudgetNote>
+          Budget 2027 extends the accelerated allowances on farm safety equipment to the end of 2029 and adds 12 items.
+        </BudgetNote>
       </Container>
 
       <ContactCta />

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Breadcrumbs, Container, PageHero } from "../../components/ui";
+import { Breadcrumbs, BudgetNote, Container, PageHero } from "../../components/ui";
 import { ContactCta } from "../../components/sections";
 import { PersonalTabs } from "../../components/personal-tabs";
 import { IrelandMortgageCalculator } from "../../components/ireland-mortgage-calculator";
@@ -56,6 +56,11 @@ export default async function IrelandMortgagePage() {
             ratesAsOf={ratesAsOf}
           />
         </div>
+
+        <BudgetNote>
+          Budget 2027 raised Help to Buy for first-time buyers of a new home from €30,000 to
+          €35,000, for applications from 7 October 2026.
+        </BudgetNote>
 
         <div className="mt-12 grid gap-6 sm:grid-cols-3">
           {notes.map((note) => (

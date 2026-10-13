@@ -1,17 +1,23 @@
 import type { Metadata } from "next";
-import { Breadcrumbs, Container, PageHero } from "../../components/ui";
+import { Breadcrumbs, BudgetNote, Container, PageHero } from "../../components/ui";
 import { ContactCta } from "../../components/sections";
 import { CalculatorTabs } from "../../components/calculator-tabs";
 import { IrelandIncomeTaxCalculator } from "../../components/ireland-income-tax-calculator";
 import { getTaxRates } from "../../lib/tax-data";
+import { comparisonYears } from "../../lib/ireland-income-tax";
+import { LATEST_BUDGET } from "../../lib/budgets";
 
-export const metadata: Metadata = {
-  title: "Ireland Income Tax Calculator (Income Tax + USC + PRSI): 2026",
-  description:
-    "Estimate your Irish personal tax for 2026: income tax, USC and PRSI, with pension relief, tax credits and a 2025 comparison. Republic of Ireland.",
-};
+/* The years follow the calendar (comparisonYears): this page renders per
+   request, so it moves to 2027 v 2026 on 1 January 2027 by itself. */
+export async function generateMetadata(): Promise<Metadata> {
+  const { current, prior } = comparisonYears(new Date(), await getTaxRates());
+  return {
+    title: `Ireland Income Tax Calculator (Income Tax + USC + PRSI): ${current}`,
+    description: `Estimate your Irish personal tax for ${current}: income tax, USC and PRSI, with pension relief, tax credits and a ${prior} comparison. Republic of Ireland.`,
+  };
+}
 
-const notes = [
+const notesFor = (current: number, prior: number) => [
   {
     title: "Income tax, USC & PRSI",
     body: "Full annual position across all three deductions, with the 20%/40% band split and every tax credit itemised so each number is traceable to a rule.",
@@ -21,13 +27,15 @@ const notes = [
     body: "Applies the age-banded relief cap on €115,000 of earnings, pension reduces income tax only, not USC or PRSI, and any excess above the cap gets no relief.",
   },
   {
-    title: "2026 vs 2025",
-    body: "Shows both tax years side by side and the year-on-year change, so you can see the impact of the Budget changes in USC bands and the PRSI rate.",
+    title: `${current} vs ${prior}`,
+    body: "Shows both tax years side by side and the year-on-year change, so you can see what each Budget changed in the bands, credits, USC and PRSI.",
   },
 ];
 
 export default async function IrelandIncomeTaxPage() {
   const ratesByYear = await getTaxRates();
+  const { current, prior } = comparisonYears(new Date(), ratesByYear);
+  const notes = notesFor(current, prior);
   return (
     <>
       <PageHero
@@ -42,15 +50,25 @@ export default async function IrelandIncomeTaxPage() {
           />
         }
         title="Ireland income tax calculator"
-        lede="Estimate your Irish income tax, USC and PRSI for 2026, including pension relief and tax credits, with a 2025 comparison alongside."
+        lede={`Estimate your Irish income tax, USC and PRSI for ${current}, including pension relief and tax credits, with a ${prior} comparison alongside.`}
       />
 
       <Container className="py-16 sm:py-20">
         <CalculatorTabs current="/tools/ireland-income-tax" />
 
         <div className="rounded-none border border-line bg-canvas p-6 sm:p-8 lg:p-10">
-          <IrelandIncomeTaxCalculator ratesByYear={ratesByYear} />
+          <IrelandIncomeTaxCalculator
+            ratesByYear={ratesByYear}
+            currentYear={current}
+            priorYear={prior}
+          />
         </div>
+
+        <BudgetNote>
+          {current < LATEST_BUDGET.year
+            ? "Budget 2027 changes the bands, credits and USC from 1 January 2027."
+            : `The ${current} figures are ${LATEST_BUDGET.label}'s.`}
+        </BudgetNote>
 
         <div className="mt-12 grid gap-6 sm:grid-cols-3">
           {notes.map((note) => (

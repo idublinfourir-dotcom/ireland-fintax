@@ -1,6 +1,7 @@
 import type { CSSProperties, ReactNode } from "react";
 import Link from "next/link";
 import { images, type ImageKey } from "../lib/images";
+import { LATEST_BUDGET } from "../lib/budgets";
 
 export function Container({
   children,
@@ -207,5 +208,59 @@ export function CheckIcon({ className = "h-4 w-4" }: { className?: string }) {
         strokeLinejoin="round"
       />
     </svg>
+  );
+}
+
+/** A small chevron; points right, or down with `down`. Inside a
+    `<details className="group">` it turns down as the details open. */
+export function Chevron({ className = "", down = false }: { className?: string; down?: boolean }) {
+  return (
+    <svg viewBox="0 0 12 12" fill="none" aria-hidden="true" className={`h-3 w-3 shrink-0 ${className}`}>
+      <path
+        d={down ? "M2.5 4.5L6 8l3.5-3.5" : "M4.5 2.5L8 6l-3.5 3.5"}
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+/** A labelled row: its name on the left from `lg`, its content on the right.
+    The Budget planner's steps and its full list share it. */
+export function GroupRow({
+  title,
+  children,
+  className = "border-line py-6",
+  titleClassName = "text-base",
+}: {
+  title: string;
+  children: ReactNode;
+  className?: string;
+  titleClassName?: string;
+}) {
+  return (
+    <div className={`grid gap-4 border-t lg:grid-cols-[12rem_1fr] lg:gap-10 ${className}`}>
+      <h3 className={`font-display font-semibold text-ink ${titleClassName}`}>{title}</h3>
+      <div>{children}</div>
+    </div>
+  );
+}
+
+/** The line a calculator page carries about the newest Budget: what changed
+    for this tool, then a link. It follows LATEST_BUDGET, so next October's
+    Budget needs no edit here or on the pages. */
+export function BudgetNote({ children }: { children: ReactNode }) {
+  return (
+    <p className="mt-6 text-sm leading-6 text-muted">
+      {children}{" "}
+      <Link
+        href={LATEST_BUDGET.href}
+        className="font-semibold text-primary-600 transition-colors duration-200 hover:text-primary-500"
+      >
+        See what {LATEST_BUDGET.label} changes for you →
+      </Link>
+    </p>
   );
 }

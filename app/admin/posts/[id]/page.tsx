@@ -61,7 +61,8 @@ export default async function EditPostPage({
           flags: origin.flags,
           affects: origin.affects.flatMap((key) => {
             const calc = getAffectedCalculator(key);
-            return calc ? [{ label: calc.label, adminHref: calc.adminHref }] : [];
+            // Only rate-editable calculators: the editor offers their rate pages.
+            return calc?.adminHref ? [{ label: calc.label, adminHref: calc.adminHref }] : [];
           }),
           model: origin.model,
           format: origin.format,

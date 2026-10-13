@@ -26,7 +26,9 @@
 
    Sources (verified July 2026):
    - Rate 33%: revenue.ie/.../cat-thresholds-rates-and-aggregation-rules/cat-rates
-   - Group thresholds A €400k / B €40k / C €20k (on/after 2 Oct 2024): .../cat-thresholds
+   - Group thresholds A €420k / B €44k / C €22k for gifts and inheritances on
+     or after 7 Oct 2026 (Budget 2027; Revenue eBrief 149/26). Before that,
+     €400k / €40k / €20k from 2 Oct 2024: .../cat-thresholds
    - Groups (relationships): .../cat-groups
    - Aggregation since 5 Dec 1991: .../cat-aggregation-rules
    - Small gift exemption €3,000, gifts only, not aggregated:
@@ -52,7 +54,7 @@
    ────────────────────────────────────────────────────────────────────────── */
 
 /** When the rates below were last checked against Revenue. */
-export const CAT_LAST_REVIEWED = "July 2026";
+export const CAT_LAST_REVIEWED = "October 2026";
 export const CAT_SOURCE_URL =
   "https://www.revenue.ie/en/gains-gifts-and-inheritance/gift-and-inheritance-tax-cat/how-do-you-calculate-cat.aspx";
 
@@ -80,7 +82,7 @@ export interface CatConfig {
 
 export const CAT_CONFIG_DEFAULT: CatConfig = {
   ratePercent: 33,
-  thresholds: { groupA: 400_000, groupB: 40_000, groupC: 20_000 },
+  thresholds: { groupA: 420_000, groupB: 44_000, groupC: 22_000 },
   smallGiftExemptionEur: 3_000,
   reliefs: { agriculturalPercent: 90, businessPercent: 90, dwellingHousePercent: 100 },
 };

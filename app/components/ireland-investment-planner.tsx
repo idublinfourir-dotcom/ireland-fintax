@@ -517,16 +517,15 @@ export function IrelandInvestmentPlanner() {
             Rates, reliefs and thresholds are current at {DATA_AS_OF} and change with each
             Budget and Finance Act. Deposit, State Savings and bond yields are contractual and
             quoted as such; every other range is long-run and illustrative, not a forecast, and
-            real outcomes can be negative. Ireland Fintax advises on the tax treatment of an
-            investment, not on the investment itself — we are not investment advisers and we do
-            not recommend products. Before committing capital, take advice from an adviser
-            authorised by the Central Bank of Ireland.
+            real outcomes can be negative. This compares the tax treatment of each option; it
+            is not investment advice and does not recommend products. Before committing
+            capital, take advice from an adviser authorised by the Central Bank of Ireland.
           </p>
           <Link
             href="/contact"
             className="mt-4 inline-flex text-sm font-semibold text-primary-500 transition-colors duration-200 hover:text-primary-600"
           >
-            Talk to us about the tax side <span aria-hidden="true">→</span>
+            Ask a question about the tax side <span aria-hidden="true">→</span>
           </Link>
         </div>
       </section>

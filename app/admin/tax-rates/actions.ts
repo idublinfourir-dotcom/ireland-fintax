@@ -49,7 +49,7 @@ const PENSION_BAND_FIELDS = [
 
 function parseYearForm(formData: FormData): { year: number; rates: YearRates } {
   const year = num(formData.get("year"));
-  if (!(TAX_YEARS as readonly number[]).includes(year))
+  if (!TAX_YEARS.includes(year))
     throw new Invalid("Unknown tax year.");
 
   const uscBand1UpTo = euro(formData, "usc_band1_up_to", "USC band 1 upper bound");
@@ -86,8 +86,19 @@ function parseYearForm(formData: FormData): { year: number; rates: YearRates } {
         spccc: euro(formData, "credit_spccc", "Single person child carer credit"),
         ageSingle: euro(formData, "credit_age_single", "Age credit (single)"),
         ageMarried: euro(formData, "credit_age_married", "Age credit (married)"),
+        homeCarer: euro(formData, "credit_home_carer", "Home carer credit"),
       },
       ageCreditThreshold: euro(formData, "age_credit_threshold", "Age credit threshold"),
+      homeCarerIncomeThreshold: euro(
+        formData,
+        "home_carer_threshold",
+        "Home carer income threshold",
+      ),
+      rentCredit: {
+        rate: pctFrac(formData, "rent_credit_rate", "Rent credit rate"),
+        maxSingle: euro(formData, "rent_credit_max_single", "Rent credit maximum (one person)"),
+        maxJoint: euro(formData, "rent_credit_max_joint", "Rent credit maximum (couple)"),
+      },
     },
     usc: {
       exemptionThreshold: euro(formData, "usc_exemption_threshold", "USC exemption threshold"),

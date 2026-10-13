@@ -66,8 +66,9 @@ test("reproduces the workbook's net returns", () => {
   assert.ok(Math.abs(netReturn(byId("posb-deposit"), m) - 0.008375) < 1e-9);
   // 10-yr Solidarity Bond is tax-free, so net === gross
   assert.ok(Math.abs(netReturn(byId("state-savings-10yr-solidarity"), m) - 0.0266) < 1e-9);
-  // Global equity ETF 6.5% mid less 38% exit tax = 4.03%
-  assert.ok(Math.abs(netReturn(byId("global-equity-etf"), m) - 0.0403) < 1e-9);
+  // Global equity ETF 6.5% mid less 35% exit tax = 4.225%. The workbook had
+  // 4.03% at 38%; exit tax falls to 35% on 1 January 2027 (Budget 2027).
+  assert.ok(Math.abs(netReturn(byId("global-equity-etf"), m) - 0.04225) < 1e-9);
   // Investment trust 6.5% mid less 31% CGT = 4.485%. The workbook had 4.355%
   // at 33%; CGT fell to 31% on 7 October 2026 (Budget 2027).
   assert.ok(Math.abs(netReturn(byId("investment-trusts"), m) - 0.04485) < 1e-9);
@@ -98,7 +99,7 @@ test("reproduces the workbook's 10-year projection on 100,000", () => {
   assert.ok(Math.abs(route(0.0229, 0) - 125_409.89) < 0.5); // 5-year Certificate
   assert.ok(Math.abs(route(0.0266, 0) - 130_020.73) < 0.5); // 10-year Solidarity Bond
   assert.ok(Math.abs(route(0.0339, 0.52) - 117_516.7) < 0.5); // Irish government bond
-  assert.ok(Math.abs(route(0.065, TAX.exit) - 148_451.98) < 0.5); // global equity ETF
+  assert.ok(Math.abs(route(0.065, TAX.exit) - 151_258.24) < 0.5); // global equity ETF (35% exit tax; workbook 148,451.98 at 38%)
   assert.ok(Math.abs(route(0.065, TAX.cgt) - 155_074.17) < 0.5); // investment trust (31% CGT; workbook 153,155.51 at 33%)
   assert.ok(Math.abs(route(0.065, 0) - 187_713.75) < 0.5); // the same equities in a pension
 });
@@ -109,10 +110,10 @@ test("the plan projects each option from its own mid-range net return", () => {
   const trust = plan.results.find((r) => r.option.id === "investment-trusts");
   assert.ok(etf && trust);
   // Both mid at 6.5% gross, so they meet the workbook's projection exactly.
-  assert.ok(Math.abs(etf.projectedValue - 148_451.98) < 0.5);
+  assert.ok(Math.abs(etf.projectedValue - 151_258.24) < 0.5);
   assert.ok(Math.abs(trust.projectedValue - 155_074.17) < 0.5);
-  // The 31% CGT wrapper is worth this much more than the 38% fund wrapper.
-  assert.ok(trust.projectedValue - etf.projectedValue > 6_500);
+  // The 31% CGT wrapper is worth this much more than the 35% fund wrapper.
+  assert.ok(trust.projectedValue - etf.projectedValue > 3_800);
 });
 
 test("grossEquivalent restates a tax-free rate for a DIRT payer", () => {

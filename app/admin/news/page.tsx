@@ -169,10 +169,10 @@ export default async function NewsAgentPage() {
                 </div>
                 <div className="flex shrink-0 items-center gap-2">
                   <Link
-                    href={c.adminHref}
+                    href={c.href}
                     className="inline-flex h-8 items-center rounded-none border border-line px-3 text-xs font-semibold text-ink-body transition-colors duration-200 hover:border-ink/30 hover:text-ink"
                   >
-                    Open rates
+                    {c.editable ? "Open rates" : "Open page"}
                   </Link>
                   <form action={dismissRateCheckAction}>
                     <input type="hidden" name="key" value={c.key} />

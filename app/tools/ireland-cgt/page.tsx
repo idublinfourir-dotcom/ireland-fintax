@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Breadcrumbs, Container, PageHero } from "../../components/ui";
+import { Breadcrumbs, BudgetNote, Container, PageHero } from "../../components/ui";
 import { ContactCta } from "../../components/sections";
 import { CalculatorTabs } from "../../components/calculator-tabs";
 import { IrelandCgtCalculator } from "../../components/ireland-cgt-calculator";
@@ -53,6 +53,10 @@ export default async function IrelandCgtPage() {
         <div className="rounded-none border border-line bg-canvas p-6 sm:p-8 lg:p-10">
           <IrelandCgtCalculator config={config} multipliers={multipliers} />
         </div>
+
+        <BudgetNote>
+          Budget 2027 cut the standard rate to 31% for disposals from 7 October 2026.
+        </BudgetNote>
 
         <div className="mt-12 grid gap-6 sm:grid-cols-3">
           {notes.map((note) => (

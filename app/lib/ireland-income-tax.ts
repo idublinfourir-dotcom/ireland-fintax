@@ -21,6 +21,13 @@
        gov.ie/en/department-of-social-protection/publications/prsi-class-a-rates
    - Pension contribution relief age bands & €115,000 earnings cap:
        revenue.ie/en/jobs-and-pensions/pensions/tax-relief-for-pension-contributions
+   - Home Carer Tax Credit (amount, €7,200 threshold, half-the-excess taper):
+       revenue.ie/.../home-carer-credit/home-carer-tax-credit-rates.aspx
+   - Rent Tax Credit (20%, maximums, capped at income tax due):
+       revenue.ie/.../land-and-property/rent-credit/how-much-claim.aspx
+   - 2027: Department of Finance, "Budget 2027 Tax Policy Changes" (6 Oct
+       2026), ch. 2 and 3. Its text prints the USC 3% ceiling as €70,444; that
+       is a typo, its own Table 2 only reconciles with €70,044 (unchanged).
 
    These figures are ESTIMATES for guidance only. Known limitations are marked
    `TODO` inline and MUST stay TODOs until checked against the live Revenue
@@ -62,6 +69,14 @@ export interface IncomeTaxInput {
       Optional so single-person call sites don't need to pass zeros. */
   spouseEmploymentIncome?: number;
   spouseSelfEmploymentOrOtherIncome?: number;
+  /** Rent paid for your home in the year, for the Rent Tax Credit. Whether the
+      tenancy qualifies (not HAP / RAS / an approved housing body, registered
+      with the RTB) is for the user to confirm. */
+  rentPaid?: number;
+  /** Married / civil partners only: one spouse works in the home caring for a
+      child on Child Benefit, someone aged 65+, or someone permanently
+      incapacitated, so the couple may claim the Home Carer Tax Credit. */
+  claimHomeCarerCredit?: boolean;
 }
 
 /* ========================================================================== */
@@ -113,9 +128,21 @@ export interface YearRates {
       spccc: number;
       ageSingle: number;
       ageMarried: number;
+      /** Home Carer Tax Credit, in full. */
+      homeCarer: number;
     };
     /** Age at/above which the Age Tax Credit applies. */
     ageCreditThreshold: number;
+    /** Home carer's own income up to this keeps the full Home Carer credit;
+        above it the credit falls by half of the excess. */
+    homeCarerIncomeThreshold: number;
+    /** Rent Tax Credit: `rate` of rent paid, up to the maximum (the joint one
+        for a jointly assessed couple). */
+    rentCredit: {
+      rate: number;
+      maxSingle: number;
+      maxJoint: number;
+    };
   };
 
   usc: {
@@ -195,8 +222,11 @@ export const RATES_2026: YearRates = {
       spccc: 1_900,
       ageSingle: 245,
       ageMarried: 490,
+      homeCarer: 1_950, // revenue.ie home-carer-tax-credit-rates (2026 table)
     },
     ageCreditThreshold: 65,
+    homeCarerIncomeThreshold: 7_200, // nil at €11,100 = 7,200 + 2 × 1,950
+    rentCredit: { rate: 0.2, maxSingle: 1_000, maxJoint: 2_000 },
   },
   usc: {
     exemptionThreshold: 13_000,
@@ -256,8 +286,11 @@ export const RATES_2025: YearRates = {
       spccc: 1_900,
       ageSingle: 245,
       ageMarried: 490,
+      homeCarer: 1_950, // Finance Act 2024 s466A(2): €1,800 → €1,950
     },
     ageCreditThreshold: 65,
+    homeCarerIncomeThreshold: 7_200,
+    rentCredit: { rate: 0.2, maxSingle: 1_000, maxJoint: 2_000 },
   },
   usc: {
     exemptionThreshold: 13_000,
@@ -293,10 +326,75 @@ export const RATES_2025: YearRates = {
   },
 };
 
+/* 2027: Budget 2027 (6 Oct 2026), Department of Finance "Tax Policy Changes"
+   ch. 2.1 and 3.1. Announced, not yet law: the Finance Bill enacts it. */
+export const RATES_2027: YearRates = {
+  ...RATES_2026,
+  year: 2027,
+  incomeTax: {
+    ...RATES_2026.incomeTax,
+    srcop: {
+      single: 46_500, // +€2,500
+      singleWithSpccc: 50_500,
+      marriedOneIncome: 55_500,
+      marriedBandIncrease: 37_500, // max combined band €93,000
+    },
+    credits: {
+      ...RATES_2026.incomeTax.credits,
+      personalSingle: 2_125, // +€125
+      personalMarried: 4_250,
+      employeePaye: 2_125,
+      earnedIncome: 2_125,
+      employmentCombinedCap: 2_125,
+      homeCarer: 2_050, // +€100
+    },
+    rentCredit: { rate: 0.2, maxSingle: 1_150, maxJoint: 2_300 }, // +€150 / +€300
+  },
+  usc: {
+    ...RATES_2026.usc,
+    // 2% band ceiling €28,700 → €30,300; the 3% ceiling stays €70,044.
+    bands: [
+      { upTo: 12_012, rate: 0.005 },
+      { upTo: 30_300, rate: 0.02 },
+      { upTo: 70_044, rate: 0.03 },
+      { upTo: Infinity, rate: 0.08 },
+    ],
+  },
+  prsi: {
+    ...RATES_2026.prsi,
+    // Flat rate at the start of the year, like the other years: 4.35% from
+    // 1 Oct 2026, rising to 4.5% on 1 Oct 2027 (Social Welfare (Miscellaneous
+    // Provisions) Act 2024). The Department's tables blend the two; the
+    // year-on-year difference is the same either way.
+    rate: 0.0435,
+  },
+};
+
 export const RATES_BY_YEAR: Record<number, YearRates> = {
+  2027: RATES_2027,
   2026: RATES_2026,
   2025: RATES_2025,
 };
+
+/**
+ * The tax year a calculator leads with: the calendar year on `now`, limited to
+ * the years that have rates, compared with the year before. The income tax
+ * page renders per request, so it moves to 2027 v 2026 on 1 January 2027 with
+ * no deploy, and holds there until 2028 rates exist. Ireland is on UTC in
+ * winter, so the server's UTC date is the Irish date at New Year.
+ */
+export function comparisonYears(
+  now: Date,
+  ratesByYear: Record<number, YearRates> = RATES_BY_YEAR,
+): { current: number; prior: number } {
+  const years = Object.keys(ratesByYear)
+    .map(Number)
+    .filter((y) => ratesByYear[y - 1])
+    .sort((a, b) => b - a);
+  const calendar = now.getUTCFullYear();
+  const current = years.find((y) => y <= calendar) ?? years[years.length - 1];
+  return { current, prior: current - 1 };
+}
 
 /* ========================================================================== */
 /* Result shape (fully audited — every number carries its reason)              */
@@ -456,13 +554,32 @@ export function computeIncomeTax(
 
   // Standard-rate cut-off point (SRCOP).
   let srcop: number;
+  let homeCarerCredit = 0;
   if (married) {
     // €53,000 base + (for two incomes) the lower of the band-increase cap
     // (€35,000) and the smaller income — so a one-income couple stays at the
     // base and the combined band never exceeds €88,000 (2026 values).
     const smallerIncome = Math.min(yourIncome, spouse.total);
-    srcop =
-      it.srcop.marriedOneIncome + Math.min(it.srcop.marriedBandIncrease, smallerIncome);
+    const bandIncrease = Math.min(it.srcop.marriedBandIncrease, smallerIncome);
+    srcop = it.srcop.marriedOneIncome + bandIncrease;
+
+    // Home Carer Tax Credit: the home carer is the spouse with the smaller
+    // income; above the threshold the credit falls by half the excess.
+    // Revenue: a couple cannot have both this credit and the band increase
+    // in the same year, so keep whichever leaves less tax.
+    if (input.claimHomeCarerCredit) {
+      const credit = clampMin0(
+        it.credits.homeCarer - clampMin0(smallerIncome - it.homeCarerIncomeThreshold) / 2,
+      );
+      const taxOn = (cutOff: number) =>
+        Math.min(taxableIncome, cutOff) * it.standardRate +
+        clampMin0(taxableIncome - cutOff) * it.higherRate;
+      const saving = credit - (taxOn(it.srcop.marriedOneIncome) - taxOn(srcop));
+      if (credit > 0 && saving > 0) {
+        srcop = it.srcop.marriedOneIncome;
+        homeCarerCredit = credit;
+      }
+    }
   } else {
     srcop = spccc ? it.srcop.singleWithSpccc : it.srcop.single;
   }
@@ -562,6 +679,35 @@ export function computeIncomeTax(
       name: "Age Tax Credit",
       amount: married ? it.credits.ageMarried : it.credits.ageSingle,
       reason: `Age ${input.age} ≥ ${it.ageCreditThreshold}`,
+    });
+  }
+
+  // Home Carer Tax Credit (chosen over the second-income band increase above).
+  if (homeCarerCredit > 0) {
+    credits.push({
+      name: "Home Carer Tax Credit",
+      amount: homeCarerCredit,
+      reason:
+        homeCarerCredit < it.credits.homeCarer
+          ? `Reduced by half of the carer's income above €${it.homeCarerIncomeThreshold.toLocaleString("en-IE")}; worth more than the second-income band increase`
+          : "Spouse works in the home caring for a dependent person; worth more than the second-income band increase",
+    });
+  }
+
+  // Rent Tax Credit: a share of rent paid, up to the maximum (joint for a
+  // couple). Like every credit it cannot take tax below zero, which is
+  // Revenue's "capped at your income tax" rule.
+  const rentPaid = sanitize(input.rentPaid ?? 0);
+  if (rentPaid > 0) {
+    const max = married ? it.rentCredit.maxJoint : it.rentCredit.maxSingle;
+    const amount = Math.min(rentPaid * it.rentCredit.rate, max);
+    credits.push({
+      name: "Rent Tax Credit",
+      amount,
+      reason:
+        amount < max
+          ? `${Math.round(it.rentCredit.rate * 100)}% of rent paid`
+          : `Maximum for ${married ? "a jointly assessed couple" : "one person"}`,
     });
   }
 

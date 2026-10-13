@@ -17,6 +17,13 @@ import {
   type CatInput,
 } from "./ireland-cat.ts";
 
+/* External worked examples (Revenue, Citizens Information) were written for
+   the thresholds in force before 7 Oct 2026, so they run on those. */
+const PRE_BUDGET_2027 = {
+  ...CAT_CONFIG_DEFAULT,
+  thresholds: { groupA: 400_000, groupB: 40_000, groupC: 20_000 },
+};
+
 const base: CatInput = {
   benefitType: "gift",
   relationship: "child",
@@ -44,9 +51,9 @@ test("parent flips group by benefit type — gift B, inheritance A", () => {
 });
 
 test("threshold + relief lookups read the config", () => {
-  assert.equal(thresholdFor("A", CAT_CONFIG_DEFAULT), 400_000);
-  assert.equal(thresholdFor("B", CAT_CONFIG_DEFAULT), 40_000);
-  assert.equal(thresholdFor("C", CAT_CONFIG_DEFAULT), 20_000);
+  assert.equal(thresholdFor("A", CAT_CONFIG_DEFAULT), 420_000);
+  assert.equal(thresholdFor("B", CAT_CONFIG_DEFAULT), 44_000);
+  assert.equal(thresholdFor("C", CAT_CONFIG_DEFAULT), 22_000);
   assert.equal(reliefPercentFor("agricultural", CAT_CONFIG_DEFAULT), 90);
   assert.equal(reliefPercentFor("business", CAT_CONFIG_DEFAULT), 90);
   assert.equal(reliefPercentFor("dwelling-house", CAT_CONFIG_DEFAULT), 100);
@@ -57,7 +64,7 @@ test("Revenue 'Claire' — Group A, prior €365k, current €40k → excess €
   const r = computeCat(
     { ...base, benefitType: "inheritance", relationship: "child",
       marketValue: 40_000, applySmallGiftExemption: false, priorBenefits: 365_000 },
-    CAT_CONFIG_DEFAULT,
+    PRE_BUDGET_2027,
   );
   assert.equal(r.thresholdRemaining, 35_000);
   assert.equal(r.taxableExcess, 5_000);
@@ -67,7 +74,7 @@ test("Revenue 'Claire' — Group A, prior €365k, current €40k → excess €
 test("CitizensInfo house gift €620k Group A → €71,610", () => {
   const r = computeCat(
     { ...base, benefitType: "gift", relationship: "child", marketValue: 620_000 },
-    CAT_CONFIG_DEFAULT,
+    PRE_BUDGET_2027,
   );
   // 620,000 − 3,000 small gift = 617,000; − 400,000 threshold = 217,000 taxable
   assert.equal(r.smallGiftExemptionApplied, 3_000);
@@ -95,7 +102,7 @@ test("agricultural relief knocks 90% off before threshold", () => {
   assert.equal(r.reliefAmount, 900_000);
   assert.equal(r.reducedValue, 100_000);
   assert.equal(r.currentTaxableValue, 100_000);
-  assert.equal(r.taxableExcess, 0); // 100,000 < 400,000 Group A threshold
+  assert.equal(r.taxableExcess, 0); // 100,000 < 420,000 Group A threshold
   assert.equal(r.catDue, 0);
 });
 
@@ -117,7 +124,7 @@ test("deductible liabilities reduce the incumbrance-free value", () => {
     CAT_CONFIG_DEFAULT,
   );
   assert.equal(r.incumbranceFreeValue, 400_000);
-  assert.equal(r.taxableExcess, 0); // 400,000 == threshold
+  assert.equal(r.taxableExcess, 0); // 400,000 < 420,000 threshold
 });
 
 test("prior benefits over threshold → whole current benefit taxable", () => {
@@ -126,7 +133,7 @@ test("prior benefits over threshold → whole current benefit taxable", () => {
       marketValue: 20_000, applySmallGiftExemption: false, priorBenefits: 60_000 },
     CAT_CONFIG_DEFAULT,
   );
-  assert.equal(r.thresholdRemaining, 0); // 40,000 − 60,000 clamped
+  assert.equal(r.thresholdRemaining, 0); // 44,000 − 60,000 clamped
   assert.equal(r.taxableExcess, 20_000);
   assert.equal(r.catDue, 6_600);
 });
@@ -152,9 +159,9 @@ test("effective rate — tax over the full current taxable value", () => {
       marketValue: 800_000, applySmallGiftExemption: false },
     CAT_CONFIG_DEFAULT,
   );
-  // taxable 400,000 × 33% = 132,000; effective over 800,000 taxable value = 16.5%
-  assert.equal(r.catDue, 132_000);
-  assert.equal(r.effectiveRatePercent, 16.5);
+  // taxable 380,000 × 33% = 125,400; effective over 800,000 taxable value = 15.675%
+  assert.equal(r.catDue, 125_400);
+  assert.equal(r.effectiveRatePercent, 15.68);
 });
 
 test("round2 absorbs binary-float error", () => {
@@ -167,7 +174,7 @@ test("parseCatConfig — code default round-trips", () => {
   assert.notEqual(cfg, null);
   if (cfg) {
     assert.equal(cfg.ratePercent, 33);
-    assert.equal(cfg.thresholds.groupA, 400_000);
+    assert.equal(cfg.thresholds.groupA, 420_000);
     assert.equal(cfg.reliefs.dwellingHousePercent, 100);
   }
 });

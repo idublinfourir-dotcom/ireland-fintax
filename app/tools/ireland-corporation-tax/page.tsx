@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Breadcrumbs, Container, PageHero } from "../../components/ui";
+import { Breadcrumbs, BudgetNote, Container, PageHero } from "../../components/ui";
 import { ContactCta } from "../../components/sections";
 import { CalculatorTabs } from "../../components/calculator-tabs";
 import { IrelandCorporationTaxCalculator } from "../../components/ireland-corporation-tax-calculator";
@@ -53,6 +53,10 @@ export default async function IrelandCorporationTaxPage() {
         <div className="rounded-none border border-line bg-canvas p-6 sm:p-8 lg:p-10">
           <IrelandCorporationTaxCalculator config={config} />
         </div>
+
+        <BudgetNote>
+          Budget 2027 extends start-up relief to the end of 2030 and raises the preliminary tax small company limit from €200,000 to €350,000.
+        </BudgetNote>
 
         <div className="mt-12 grid gap-6 sm:grid-cols-3">
           {notes.map((note) => (

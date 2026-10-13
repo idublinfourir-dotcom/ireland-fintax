@@ -469,6 +469,59 @@ Whenever anything else gets hidden rather than deleted, add a row here.
 - `toolkit_resources` and `toolkit_requests.resource_id` are **gone**: they were
   already read and written by nothing, and were not recreated in MongoDB.
 
+### Budget page (`/budget/2027`, Oct 2026)
+
+- Visitors tick what applies to them and see only the measures that touch
+  them. Every measure is data in `app/lib/budget-2027.ts` (pure, tested); the
+  page and `components/budget-2027-planner.tsx` only render it. Tax lines come
+  from the income tax engine (`compareYears` 2027 v 2026), so admin rate edits
+  flow through. Everything is computed in the browser; nothing is sent,
+  stored or put in the URL.
+- **Three tiers, never mixed**: *exact* (from the rules and the visitor's own
+  numbers, the only lines that are totalled), *perUnit* (official change per
+  litre / pack / hour; a personal estimate only when usage is given, never
+  totalled), *info* (nothing changes until the visitor acts).
+- **Figures come from official sources only** (Department of Finance, DPER,
+  Revenue, the Acts, a department's own release). Secondary sites were wrong
+  more than once (USC "2.5%", fuel "27c / 32c"). A date or rule no official
+  source has published is shown as "Not announced yet", never guessed. The
+  verification log lives in the gitignored `docs/budget-2027-plan.md`.
+- Each measure carries a status (in force / awaiting the Finance Act /
+  announced / already law). When the Finance Act passes, re-check and flip
+  them, and move `BUDGET_DATA_AS_OF`.
+- Next October: copy the module and page for the new year and add it to the
+  top of `BUDGETS` in `app/lib/budgets.ts`; the nav dropdown, the footer, the
+  sitemap, the home banner, the `/budget` redirect and every calculator
+  page's `<BudgetNote>` (components/ui.tsx) follow that list. Inside the
+  module, `YEARS` is the one place the compared tax years live.
+- A sticky action bar at the foot of the screen carries
+  `data-sticky-actions`; globals.css lifts the back-to-top button above it.
+- Page design (Oct 2026 redesign): a compact navy hero carrying the Budget's
+  key dates instead of a photo; the planner in three numbered steps, each
+  area a row (name left, square-tick tiles right); the result set like a
+  statement (dotted leaders to right-aligned amounts, ruled totals, each line
+  a `<details>` that opens to why / starts / status / source); the full list
+  below in the same row structure; sources folded away. Keep it that quiet:
+  no per-line meta strings, no second always-open calculator.
+- Per-unit lines (fuel, heating, tobacco, vapes, new cars, childcare) always
+  show their change on the right in words ("27c a litre more", "€43 less per
+  1,000 litres"), never with a + or - sign, because + means "better off" in
+  the money statement. `cheaper` decides the colour. A personal estimate is
+  always "a year" and only appears when the visitor gives their usage.
+  Petrol and diesel are separate measures, so a two-car home can tick both.
+- The income tax engine now models the **Rent Tax Credit** and the **Home
+  Carer Tax Credit** (the latter against the second-income band increase,
+  keeping whichever leaves less tax). Their rates are in `YearRates` and the
+  admin editor; stored rows that predate them fall back to the code value.
+  `IrelandIncomeTaxCalculator` takes `currentYear` / `priorYear`. The tool
+  page picks them with `comparisonYears(new Date())`, so it moves to 2027 v
+  2026 on 1 January 2027 by itself (it renders per request) and holds there
+  until 2028 rates exist.
+- `budget-2027` is in the news agent's `AFFECTED_CALCULATORS`, so a story
+  about a Budget measure (the Finance Bill, a start date still "Not announced
+  yet") raises a check in `/admin/news`. There is no rate editor behind it:
+  a real change is an edit to `budget-2027.ts`.
+
 ### Blog (`/blog`)
 
 - Posts are rows in `posts`, written in `/admin/posts` with a **block editor**
@@ -533,7 +586,10 @@ Whenever anything else gets hidden rather than deleted, add a row here.
   sitemap is `force-dynamic` so it lists posts published after a deploy and
   the build does not need the database.
 - "Blog" took the nav slot the Services mega-menu freed. The row is full at
-  six top-level links again.
+  six top-level links again. "Budget" took Contact's slot (Oct 2026) as a
+  dropdown of years from `BUDGETS` in `app/lib/budgets.ts` (the label stays
+  "Budget", so the row never grows); the "Ask a question" button beside the
+  links already goes to /contact. Don't re-add a Contact link.
 
 ### News agent (AI drafts for the blog, Oct 2026)
 

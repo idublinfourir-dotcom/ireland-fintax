@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Breadcrumbs, Container, PageHero } from "../../components/ui";
+import { Breadcrumbs, BudgetNote, Container, PageHero } from "../../components/ui";
 import { ContactCta } from "../../components/sections";
 import { CalculatorTabs } from "../../components/calculator-tabs";
 import { IrelandCatCalculator } from "../../components/ireland-cat-calculator";
@@ -9,13 +9,13 @@ import { getCatData } from "../../lib/cat-data";
 export const metadata: Metadata = {
   title: "Ireland CAT Calculator: Gift & Inheritance Tax (Group A/B/C)",
   description:
-    "Estimate Irish Capital Acquisitions Tax on a gift or inheritance. Group A/B/C thresholds (€400,000 / €40,000 / €20,000), the €3,000 small-gift exemption, agricultural and business relief at 90%, prior-benefit aggregation and 33%, with the pay & file date. Republic of Ireland.",
+    "Estimate Irish Capital Acquisitions Tax on a gift or inheritance. Group A/B/C thresholds (€420,000 / €44,000 / €22,000 from 7 October 2026), the €3,000 small-gift exemption, agricultural and business relief at 90%, prior-benefit aggregation and 33%, with the pay & file date. Republic of Ireland.",
 };
 
 const notes = [
   {
     title: "Group thresholds",
-    body: "Your relationship to the disponer sets the tax-free threshold, Group A €400,000 (children), B €40,000 (close relatives), C €20,000 (everyone else). The tool derives it for you.",
+    body: "Your relationship to the disponer sets the tax-free threshold, Group A €420,000 (children), B €44,000 (close relatives), C €22,000 (everyone else), for gifts and inheritances from 7 October 2026. The tool derives it for you.",
   },
   {
     title: "Farm & business relief",
@@ -53,6 +53,10 @@ export default async function IrelandCatPage() {
         <div className="rounded-none border border-line bg-canvas p-6 sm:p-8 lg:p-10">
           <IrelandCatCalculator config={config} />
         </div>
+
+        <BudgetNote>
+          Budget 2027 raised the thresholds for gifts and inheritances from 7 October 2026.
+        </BudgetNote>
 
         <div className="mt-12 grid gap-6 sm:grid-cols-3">
           {notes.map((note) => (
