@@ -1,5 +1,8 @@
 "use client";
 
+import { useT } from "./locale-link";
+import { calcMessages } from "../lib/messages/calc";
+
 import { useEffect, useState } from "react";
 
 export function BackToTop() {
@@ -24,7 +27,7 @@ export function BackToTop() {
     <button
       type="button"
       onClick={toTop}
-      aria-label="Back to top"
+      aria-label={useT(calcMessages).backToTop}
       data-back-to-top
       tabIndex={visible ? 0 : -1}
       className={`fixed bottom-6 right-6 z-40 grid h-11 w-11 cursor-pointer place-items-center rounded-none bg-navy-900 text-primary-300 shadow-lg shadow-navy-900/25 transition-all duration-300 hover:bg-navy-700 hover:text-primary-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500 ${

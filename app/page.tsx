@@ -10,41 +10,47 @@ import {
   ContactCta,
 } from "./components/sections";
 import { LATEST_BUDGET } from "./lib/budgets";
+import { getMessages } from "./lib/messages";
 
 /* Same sections and order as before the learning-platform switch, rewritten
    for it. Only the Services grid is gone (hidden site-wide); Who we are sits
    in its slot. */
-export default function Home() {
+export default async function Home() {
+  const { locale, t } = await getMessages();
+  const budget = t.header.tools[LATEST_BUDGET.href]?.label ?? LATEST_BUDGET.label;
   return (
     <>
       <Hero />
       <QuickEntry />
       <WhoWeAre />
       <PromoBanner
-        eyebrow={LATEST_BUDGET.label}
-        title={`What does ${LATEST_BUDGET.label} change for you?`}
-        body="Tick what applies to you, from renting or buying a first home to a pension, a car or a family, and see only the changes that affect you, in euro where the rules make it exact. Built from the official figures, worked out in your browser."
+        locale={locale}
+        eyebrow={budget}
+        title={t.promos.budget.title.replace("{budget}", budget)}
+        body={t.promos.budget.body}
         ctaHref={LATEST_BUDGET.href}
-        ctaLabel="See what changes for you"
+        ctaLabel={t.promos.budget.cta}
         image="deskFinance"
         reverse
       />
       <PromoBanner
-        eyebrow="Calculators"
-        title="Don’t just read about it. Run your own numbers."
-        body="Income tax, VAT, CGT, CAT, corporation tax and more, all using Irish rates. Change a figure and watch what happens: it’s the quickest way to understand how a tax really works."
+        locale={locale}
+        eyebrow={t.promos.calculators.eyebrow}
+        title={t.promos.calculators.title}
+        body={t.promos.calculators.body}
         ctaHref="/tools/ireland-income-tax"
-        ctaLabel="Try the calculators"
+        ctaLabel={t.promos.calculators.cta}
         image="forecast"
       />
       <AiBand />
       <Industries />
       <PromoBanner
-        eyebrow="Accounts and Finance"
-        title="Starting a company? Start here."
-        body="Memos, templates, tax and VAT forms and step-by-step setup guides for Ireland and the UK. All free: tell us which one you need and we’ll email it over."
+        locale={locale}
+        eyebrow={t.promos.company.eyebrow}
+        title={t.promos.company.title}
+        body={t.promos.company.body}
         ctaHref="/toolkits"
-        ctaLabel="Browse Accounts and Finance"
+        ctaLabel={t.promos.company.cta}
         image="office"
         reverse
       />

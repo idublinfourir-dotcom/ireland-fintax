@@ -16,6 +16,8 @@ import { useFormStatus } from "react-dom";
 import { Icon } from "./dashboard-icons";
 import type { EnquiryMessage, MessageSender } from "../lib/enquiry-messages";
 import { ENQUIRY_MESSAGE_MAX_LENGTH } from "../lib/enquiry-message-validation";
+import { useT } from "./locale-link";
+import { portalMessages } from "../lib/messages/portal";
 
 const time = new Intl.DateTimeFormat("en-GB", {
   day: "2-digit",
@@ -48,9 +50,10 @@ function Bubble({
   clientName: string;
 }) {
   const mine = item.sender === viewer;
+  const t = useT(portalMessages).chat;
   // Short mark, not the full legal name: this caption repeats under every
   // admin message and the full name wraps the bubble column.
-  const label = item.sender === "admin" ? "Ireland Fintax" : clientName;
+  const label = item.sender === "admin" ? "Irish Fintax" : clientName;
   return (
     <div className={`flex items-end gap-2 ${mine ? "flex-row-reverse" : "flex-row"}`}>
       <span
@@ -76,7 +79,7 @@ function Bubble({
           {item.body}
         </div>
         <span className="mt-1 px-0.5 text-[11px] text-muted">
-          {label} · {item.pending ? "Sending…" : time.format(new Date(item.createdAt))}
+          {label} · {item.pending ? t.sending : time.format(new Date(item.createdAt))}
         </span>
       </div>
     </div>

@@ -22,33 +22,13 @@ import {
   SegmentedField,
   SelectField,
   ResultDisclaimer,
+  useFormat,
 } from "./calculator-fields";
+import { useT } from "./locale-link";
+import { catMessages } from "../lib/messages/cat";
+import { fill } from "./ui";
 
-const money = (n: number) =>
-  new Intl.NumberFormat("en-IE", {
-    style: "currency",
-    currency: "EUR",
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(n);
-
-const MONTHS = [
-  "January", "February", "March", "April", "May", "June",
-  "July", "August", "September", "October", "November", "December",
-];
-
-const GROUP_NOTE: Record<Relationship, string> = {
-  child: "A child of the disponer.",
-  parent: "Parent: Group A on an absolute inheritance, Group B on a gift.",
-  sibling: "A brother or sister of the disponer.",
-  "niece-nephew": "A niece or nephew of the disponer.",
-  grandchild: "A grandchild (lineal descendant).",
-  grandparent: "A grandparent (lineal ancestor).",
-  "uncle-aunt": "An uncle or aunt of the disponer.",
-  cousin: "A cousin.",
-  "in-law": "An in-law.",
-  other: "Any other relationship or a friend.",
-};
+/* Months, relationship notes and relief names: catMessages. */
 
 function Line({ label, value, strong = false, muted = false }: {
   label: string; value: string; strong?: boolean; muted?: boolean;
@@ -66,6 +46,10 @@ function Line({ label, value, strong = false, muted = false }: {
 }
 
 export function IrelandCatCalculator({ config }: { config: CatConfig }) {
+  const t = useT(catMessages);
+  const { money, eur0, rate } = useFormat();
+  const computed = (s: string) => t.computed[s] ?? s;
+  const smallGift = eur0(config.smallGiftExemptionEur);
   const [benefitType, setBenefitType] = useState<BenefitType>("gift");
   const [relationship, setRelationship] = useState<Relationship>("child");
   const [marketValue, setMarketValue] = useState(0);
@@ -96,90 +80,91 @@ export function IrelandCatCalculator({ config }: { config: CatConfig }) {
       {/* inputs */}
       <div className="flex flex-col gap-5">
         <div className="border-l-[3px] border-primary-500 bg-surface-muted px-4 py-3 text-xs leading-5 text-ink-body">
-          <span className="font-semibold text-ink">Gift or inheritance.</span> Enter one
-          benefit, who received it, its value and any relief, and see the CAT due after
-          the group threshold and, for gifts, the €{config.smallGiftExemptionEur.toLocaleString("en-IE")} small-gift exemption.
+          <span className="font-semibold text-ink">{t.introTitle}</span>{" "}
+          {t.introBody.replace("{amount}", smallGift)}
         </div>
 
         <SegmentedField<BenefitType>
-          label="Benefit type"
+          label={t.benefitType}
           value={benefitType}
           onChange={setBenefitType}
           options={[
-            { value: "gift", label: "Gift" },
-            { value: "inheritance", label: "Inheritance" },
+            { value: "gift", label: t.gift },
+            { value: "inheritance", label: t.inheritance },
           ]}
         />
 
         <SelectField
-          label="Relationship (beneficiary is the disponer's…)"
+          label={t.relationship}
           value={relationship}
           onChange={(v) => setRelationship(v as Relationship)}
           hint={
             <>
-              {GROUP_NOTE[relationship]} Group{" "}
-              <span className="font-semibold text-ink">{r.group}</span>: threshold{" "}
-              <span className="font-semibold text-ink">{money(r.groupThreshold)}</span>.
+              {fill(t.groupLine, {
+                note: t.groupNotes[relationship],
+                group: <span className="font-semibold text-ink">{r.group}</span>,
+                threshold: <span className="font-semibold text-ink">{money(r.groupThreshold)}</span>,
+              })}
             </>
           }
         >
           {RELATIONSHIPS.map((rel) => (
-            <option key={rel.value} value={rel.value}>{rel.label}</option>
+            <option key={rel.value} value={rel.value}>{t.relationships[rel.value]}</option>
           ))}
         </SelectField>
 
         <CurrencyField
-          label="Market value of the benefit"
+          label={t.marketValue}
           value={marketValue}
           onChange={setMarketValue}
-          hint="What the gift or inheritance is worth."
+          hint={t.marketValueHint}
         />
 
         <CurrencyField
-          label="Deductible liabilities & costs"
+          label={t.liabilities}
           value={deductibleLiabilities}
           onChange={setDeductibleLiabilities}
-          hint="Debts, costs or consideration paid by the beneficiary: reduce the taxable value."
+          hint={t.liabilitiesHint}
         />
 
         <SegmentedField<ReliefKind>
-          label="Relief"
+          label={t.relief}
           value={relief}
           onChange={setRelief}
           options={[
-            { value: "none", label: "None" },
-            { value: "agricultural", label: `Agricultural ${config.reliefs.agriculturalPercent}%` },
-            { value: "business", label: `Business ${config.reliefs.businessPercent}%` },
-            { value: "dwelling-house", label: `Dwelling house ${config.reliefs.dwellingHousePercent}%` },
+            { value: "none", label: t.none },
+            { value: "agricultural", label: t.agricultural.replace("{rate}", rate(config.reliefs.agriculturalPercent)) },
+            { value: "business", label: t.business.replace("{rate}", rate(config.reliefs.businessPercent)) },
+            { value: "dwelling-house", label: t.dwelling.replace("{rate}", rate(config.reliefs.dwellingHousePercent)) },
           ]}
         />
 
         {isGift && (
           <SegmentedField<"on" | "off">
-            label={`Apply €${config.smallGiftExemptionEur.toLocaleString("en-IE")} small-gift exemption`}
+            label={t.applySmallGift.replace("{amount}", smallGift)}
             value={applySmallGift ? "on" : "off"}
             onChange={(v) => setApplySmallGift(v === "on")}
             options={[
-              { value: "on", label: "Apply" },
-              { value: "off", label: "Skip" },
+              { value: "on", label: t.apply },
+              { value: "off", label: t.skip },
             ]}
           />
         )}
 
         <CurrencyField
-          label="Prior benefits in this group (since 5 Dec 1991)"
+          label={t.prior}
           value={priorBenefits}
           onChange={setPriorBenefits}
-          hint="Taxable value of earlier gifts/inheritances in the SAME group: they use up the threshold."
+          hint={t.priorHint}
         />
 
         <SelectField
-          label="Valuation month"
+          label={t.valuationMonth}
           value={String(valuationMonth)}
           onChange={(v) => setValuationMonth(Number(v))}
-          hint={r.paymentDue ? `Pay & file by ${r.paymentDue}.` : undefined}
+          hint={r.paymentDue ? t.payBy.replace("{date}", computed(r.paymentDue)) : undefined}
         >
-          {MONTHS.map((name, i) => (
+          {t.months.map((name, i) => (
             <option key={name} value={i + 1}>{name}</option>
           ))}
         </SelectField>
@@ -191,10 +176,10 @@ export function IrelandCatCalculator({ config }: { config: CatConfig }) {
           <div className="border-b border-line px-5 py-5 sm:px-6">
             <div className="flex items-baseline justify-between gap-4">
               <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted">
-                CAT due
+                {t.catDue}
               </p>
               <span className="rounded-none bg-navy-900 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-white">
-                Group {r.group} · {r.ratePercent}%
+                {t.groupBadge.replace("{group}", r.group).replace("{rate}", rate(r.ratePercent))}
               </span>
             </div>
             <p className="mt-3 font-display text-[2.5rem] font-semibold leading-none tracking-tight text-ink tabular-nums">
@@ -202,33 +187,44 @@ export function IrelandCatCalculator({ config }: { config: CatConfig }) {
             </p>
             <p className="mt-2.5 text-sm text-muted">
               {r.taxableExcess > 0
-                ? `on ${money(r.taxableExcess)} above the ${money(r.groupThreshold)} Group ${r.group} threshold.`
-                : `nothing to pay: within the ${money(r.groupThreshold)} Group ${r.group} threshold.`}
+                ? t.above
+                    .replace("{excess}", money(r.taxableExcess))
+                    .replace("{threshold}", money(r.groupThreshold))
+                    .replace("{group}", r.group)
+                : t.within.replace("{threshold}", money(r.groupThreshold)).replace("{group}", r.group)}
             </p>
           </div>
           <dl className="divide-y divide-line">
-            <Line label="Market value" value={money(r.marketValue)} />
+            <Line label={t.lineMarket} value={money(r.marketValue)} />
             {r.deductibleLiabilities > 0 && (
-              <Line label="Less liabilities & costs" value={`− ${money(r.deductibleLiabilities)}`} muted />
+              <Line label={t.lessLiabilities} value={`− ${money(r.deductibleLiabilities)}`} muted />
             )}
             {r.reliefPercent > 0 && (
-              <Line label={`Less ${r.reliefLabel} (${r.reliefPercent}%)`} value={`− ${money(r.reliefAmount)}`} muted />
+              <Line
+                label={t.lessRelief
+                  .replace("{relief}", relief === "none" ? r.reliefLabel : t.reliefNames[relief])
+                  .replace("{rate}", rate(r.reliefPercent))}
+                value={`− ${money(r.reliefAmount)}`}
+                muted
+              />
             )}
             {r.smallGiftExemptionApplied > 0 && (
-              <Line label="Less small-gift exemption" value={`− ${money(r.smallGiftExemptionApplied)}`} muted />
+              <Line label={t.lessSmallGift} value={`− ${money(r.smallGiftExemptionApplied)}`} muted />
             )}
-            <Line label="Taxable value of this benefit" value={money(r.currentTaxableValue)} />
+            <Line label={t.taxableValue} value={money(r.currentTaxableValue)} />
             {r.priorBenefits > 0 && (
-              <Line label="Prior benefits in group" value={money(r.priorBenefits)} muted />
+              <Line label={t.priorInGroup} value={money(r.priorBenefits)} muted />
             )}
-            <Line label="Threshold remaining" value={money(r.thresholdRemaining)} muted />
-            <Line label="Taxable excess" value={money(r.taxableExcess)} />
-            <Line label={`CAT at ${r.ratePercent}%`} value={money(r.catDue)} strong />
+            <Line label={t.remaining} value={money(r.thresholdRemaining)} muted />
+            <Line label={t.excess} value={money(r.taxableExcess)} />
+            <Line label={t.catAt.replace("{rate}", rate(r.ratePercent))} value={money(r.catDue)} strong />
           </dl>
           <p className="border-t border-line px-5 py-3 text-xs leading-5 text-muted sm:px-6">
             {r.paymentDue
-              ? `Based on a ${MONTHS[valuationMonth - 1]} valuation date, the return and payment are due ${r.paymentDue}.`
-              : "Set a valuation month to see the pay & file date."}
+              ? t.basedOn
+                  .replace("{month}", t.months[valuationMonth - 1])
+                  .replace("{date}", computed(r.paymentDue))
+              : t.setMonth}
           </p>
         </div>
         <ResultDisclaimer asOf={CAT_LAST_REVIEWED} sourceUrl={CAT_SOURCE_URL} />

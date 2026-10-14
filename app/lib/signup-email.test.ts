@@ -5,7 +5,7 @@ import { confirmHtml, confirmSubject, confirmText } from "./signup-email.ts";
 const base = {
   name: "Cian Murphy",
   verifyUrl: "https://www.irishfintax.ie/auth/confirm?token=deadbeef",
-  firmName: "Ireland Fintax",
+  firmName: "Irish Fintax",
 };
 
 test("both parts carry the confirmation link", () => {

@@ -1,10 +1,12 @@
 "use client";
 
-import Link from "next/link";
+import Link from "../components/locale-link";
 import { useActionState } from "react";
 import { signup, type SignupState } from "./actions";
 import { PasswordInput } from "../components/password-input";
 import { GoogleButton } from "../components/google-button";
+import { useT } from "../components/locale-link";
+import { accountMessages } from "../lib/messages/account";
 
 const inputClasses =
   "w-full rounded-none border border-line bg-canvas px-4 py-3 text-[15px] text-ink placeholder:text-muted focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-primary-500";
@@ -12,6 +14,7 @@ const inputClasses =
 const initialState: SignupState = {};
 
 export function SignupForm({ googleEnabled }: { googleEnabled: boolean }) {
+  const t = useT(accountMessages);
   const [state, formAction, isPending] = useActionState(signup, initialState);
 
   if (state.checkEmail) {
@@ -29,7 +32,7 @@ export function SignupForm({ googleEnabled }: { googleEnabled: boolean }) {
           </svg>
         </span>
         <h2 className="font-display text-2xl font-medium tracking-tight text-ink">
-          Check your email
+          {t.signup.checkTitle}
         </h2>
         <p className="text-[15px] leading-7 text-muted">
           {/* Deliberately the same sentence for all three outcomes: a new
@@ -39,24 +42,28 @@ export function SignupForm({ googleEnabled }: { googleEnabled: boolean }) {
               here, which is the same thing the old error message gave away.
               Whatever the reader needs to know is in the message itself, where
               only the address's owner can read it. */}
-          <>
-            We&apos;ve sent a message to{" "}
-            <span className="font-medium text-ink">{state.values?.email}</span>.
-            Open it to finish setting up your account.
-          </>
+          {t.signup.sentTo.split("{email}").map((part, i) =>
+            i === 0 ? (
+              part
+            ) : (
+              <span key={i}>
+                <span className="font-medium text-ink">{state.values?.email}</span>
+                {part}
+              </span>
+            ),
+          )}
         </p>
         {/* Said plainly because it is the most common outcome, not an edge
             case: a first message from a new sender, carrying a link, is
             exactly what a spam filter holds back. */}
         <p className="text-sm leading-6 text-muted">
-          Can&apos;t find it? Check your spam or junk folder, and mark it as
-          not spam so future messages reach your inbox.
+          {t.signup.cantFind}
         </p>
         <Link
           href="/login"
           className="font-medium text-primary-500 transition-colors duration-200 hover:text-primary-600"
         >
-          Go to sign in
+          {t.signup.goToSignIn}
         </Link>
       </div>
     );
@@ -79,7 +86,7 @@ export function SignupForm({ googleEnabled }: { googleEnabled: boolean }) {
 
       <div className="flex items-center gap-3 text-xs font-medium uppercase tracking-wide text-muted">
         <span className="h-px flex-1 bg-line" />
-        or
+        {t.or}
         <span className="h-px flex-1 bg-line" />
       </div>
 
@@ -89,7 +96,7 @@ export function SignupForm({ googleEnabled }: { googleEnabled: boolean }) {
             htmlFor="full_name"
             className="mb-1.5 block text-sm font-medium text-ink"
           >
-            Full name
+            {t.signup.fullName}
           </label>
           <input
             id="full_name"
@@ -99,13 +106,13 @@ export function SignupForm({ googleEnabled }: { googleEnabled: boolean }) {
             required
             defaultValue={values.fullName}
             className={inputClasses}
-            placeholder="Jane Smith"
+            placeholder={t.signup.namePlaceholder}
           />
         </div>
 
         <div>
           <label htmlFor="email" className="mb-1.5 block text-sm font-medium text-ink">
-            Email
+            {t.email}
           </label>
           <input
             id="email"
@@ -115,7 +122,7 @@ export function SignupForm({ googleEnabled }: { googleEnabled: boolean }) {
             required
             defaultValue={values.email}
             className={inputClasses}
-            placeholder="jane@company.co"
+            placeholder={t.emailPlaceholder}
           />
         </div>
 
@@ -124,8 +131,8 @@ export function SignupForm({ googleEnabled }: { googleEnabled: boolean }) {
             htmlFor="password"
             className="mb-1.5 block text-sm font-medium text-ink"
           >
-            Password{" "}
-            <span className="font-normal text-muted">(8+ characters)</span>
+            {t.password}{" "}
+            <span className="font-normal text-muted">{t.signup.passwordHint}</span>
           </label>
           <PasswordInput
             id="password"
@@ -140,16 +147,16 @@ export function SignupForm({ googleEnabled }: { googleEnabled: boolean }) {
           disabled={isPending}
           className="inline-flex h-12 cursor-pointer items-center justify-center gap-2 rounded-none bg-primary-500 px-7 text-sm font-semibold text-white transition-colors duration-200 hover:bg-primary-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500 disabled:cursor-default disabled:opacity-60"
         >
-          {isPending ? "Creating account…" : "Create account"}
+          {isPending ? t.signup.creating : t.signup.create}
         </button>
 
         <p className="text-sm text-muted">
-          Already have an account?{" "}
+          {t.signup.haveAccount}{" "}
           <Link
             href="/login"
             className="font-medium text-primary-500 transition-colors duration-200 hover:text-primary-600"
           >
-            Sign in
+            {t.signup.signIn}
           </Link>
         </p>
       </form>

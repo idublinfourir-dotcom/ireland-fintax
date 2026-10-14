@@ -1,32 +1,23 @@
 import type { Metadata } from "next";
 import { Breadcrumbs, BudgetNote, Container, PageHero } from "../../components/ui";
 import { ContactCta } from "../../components/sections";
-import { PersonalTabs } from "../../components/personal-tabs";
+import { PersonalTabs } from "../../components/tool-tabs";
 import { IrelandMortgageCalculator } from "../../components/ireland-mortgage-calculator";
 import { getMortgageData } from "../../lib/mortgage-data";
+import { getMessages, getT } from "../../lib/messages";
+import { mortgageMessages } from "../../lib/messages/mortgage";
+import { calcMessages } from "../../lib/messages/calc";
+import { localDate } from "../../lib/i18n";
 
-export const metadata: Metadata = {
-  title: "Ireland Mortgage Calculator: Compare Repayments by Lender",
-  description:
-    "Compare monthly mortgage repayments across Irish lenders, first-time buyer, trading up, switcher and investment rates with APRC, green mortgage and cashback offers.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  return (await getT(mortgageMessages)).meta;
+}
 
-const notes = [
-  {
-    title: "Compare Irish lenders",
-    body: "Monthly repayments across AIB, Haven, Bank of Ireland, Avant Money, PTSB and ICS, with each product's interest rate, APRC and incentives side by side.",
-  },
-  {
-    title: "Every rate type",
-    body: "Filter variable, 2–10 year fixed and full-term fixed rates, including green mortgage rates for energy-efficient homes and cashback offers.",
-  },
-  {
-    title: "Central Bank guardrails",
-    body: "Flags where your loan sits against the loan-to-income and loan-to-value limits, and where your term runs past typical lender age caps.",
-  },
-];
 
 export default async function IrelandMortgagePage() {
+  const { locale } = await getMessages();
+  const t = await getT(mortgageMessages);
+  const c = await getT(calcMessages);
   const { products, policy, ratesAsOf } = await getMortgageData();
 
   return (
@@ -36,14 +27,14 @@ export default async function IrelandMortgagePage() {
         breadcrumb={
           <Breadcrumbs
             items={[
-              { label: "Home", href: "/" },
-              { label: "Personal Finance Tools", href: "/personal/mortgage" },
-              { label: "Ireland mortgage" },
+              { label: c.home, href: "/" },
+              { label: t.crumbHub, href: "/personal/mortgage" },
+              { label: t.crumb },
             ]}
           />
         }
-        title="Ireland mortgage calculator"
-        lede={`Compare monthly repayments across Irish lenders: variable, fixed and green rates as of ${ratesAsOf}.`}
+        title={t.title}
+        lede={t.lede.replace("{date}", localDate(locale, ratesAsOf))}
       />
 
       <Container className="py-16 sm:py-20">
@@ -57,13 +48,10 @@ export default async function IrelandMortgagePage() {
           />
         </div>
 
-        <BudgetNote>
-          Budget 2027 raised Help to Buy for first-time buyers of a new home from €30,000 to
-          €35,000, for applications from 7 October 2026.
-        </BudgetNote>
+        <BudgetNote>{t.budgetNote}</BudgetNote>
 
         <div className="mt-12 grid gap-6 sm:grid-cols-3">
-          {notes.map((note) => (
+          {t.notes.map((note) => (
             <div key={note.title} className="rounded-none border border-line bg-surface p-6">
               <h2 className="font-display text-base font-medium tracking-tight text-ink">
                 {note.title}

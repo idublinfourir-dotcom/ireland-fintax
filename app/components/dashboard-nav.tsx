@@ -1,7 +1,8 @@
 "use client";
 
-import Link from "next/link";
+import Link from "./locale-link";
 import { usePathname } from "next/navigation";
+import { splitLocale } from "../lib/i18n";
 import { Icon, type IconName } from "./dashboard-icons";
 
 export interface DashNavItem {
@@ -27,7 +28,7 @@ export function DashNav({
   /** Hrefs that should show a "review due" dot (e.g. stale calculator rates). */
   dueHrefs?: string[];
 }) {
-  const pathname = usePathname();
+  const pathname = splitLocale(usePathname() ?? "").path;
   const dueSet = new Set(dueHrefs);
   return (
     <nav className="flex flex-col gap-1 p-3" aria-label={ariaLabel}>

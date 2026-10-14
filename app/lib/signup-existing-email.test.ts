@@ -10,7 +10,7 @@ const base = {
   name: "Cian Murphy",
   loginUrl: "https://www.irishfintax.ie/login",
   resetUrl: "https://www.irishfintax.ie/forgot-password",
-  firmName: "Ireland Fintax",
+  firmName: "Irish Fintax",
 };
 
 test("both parts point at signing in and at resetting", () => {
@@ -51,7 +51,7 @@ test("there is a plain-text alternative and it is not the HTML", () => {
   const text = existingAccountText(base);
   assert.doesNotMatch(text, /<[a-z]/i);
   assert.match(text, /^Hi Cian,/);
-  assert.match(text, /Ireland Fintax$/);
+  assert.match(text, /Irish Fintax$/);
 });
 
 test("the greeting falls back when the account has no usable name", () => {

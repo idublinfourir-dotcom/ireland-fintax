@@ -2,17 +2,26 @@
    forgot-password flow. No React/IO — unit-tested with node:test. Floors
    mirror signup: name >= 2, password >= 8. */
 
-export function validateDisplayName(name: string): string | null {
-  if (name.trim().length < 2) return "Please enter your name.";
+/* `t` carries the page's language (accountMessages.errors); the defaults
+   are the English, which the unit tests check. */
+export function validateDisplayName(
+  name: string,
+  t = { enterName: "Please enter your name." },
+): string | null {
+  if (name.trim().length < 2) return t.enterName;
   return null;
 }
 
 export function validatePassword(
   password: string,
   confirm: string,
+  t = {
+    passwordShort: "Password must be at least 8 characters.",
+    passwordMismatch: "Passwords do not match.",
+  },
 ): string | null {
-  if (password.length < 8) return "Password must be at least 8 characters.";
-  if (password !== confirm) return "Passwords do not match.";
+  if (password.length < 8) return t.passwordShort;
+  if (password !== confirm) return t.passwordMismatch;
   return null;
 }
 

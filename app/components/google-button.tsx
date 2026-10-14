@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { signIn } from "next-auth/react";
+import { useLocale, useT } from "./locale-link";
+import { accountMessages } from "../lib/messages/account";
 
 /**
  * "Continue with Google" — starts the Auth.js OAuth flow.
@@ -13,6 +15,8 @@ import { signIn } from "next-auth/react";
  */
 export function GoogleButton({ enabled }: { enabled: boolean }) {
   const [loading, setLoading] = useState(false);
+  const locale = useLocale();
+  const t = useT(accountMessages);
 
   if (!enabled) return null;
 
@@ -22,8 +26,9 @@ export function GoogleButton({ enabled }: { enabled: boolean }) {
       // Land on /auth/callback rather than a fixed page: only the server knows
       // whether this account belongs in /admin or /portal, and that route
       // decides. Google's own redirect URI is Auth.js' handler at
-      // /api/auth/callback/google — not this one.
-      await signIn("google", { redirectTo: "/auth/callback" });
+      // /api/auth/callback/google — not this one. `lang` brings the user
+      // back to the language they signed in from.
+      await signIn("google", { redirectTo: `/auth/callback?lang=${locale}` });
     } catch {
       // On success the browser is redirected to Google; only reset on failure.
       setLoading(false);
@@ -38,7 +43,7 @@ export function GoogleButton({ enabled }: { enabled: boolean }) {
       className="inline-flex h-12 w-full cursor-pointer items-center justify-center gap-3 rounded-none border border-line bg-surface px-5 text-sm font-semibold text-ink transition-colors duration-200 hover:bg-secondary-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500 disabled:cursor-default disabled:opacity-60"
     >
       <GoogleIcon />
-      {loading ? "Redirecting…" : "Continue with Google"}
+      {loading ? t.redirecting : t.google}
     </button>
   );
 }

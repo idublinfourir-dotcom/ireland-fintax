@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "./locale-link";
 import type { ReactNode } from "react";
 import { parseLines, type Inline } from "../lib/inline-format";
 import type { Block } from "../lib/post-blocks";

@@ -21,6 +21,7 @@ import {
   NEWS_LIMITS,
   NEWS_SOURCES,
   NEWS_USER_AGENT,
+  PRESS_SIGNALS,
   PROMPT_VERSION,
   isBlockedTitle,
   type NewsSource,
@@ -29,6 +30,7 @@ import {
   canonicalUrl,
   followableLinks,
   htmlToText,
+  parseFeed,
   parseSource,
   robotsAllows,
   sliceArticle,
@@ -112,7 +114,7 @@ async function allowedByRobots(url: string): Promise<boolean> {
   }
   const robots = robotsCache.get(u.host);
   if (robots === null || robots === undefined) return false;
-  return robotsAllows(robots, u.pathname + u.search, "IrelandFintaxNewsBot");
+  return robotsAllows(robots, u.pathname + u.search, "IrishFintaxNewsBot");
 }
 
 async function getText(url: string): Promise<string> {
@@ -251,7 +253,25 @@ async function recentTitles(ctx: Ctx): Promise<string[]> {
   return [...new Set([...posts.map((p) => p.title), ...rejected.map((r) => r.title)])];
 }
 
-async function triage(ctx: Ctx, candidates: Candidate[], recent: string[]) {
+/** Recent press headlines, newest first: a triage hint and nothing else (see
+    PRESS_SIGNALS). Titles only; a feed that cannot be read is skipped. */
+async function pressHeadlines(ctx: Ctx): Promise<string[]> {
+  const since = ctx.now.getTime() - NEWS_LIMITS.lookbackDays * DAY;
+  const items: FeedItem[] = [];
+  for (const feed of PRESS_SIGNALS) {
+    try {
+      items.push(...parseFeed(await getText(feed.url)).filter((i) => !i.publishedAt || i.publishedAt.getTime() >= since));
+    } catch (err) {
+      log(`${feed.label} (press signal): could not be read (${(err as Error).message})`);
+    }
+  }
+  items.sort((a, b) => (b.publishedAt?.getTime() ?? 0) - (a.publishedAt?.getTime() ?? 0));
+  const titles = [...new Set(items.map((i) => i.title))].slice(0, NEWS_LIMITS.pressHeadlines);
+  log(`${titles.length} press headline(s) as triage signal`);
+  return titles;
+}
+
+async function triage(ctx: Ctx, candidates: Candidate[], recent: string[], press: string[]) {
   for (let i = 0; i < candidates.length; i += NEWS_LIMITS.triageBatch) {
     const batch = candidates.slice(i, i + NEWS_LIMITS.triageBatch);
     const withIds = batch.map((c, j) => ({ c, id: `item${i + j + 1}` }));
@@ -268,6 +288,7 @@ async function triage(ctx: Ctx, candidates: Candidate[], recent: string[]) {
             summary: c.item.summary || (c.item.contentHtml ? htmlToText(c.item.contentHtml).slice(0, 500) : ""),
           })),
           recent,
+          press,
         ),
         maxTokens: 2500,
       });
@@ -558,7 +579,7 @@ async function work(ctx: Ctx) {
   if (open.length === 0) return;
 
   const recent = await recentTitles(ctx);
-  await triage(ctx, open, recent);
+  await triage(ctx, open, recent, await pressHeadlines(ctx));
 
   const scored = open.filter((c) => c.triage);
   const qualified: Candidate[] = [];

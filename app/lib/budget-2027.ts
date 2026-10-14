@@ -257,7 +257,13 @@ const STATUS_LABEL: Record<Status, string> = {
 export const GROUPS = ["Tax and pay", "Home", "Family", "Support", "Money", "Spending", "Business"] as const;
 export type Group = (typeof GROUPS)[number];
 
-type Impact =
+/* `vars` carries the visitor's figures behind a sentence below, and
+   `variant` which form of it was used, so a page in another language can
+   phrase the same facts (messages/budget.ts; checked in i18n.test.ts). */
+type Words = { vars?: Record<string, number>; variant?: string };
+
+type Impact = Words &
+  (
   | {
       kind: "exact";
       /** Euro; positive means better off. */
@@ -276,7 +282,8 @@ type Impact =
           added to the statement's totals. */
       estimate?: string;
     }
-  | { kind: "info"; text: string };
+  | { kind: "info"; text: string }
+  );
 
 interface Starts {
   /** ISO date when one is officially known; used to order the timeline. */
@@ -314,6 +321,7 @@ function toLine(m: MeasureDef) {
     group: m.group,
     title: m.title,
     starts: m.starts,
+    status: m.status,
     statusLabel: STATUS_LABEL[m.status],
     source: BUDGET_SOURCES[m.source] as { label: string; url: string },
     calculator: m.calculator,
@@ -423,10 +431,19 @@ const MEASURES: MeasureDef[] = [
       // to the stored rates can never leave the two disagreeing.
       const [ra, rb] = [rates[YEARS.before], rates[YEARS.after]];
       const homeCarer = rb.incomeTax.credits.homeCarer - ra.incomeTax.credits.homeCarer;
+      const shownHomeCarer = p.married && p.homeCarer && homeCarer > 0 ? homeCarer : 0;
       return {
         kind: "exact",
         amount: it + usc,
         period: "year",
+        vars: {
+          it,
+          usc,
+          band: rb.incomeTax.srcop.single - ra.incomeTax.srcop.single,
+          credits: rb.incomeTax.credits.personalSingle - ra.incomeTax.credits.personalSingle,
+          homeCarer: shownHomeCarer,
+          uscBand: rb.usc.bands[1].upTo - ra.usc.bands[1].upTo,
+        },
         detail: `${eur(it)} less income tax, ${eur(usc)} less USC. The 20% band rises by ${eur(
           rb.incomeTax.srcop.single - ra.incomeTax.srcop.single,
         )}, the main credits by ${eur(rb.incomeTax.credits.personalSingle - ra.incomeTax.credits.personalSingle)}${
@@ -476,6 +493,7 @@ const MEASURES: MeasureDef[] = [
         kind: "exact",
         amount: after - before,
         period: "year",
+        vars: { from: MINIMUM_WAGE.from, to: MINIMUM_WAGE.to, rise, hours: pos(p.minimumWageHours) },
         detail: `€${MINIMUM_WAGE.from} to €${MINIMUM_WAGE.to} an hour: ${eur(rise)} more gross pay at ${pos(p.minimumWageHours)} hours a week, shown after tax.`,
       };
     },
@@ -501,6 +519,8 @@ const MEASURES: MeasureDef[] = [
         kind: "exact",
         amount: gain(YEARS.after) - gain(YEARS.before),
         period: "year",
+        vars: { rate: Math.round(rb.rate * 100), max, rise },
+        variant: p.married ? "couple" : "person",
         detail: `${Math.round(rb.rate * 100)}% of the rent you pay, now up to ${eur(max)} ${
           p.married ? "for a couple" : "a person"
         } (${eur(rise)} more), never more than the income tax you pay. Not for HAP, RAS, Rent Supplement or approved housing body tenancies.`,
@@ -516,10 +536,12 @@ const MEASURES: MeasureDef[] = [
     status: "in-force",
     source: "revenueHtb",
     appliesTo: (p) => p.buyingFirstHome && pos(p.homePrice) > 0,
-    impact: (p) => {
+    impact: (p): Impact => {
       if (p.homePrice > HELP_TO_BUY.maxPrice) {
         return {
           kind: "info",
+          variant: "tooExpensive",
+          vars: { price: p.homePrice },
           text: `The limit rose from €30,000 to €35,000, but Help to Buy only covers new homes costing €500,000 or less, so a ${eur(p.homePrice)} home does not qualify.`,
         };
       }
@@ -529,6 +551,8 @@ const MEASURES: MeasureDef[] = [
         kind: "exact",
         amount: now - before,
         period: "once",
+        vars: { now, price: p.homePrice, before },
+        variant: p.taxPaidFourYears > 0 ? "taxGiven" : "taxMissing",
         detail: `Up to ${eur(now)} on a ${eur(p.homePrice)} new home (was ${eur(before)}): the lesser of €35,000, 10% of the price${
           p.taxPaidFourYears > 0 ? " and the tax you paid in the last four years" : ", and the income tax and DIRT you paid in the last four years, which you did not enter"
         }. First-time buyers, new homes only, mortgage of at least 70%, and you must live there for five years.`,
@@ -625,6 +649,7 @@ const MEASURES: MeasureDef[] = [
         kind: "perUnit",
         change: "36c an hour less",
         cheaper: true,
+        vars: { perWeek: 0.36 * hours, hours },
         text: "The National Childcare Scheme subsidy rises from €2.14 to €2.50 an hour for children up to senior infants. Separately, the most a Core Funding service can charge for a typical full-time place falls from €280 to €250 a week; its start date has not been announced.",
         estimate:
           hours > 0 ? `${eur2(0.36 * hours)} a week less at ${hours} subsidised hours a week.` : undefined,
@@ -884,6 +909,13 @@ const MEASURES: MeasureDef[] = [
           kind: "perUnit",
           change: `${Math.round(perLitre * 100)}c a litre more`,
           cheaper: false,
+          vars: {
+            cents: Math.round(perLitre * 100),
+            excise: Math.round(f.excise * 100),
+            carbon: f.carbonPerFill,
+            yearly: perLitre * litres * 52,
+            litres,
+          },
           text: `The temporary excise cut ends in steps between 28 February and 30 June 2027, adding ${Math.round(f.excise * 100)}c a litre, VAT included. Carbon tax adds ${eur2(f.carbonPerFill)} to a 60-litre fill from 1 May 2027, and rises again on 13 October 2027.`,
           estimate:
             litres > 0
@@ -908,6 +940,7 @@ const MEASURES: MeasureDef[] = [
         kind: "perUnit",
         change: "€43 less per 1,000 litres",
         cheaper: true,
+        vars: { yearly: (HEATING.oilPer1000Litres * litres) / 1000, litres },
         text: "Carbon tax falls from €63.50 to €48.50 a tonne and stays there until 2030. The start date has not been announced.",
         estimate:
           litres > 0
@@ -931,6 +964,7 @@ const MEASURES: MeasureDef[] = [
         kind: "perUnit",
         change: "€32 less per 11,000 kWh",
         cheaper: true,
+        vars: { yearly: (HEATING.gasPer11000Kwh * kwh) / 11_000, kwh },
         text: "Carbon tax falls from €63.50 to €48.50 a tonne. 11,000 kWh is the Budget's typical home for a year. The start date has not been announced.",
         estimate:
           kwh > 0
@@ -954,6 +988,7 @@ const MEASURES: MeasureDef[] = [
         kind: "perUnit",
         change: "€1 a pack more",
         cheaper: false,
+        vars: { yearly: packs * 52, packs },
         text: "€1 more on a pack of 20 in the most popular price band, and in proportion on other tobacco.",
         estimate: packs > 0 ? `${yearly(packs * 52, true)} at ${packs} packs a week.` : undefined,
       };

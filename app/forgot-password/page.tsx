@@ -1,24 +1,28 @@
 import type { Metadata } from "next";
 import { Container, PageHero } from "../components/ui";
 import { ForgotPasswordForm } from "./forgot-password-form";
+import { getT } from "../lib/messages";
+import { accountMessages } from "../lib/messages/account";
 
-export const metadata: Metadata = {
-  title: "Reset your password",
-  description: "Set a new password for your Ireland Fintax account.",
-  /* A utility page, not a destination: nothing links to it but the login form,
+export async function generateMetadata(): Promise<Metadata> {
+  return {
+    ...(await getT(accountMessages)).forgot.meta,
+    robots: { index: false, follow: false },
+  };
+}
+/* robots: a utility page, not a destination: nothing links to it but the login form,
      there is nothing on it to find in a search, and a reset form in an index is
      only useful to someone phishing for one. Deliberately also left out of
      sitemap.ts for the same reason. */
-  robots: { index: false, follow: false },
-};
 
-export default function ForgotPasswordPage() {
+export default async function ForgotPasswordPage() {
+  const t = await getT(accountMessages);
   return (
     <>
       <PageHero
-        eyebrow="Your account"
-        title="Reset your password."
-        lede="Enter the email address on your account and we'll send you a code to set a new password."
+        eyebrow={t.eyebrow}
+        title={t.forgot.title}
+        lede={t.forgot.lede}
         image="tower"
       />
       <Container className="py-16 sm:py-20">

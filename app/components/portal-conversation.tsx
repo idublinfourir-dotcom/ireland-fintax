@@ -11,6 +11,8 @@ import { useState } from "react";
 import { Icon } from "./dashboard-icons";
 import { ChatPanel } from "./chat-panel";
 import type { EnquiryMessage } from "../lib/enquiry-messages";
+import { useT } from "./locale-link";
+import { portalMessages } from "../lib/messages/portal";
 
 export function PortalConversation({
   enquiryId,
@@ -36,6 +38,7 @@ export function PortalConversation({
   defaultOpen: boolean;
 }) {
   const [open, setOpen] = useState(defaultOpen);
+  const t = useT(portalMessages).chat;
 
   return (
     <div
@@ -73,7 +76,7 @@ export function PortalConversation({
               </span>
               {unread && (
                 <span className="rounded-none bg-primary-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-primary-600">
-                  New reply
+                  {t.newReply}
                 </span>
               )}
             </span>
@@ -109,8 +112,9 @@ export function PortalConversation({
             messages={messages}
             enquiryId={enquiryId}
             action={action}
-            placeholder="Reply to the team…"
-            submitLabel="Send"
+            clientName={t.client}
+            placeholder={t.reply}
+            submitLabel={t.send}
           />
         </div>
       )}

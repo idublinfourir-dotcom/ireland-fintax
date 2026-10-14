@@ -1,6 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { localePath } from "../lib/messages";
 import { signOut } from "../../auth";
 import { isAuthConfigured } from "../lib/auth/config";
 
@@ -12,5 +13,5 @@ export async function signOutAction() {
     // clears the session cookie server-side either way.
     await signOut({ redirect: false });
   }
-  redirect("/");
+  redirect(await localePath("/"));
 }

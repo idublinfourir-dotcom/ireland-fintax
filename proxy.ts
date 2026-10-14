@@ -2,6 +2,15 @@ import NextAuth from "next-auth";
 import { NextResponse } from "next/server";
 import authConfig from "./auth.config";
 import { isAuthConfigured } from "./app/lib/auth/config";
+import {
+  DEFAULT_LOCALE,
+  LOCALE_HEADER,
+  PATH_HEADER,
+  hasLocaleRoute,
+  isLive,
+  localeHref,
+  splitLocale,
+} from "./app/lib/i18n";
 
 /* Next 16 middleware. Two jobs: gate the authenticated areas, and stamp a
  * per-request Content-Security-Policy nonce on every document.
@@ -67,8 +76,23 @@ export const proxy = auth((request) => {
   const nonce = btoa(crypto.randomUUID());
   const csp = policyFor(nonce);
 
+  /* Language prefix (see app/lib/i18n.ts). /en/x, /ga/<English only> and a
+     language not live in this build go to the English URL; a translated or chrome-only page is rewritten to its
+     route, with the locale passed on in a request header. */
   const { pathname } = request.nextUrl;
-  const needsAuth = PROTECTED.some((p) => pathname.startsWith(p));
+  const { locale, path } = splitLocale(pathname);
+  if (
+    path !== pathname &&
+    (locale === DEFAULT_LOCALE || !isLive(locale) || !hasLocaleRoute(path))
+  ) {
+    const url = request.nextUrl.clone();
+    url.pathname = path;
+    const english = NextResponse.redirect(url);
+    english.headers.set("Content-Security-Policy", csp);
+    return english;
+  }
+
+  const needsAuth = PROTECTED.some((p) => path.startsWith(p));
 
   if (needsAuth) {
     // No backend configured: nobody can be signed in, so send the protected
@@ -76,8 +100,8 @@ export const proxy = auth((request) => {
     const signedIn = isAuthConfigured() && Boolean(request.auth?.user);
     if (!signedIn) {
       const url = request.nextUrl.clone();
-      url.pathname = "/login";
-      url.searchParams.set("next", pathname);
+      url.pathname = localeHref(locale, "/login");
+      url.searchParams.set("next", path);
       const bounced = NextResponse.redirect(url);
       bounced.headers.set("Content-Security-Policy", csp);
       return bounced;
@@ -91,8 +115,19 @@ export const proxy = auth((request) => {
   const headers = new Headers(request.headers);
   headers.set("x-nonce", nonce);
   headers.set("Content-Security-Policy", csp);
+  // Always set, so a client cannot pick the locale (or the path the hreflang
+  // tags describe) by sending the header itself.
+  headers.set(LOCALE_HEADER, locale);
+  headers.set(PATH_HEADER, path);
 
-  const response = NextResponse.next({ request: { headers } });
+  let response: NextResponse;
+  if (path === pathname) {
+    response = NextResponse.next({ request: { headers } });
+  } else {
+    const url = request.nextUrl.clone();
+    url.pathname = path;
+    response = NextResponse.rewrite(url, { request: { headers } });
+  }
   response.headers.set("Content-Security-Policy", csp);
   return response;
 });

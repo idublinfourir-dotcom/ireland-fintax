@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Ireland Fintax">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Irish Fintax">
   <!-- Sharp corners on purpose: the site is rounded-none throughout. Ground is
        navy-900, the accent bar is primary-300 (the on-dark accent the Eyebrow
        uses), which clears 5.4:1 against it. Drawn as rects, not text, so the

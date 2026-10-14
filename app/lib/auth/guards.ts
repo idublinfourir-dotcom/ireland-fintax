@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { localePath } from "../messages";
 import { auth } from "../../../auth";
 import { isAuthConfigured } from "./config";
 import type { UserRole } from "../collections";
@@ -65,7 +66,7 @@ export async function getSessionUser(): Promise<SessionUser | null> {
 /** Require any signed-in user; otherwise redirect to login. */
 export async function requireUser(next = "/portal"): Promise<AuthUser> {
   const user = await getUser();
-  if (!user) redirect(`/login?next=${encodeURIComponent(next)}`);
+  if (!user) redirect(await localePath(`/login?next=${encodeURIComponent(next)}`));
   return user;
 }
 
@@ -76,8 +77,8 @@ export async function requireUser(next = "/portal"): Promise<AuthUser> {
  */
 export async function requireClient(): Promise<AuthUser> {
   const user = await getUser();
-  if (!user) redirect(`/login?next=${encodeURIComponent("/portal")}`);
-  if (user.role === "admin") redirect("/admin");
+  if (!user) redirect(await localePath(`/login?next=${encodeURIComponent("/portal")}`));
+  if (user.role === "admin") redirect(await localePath("/admin"));
   return user;
 }
 
@@ -87,7 +88,7 @@ export async function requireClient(): Promise<AuthUser> {
  */
 export async function requireAdmin(): Promise<AuthUser> {
   const user = await getUser();
-  if (!user) redirect(`/login?next=${encodeURIComponent("/admin")}`);
-  if (user.role !== "admin") redirect("/portal");
+  if (!user) redirect(await localePath(`/login?next=${encodeURIComponent("/admin")}`));
+  if (user.role !== "admin") redirect(await localePath("/portal"));
   return user;
 }

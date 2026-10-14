@@ -1,5 +1,3 @@
-import { ToolTabs } from "./calculator-tabs";
-
 /* The Personal Hub tools, in one place. Drives both the on-page switcher below
    and the Personal Hub dropdown in the site header — the same shape
    CALCULATOR_TOOLS has for the Accountants Hub.
@@ -19,10 +17,3 @@ export const PERSONAL_TOOLS = [
     desc: "Compare options by return after Irish tax",
   },
 ] as const;
-
-/** The Personal Hub switcher. */
-export function PersonalTabs({ current }: { current: string }) {
-  return (
-    <ToolTabs heading="Personal Finance Tools" tools={PERSONAL_TOOLS} current={current} />
-  );
-}

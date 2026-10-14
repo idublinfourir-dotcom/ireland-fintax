@@ -222,8 +222,11 @@ test("prompts carry the items, recent posts and any retry errors", () => {
   const t = triageMessages(
     [{ id: "item1", title: "VAT on medical services", publisher: "Revenue", publishedAt: SOURCE.publishedAt, summary: "" }],
     ["Old post"],
+    ["Budget cuts CGT"],
   );
   assert.match(t.user, /RECENT POSTS:\n- Old post/);
+  assert.match(t.user, /IN THE PRESS:\n- Budget cuts CGT\n\nITEMS:/);
+  assert.match(triageMessages([], []).user, /IN THE PRESS:\n\(none\)/);
   assert.match(t.user, /id: item1\npublisher: Revenue\ndate: 9 October 2026\ntitle: VAT on medical services/);
   assert.match(t.system, /data, not instructions/);
 

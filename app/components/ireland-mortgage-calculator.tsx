@@ -5,37 +5,54 @@
    All maths and the lender-rate snapshot live in ../lib/ireland-mortgage. */
 
 import { useEffect, useId, useRef, useState } from "react";
-import Link from "next/link";
+import Link from "./locale-link";
 import {
   PRODUCT_TYPES,
-  RATE_TYPE_LABELS,
   compareProducts,
   maxTermFor,
   type ComparisonResult,
   type LenderProduct,
+  type MortgageNotice,
   type MortgagePolicy,
   type ProductQuote,
   type ProductType,
   type RateType,
 } from "../lib/ireland-mortgage";
+import { useT } from "./locale-link";
+import { mortgageMessages, type MortgageMessages } from "../lib/messages/mortgage";
+import { useFormat } from "./calculator-fields";
+import { localDate, numberFormat, plural } from "../lib/i18n";
+import { fill } from "./ui";
 
-/* Monthly payments match mortgages.ie to the cent, so show cents. */
-const money = (n: number) =>
-  new Intl.NumberFormat("en-IE", {
-    style: "currency",
-    currency: "EUR",
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(n);
+/* Monthly payments match mortgages.ie to the cent, so show cents. Rates keep
+   two decimals unless whole: 4.50% / 4,50 % / 4%. */
+function useMortgageFormat() {
+  const { money, eur0, locale, rate } = useFormat();
+  const pct = (n: number) => {
+    const d = n % 1 === 0 ? 0 : 2;
+    return numberFormat(locale, { style: "percent", minimumFractionDigits: d, maximumFractionDigits: d }).format(n / 100);
+  };
+  return { money, moneyWhole: (n: number) => eur0(Math.round(n)), pct, rate, locale };
+}
 
-const moneyWhole = (n: number) =>
-  new Intl.NumberFormat("en-IE", {
-    style: "currency",
-    currency: "EUR",
-    maximumFractionDigits: 0,
-  }).format(Math.round(n));
-
-const pct = (n: number) => n.toFixed(n % 1 === 0 ? 0 : 2);
+/* A product's name in the page's language when it follows the usual
+   patterns ("5 Year Fixed", "Buy-to-Let Variable"); otherwise as stored. */
+function translateProductName(name: string, t: MortgageMessages["products"]): string {
+  const one = (n: string): string | null => {
+    const fixed = /^(\d+) Year Fixed( Green)?$/.exec(n);
+    if (fixed) return t.yearFixed.replace("{n}", fixed[1]) + (fixed[2] ? ` (${t.green})` : "");
+    if (n === "Full-term Fixed") return t.fullTerm;
+    if (n === "Standard Variable") return t.standardVariable;
+    if (n === "Variable") return t.variable;
+    return null;
+  };
+  const btl = /^Buy-to-Let (.+)$/.exec(name);
+  if (btl) {
+    const inner = one(btl[1]);
+    return inner ? t.buyToLet.replace("{name}", inner) : name;
+  }
+  return one(name) ?? name;
+}
 
 /* ---------- button styles (match app/components/ui.tsx Button) ---------- */
 
@@ -194,9 +211,8 @@ function NumberField({
 
 /* ---------- step indicator ---------- */
 
-const STEPS = ["Mortgage", "Applicants", "Results"] as const;
-
 function StepIndicator({ current }: { current: number }) {
+  const STEPS = useT(mortgageMessages).steps;
   return (
     <div className="mx-auto flex max-w-sm items-start">
       {STEPS.map((label, i) => {
@@ -247,6 +263,7 @@ function QuoteList({
   result: ComparisonResult;
   termYears: number;
 }) {
+  const t = useT(mortgageMessages);
   const [tab, setTab] = useState<"all" | RateType>("all");
   const quotes =
     tab === "all"
@@ -262,7 +279,7 @@ function QuoteList({
 
   return (
     <div>
-      <div className="flex flex-wrap gap-1.5" role="tablist" aria-label="Rate type">
+      <div className="flex flex-wrap gap-1.5" role="tablist" aria-label={t.rateTypeLabel}>
         <button
           type="button"
           role="tab"
@@ -270,18 +287,18 @@ function QuoteList({
           onClick={() => setTab("all")}
           className={tabClass(tab === "all")}
         >
-          All
+          {t.all}
         </button>
-        {result.availableRateTypes.map((t) => (
+        {result.availableRateTypes.map((rt) => (
           <button
-            key={t}
+            key={rt}
             type="button"
             role="tab"
-            aria-selected={tab === t}
-            onClick={() => setTab(t)}
-            className={tabClass(tab === t)}
+            aria-selected={tab === rt}
+            onClick={() => setTab(rt)}
+            className={tabClass(tab === rt)}
           >
-            {RATE_TYPE_LABELS[t]}
+            {t.rateTypes[rt]}
           </button>
         ))}
       </div>
@@ -289,7 +306,7 @@ function QuoteList({
       <div className="mt-4 border-t border-line">
         {quotes.length === 0 && (
           <p className="py-8 text-center text-sm text-muted">
-            No products of this rate type for your loan.
+            {t.noProducts}
           </p>
         )}
         {quotes.map((q) => (
@@ -299,10 +316,7 @@ function QuoteList({
 
       {quotes.length > 0 && (
         <p className="mt-3 text-xs text-muted">
-          Repayments shown over a {termYears}-year term. Fixed-rate quotes assume
-          the balance rolls to the lender&apos;s variable rate when the fixed
-          period ends. APRC is each lender&apos;s quoted Annual Percentage Rate
-          of Charge.
+          {t.termNote.replace("{years}", String(termYears))}
         </p>
       )}
     </div>
@@ -313,6 +327,10 @@ function QuoteCard({ quote }: { quote: ProductQuote }) {
   const { product, monthly, totalRepayable, totalInterest, phases, cashbackValue } =
     quote;
   const [open, setOpen] = useState(false);
+  const t = useT(mortgageMessages);
+  const { money, moneyWhole, pct, rate, locale } = useMortgageFormat();
+  const years = (n: number) => plural(locale, n, t.years);
+  const cashbackRate = /^(\d+(?:\.\d+)?)% cashback$/i.exec(product.cashback ?? "");
   const detailsId = useId();
   const twoPhase = phases.length > 1;
 
@@ -322,16 +340,18 @@ function QuoteCard({ quote }: { quote: ProductQuote }) {
         {/* lender + product */}
         <div>
           <p className="text-sm font-semibold text-ink">{product.lender}</p>
-          <p className="mt-0.5 text-sm text-muted">{product.name}</p>
+          <p className="mt-0.5 text-sm text-muted">{translateProductName(product.name, t.products)}</p>
           <div className="mt-1.5 flex flex-wrap gap-1.5">
             {product.green && (
               <span className="rounded-none bg-secondary-50 px-2 py-0.5 text-[11px] font-semibold text-secondary-600">
-                Green Mortgage
+                {t.greenMortgage}
               </span>
             )}
             {product.cashback && (
               <span className="rounded-none bg-primary-50 px-2 py-0.5 text-[11px] font-semibold text-primary-600">
-                {product.cashback}
+                {cashbackRate
+                  ? t.products.cashback.replace("{rate}", rate(Number(cashbackRate[1])))
+                  : product.cashback}
               </span>
             )}
           </div>
@@ -343,24 +363,24 @@ function QuoteCard({ quote }: { quote: ProductQuote }) {
             {money(monthly)}
           </p>
           <p className="text-xs text-muted">
-            {twoPhase ? `monthly, first ${phases[0].years} yrs` : "monthly"}
+            {twoPhase ? t.monthlyFirst.replace("{years}", String(phases[0].years)) : t.monthly}
           </p>
         </div>
 
         {/* rate + APRC */}
         <div className="sm:text-center">
           <p className="text-base font-semibold tabular-nums text-ink">
-            {pct(product.ratePercent)}%
+            {pct(product.ratePercent)}
           </p>
           <p className="text-xs text-muted">
-            interest rate · APRC {product.aprcPercent}%
+            {t.rateAprc.replace("{aprc}", rate(product.aprcPercent))}
           </p>
         </div>
 
         {/* CTA + details toggle */}
         <div className="flex items-center gap-4 sm:flex-col sm:items-end sm:gap-2 sm:justify-self-end">
           <Link href="/contact" className={`${btnPrimary} !h-10 !px-5 !text-xs`}>
-            Ask about this →
+            {t.ask}
           </Link>
           <button
             type="button"
@@ -369,7 +389,7 @@ function QuoteCard({ quote }: { quote: ProductQuote }) {
             onClick={() => setOpen((o) => !o)}
             className="cursor-pointer text-xs font-medium text-primary-500 transition-colors duration-200 hover:text-primary-600"
           >
-            {open ? "Hide details ▴" : "See details ▾"}
+            {open ? t.hide : t.see}
           </button>
         </div>
       </div>
@@ -382,11 +402,14 @@ function QuoteCard({ quote }: { quote: ProductQuote }) {
           <div className="flex flex-col gap-1">
             {phases.map((p, i) => (
               <p key={i} className="text-sm text-ink">
-                {p.years} {p.years === 1 ? "year" : "years"} of{" "}
-                <strong className="tabular-nums">{money(p.monthly)}</strong>/month{" "}
+                {fill(t.phase, {
+                  years: years(p.years),
+                  amount: <strong className="tabular-nums">{money(p.monthly)}</strong>,
+                })}{" "}
                 <span className="text-muted">
-                  ({pct(p.ratePercent)}%{" "}
-                  {twoPhase ? (i === 0 ? "fixed" : "variable") : "interest"} rate)
+                  {t.phaseRate
+                    .replace("{rate}", pct(p.ratePercent))
+                    .replace("{kind}", twoPhase ? (i === 0 ? t.fixed : t.variableKind) : t.interest)}
                 </span>
               </p>
             ))}
@@ -394,20 +417,20 @@ function QuoteCard({ quote }: { quote: ProductQuote }) {
 
           <div className="mt-3 grid gap-3 sm:grid-cols-3">
             <div>
-              <p className="text-xs text-muted">Total cost</p>
+              <p className="text-xs text-muted">{t.totalCost}</p>
               <p className="text-sm font-semibold tabular-nums text-ink">
                 {moneyWhole(totalRepayable)}
               </p>
             </div>
             <div>
-              <p className="text-xs text-muted">Total interest</p>
+              <p className="text-xs text-muted">{t.totalInterest}</p>
               <p className="text-sm font-semibold tabular-nums text-ink">
                 {moneyWhole(totalInterest)}
               </p>
             </div>
             {cashbackValue > 0 && (
               <div>
-                <p className="text-xs text-muted">Cashback</p>
+                <p className="text-xs text-muted">{t.cashbackLabel}</p>
                 <p className="text-sm font-semibold tabular-nums text-secondary-600">
                   {moneyWhole(cashbackValue)}
                 </p>
@@ -462,6 +485,32 @@ export function IrelandMortgageCalculator({
   policy: MortgagePolicy;
   ratesAsOf: string;
 }) {
+  const t = useT(mortgageMessages);
+  const { moneyWhole, rate, locale } = useMortgageFormat();
+  const ltvFmt = numberFormat(locale, { style: "percent", maximumFractionDigits: 1 });
+  const notice = (n: MortgageNotice): string => {
+    switch (n.kind) {
+      case "ltv":
+        return t.notices.ltv
+          .replace("{ltv}", ltvFmt.format(n.ltv))
+          .replace("{max}", rate(n.maxLtvPercent))
+          .replace("{deposit}", moneyWhole(n.deposit));
+      case "lti":
+        return t.notices.lti
+          .replace("{loan}", moneyWhole(n.loan))
+          .replace("{multiple}", String(n.multiple))
+          .replace("{maxLoan}", moneyWhole(n.maxLoan));
+      case "term":
+        return (n.investment ? t.notices.termInvestment : t.notices.termResidential)
+          .replace("{term}", String(n.termYears))
+          .replace("{max}", String(n.maxTerm));
+      case "age":
+        return t.notices.age
+          .replace("{term}", String(n.termYears))
+          .replaceAll("{maxAge}", String(n.maxAgeAtEnd))
+          .replace("{years}", String(n.yearsLeft));
+    }
+  };
   const [form, setForm] = useState<FormState>(DEFAULTS);
   const [step, setStep] = useState(1);
   const [error, setError] = useState<string | null>(null);
@@ -481,31 +530,26 @@ export function IrelandMortgageCalculator({
   const maxTerm = maxTermFor(policy, form.productType);
 
   const goToStep2 = () => {
-    if (form.propertyValue <= 0) return setError("Enter the value of the home.");
-    if (form.loanAmount <= 0) return setError("Enter the amount to borrow.");
-    if (form.loanAmount > form.propertyValue)
-      return setError("The loan can't be more than the property value.");
+    if (form.propertyValue <= 0) return setError(t.errors.value);
+    if (form.loanAmount <= 0) return setError(t.errors.borrow);
+    if (form.loanAmount > form.propertyValue) return setError(t.errors.tooMuch);
     if (form.termYears < 5 || form.termYears > maxTerm)
       return setError(
-        `Mortgage term must be between 5 and ${maxTerm} years for ${
-          form.productType === "investment"
-            ? "an investment property"
-            : "a residential mortgage"
-        }.`,
+        (form.productType === "investment" ? t.errors.termInvestment : t.errors.termResidential).replace(
+          "{max}",
+          String(maxTerm),
+        ),
       );
     setError(null);
     setStep(2);
   };
 
   const calculate = () => {
-    if (form.age1 < 18 || form.age1 > 80)
-      return setError("Applicant age must be between 18 and 80.");
-    if (form.income1 <= 0) return setError("Enter the annual income.");
+    if (form.age1 < 18 || form.age1 > 80) return setError(t.errors.age);
+    if (form.income1 <= 0) return setError(t.errors.income);
     if (form.application === "joint") {
-      if (form.age2 < 18 || form.age2 > 80)
-        return setError("Second applicant's age must be between 18 and 80.");
-      if (form.income2 <= 0)
-        return setError("Enter the second applicant's annual income.");
+      if (form.age2 < 18 || form.age2 > 80) return setError(t.errors.age2);
+      if (form.income2 <= 0) return setError(t.errors.income2);
     }
     setError(null);
 
@@ -545,16 +589,19 @@ export function IrelandMortgageCalculator({
         {/* requirements summary */}
         <div className="mx-auto mt-8 max-w-2xl rounded-none border border-line bg-surface-muted p-6 text-center">
           <h3 className="font-display text-base font-semibold text-ink">
-            Mortgage requirements:
+            {t.requirements}
           </h3>
           <p className="mt-2 text-sm text-ink">
-            {moneyWhole(form.loanAmount)} mortgage over {form.termYears} years
+            {t.over.replace("{loan}", moneyWhole(form.loanAmount)).replace("{years}", String(form.termYears))}
           </p>
           <p className="mt-1 text-sm text-ink">
-            {moneyWhole(form.propertyValue)} property value
+            {t.propertyValue.replace("{value}", moneyWhole(form.propertyValue))}
           </p>
           <p className="mt-1 text-sm text-ink">
-            Age {form.application === "joint" ? Math.max(form.age1, form.age2) : form.age1}
+            {t.ageLine.replace(
+              "{age}",
+              String(form.application === "joint" ? Math.max(form.age1, form.age2) : form.age1),
+            )}
           </p>
           <button
             type="button"
@@ -564,13 +611,13 @@ export function IrelandMortgageCalculator({
             }}
             className="mt-3 cursor-pointer text-sm font-medium text-primary-500 transition-colors duration-200 hover:text-primary-600"
           >
-            ↺ Change
+            {t.change}
           </button>
         </div>
 
-        {result.warnings.length > 0 && (
+        {result.notices.length > 0 && (
           <div className="mx-auto mt-6 max-w-2xl space-y-3">
-            {result.warnings.map((w) => (
+            {result.notices.map(notice).map((w) => (
               <p
                 key={w}
                 className="rounded-none border border-primary-400/40 bg-primary-50 px-4 py-3 text-sm leading-6 text-primary-600"
@@ -582,7 +629,7 @@ export function IrelandMortgageCalculator({
         )}
 
         <div className="mt-10">
-          <h3 className="font-display text-lg font-medium text-ink">Top results</h3>
+          <h3 className="font-display text-lg font-medium text-ink">{t.topResults}</h3>
           <div className="mt-4">
             <QuoteList result={result} termYears={form.termYears} />
           </div>
@@ -590,18 +637,15 @@ export function IrelandMortgageCalculator({
 
         <div className="mt-10 flex flex-wrap justify-center gap-4">
           <button type="button" className={btnOutline} onClick={() => setStep(2)}>
-            ← Go Back
+            {t.goBack}
           </button>
           <button type="button" className={btnPrimary} onClick={newCalculation}>
-            New Calculation
+            {t.newCalc}
           </button>
         </div>
 
         <p className="mt-8 text-center text-xs leading-5 text-muted">
-          Indicative lender rates as of {ratesAsOf} for the Republic of Ireland.
-          Lenders reprice regularly and eligibility conditions apply (LTV bands,
-          green BER criteria, minimum loan sizes). Repayments use the standard
-          amortising formula; APRC figures are the lenders&apos; own.
+          {t.footnote.replace("{date}", localDate(locale, ratesAsOf))}
         </p>
       </div>
     );
@@ -624,75 +668,72 @@ export function IrelandMortgageCalculator({
         {step === 1 ? (
           <>
             <SegmentedField
-              label="Product type"
+              label={t.productType}
               value={form.productType}
               onChange={(v) => set("productType", v)}
-              options={PRODUCT_TYPES}
+              options={PRODUCT_TYPES.map((o) => ({ ...o, label: t.productTypes[o.value] }))}
             />
             <CurrencyField
-              label="Value of new home"
+              label={t.homeValue}
               value={form.propertyValue}
               onChange={(v) => set("propertyValue", v)}
             />
             <CurrencyField
-              label="Amount to borrow"
+              label={t.borrow}
               value={form.loanAmount}
               onChange={(v) => set("loanAmount", v)}
               hint={
                 form.propertyValue > 0 && form.loanAmount > 0
-                  ? `Loan-to-value: ${new Intl.NumberFormat("en-IE", {
-                      style: "percent",
-                      maximumFractionDigits: 1,
-                    }).format(form.loanAmount / form.propertyValue)}`
+                  ? t.ltvHint.replace("{ltv}", ltvFmt.format(form.loanAmount / form.propertyValue))
                   : undefined
               }
             />
             <NumberField
-              label="Mortgage term"
+              label={t.term}
               value={form.termYears}
               onChange={(v) => set("termYears", v)}
-              suffix="years"
+              suffix={t.yearsSuffix}
               max={maxTerm}
             />
             <div>
               <SegmentedField
-                label="Home energy rating (BER)"
+                label={t.ber}
                 value={form.ber}
                 onChange={(v) => set("ber", v)}
                 options={[
-                  { value: "b3plus", label: "B3 or better" },
-                  { value: "below", label: "Below B3 / not sure" },
+                  { value: "b3plus", label: t.berPlus },
+                  { value: "below", label: t.berBelow },
                 ]}
               />
               <p className="mt-1 text-xs text-muted">
-                Green mortgage rates need a Building Energy Rating of B3 or better.
+                {t.berHint}
               </p>
             </div>
           </>
         ) : (
           <>
             <SegmentedField
-              label="Application"
+              label={t.application}
               value={form.application}
               onChange={(v) => set("application", v)}
               options={[
-                { value: "single", label: "Single" },
-                { value: "joint", label: "Joint" },
+                { value: "single", label: t.single },
+                { value: "joint", label: t.joint },
               ]}
             />
 
             <h3 className="mt-2 font-display text-sm font-semibold uppercase tracking-wide text-muted">
-              Applicant
+              {t.applicant}
             </h3>
             <NumberField
-              label="Age next birthday"
+              label={t.ageNext}
               value={form.age1}
               onChange={(v) => set("age1", v)}
-              suffix="years"
+              suffix={t.yearsSuffix}
               max={80}
             />
             <CurrencyField
-              label="Annual income"
+              label={t.income}
               value={form.income1}
               onChange={(v) => set("income1", v)}
             />
@@ -700,17 +741,17 @@ export function IrelandMortgageCalculator({
             {form.application === "joint" && (
               <>
                 <h3 className="mt-2 font-display text-sm font-semibold uppercase tracking-wide text-muted">
-                  Second applicant
+                  {t.secondApplicant}
                 </h3>
                 <NumberField
-                  label="Age next birthday"
+                  label={t.ageNext}
                   value={form.age2}
                   onChange={(v) => set("age2", v)}
-                  suffix="years"
+                  suffix={t.yearsSuffix}
                   max={80}
                 />
                 <CurrencyField
-                  label="Annual income"
+                  label={t.income}
                   value={form.income2}
                   onChange={(v) => set("income2", v)}
                 />
@@ -739,11 +780,11 @@ export function IrelandMortgageCalculator({
               setStep(1);
             }}
           >
-            ← Back
+            {t.back}
           </button>
         )}
         <button type="submit" className={btnPrimary}>
-          {step === 1 ? "Next →" : "Calculate"}
+          {step === 1 ? t.next : t.calculate}
         </button>
       </div>
     </form>

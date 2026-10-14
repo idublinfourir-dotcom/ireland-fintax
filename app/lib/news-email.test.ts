@@ -11,7 +11,7 @@ const input = {
     { title: "VAT on medical services", flagCount: 0 },
   ],
   reviewUrl: "https://www.irishfintax.ie/admin/posts?filter=review",
-  siteName: "Ireland Fintax",
+  siteName: "Irish Fintax",
 };
 
 test("subject counts the drafts", () => {

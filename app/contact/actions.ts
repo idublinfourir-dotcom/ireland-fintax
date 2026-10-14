@@ -12,6 +12,8 @@ import { allowPublicAction } from "../lib/rate-limit";
 import { sendMail } from "../lib/mailer";
 import { ackHtml, ackSubject, ackText } from "../lib/enquiry-email";
 import { site } from "../lib/content";
+import { getT } from "../lib/messages";
+import { contactMessages } from "../lib/messages/contact";
 
 export interface EnquiryState {
   status: "idle" | "success" | "error";
@@ -72,12 +74,11 @@ export async function submitEnquiry(
       .slice(0, 4000),
   };
 
+  const t = (await getT(contactMessages)).errors;
   const errors: EnquiryState["errors"] = {};
-  if (values.name.length < 2) errors.name = "Please tell us your name.";
-  if (!EMAIL_RE.test(values.email))
-    errors.email = "Please enter a valid email address.";
-  if (values.message.length < 10)
-    errors.message = "Tell us a little more: a sentence or two is plenty.";
+  if (values.name.length < 2) errors.name = t.name;
+  if (!EMAIL_RE.test(values.email)) errors.email = t.email;
+  if (values.message.length < 10) errors.message = t.message;
 
   if (Object.keys(errors).length > 0) {
     return { status: "error", errors, values };
@@ -92,8 +93,7 @@ export async function submitEnquiry(
   if (!allowed) {
     return {
       status: "error",
-      formError:
-        "Too many questions have been sent recently. Please wait an hour or email us.",
+      formError: t.rateLimited,
       values,
     };
   }

@@ -1,7 +1,9 @@
-import type { CSSProperties, ReactNode } from "react";
-import Link from "next/link";
+import { Fragment, type CSSProperties, type ReactNode } from "react";
+import Link from "./locale-link";
 import { images, type ImageKey } from "../lib/images";
-import { LATEST_BUDGET } from "../lib/budgets";
+import { LocaleLink } from "./locale-link";
+import type { Locale } from "../lib/i18n";
+import { BreadcrumbNav, BudgetNoteLink } from "./calculator-fields";
 
 export function Container({
   children,
@@ -80,14 +82,24 @@ export function Button({
   variant = "primary",
   className = "",
   external = false,
+  locale,
 }: {
   href: string;
   children: ReactNode;
   variant?: ButtonVariant;
   className?: string;
   external?: boolean;
+  /** The page's language, on pages that are translated (see LocaleLink). */
+  locale?: Locale;
 }) {
   const cls = `${buttonBase} ${buttonVariants[variant]} ${className}`;
+  if (locale && !external) {
+    return (
+      <LocaleLink locale={locale} href={href} className={cls}>
+        {children}
+      </LocaleLink>
+    );
+  }
   if (external) {
     return (
       <a href={href} className={cls}>
@@ -99,6 +111,30 @@ export function Button({
     <Link href={href} className={cls}>
       {children}
     </Link>
+  );
+}
+
+/** A translated sentence with {placeholders} swapped for nodes, so a bold
+    figure or a link can sit wherever the language puts it:
+    fill("VAT paid: {vat}.", { vat: <b>€10</b> }). */
+export function fill(template: string, values: Record<string, ReactNode>): ReactNode[] {
+  return template
+    .split(/\{(\w+)\}/)
+    .map((part, i) => (i % 2 ? <Fragment key={i}>{values[part]}</Fragment> : part));
+}
+
+/** A translated title with its *emphasised* words wrapped in <em>. The
+    sentence stays whole in the message file, so a language can move the
+    emphasis instead of being handed two fragments to glue together. */
+export function Emphasis({ text, className }: { text: string; className: string }) {
+  return text.split("*").map((part, i) =>
+    i % 2 ? (
+      <em key={i} className={className}>
+        {part}
+      </em>
+    ) : (
+      part
+    ),
   );
 }
 
@@ -166,7 +202,7 @@ export function Breadcrumbs({
   const currentCls = tone === "dark" ? "text-white/90" : "text-ink";
   const sepCls = tone === "dark" ? "text-white/30" : "text-line";
   return (
-    <nav aria-label="Breadcrumb">
+    <BreadcrumbNav>
       <ol className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs font-semibold uppercase tracking-[0.14em]">
         {items.map((item, index) => {
           const last = index === items.length - 1;
@@ -193,7 +229,7 @@ export function Breadcrumbs({
           );
         })}
       </ol>
-    </nav>
+    </BreadcrumbNav>
   );
 }
 
@@ -254,13 +290,7 @@ export function GroupRow({
 export function BudgetNote({ children }: { children: ReactNode }) {
   return (
     <p className="mt-6 text-sm leading-6 text-muted">
-      {children}{" "}
-      <Link
-        href={LATEST_BUDGET.href}
-        className="font-semibold text-primary-600 transition-colors duration-200 hover:text-primary-500"
-      >
-        See what {LATEST_BUDGET.label} changes for you →
-      </Link>
+      {children} <BudgetNoteLink />
     </p>
   );
 }

@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "./locale-link";
 import { Breadcrumbs } from "./ui";
 import { CopyLinkButton } from "./copy-link-button";
 import { PostImg } from "./post-body";
@@ -176,7 +176,7 @@ export function PostHeader({
           </p>
         )}
         <p className="animate-fade-up mt-4 text-xs text-muted [animation-delay:160ms]">
-          By Ireland Fintax
+          By Irish Fintax
           {wasUpdated(post) && (
             <>
               {" "}

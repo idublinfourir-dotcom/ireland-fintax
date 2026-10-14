@@ -485,8 +485,17 @@ export interface ComparisonResult {
   quotes: ProductQuote[];
   /** Rate types with at least one quote — drives the filter tabs. */
   availableRateTypes: RateType[];
+  /** English sentences, one per notice below. */
   warnings: string[];
+  /** The same warnings as data, for pages in another language to phrase. */
+  notices: MortgageNotice[];
 }
+
+export type MortgageNotice =
+  | { kind: "ltv"; ltv: number; maxLtvPercent: number; deposit: number }
+  | { kind: "lti"; loan: number; multiple: number; maxLoan: number }
+  | { kind: "term"; termYears: number; maxTerm: number; investment: boolean }
+  | { kind: "age"; termYears: number; maxAgeAtEnd: number; yearsLeft: number };
 
 const fmtEur = (n: number) =>
   new Intl.NumberFormat("en-IE", {
@@ -505,9 +514,11 @@ export function compareProducts(
   const ltv = value > 0 ? loan / value : 0;
 
   const warnings: string[] = [];
+  const notices: MortgageNotice[] = [];
 
   const maxLtv = maxLtvFor(policy, input.productType);
   if (ltv > maxLtv + 1e-9) {
+    notices.push({ kind: "ltv", ltv, maxLtvPercent: Math.round(maxLtv * 100), deposit: value * (1 - maxLtv) });
     warnings.push(
       `Your loan is ${new Intl.NumberFormat("en-IE", {
         style: "percent",
@@ -522,6 +533,7 @@ export function compareProducts(
 
   const ltiMultiple = ltiMultipleFor(policy, input.productType);
   if (ltiMultiple !== null && input.income > 0 && loan > ltiMultiple * input.income) {
+    notices.push({ kind: "lti", loan, multiple: ltiMultiple, maxLoan: ltiMultiple * input.income });
     warnings.push(
       `A ${fmtEur(loan)} loan is above the ${ltiMultiple}× loan-to-income limit for your income (max ${fmtEur(
         ltiMultiple * input.income,
@@ -531,6 +543,7 @@ export function compareProducts(
 
   const maxTerm = maxTermFor(policy, input.productType);
   if (input.termYears > maxTerm) {
+    notices.push({ kind: "term", termYears: input.termYears, maxTerm, investment: input.productType === "investment" });
     warnings.push(
       `A ${input.termYears}-year term is longer than the ${maxTerm}-year maximum lenders offer on ${
         input.productType === "investment" ? "an investment" : "a residential"
@@ -539,6 +552,12 @@ export function compareProducts(
   }
 
   if (input.age > 0 && input.age + input.termYears > policy.maxAgeAtEnd) {
+    notices.push({
+      kind: "age",
+      termYears: input.termYears,
+      maxAgeAtEnd: policy.maxAgeAtEnd,
+      yearsLeft: Math.max(5, policy.maxAgeAtEnd - input.age),
+    });
     warnings.push(
       `A ${input.termYears}-year term would run past age ${policy.maxAgeAtEnd}. Most lenders cap the term so the mortgage ends by ${policy.maxAgeAtEnd}, around ${Math.max(
         5,
@@ -565,5 +584,5 @@ export function compareProducts(
     quotes.some((q) => q.product.rateType === t),
   );
 
-  return { ltv, quotes, availableRateTypes, warnings };
+  return { ltv, quotes, availableRateTypes, warnings, notices };
 }

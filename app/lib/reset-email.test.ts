@@ -5,7 +5,7 @@ import { resetHtml, resetSubject, resetText } from "./reset-email.ts";
 const base = {
   name: "Cian Murphy",
   code: "04871523",
-  firmName: "Ireland Fintax",
+  firmName: "Irish Fintax",
 };
 
 test("both parts carry the code", () => {
@@ -85,7 +85,7 @@ test("there is a plain-text alternative and it is not the HTML", () => {
   const text = resetText(base);
   assert.doesNotMatch(text, /<[a-z]/i);
   assert.match(text, /^Hi Cian,/);
-  assert.match(text, /Ireland Fintax$/);
+  assert.match(text, /Irish Fintax$/);
 });
 
 test("the greeting falls back when the account has no usable name", () => {

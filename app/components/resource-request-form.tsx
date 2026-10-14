@@ -8,8 +8,10 @@
 
 import { useActionState, useEffect, useRef } from "react";
 import { useFormStatus } from "react-dom";
-import Link from "next/link";
+import Link from "./locale-link";
 import { submitResourceRequestAction, type RequestState } from "../toolkits/actions";
+import { useT } from "./locale-link";
+import { toolkitMessages } from "../lib/messages/toolkits";
 
 const IDLE: RequestState = { status: "idle" };
 
@@ -47,6 +49,7 @@ function Field({
 
 function SubmitButton() {
   const { pending } = useFormStatus();
+  const t = useT(toolkitMessages).request;
   return (
     <button
       type="submit"
@@ -56,10 +59,10 @@ function SubmitButton() {
       {pending ? (
         <>
           <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" />
-          Submitting…
+          {t.submitting}
         </>
       ) : (
-        "Submit request"
+        t.submit
       )}
     </button>
   );
@@ -68,6 +71,7 @@ function SubmitButton() {
 /* Confirmation shown once the request is recorded. Wording matches what the
    team actually does next: a person emails the file over. */
 function ThankYouDialog() {
+  const t = useT(toolkitMessages).request;
   const closeRef = useRef<HTMLAnchorElement>(null);
 
   useEffect(() => {
@@ -98,17 +102,17 @@ function ThankYouDialog() {
           id="request-thanks-title"
           className="mt-4 font-display text-xl font-semibold tracking-tight text-ink"
         >
-          Thank you for submitting the form
+          {t.thanksTitle}
         </h2>
         <p className="mt-2 text-sm leading-6 text-muted">
-          We will send you the file shortly via your email.
+          {t.thanksBody}
         </p>
         <Link
           ref={closeRef}
           href="/toolkits"
           className="mt-6 inline-flex h-11 items-center justify-center rounded-none bg-primary-500 px-6 text-sm font-semibold text-white transition-colors duration-200 hover:bg-primary-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500"
         >
-          Back to Accounts and Finance
+          {t.back}
         </Link>
       </div>
     </div>
@@ -116,6 +120,7 @@ function ThankYouDialog() {
 }
 
 export function ResourceRequestForm({ slug }: { slug: string }) {
+  const t = useT(toolkitMessages).request;
   const [state, action] = useActionState(submitResourceRequestAction, IDLE);
   const errors = state.errors ?? {};
 
@@ -134,7 +139,7 @@ export function ResourceRequestForm({ slug }: { slug: string }) {
         </p>
       )}
 
-      <Field label="Your name" name="name" error={errors.name}>
+      <Field label={t.name} name="name" error={errors.name}>
         <input
           id="name"
           name="name"
@@ -146,7 +151,7 @@ export function ResourceRequestForm({ slug }: { slug: string }) {
         />
       </Field>
 
-      <Field label="Phone number" name="phone" error={errors.phone}>
+      <Field label={t.phone} name="phone" error={errors.phone}>
         <input
           id="phone"
           name="phone"
@@ -160,10 +165,10 @@ export function ResourceRequestForm({ slug }: { slug: string }) {
       </Field>
 
       <Field
-        label="Organisation email address"
+        label={t.email}
         name="email"
         error={errors.email}
-        hint="We send the file to this address, so please use one you can access."
+        hint={t.emailHint}
       >
         <input
           id="email"
@@ -178,10 +183,10 @@ export function ResourceRequestForm({ slug }: { slug: string }) {
       </Field>
 
       <Field
-        label="Organisation website"
+        label={t.website}
         name="website"
         error={errors.website}
-        hint="The site for your company or practice. Typing acme.ie is fine."
+        hint={t.websiteHint}
       >
         <input
           id="website"
@@ -197,10 +202,10 @@ export function ResourceRequestForm({ slug }: { slug: string }) {
       </Field>
 
       <Field
-        label="What do you need it for?"
+        label={t.purpose}
         name="purpose"
         error={errors.purpose}
-        hint="A sentence is plenty. It helps us send the most useful version."
+        hint={t.purposeHint}
       >
         <textarea
           id="purpose"
@@ -218,7 +223,7 @@ export function ResourceRequestForm({ slug }: { slug: string }) {
           href="/toolkits"
           className="text-sm font-semibold text-muted transition-colors duration-200 hover:text-ink"
         >
-          Cancel
+          {t.cancel}
         </Link>
       </div>
     </form>

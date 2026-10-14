@@ -3,13 +3,16 @@ import { requireClient } from "../../lib/auth/guards";
 import { toObjectId, usersCollection } from "../../lib/collections";
 import { PageHeader } from "../../components/dashboard-ui";
 import { SettingsForm } from "./settings-form";
+import { getT } from "../../lib/messages";
+import { accountMessages } from "../../lib/messages/account";
 
-export const metadata: Metadata = {
-  title: "Settings",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  return (await getT(accountMessages)).settings.meta;
+}
 
 export default async function SettingsPage() {
   const user = await requireClient();
+  const t = await getT(accountMessages);
 
   const owner = toObjectId(user.id);
   const users = await usersCollection();
@@ -21,9 +24,9 @@ export default async function SettingsPage() {
   return (
     <div className="mx-auto max-w-3xl">
       <PageHeader
-        eyebrow="Your account"
-        title="Settings"
-        lede="Update your name and password."
+        eyebrow={t.eyebrow}
+        title={t.settings.title}
+        lede={t.settings.lede}
       />
       <SettingsForm fullName={fullName} email={user.email} />
     </div>

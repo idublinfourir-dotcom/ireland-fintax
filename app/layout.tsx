@@ -7,6 +7,8 @@ import { ChromeGate } from "./components/chrome-gate";
 import { RouteProgress } from "./components/route-progress";
 import { getSessionUser } from "./lib/auth/guards";
 import { site } from "./lib/content";
+import { getMessages, languageAlternates } from "./lib/messages";
+import { LocaleProvider } from "./components/locale-link";
 import "./globals.css";
 
 const archivo = Archivo({
@@ -20,20 +22,23 @@ const geistSans = Geist({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  metadataBase: new URL(site.url),
-  title: {
-    default: "Ireland Fintax: free tax and money learning",
-    template: "%s — Ireland Fintax",
-  },
-  description:
-    "Free calculators, guides and templates that explain Irish tax and personal finance in plain English: income tax, VAT, CGT, mortgages, investing and starting a company.",
-  openGraph: {
-    siteName: "Ireland Fintax",
-    type: "website",
-    locale: "en_GB",
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const { locale, t } = await getMessages();
+  return {
+    metadataBase: new URL(site.url),
+    alternates: await languageAlternates(),
+    title: {
+      default: t.meta.title,
+      template: "%s — Irish Fintax",
+    },
+    description: t.meta.description,
+    openGraph: {
+      siteName: "Irish Fintax",
+      type: "website",
+      locale: { en: "en_GB", ga: "ga_IE", es: "es_ES", pt: "pt_BR" }[locale],
+    },
+  };
+}
 
 export const viewport: Viewport = {
   themeColor: "#0b0d14",
@@ -44,10 +49,13 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const user = await getSessionUser();
+  const [user, { locale, t }] = await Promise.all([
+    getSessionUser(),
+    getMessages(),
+  ]);
   return (
     <html
-      lang="en"
+      lang={locale}
       data-scroll-behavior="smooth"
       className={`${archivo.variable} ${geistSans.variable} h-full antialiased`}
     >
@@ -55,23 +63,25 @@ export default async function RootLayout({
         className="min-h-full flex flex-col bg-canvas font-sans text-ink-body"
         suppressHydrationWarning
       >
-        <RouteProgress />
-        <a
-          href="#main"
-          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-none focus:bg-navy-900 focus:px-5 focus:py-3 focus:text-sm focus:text-white"
-        >
-          Skip to content
-        </a>
-        <ChromeGate>
-          <SiteHeader user={user} />
-        </ChromeGate>
-        <main id="main" className="flex-1">
-          {children}
-        </main>
-        <ChromeGate>
-          <SiteFooter />
-          <BackToTop />
-        </ChromeGate>
+        <LocaleProvider locale={locale}>
+          <RouteProgress />
+          <a
+            href="#main"
+            className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-none focus:bg-navy-900 focus:px-5 focus:py-3 focus:text-sm focus:text-white"
+          >
+            {t.header.skip}
+          </a>
+          <ChromeGate>
+            <SiteHeader user={user} locale={locale} t={t.header} />
+          </ChromeGate>
+          <main id="main" className="flex-1">
+            {children}
+          </main>
+          <ChromeGate>
+            <SiteFooter />
+            <BackToTop />
+          </ChromeGate>
+        </LocaleProvider>
       </body>
     </html>
   );

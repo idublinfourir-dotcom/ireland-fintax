@@ -1,4 +1,4 @@
-# Ireland Fintax
+# Irish Fintax
 
 A free site for learning Irish tax and personal finance: calculators, guides
 and a client/admin area, with no firm, services or fees attached. Next.js 16

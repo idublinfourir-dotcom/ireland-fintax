@@ -1,10 +1,15 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import Link from "../../components/locale-link";
 import { Breadcrumbs, BudgetNote, Button, Container, PageHero } from "../../components/ui";
 import { ContactCta } from "../../components/sections";
-import { PersonalTabs } from "../../components/personal-tabs";
+import { PersonalTabs } from "../../components/tool-tabs";
 import { IrelandInvestmentPlanner } from "../../components/ireland-investment-planner";
 import { DATA_AS_OF, SOURCES } from "../../lib/ireland-investment";
+import { getMessages, getT } from "../../lib/messages";
+import { investmentMessages } from "../../lib/messages/investment";
+import { investmentData } from "../../lib/messages/investment-options";
+import { calcMessages } from "../../lib/messages/calc";
+import { localDate } from "../../lib/i18n";
 
 /* Personal investment — the options planner plus the tax explainer behind it.
  *
@@ -19,91 +24,22 @@ import { DATA_AS_OF, SOURCES } from "../../lib/ireland-investment";
  * phrased as a personal recommendation; the disclaimers in the planner and at
  * the foot of this page are load-bearing, not boilerplate. */
 
-export const metadata: Metadata = {
-  title: "Personal Investment Tax in Ireland: What You Owe and When",
-  description:
-    "Compare where to invest in Ireland by return after tax: State Savings, deposits, pensions, ETFs, shares, property and private markets, filtered by timeframe and risk.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  return (await getT(investmentMessages)).meta;
+}
 
-/* What the finished section will cover. Each row is a distinct Irish tax
-   treatment, which is the point: the wrapper decides the tax, not the asset. */
-const coverage = [
-  {
-    title: "Shares held directly",
-    body: "Gains on disposal fall under capital gains tax, with your annual personal exemption and any allowable losses set against them first. Dividends are income, taxed at your marginal rate, with withholding tax credited against the bill.",
-  },
-  {
-    title: "Funds and ETFs",
-    body: "Irish and EU funds sit outside the CGT rules entirely. They carry their own exit tax, charged on a disposal and again on a deemed disposal every eight years even if you have sold nothing — the single most common surprise.",
-  },
-  {
-    title: "Deposit interest",
-    body: "Interest from Irish deposit accounts is taxed at source. Interest from an account held abroad is not, so it has to be declared, and that is where most non-compliance starts.",
-  },
-  {
-    title: "Rental income",
-    body: "Rent is assessed as income after allowable expenses, mortgage interest and capital allowances on fittings. A later sale of the property is a separate capital gains event.",
-  },
-  {
-    title: "Pensions and approved schemes",
-    body: "Contributions attract relief at your marginal rate within age-related limits, and the fund grows free of Irish tax until it is drawn down. For most people this is the first place a euro of investable income should go.",
-  },
-  {
-    title: "Gifts, inheritance and transfers",
-    body: "Passing an asset on is a capital acquisitions tax question for the person receiving it and, often, a capital gains question for the person giving it. The two are assessed separately on the same transaction.",
-  },
-];
+/* Copy: investmentMessages (coverage, approach, related). The order matters
+   for `approach`: each step depends on the one before it. `related` pairs by
+   index with these hrefs: existing tools that already answer part of the
+   question. */
+const relatedHrefs = ["/tools/ireland-cgt", "/tools/ireland-cat", "/tools/ireland-income-tax", "/personal/mortgage"];
 
-/* The order matters: each step depends on the one before it. */
-const approach = [
-  {
-    step: "01",
-    title: "Establish the wrapper",
-    body: "Direct shares, a fund, a pension or a property are four different tax regimes. Identifying which one applies decides everything that follows, so it is the first question, not the last.",
-  },
-  {
-    step: "02",
-    title: "Separate income from gains",
-    body: "Dividends, interest and rent are taxed as they arise. Gains are taxed when you dispose. They have different rates, different deadlines and different forms, and mixing them up is what triggers most Revenue correspondence.",
-  },
-  {
-    step: "03",
-    title: "Apply reliefs and losses",
-    body: "Annual exemptions, carried-forward losses, relief on retirement or transfer of a business, and the credits already withheld at source. These are claimed, not applied automatically.",
-  },
-  {
-    step: "04",
-    title: "File the right return on time",
-    body: "Capital gains have payment dates that do not line up with the income tax return, and a deemed disposal has no cash proceeds behind it. Know what falls due, and when, before you invest.",
-  },
-];
-
-/* Existing tools that already answer part of the question, so this page is
-   useful before its own calculator exists. */
-const related = [
-  {
-    href: "/tools/ireland-cgt",
-    label: "Capital gains tax calculator",
-    body: "Gains on shares and property, with indexation relief on pre-2003 acquisitions.",
-  },
-  {
-    href: "/tools/ireland-cat",
-    label: "Gift & inheritance tax calculator",
-    body: "Capital acquisitions tax thresholds, group bands and the main reliefs.",
-  },
-  {
-    href: "/tools/ireland-income-tax",
-    label: "Income tax calculator",
-    body: "Income tax, USC and PRSI: the marginal rate that dividends and rent are taxed at.",
-  },
-  {
-    href: "/personal/mortgage",
-    label: "Mortgage calculator",
-    body: "Compare repayments across Irish lenders before you commit capital to a home.",
-  },
-];
-
-export default function PersonalInvestmentPage() {
+export default async function PersonalInvestmentPage() {
+  const { locale } = await getMessages();
+  const t = await getT(investmentMessages);
+  const c = await getT(calcMessages);
+  const data = await getT(investmentData);
+  const asOf = localDate(locale, DATA_AS_OF);
   return (
     <>
       <PageHero
@@ -111,17 +47,17 @@ export default function PersonalInvestmentPage() {
         breadcrumb={
           <Breadcrumbs
             items={[
-              { label: "Home", href: "/" },
-              { label: "Personal Finance Tools", href: "/personal/mortgage" },
-              { label: "Personal investment" },
+              { label: c.home, href: "/" },
+              { label: t.crumbHub, href: "/personal/mortgage" },
+              { label: t.crumb },
             ]}
           />
         }
-        title="Personal investment"
-        lede={`Where €1 can go in Ireland, ranked by what is left after tax. Thirty-two options across the State-backed and private sectors, current at ${DATA_AS_OF}.`}
+        title={t.title}
+        lede={t.lede.replace("{date}", asOf)}
         action={
           <Button href="/contact" variant="outlineLight">
-            Ask a question
+            {t.ask}
           </Button>
         }
       />
@@ -133,30 +69,22 @@ export default function PersonalInvestmentPage() {
           <IrelandInvestmentPlanner />
         </div>
 
-        <BudgetNote>
-          Budget 2027 cuts exit tax to 35% from 1 January 2027 and brings a new Investment Account from 1 July 2027.
-        </BudgetNote>
+        <BudgetNote>{t.budgetNote}</BudgetNote>
 
         <div className="mt-16 max-w-3xl border-t border-line pt-12">
           <h2 className="font-display text-3xl font-bold leading-tight tracking-[-0.02em] text-ink sm:text-4xl">
-            The wrapper decides the tax, not the asset
+            {t.wrapperTitle}
           </h2>
           <p className="mt-5 text-lg leading-8 text-ink-body">
-            Two people can hold the same index of shares and be taxed under
-            entirely different rules: one under capital gains tax, the other
-            under the exit tax regime that applies to funds. The rate, the
-            deadline, the form and the treatment of losses all change with it,
-            so the first question is always which set of rules applies.
+            {t.wrapperBody}
           </p>
           <p className="mt-4 text-base leading-7 text-muted">
-            This page explains how investments are taxed in Ireland. It does not
-            recommend products or tell you where to put your money: for that,
-            speak to an adviser authorised by the Central Bank of Ireland.
+            {t.wrapperNote}
           </p>
         </div>
 
         <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {coverage.map((item) => (
+          {t.coverage.map((item) => (
             <div
               key={item.title}
               className="rounded-none border border-line bg-surface p-6"
@@ -171,10 +99,10 @@ export default function PersonalInvestmentPage() {
 
         <div className="mt-16 border-t border-line pt-12">
           <h2 className="font-display text-2xl font-semibold tracking-tight text-ink sm:text-3xl">
-            How to work through it
+            {t.approachTitle}
           </h2>
           <div className="mt-8 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-            {approach.map((item) => (
+            {t.approach.map((item, i) => ({ ...item, step: String(i + 1).padStart(2, "0") })).map((item) => (
               <div key={item.step}>
                 <span className="font-display text-sm font-semibold tracking-[0.16em] text-primary-500">
                   {item.step}
@@ -190,14 +118,13 @@ export default function PersonalInvestmentPage() {
 
         <div className="mt-16 border-t border-line pt-12">
           <h2 className="font-display text-2xl font-semibold tracking-tight text-ink sm:text-3xl">
-            Calculators that already cover part of this
+            {t.relatedTitle}
           </h2>
           <p className="mt-3 max-w-2xl text-base leading-7 text-muted">
-            The planner compares options. These put a number on the tax that
-            falls due once you have picked one.
+            {t.relatedLede}
           </p>
           <div className="mt-8 grid gap-6 sm:grid-cols-2">
-            {related.map((item) => (
+            {t.related.map((item, i) => ({ ...item, href: relatedHrefs[i] })).map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
@@ -219,17 +146,16 @@ export default function PersonalInvestmentPage() {
 
         <div className="mt-16 border-t border-line pt-12">
           <h2 className="font-display text-2xl font-semibold tracking-tight text-ink sm:text-3xl">
-            Where these figures come from
+            {t.sourcesTitle}
           </h2>
           <p className="mt-3 max-w-2xl text-base leading-7 text-muted">
-            Every rate, limit and yield in the planner, with the source it was
-            taken from. All checked at {DATA_AS_OF}.
+            {t.sourcesLede.replace("{date}", asOf)}
           </p>
           <ul className="mt-8 grid gap-x-8 gap-y-4 sm:grid-cols-2">
             {SOURCES.map((source) => (
               <li key={source.url} className="border-t border-line pt-3">
                 <span className="block text-sm font-medium text-ink">
-                  {source.topic}
+                  {data.topics[source.url] ?? source.topic}
                 </span>
                 <a
                   href={source.url}
@@ -245,10 +171,7 @@ export default function PersonalInvestmentPage() {
         </div>
 
         <p className="mt-12 max-w-3xl border-t border-line pt-6 text-sm leading-6 text-muted">
-          General information only, current at the date of publication. Rates,
-          thresholds and reliefs change with each Budget and Finance Act, and
-          how they apply depends on your own circumstances. Take advice before
-          you act on any of it.
+          {t.pageDisclaimer}
         </p>
       </Container>
 

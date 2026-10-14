@@ -2,26 +2,21 @@ import type { Metadata } from "next";
 import { Container, PageHero } from "../components/ui";
 import { ContactForm } from "../components/contact-form";
 import { site } from "../lib/content";
+import { getT } from "../lib/messages";
+import { contactMessages } from "../lib/messages/contact";
 
-export const metadata: Metadata = {
-  title: "Ask a question",
-  description:
-    "Ask a question about Irish tax or personal finance and get a plain-English answer by email. Free.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  return (await getT(contactMessages)).meta;
+}
 
-const nextSteps = [
-  "Pick a topic and ask it in your own words.",
-  "A real person reads it and replies by email, in plain English.",
-  "Ask while signed in and your questions and answers stay in your account.",
-];
-
-export default function ContactPage() {
+export default async function ContactPage() {
+  const t = await getT(contactMessages);
   return (
     <>
       <PageHero
-        eyebrow="Ask a question"
-        title="Ask us anything about tax and money."
-        lede="No question is too basic. Ask it the way you’d ask a friend and we’ll explain it in plain English. It’s free."
+        eyebrow={t.hero.eyebrow}
+        title={t.hero.title}
+        lede={t.hero.lede}
         image="teamMeeting"
       />
 
@@ -33,10 +28,10 @@ export default function ContactPage() {
         <aside className="flex flex-col gap-8 lg:sticky lg:top-28">
           <div className="rounded-none border-t-2 border-primary-400 bg-surface p-6 shadow-sm shadow-navy-900/5">
             <h2 className="text-xs font-semibold uppercase tracking-[0.18em] text-muted">
-              What happens next
+              {t.nextHeading}
             </h2>
             <ol className="mt-4 flex flex-col gap-4">
-              {nextSteps.map((step, index) => (
+              {t.nextSteps.map((step, index) => (
                 <li key={step} className="flex items-start gap-3">
                   <span className="mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-none bg-navy-900 text-xs font-semibold text-primary-300">
                     {index + 1}
@@ -49,7 +44,7 @@ export default function ContactPage() {
 
           <div className="rounded-none border border-line bg-surface p-6">
             <h2 className="text-xs font-semibold uppercase tracking-[0.18em] text-muted">
-              Prefer email?
+              {t.preferEmail}
             </h2>
             <a
               href={`mailto:${site.email}`}

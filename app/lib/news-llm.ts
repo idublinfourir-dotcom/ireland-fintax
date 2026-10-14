@@ -162,7 +162,7 @@ export async function callJson(call: JsonCall, cfg: LlmConfig, deps: LlmDeps): P
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${key}`,
-            ...(target.provider === "openrouter" ? { "HTTP-Referer": cfg.siteUrl, "X-Title": "Ireland Fintax" } : {}),
+            ...(target.provider === "openrouter" ? { "HTTP-Referer": cfg.siteUrl, "X-Title": "Irish Fintax" } : {}),
           },
           body: JSON.stringify(requestBody(target, call)),
           signal: AbortSignal.timeout(120_000),

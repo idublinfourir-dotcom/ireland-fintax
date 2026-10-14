@@ -12,7 +12,6 @@ import { useMemo, useState } from "react";
 import {
   computeRdCredit,
   RD_CREDIT,
-  RD_QUALIFYING_NOTE,
   RD_LAST_REVIEWED,
   RD_SOURCE_URL,
   type RdConfig,
@@ -22,22 +21,12 @@ import {
   LegendDot,
   ProportionBar,
   ResultDisclaimer,
+  useFormat,
 } from "./calculator-fields";
+import { useT } from "./locale-link";
+import { rdMessages } from "../lib/messages/rd";
+import { fill } from "./ui";
 
-const money = (n: number) =>
-  new Intl.NumberFormat("en-IE", {
-    style: "currency",
-    currency: "EUR",
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(n);
-
-const eur0 = (n: number) =>
-  new Intl.NumberFormat("en-IE", {
-    style: "currency",
-    currency: "EUR",
-    maximumFractionDigits: 0,
-  }).format(n);
 
 /* One instalment row: swatch · year + when · amount. */
 function InstalmentRow({
@@ -66,6 +55,9 @@ function InstalmentRow({
 }
 
 export function IrelandRdTaxCreditCalculator({ config }: { config: RdConfig }) {
+  const t = useT(rdMessages);
+  const { money, eur0, rate } = useFormat();
+  const threshold = eur0(config.firstYearThresholdEur);
   const [spend, setSpend] = useState(0);
   const [grant, setGrant] = useState(0);
 
@@ -73,59 +65,62 @@ export function IrelandRdTaxCreditCalculator({ config }: { config: RdConfig }) {
   const { year1, year2, year3 } = r.instalments;
 
   // Explain which arm of the instalment rule applied, in plain words.
-  const instalmentNote = r.paidInFullYearOne
-    ? `Your credit is ${eur0(config.firstYearThresholdEur)} or less, so the full amount is payable in year one.`
-    : year1 === config.firstYearThresholdEur
-      ? `The first ${eur0(config.firstYearThresholdEur)} is payable in year one (it beats 50% of your credit); the balance follows over years two and three.`
-      : `Year one is 50% of the credit (it beats the ${eur0(config.firstYearThresholdEur)} floor); the balance splits 30% / 20% across years two and three.`;
+  const instalmentNote = (
+    r.paidInFullYearOne
+      ? t.paidInFull
+      : year1 === config.firstYearThresholdEur
+        ? t.floorWins
+        : t.halfWins
+  ).replace("{threshold}", threshold);
 
   return (
     <div className="grid gap-10 lg:grid-cols-2">
       {/* input */}
       <div className="flex flex-col gap-5">
         <div className="border-l-[3px] border-primary-500 bg-surface-muted px-4 py-3 text-xs leading-5 text-ink-body">
-          <span className="font-semibold text-ink">A credit, not a deduction.</span>{" "}
-          The R&amp;D credit is {config.ratePercent}% of qualifying spend and comes
-          on top of the normal {config.tradingDeductionPercent}% trading
-          deduction: a combined benefit of about{" "}
-          {RD_CREDIT.effectiveBenefitPercent}%. It&rsquo;s
-          paid to you over three years, or set against tax you owe.
+          <span className="font-semibold text-ink">{t.introTitle}</span>{" "}
+          {t.introBody
+            .replace("{rate}", rate(config.ratePercent))
+            .replace("{deduction}", rate(config.tradingDeductionPercent))
+            .replace("{combined}", rate(RD_CREDIT.effectiveBenefitPercent))}
         </div>
 
         <CurrencyField
-          label="Qualifying R&D expenditure"
+          label={t.spend}
           value={spend}
           onChange={setSpend}
-          hint={RD_QUALIFYING_NOTE}
+          hint={t.spendHint}
         />
 
         <CurrencyField
-          label="Grant funding received (if any)"
+          label={t.grant}
           value={grant}
           onChange={setGrant}
-          hint="Enterprise Ireland, IDA or other grants toward the R&D. Grant-aided spend doesn't qualify, so it's deducted here. Leave at 0 if none."
+          hint={t.grantHint}
         />
 
         {r.grantFunding > 0 && (
           <div className="border border-line bg-surface-muted px-4 py-3 text-xs leading-5 text-ink-body">
-            Qualifying spend: {money(r.grossExpenditure)} −{" "}
-            {money(r.grantFunding)} grant ={" "}
-            <span className="font-semibold text-ink tabular-nums">
-              {money(r.qualifyingSpend)}
-            </span>
+            {fill(t.qualifyingLine, {
+              gross: money(r.grossExpenditure),
+              grant: money(r.grantFunding),
+              net: (
+                <span className="font-semibold text-ink tabular-nums">
+                  {money(r.qualifyingSpend)}
+                </span>
+              ),
+            })}
           </div>
         )}
 
         <div className="mt-auto border border-line bg-surface p-4">
           <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted">
-            The hard part isn&rsquo;t the maths
+            {t.hardPartTitle}
           </p>
           <p className="mt-2 text-xs leading-5 text-muted">
-            Whether an activity passes the science test, which costs are eligible,
-            subcontractor and grant limits, and the capital/revenue split all shape a
-            real claim, and Revenue can audit it. Treat this as a sizing estimate,
-            then let us build the claim. Applies to {RD_CREDIT.effectiveFrom}.
-            {/* effectiveFrom is prose-only, not editable — stays in code. */}
+            {/* Ends with RD_CREDIT.effectiveFrom, written into the copy: it is
+                prose-only and not editable. Change both together. */}
+            {t.hardPartBody}
           </p>
         </div>
       </div>
@@ -137,28 +132,32 @@ export function IrelandRdTaxCreditCalculator({ config }: { config: RdConfig }) {
           <div className="border-b border-line px-5 py-5 sm:px-6">
             <div className="flex items-baseline justify-between gap-4">
               <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted">
-                R&amp;D tax credit
+                {t.heading}
               </p>
               <span className="text-xs text-muted tabular-nums">
-                {config.ratePercent}% of {money(r.qualifyingSpend)}
+                {t.rateOf.replace("{rate}", rate(config.ratePercent)).replace("{amount}", money(r.qualifyingSpend))}
               </span>
             </div>
             <p className="mt-3 font-display text-[2.5rem] font-semibold leading-none tracking-tight text-ink tabular-nums">
               {money(r.credit)}
             </p>
             <p className="mt-2.5 text-sm text-muted">
-              Plus a {money(r.tradingDeductionValue)} trading deduction ·{" "}
-              <span className="font-semibold text-primary-600 tabular-nums">
-                {money(r.combinedBenefit)}
-              </span>{" "}
-              combined benefit ({RD_CREDIT.effectiveBenefitPercent}%)
+              {fill(t.plusDeduction, {
+                deduction: money(r.tradingDeductionValue),
+                combined: (
+                  <span className="font-semibold text-primary-600 tabular-nums">
+                    {money(r.combinedBenefit)}
+                  </span>
+                ),
+                percent: rate(RD_CREDIT.effectiveBenefitPercent),
+              })}
             </p>
             <div className="mt-4">
               <ProportionBar
                 segments={[
-                  { label: `Year 1 ${money(year1)}`, value: year1, className: "bg-primary-500" },
-                  { label: `Year 2 ${money(year2)}`, value: year2, className: "bg-navy-900" },
-                  { label: `Year 3 ${money(year3)}`, value: year3, className: "bg-primary-300" },
+                  { label: t.bar.replace("{n}", "1").replace("{amount}", money(year1)), value: year1, className: "bg-primary-500" },
+                  { label: t.bar.replace("{n}", "2").replace("{amount}", money(year2)), value: year2, className: "bg-navy-900" },
+                  { label: t.bar.replace("{n}", "3").replace("{amount}", money(year3)), value: year3, className: "bg-primary-300" },
                 ]}
               />
             </div>
@@ -168,24 +167,24 @@ export function IrelandRdTaxCreditCalculator({ config }: { config: RdConfig }) {
           <dl className="divide-y divide-line">
             <InstalmentRow
               dotClass="bg-primary-500"
-              year="Year 1 instalment"
-              when="On filing: cash or offset"
+              year={t.year1}
+              when={t.year1When}
               value={money(year1)}
             />
             <InstalmentRow
               dotClass="bg-navy-900"
-              year="Year 2 instalment"
-              when="12 months later"
+              year={t.year2}
+              when={t.year2When}
               value={money(year2)}
             />
             <InstalmentRow
               dotClass="bg-primary-300"
-              year="Year 3 instalment"
-              when="24 months later"
+              year={t.year3}
+              when={t.year3When}
               value={money(year3)}
             />
             <div className="flex items-baseline justify-between gap-4 bg-surface-muted px-5 py-3.5 sm:px-6">
-              <span className="text-sm font-semibold text-ink">Total credit</span>
+              <span className="text-sm font-semibold text-ink">{t.total}</span>
               <span className="font-display text-sm font-semibold text-ink tabular-nums">
                 {money(r.credit)}
               </span>
@@ -200,13 +199,10 @@ export function IrelandRdTaxCreditCalculator({ config }: { config: RdConfig }) {
         {/* how it's paid — info note */}
         <div className="mt-5 border border-line bg-surface p-5">
           <h3 className="text-xs font-semibold uppercase tracking-[0.16em] text-muted">
-            Paid in three instalments
+            {t.threeTitle}
           </h3>
           <p className="mt-2 text-xs leading-5 text-muted">
-            The credit isn&rsquo;t netted against your Corporation Tax first: you
-            elect, for each instalment, to offset it against tax due or take it as a
-            cash refund. A claim of {eur0(config.firstYearThresholdEur)} or less is
-            paid in full in year one.
+            {t.threeBody.replace("{threshold}", threshold)}
           </p>
         </div>
 
