@@ -2,19 +2,21 @@ import type { Metadata } from "next";
 import { Container, PageHero } from "../components/ui";
 import { SignupForm } from "./signup-form";
 import { isGoogleEnabled } from "../lib/auth/config";
+import { getT } from "../lib/messages";
+import { accountMessages } from "../lib/messages/account";
 
-export const metadata: Metadata = {
-  title: "Create an account",
-  description: "Create a free Ireland Fintax account.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  return (await getT(accountMessages)).signup.meta;
+}
 
-export default function SignupPage() {
+export default async function SignupPage() {
+  const t = await getT(accountMessages);
   return (
     <>
       <PageHero
-        eyebrow="Your account"
-        title="Create your account."
-        lede="Free, and takes under a minute. Keep the questions you ask and our answers in one place."
+        eyebrow={t.eyebrow}
+        title={t.signup.title}
+        lede={t.signup.lede}
         image="tower"
       />
       <Container className="py-16 sm:py-20">

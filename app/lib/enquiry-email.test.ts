@@ -6,7 +6,7 @@ const base = {
   name: "Cian Murphy",
   message: "I need help with a Form 11 for 2025.",
   service: "Income tax return",
-  firmName: "Ireland Fintax",
+  firmName: "Irish Fintax",
 };
 
 test("the acknowledgement says when we will reply", () => {

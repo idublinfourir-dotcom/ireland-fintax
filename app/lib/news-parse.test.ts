@@ -162,11 +162,11 @@ Disallow: /documents/
 Disallow: /*/search/
 Allow: /documents/public$
 
-User-agent: IrelandFintaxNewsBot
+User-agent: IrishFintaxNewsBot
 User-agent: OtherBot
 Disallow: /private/
 `;
-  const bot = "IrelandFintaxNewsBot";
+  const bot = "IrishFintaxNewsBot";
   assert.equal(robotsAllows(robots, "/en/news/", bot), true);
   assert.equal(robotsAllows(robots, "/private/x", bot), false);
   // Our own group replaces "*" entirely.

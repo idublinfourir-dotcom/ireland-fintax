@@ -3,14 +3,15 @@ import { notFound } from "next/navigation";
 import { Breadcrumbs, Container, PageHero } from "../../../components/ui";
 import { ResourceRequestForm } from "../../../components/resource-request-form";
 import { findRequestableResourceBySlug } from "../../../lib/toolkit-content";
-import { TOOLKIT_CATEGORY_LABELS } from "../../../lib/toolkit-types";
+import { getT } from "../../../lib/messages";
+import { toolkitMessages } from "../../../lib/messages/toolkits";
 
-export const metadata: Metadata = {
-  title: "Request a copy from Accounts and Finance",
-  description:
-    "Request a copy of an Ireland Fintax Accounts and Finance resource and we will email it to you.",
-  robots: { index: false, follow: true },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  return {
+    ...(await getT(toolkitMessages)).request.meta,
+    robots: { index: false, follow: true },
+  };
+}
 
 export default async function RequestResourcePage({
   params,
@@ -20,6 +21,8 @@ export default async function RequestResourcePage({
   const { slug } = await params;
   const resource = findRequestableResourceBySlug(slug);
   if (!resource) notFound();
+  const t = await getT(toolkitMessages);
+  const text = t.resources[resource.title] ?? resource;
 
   return (
     <>
@@ -28,14 +31,14 @@ export default async function RequestResourcePage({
         breadcrumb={
           <Breadcrumbs
             items={[
-              { label: "Home", href: "/" },
-              { label: "Accounts and Finance", href: "/toolkits" },
-              { label: "Request a copy" },
+              { label: t.home, href: "/" },
+              { label: t.title, href: "/toolkits" },
+              { label: t.request.title },
             ]}
           />
         }
-        title="Request a copy"
-        lede="Tell us where to send it and we’ll email the file over. It’s free."
+        title={t.request.title}
+        lede={t.request.lede}
       />
 
       <Container className="py-16 sm:py-20">
@@ -43,18 +46,18 @@ export default async function RequestResourcePage({
           {/* What they are asking for, so the form is never ambiguous. */}
           <div className="rounded-none border-l-2 border-primary-500 bg-surface-muted p-5">
             <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted">
-              You are requesting
+              {t.request.requesting}
             </p>
             <h2 className="mt-1.5 font-display text-lg font-medium tracking-tight text-ink">
-              {resource.title}
+              {text.title}
             </h2>
             <p className="mt-1 text-xs font-medium uppercase tracking-wide text-muted">
-              {TOOLKIT_CATEGORY_LABELS[resource.category]}
+              {t.browser.categories[resource.category]}
               {resource.framework ? ` · ${resource.framework}` : ""}
             </p>
-            {resource.description && (
+            {text.description && (
               <p className="mt-2.5 text-sm leading-6 text-muted">
-                {resource.description}
+                {text.description}
               </p>
             )}
           </div>
@@ -64,8 +67,7 @@ export default async function RequestResourcePage({
           </div>
 
           <p className="mt-8 text-xs leading-5 text-muted">
-            We use these details only to send you this resource and to answer any
-            follow-up. We do not add you to a marketing list.
+            {t.request.privacy}
           </p>
         </div>
       </Container>

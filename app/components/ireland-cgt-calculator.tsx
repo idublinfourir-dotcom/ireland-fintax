@@ -26,20 +26,20 @@ import {
   ResultDisclaimer,
   SegmentedField,
   SelectField,
+  useFormat,
 } from "./calculator-fields";
+import { useT } from "./locale-link";
+import { cgtMessages } from "../lib/messages/cgt";
+import { numberFormat } from "../lib/i18n";
+import { fill } from "./ui";
 
-const money = (n: number) =>
-  new Intl.NumberFormat("en-IE", {
-    style: "currency",
-    currency: "EUR",
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(n);
-
-const MONTHS = [
-  "January", "February", "March", "April", "May", "June",
-  "July", "August", "September", "October", "November", "December",
-];
+/* Multipliers as Revenue prints them, up to three decimals: ×6.08, ×1.049
+   (×6,08 / ×1,049 where the language uses a decimal comma). */
+function useMultiplier() {
+  const { locale } = useFormat();
+  const f = numberFormat(locale, { maximumFractionDigits: 3 });
+  return (m: number) => f.format(m);
+}
 
 /* Checkbox that reveals an optional section — keeps the common case simple. */
 function SectionToggle({
@@ -102,18 +102,21 @@ function Row({
 }
 
 function ResultCard({ r }: { r: CgtResult }) {
+  const t = useT(cgtMessages);
+  const { money, rate } = useFormat();
+  const computed = (s: string) => t.computed[s] ?? s;
   const view = r.isLoss
-    ? { tag: { text: "Allowable loss", cls: "bg-navy-900 text-white" }, hero: r.disposalLoss, sub: "No CGT: this disposal is a loss you can carry forward or set against other gains." }
+    ? { tag: { text: t.verdict.loss.tag, cls: "bg-navy-900 text-white" }, hero: r.disposalLoss, sub: t.verdict.loss.sub }
     : r.totalTax > 0
-      ? { tag: { text: "CGT due", cls: "bg-primary-500 text-white" }, hero: r.totalTax, sub: `Effective rate ${r.effectiveRatePercent}% of the taxable gain.` }
-      : { tag: { text: "No CGT", cls: "border border-line bg-surface-muted text-muted" }, hero: 0, sub: "The gain is covered by reliefs, losses and the annual exemption." };
+      ? { tag: { text: t.verdict.due.tag, cls: "bg-primary-500 text-white" }, hero: r.totalTax, sub: t.verdict.due.sub.replace("{rate}", rate(r.effectiveRatePercent)) }
+      : { tag: { text: t.verdict.none.tag, cls: "border border-line bg-surface-muted text-muted" }, hero: 0, sub: t.verdict.none.sub };
 
   return (
     <div className="border border-line bg-surface">
       <div className="border-b border-line px-5 py-5 sm:px-6">
         <div className="flex items-baseline justify-between gap-4">
           <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted">
-            Capital gains tax
+            {t.heading}
           </p>
           <span
             className={`rounded-none px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide ${view.tag.cls}`}
@@ -129,9 +132,9 @@ function ResultCard({ r }: { r: CgtResult }) {
           <div className="mt-4">
             <ProportionBar
               segments={[
-                { label: `Tax ${money(r.totalTax)}`, value: r.totalTax, className: "bg-primary-500" },
+                { label: t.barTax.replace("{amount}", money(r.totalTax)), value: r.totalTax, className: "bg-primary-500" },
                 {
-                  label: `Kept ${money(Math.max(0, r.taxableGain - r.totalTax))}`,
+                  label: t.barKept.replace("{amount}", money(Math.max(0, r.taxableGain - r.totalTax))),
                   value: Math.max(0, r.taxableGain - r.totalTax),
                   className: "bg-navy-900",
                 },
@@ -142,38 +145,38 @@ function ResultCard({ r }: { r: CgtResult }) {
       </div>
 
       <dl className="divide-y divide-line">
-        <Row label="Sale proceeds" value={money(r.proceeds)} />
+        <Row label={t.proceeds} value={money(r.proceeds)} />
         <Row
-          label="Less allowable cost"
+          label={t.lessCost}
           sub={
             r.indexedAcquisition !== r.acquisitionCost || r.indexedEnhancement !== r.enhancementCost
-              ? "incl. indexation relief"
+              ? t.inclIndexation
               : undefined
           }
           value={`− ${money(r.allowableCost)}`}
         />
-        <Row label={r.rawGain < 0 ? "Loss on disposal" : "Chargeable gain"} value={money(r.rawGain)} strong />
+        <Row label={r.rawGain < 0 ? t.loss : t.gain} value={money(r.rawGain)} strong />
         {r.pprRelief > 0 && (
-          <Row label="Less PPR relief" sub={`${r.exemptFractionPercent}% main-home exemption`} value={`− ${money(r.pprRelief)}`} />
+          <Row label={t.lessPpr} sub={t.pprSub.replace("{percent}", rate(r.exemptFractionPercent))} value={`− ${money(r.pprRelief)}`} />
         )}
-        {r.lossesApplied > 0 && <Row label="Less allowable losses" value={`− ${money(r.lossesApplied)}`} />}
+        {r.lossesApplied > 0 && <Row label={t.lessLosses} value={`− ${money(r.lossesApplied)}`} />}
         {r.exemptionApplied > 0 && (
-          <Row label="Less annual exemption" value={`− ${money(r.exemptionApplied)}`} />
+          <Row label={t.lessExemption} value={`− ${money(r.exemptionApplied)}`} />
         )}
-        <Row label="Taxable gain" value={money(r.taxableGain)} strong />
+        <Row label={t.taxable} value={money(r.taxableGain)} strong />
         {r.bands.map((b) => (
           <Row
             key={b.label}
-            label={b.label}
-            sub={`${money(b.amount)} × ${b.ratePercent}%`}
+            label={computed(b.label)}
+            sub={`${money(b.amount)} × ${rate(b.ratePercent)}`}
             value={money(b.tax)}
           />
         ))}
-        <Row label="Total CGT due" value={money(r.totalTax)} strong muted />
+        <Row label={t.total} value={money(r.totalTax)} strong muted />
         {r.lossCarried > 0 && (
-          <Row label="Losses carried forward" value={money(r.lossCarried)} />
+          <Row label={t.carried} value={money(r.lossCarried)} />
         )}
-        {r.paymentDue && <Row label="Payment due" value={r.paymentDue} />}
+        {r.paymentDue && <Row label={t.paymentDue} value={computed(r.paymentDue)} />}
       </dl>
     </div>
   );
@@ -186,6 +189,9 @@ export function IrelandCgtCalculator({
   config: CgtConfig;
   multipliers: CgtMultiplier[];
 }) {
+  const t = useT(cgtMessages);
+  const { money, rate } = useFormat();
+  const mult = useMultiplier();
   const [proceeds, setProceeds] = useState(0);
   const [disposalCosts, setDisposalCosts] = useState(0);
   const [acquisitionCost, setAcquisitionCost] = useState(0);
@@ -243,18 +249,18 @@ export function IrelandCgtCalculator({
   );
 
   const rateOptions: { value: RateMode; label: string }[] = [
-    { value: "standard", label: `Standard ${config.standardRatePercent}%` },
-    { value: "entrepreneur", label: `Entrepreneur ${config.entrepreneurRatePercent}%` },
-    { value: "rate40", label: "Foreign life 40%" },
-    { value: "rate15", label: "VC fund 15%" },
+    { value: "standard", label: t.rates.standard.replace("{rate}", rate(config.standardRatePercent)) },
+    { value: "entrepreneur", label: t.rates.entrepreneur.replace("{rate}", rate(config.entrepreneurRatePercent)) },
+    { value: "rate40", label: t.rates.rate40.replace("{rate}", rate(40)) },
+    { value: "rate15", label: t.rates.rate15.replace("{rate}", rate(15)) },
   ];
 
   const yearOptions = (
     <>
-      <option value="none">No indexation applies (×1.000)</option>
+      <option value="none">{t.noIndexation}</option>
       {multipliers.map((m) => (
         <option key={m.yearKey} value={m.yearKey}>
-          {m.yearLabel} (×{m.multiplier})
+          {t.computed[m.yearLabel] ?? m.yearLabel} (×{mult(m.multiplier)})
         </option>
       ))}
     </>
@@ -265,54 +271,54 @@ export function IrelandCgtCalculator({
       {/* inputs */}
       <div className="flex flex-col gap-5">
         <div className="border-l-[3px] border-primary-500 bg-surface-muted px-4 py-3 text-xs leading-5 text-ink-body">
-          <span className="font-semibold text-ink">Indexation relief.</span> The cost of
-          an asset bought before 2003 is uplifted by Revenue&rsquo;s multiplier for the
-          year you bought it, so only the real gain is taxed. Costs from 2003 on get no
-          uplift (×1.000).
+          <span className="font-semibold text-ink">{t.introTitle}</span> {t.introBody}
         </div>
 
         <CurrencyField
-          label="Sale proceeds"
+          label={t.proceeds}
           value={proceeds}
           onChange={setProceeds}
-          hint="What you sold the asset for (or its market value on a gift/transfer)."
+          hint={t.proceedsHint}
         />
         <CurrencyField
-          label="Selling costs"
+          label={t.sellingCosts}
           value={disposalCosts}
           onChange={setDisposalCosts}
-          hint="Incidental costs of disposal: solicitor, auctioneer, agent fees. Not indexed."
+          hint={t.sellingCostsHint}
         />
         <CurrencyField
-          label="Acquisition cost"
+          label={t.acquisition}
           value={acquisitionCost}
           onChange={setAcquisitionCost}
-          hint="What you paid, including buying fees (solicitor, stamp duty). This is the figure indexation uplifts."
+          hint={t.acquisitionHint}
         />
         <SelectField
-          label="Year the asset was acquired"
+          label={t.acqYear}
           value={acqYearKey}
           onChange={setAcqYearKey}
-          hint="Picks the indexation multiplier. Only pre-2003 years uplift the cost."
+          hint={t.acqYearHint}
         >
           {yearOptions}
         </SelectField>
 
         {acquisitionCost > 0 && acqMult !== 1 && (
           <div className="border border-line bg-surface-muted px-4 py-3 text-xs leading-5 text-ink-body">
-            Indexed cost: {money(acquisitionCost)} × {acqMult} ={" "}
-            <span className="font-semibold text-ink tabular-nums">{money(r.indexedAcquisition)}</span>
+            {fill(t.indexedCost, {
+              cost: money(acquisitionCost),
+              multiplier: mult(acqMult),
+              indexed: <span className="font-semibold text-ink tabular-nums">{money(r.indexedAcquisition)}</span>,
+            })}
           </div>
         )}
 
         <SelectField
-          label="Month of sale (optional)"
+          label={t.saleMonth}
           value={disposalMonth}
           onChange={setDisposalMonth}
-          hint="Sets the CGT payment date: Jan–Nov is due 15 December, December is due 31 January."
+          hint={t.saleMonthHint}
         >
-          <option value="">Select a month…</option>
-          {MONTHS.map((m, i) => (
+          <option value="">{t.selectMonth}</option>
+          {t.months.map((m, i) => (
             <option key={m} value={String(i + 1)}>
               {m}
             </option>
@@ -321,68 +327,71 @@ export function IrelandCgtCalculator({
 
         {/* optional sections */}
         <div className="flex flex-col gap-3 border-t border-line pt-5">
-          <SectionToggle label="Improvement / enhancement costs" checked={showEnhancement} onChange={setShowEnhancement} />
+          <SectionToggle label={t.enhancementToggle} checked={showEnhancement} onChange={setShowEnhancement} />
           {showEnhancement && (
             <div className="flex flex-col gap-4 border-l-[3px] border-line pl-4">
               <CurrencyField
-                label="Enhancement expenditure"
+                label={t.enhancement}
                 value={enhancementCost}
                 onChange={setEnhancementCost}
-                hint="Money spent adding value (extensions, improvements): not repairs."
+                hint={t.enhancementHint}
               />
-              <SelectField label="Year of the enhancement" value={enhYearKey} onChange={setEnhYearKey}>
+              <SelectField label={t.enhancementYear} value={enhYearKey} onChange={setEnhYearKey}>
                 {yearOptions}
               </SelectField>
             </div>
           )}
 
-          <SectionToggle label="Allowable losses" checked={showLosses} onChange={setShowLosses} />
+          <SectionToggle label={t.lossesToggle} checked={showLosses} onChange={setShowLosses} />
           {showLosses && (
             <div className="flex flex-col gap-4 border-l-[3px] border-line pl-4">
               <CurrencyField
-                label="Losses this year"
+                label={t.lossesThisYear}
                 value={currentYearLosses}
                 onChange={setCurrentYearLosses}
-                hint="Allowable capital losses on other disposals in the same year."
+                hint={t.lossesThisYearHint}
               />
               <CurrencyField
-                label="Losses brought forward"
+                label={t.lossesForward}
                 value={broughtForwardLosses}
                 onChange={setBroughtForwardLosses}
-                hint="Unused allowable losses carried forward from earlier years."
+                hint={t.lossesForwardHint}
               />
             </div>
           )}
 
-          <SectionToggle label="Relief / different rate" checked={showRelief} onChange={setShowRelief} />
+          <SectionToggle label={t.reliefToggle} checked={showRelief} onChange={setShowRelief} />
           {showRelief && (
             <div className="flex flex-col gap-4 border-l-[3px] border-line pl-4">
-              <SegmentedField<RateMode> label="Rate" value={rateMode} onChange={setRateMode} options={rateOptions} />
+              <SegmentedField<RateMode> label={t.rate} value={rateMode} onChange={setRateMode} options={rateOptions} />
               {rateMode === "entrepreneur" && (
                 <CurrencyField
-                  label="Entrepreneur Relief already used (lifetime)"
+                  label={t.entrepreneurUsed}
                   value={entrepreneurUsed}
                   onChange={setEntrepreneurUsed}
-                  hint={`Gains already relieved at ${config.entrepreneurRatePercent}%. The lifetime cap is ${money(config.entrepreneurLifetimeCapEur)}; anything above it is taxed at ${config.standardRatePercent}%.`}
+                  hint={t.entrepreneurUsedHint
+                    .replace("{relief}", rate(config.entrepreneurRatePercent))
+                    .replace("{cap}", money(config.entrepreneurLifetimeCapEur))
+                    .replace("{standard}", rate(config.standardRatePercent))}
                 />
               )}
             </div>
           )}
 
-          <SectionToggle label="Main home (PPR) relief" checked={showPpr} onChange={setShowPpr} />
+          <SectionToggle label={t.pprToggle} checked={showPpr} onChange={setShowPpr} />
           {showPpr && (
             <div className="flex flex-col gap-4 border-l-[3px] border-line pl-4">
               <NumericField
-                label="Months owned"
+                label={t.monthsOwned}
                 value={monthsOwned}
                 onChange={setMonthsOwned}
-                hint="Total months you owned the property."
+                hint={t.monthsOwnedHint}
               />
               <NumericField
-                label="Months lived in as your main home"
+                label={t.monthsOccupied}
                 value={monthsOccupied}
                 onChange={setMonthsOccupied}
-                hint="The last 12 months always count if it was ever your main home."
+                hint={t.monthsOccupiedHint}
               />
             </div>
           )}

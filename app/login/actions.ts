@@ -1,12 +1,15 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { localePath } from "../lib/messages";
 import { AuthError } from "next-auth";
 import { signIn } from "../../auth";
 import { usersCollection } from "../lib/collections";
-import { AUTH_NOT_CONFIGURED, isAuthConfigured } from "../lib/auth/config";
+import { isAuthConfigured } from "../lib/auth/config";
 import { allowPublicAction } from "../lib/rate-limit";
 import { safeRedirectPath } from "../lib/safe-redirect";
+import { getT } from "../lib/messages";
+import { accountMessages } from "../lib/messages/account";
 
 export interface AuthState {
   error?: string;
@@ -23,23 +26,22 @@ export interface AuthState {
    keeping only if it costs nothing to say, which it does when it is
    unconditional. `authorize` is written to be silent for the same reason; this
    is the other half of that. */
-const LOGIN_REJECTED =
-  "Invalid login credentials. If you've just signed up, check your inbox (and your spam folder) for the confirmation link.";
 
 export async function login(
   _prev: AuthState,
   formData: FormData,
 ): Promise<AuthState> {
+  const t = (await getT(accountMessages)).errors;
   const email = String(formData.get("email") ?? "").trim();
   const password = String(formData.get("password") ?? "");
   const requestedNext = String(formData.get("next") ?? "").trim();
 
   if (!email || !password) {
-    return { error: "Enter your email and password.", values: { email } };
+    return { error: t.enterBoth, values: { email } };
   }
 
   if (!isAuthConfigured()) {
-    return { error: AUTH_NOT_CONFIGURED, values: { email } };
+    return { error: t.notConfigured, values: { email } };
   }
 
   /* The brute-force cap on the front door. bcrypt at cost 12 makes each guess
@@ -62,7 +64,7 @@ export async function login(
   });
   if (!allowed) {
     return {
-      error: "Too many sign-in attempts. Please wait a few minutes and try again.",
+      error: t.tooManySignIns,
       values: { email },
     };
   }
@@ -86,8 +88,8 @@ export async function login(
 
   /* Answer before looking anything up. The old code read the account first so
      it could say which failure it was, which is exactly the leak described on
-     LOGIN_REJECTED. Nothing about the account is needed to reject. */
-  if (failed) return { error: LOGIN_REJECTED, values: { email } };
+     t.loginRejected. Nothing about the account is needed to reject. */
+  if (failed) return { error: t.loginRejected, values: { email } };
 
   // Only now, on success, and only for the role. Reading the account directly
   // rather than re-reading the session keeps this independent of the cookie
@@ -104,7 +106,7 @@ export async function login(
      This redirect is RELATIVE, so the destination has to be validated by
      parsing rather than by pattern: see safeRedirectPath. */
   const target = safeRedirectPath(requestedNext);
-  if (target) redirect(target);
+  if (target) redirect(await localePath(target));
 
-  redirect(account?.role === "admin" ? "/admin" : "/portal");
+  redirect(await localePath(account?.role === "admin" ? "/admin" : "/portal"));
 }

@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 import { site } from "./lib/content";
 import { BUDGETS } from "./lib/budgets";
 import { listPublishedSlugs } from "./lib/posts";
+import { LIVE_LOCALES, isTranslated, localeHref } from "./lib/i18n";
 
 /* Rendered per request, not at build time: it lists published posts, so a
    build-time copy would miss every post published after the deploy, and the
@@ -10,8 +11,10 @@ export const dynamic = "force-dynamic";
 
 // No /services pages: the section is hidden (see next.config.ts redirects).
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  /* Each page once per language it exists in, each entry listing the others
+     (the sitemap form of hreflang). The blog is English only. */
   const pages: MetadataRoute.Sitemap = [
-    "",
+    "/",
     "/blog",
     ...BUDGETS.map((b) => b.href),
     "/personal/mortgage",
@@ -26,12 +29,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/toolkits",
     "/about",
     "/contact",
-  ].map((path) => ({
-    url: `${site.url}${path}`,
-    lastModified: new Date(),
-    changeFrequency: "monthly" as const,
-    priority: path === "" ? 1 : 0.8,
-  }));
+  ].flatMap((path) => {
+    const base = { lastModified: new Date(), changeFrequency: "monthly" as const, priority: path === "/" ? 1 : 0.8 };
+    if (!isTranslated(path)) return [{ ...base, url: `${site.url}${path}` }];
+    const languages = Object.fromEntries(LIVE_LOCALES.map((l) => [l, `${site.url}${localeHref(l, path)}`]));
+    return LIVE_LOCALES.map((l) => ({ ...base, url: languages[l], alternates: { languages } }));
+  });
 
   // Published posts only, read through publishedFilter. An unreachable
   // database yields none, so the sitemap still serves the static pages.

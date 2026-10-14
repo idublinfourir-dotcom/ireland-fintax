@@ -1,5 +1,6 @@
-import Link from "next/link";
+import Link from "../components/locale-link";
 import { redirect } from "next/navigation";
+import { localePath } from "../lib/messages";
 import { enquiriesCollection, toObjectId, usersCollection } from "../lib/collections";
 import { requireClient } from "../lib/auth/guards";
 import { getThreadsFor, markClientRead } from "../lib/enquiry-messages";
@@ -7,6 +8,13 @@ import { PortalConversation } from "../components/portal-conversation";
 import { sendClientMessageAction } from "./actions";
 import { Icon } from "../components/dashboard-icons";
 import { Avatar, initialsOf, Panel, timeAgo } from "../components/dashboard-ui";
+import { getMessages, getT } from "../lib/messages";
+import { portalMessages } from "../lib/messages/portal";
+import { contactMessages } from "../lib/messages/contact";
+import { toolNames } from "../lib/messages/tool-names";
+import { CALCULATOR_TOOLS } from "../components/calculator-tabs";
+import { PERSONAL_TOOLS } from "../components/personal-tabs";
+import { INTL_LOCALE, plural } from "../lib/i18n";
 
 interface EnquiryRow {
   id: string;
@@ -16,41 +24,43 @@ interface EnquiryRow {
   client_last_read_at: Date | null;
 }
 
-const fmt = new Intl.DateTimeFormat("en-GB", {
-  day: "2-digit",
-  month: "short",
-  year: "numeric",
-});
-
+/* Copy: portalMessages.page.quickActions, paired by index.
+   Plans & pricing card is hidden while the fee model is being decided. */
 const quickActions = [
-  {
-    href: "/contact",
-    icon: "chat",
-    title: "Ask a question",
-    body: "Get a plain-English answer by email.",
-  },
-  {
-    href: "/tools/ireland-income-tax",
-    icon: "calculator",
-    title: "Tax calculators",
-    body: "Income tax, VAT, CT and more.",
-  },
-  // Plans & pricing card is hidden while the fee model is being decided.
-  {
-    href: "/portal/settings",
-    icon: "settings",
-    title: "Account settings",
-    body: "Update your name or password.",
-  },
+  { href: "/contact", icon: "chat" },
+  { href: "/tools/ireland-income-tax", icon: "calculator" },
+  { href: "/portal/settings", icon: "settings" },
 ] as const;
+
+const TOOL_HREF_BY_LABEL = new Map(
+  [...CALCULATOR_TOOLS, ...PERSONAL_TOOLS].map((t) => [t.label as string, t.href as string]),
+);
 
 export default async function PortalPage() {
   const user = await requireClient();
+  const { locale } = await getMessages();
+  const t = (await getT(portalMessages)).page;
+  const chat = (await getT(portalMessages)).chat;
+  const fmt = new Intl.DateTimeFormat(locale === "en" ? "en-GB" : INTL_LOCALE[locale], {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+  /* The topic is stored as the contact form's ENGLISH label; show it in the
+     page's language when it is one we know, as typed otherwise. */
+  const contact = contactMessages[locale].form;
+  const topicLabel = (service: string | null) => {
+    if (!service) return chat.generalQuestion;
+    if (service === "Not sure yet") return contact.notSure;
+    if (service === "Starting a company") return contact.startingCompany;
+    const href = TOOL_HREF_BY_LABEL.get(service);
+    return (href && toolNames[locale][href]?.label) || service;
+  };
 
   // requireClient guarantees a session; an id that is not an ObjectId means a
   // token this app never issued, so treat it as signed out.
   const owner = toObjectId(user.id);
-  if (!owner) redirect("/login?next=%2Fportal");
+  if (!owner) redirect(await localePath("/login?next=%2Fportal"));
 
   const [users, enquiriesCol] = await Promise.all([
     usersCollection(),
@@ -113,19 +123,19 @@ export default async function PortalPage() {
 
   const heroStats = [
     {
-      label: "Questions asked",
+      label: t.stats.asked,
       value: String(totalEnquiries),
-      hint: totalEnquiries === 0 ? "None yet" : "All time",
+      hint: totalEnquiries === 0 ? t.stats.noneYet : t.stats.allTime,
     },
     {
-      label: "New replies",
+      label: t.stats.newReplies,
       value: String(unreadCount),
-      hint: unreadCount === 0 ? "You're all caught up" : "Unread from the team",
+      hint: unreadCount === 0 ? t.stats.caughtUp : t.stats.unread,
     },
     {
-      label: "Last activity",
-      value: latest ? timeAgo(latest) : "—",
-      hint: latest ? fmt.format(latest) : "No activity yet",
+      label: t.stats.lastActivity,
+      value: latest ? timeAgo(latest, locale) : "—",
+      hint: latest ? fmt.format(latest) : t.stats.noActivity,
     },
   ];
 
@@ -144,16 +154,15 @@ export default async function PortalPage() {
         <div className="relative px-6 pt-8 sm:px-10 sm:pt-10">
           <p className="flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.2em] text-primary-300">
             <span aria-hidden="true" className="h-px w-7 bg-current opacity-60" />
-            Your account
+            {t.eyebrow}
           </p>
           <div className="mt-3 flex flex-wrap items-end justify-between gap-6">
             <div>
               <h2 className="font-display text-3xl font-bold tracking-[-0.02em] text-white">
-                {firstName ? `Welcome back, ${firstName}` : "Welcome back"}
+                {firstName ? t.welcomeName.replace("{name}", firstName) : t.welcome}
               </h2>
               <p className="mt-2 max-w-xl text-sm leading-6 text-white/60">
-                Track your questions, run the calculators and keep
-                everything about your account in one place.
+                {t.lede}
               </p>
             </div>
             <div className="flex flex-wrap items-center gap-3">
@@ -162,14 +171,14 @@ export default async function PortalPage() {
                 className="inline-flex h-11 items-center justify-center gap-2 rounded-none bg-primary-500 px-5 text-sm font-semibold text-white transition-colors duration-200 hover:bg-primary-400"
               >
                 <Icon name="plus" className="h-4 w-4" />
-                New question
+                {t.newQuestion}
               </Link>
               <Link
                 href="/tools/ireland-income-tax"
                 className="inline-flex h-11 items-center justify-center gap-2 rounded-none border border-white/20 px-5 text-sm font-semibold text-white/80 transition-colors duration-200 hover:border-white/45 hover:text-white"
               >
                 <Icon name="calculator" className="h-4 w-4" />
-                Calculators
+                {t.calculators}
               </Link>
             </div>
           </div>
@@ -197,7 +206,7 @@ export default async function PortalPage() {
 
       {/* Quick actions */}
       <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {quickActions.map((action) => (
+        {quickActions.map((action, i) => (
           <Link
             key={action.href}
             href={action.href}
@@ -217,9 +226,9 @@ export default async function PortalPage() {
               />
             </div>
             <p className="mt-4 font-display text-sm font-semibold tracking-tight text-ink">
-              {action.title}
+              {t.quickActions[i].title}
             </p>
-            <p className="mt-1 text-xs leading-5 text-muted">{action.body}</p>
+            <p className="mt-1 text-xs leading-5 text-muted">{t.quickActions[i].body}</p>
           </Link>
         ))}
       </div>
@@ -230,16 +239,15 @@ export default async function PortalPage() {
           <div className="flex flex-wrap items-end justify-between gap-2">
             <div>
               <h3 className="font-display text-xl font-semibold tracking-tight text-ink">
-                Your questions
+                {t.yourQuestions}
               </h3>
               {totalEnquiries > 0 && (
                 <p className="mt-0.5 text-xs text-muted">
-                  {totalEnquiries} total
-                  {unreadCount > 0 &&
-                    ` · ${unreadCount} new ${unreadCount === 1 ? "reply" : "replies"}`}. Tap
-                  one to read the conversation and reply.
+                  {t.total.replace("{n}", String(totalEnquiries))}
+                  {unreadCount > 0 && ` · ${plural(locale, unreadCount, t.newRepliesCount)}`}.{" "}
+                  {t.tapOne}
                   {totalEnquiries > enquiries.length &&
-                    ` Showing the latest ${enquiries.length}.`}
+                    ` ${t.showingLatest.replace("{n}", String(enquiries.length))}`}
                 </p>
               )}
             </div>
@@ -247,7 +255,7 @@ export default async function PortalPage() {
               href="/contact"
               className="text-sm font-semibold text-primary-600 transition-colors duration-200 hover:text-primary-500"
             >
-              New question →
+              {t.newQuestionArrow}
             </Link>
           </div>
 
@@ -257,17 +265,16 @@ export default async function PortalPage() {
                 <Icon name="chat" className="h-6 w-6" />
               </span>
               <p className="mt-4 text-[15px] font-medium text-ink">
-                No questions yet
+                {t.noQuestions}
               </p>
               <p className="mt-1 text-sm text-muted">
-                When you ask a question it&apos;ll show here, and our answers
-                land in the same thread.
+                {t.noQuestionsBody}
               </p>
               <Link
                 href="/contact"
                 className="mt-5 inline-flex h-11 items-center justify-center rounded-none bg-primary-500 px-6 text-sm font-semibold text-white transition-colors duration-200 hover:bg-primary-600"
               >
-                Ask a question
+                {t.ask}
               </Link>
             </div>
           ) : (
@@ -276,8 +283,8 @@ export default async function PortalPage() {
                 <li key={enquiry.id}>
                   <PortalConversation
                     enquiryId={enquiry.id}
-                    service={enquiry.service ?? "General question"}
-                    refLabel={`Ref #${enquiry.id.padStart(4, "0")}`}
+                    service={topicLabel(enquiry.service)}
+                    refLabel={chat.ref.replace("{ref}", enquiry.id.padStart(4, "0"))}
                     dateLabel={fmt.format(new Date(enquiry.created_at))}
                     openingMessage={enquiry.message}
                     openingAt={new Date(enquiry.created_at)}
@@ -297,14 +304,14 @@ export default async function PortalPage() {
           <Panel accent className="p-6">
             <div className="flex items-center justify-between gap-3">
               <h3 className="text-xs font-semibold uppercase tracking-[0.18em] text-muted">
-                Your account
+                {t.account}
               </h3>
               <Link
                 href="/portal/settings"
                 className="inline-flex items-center gap-1 text-xs font-semibold text-primary-600 transition-colors duration-200 hover:text-primary-500"
               >
                 <Icon name="settings" className="h-3.5 w-3.5" />
-                Settings
+                {t.settings}
               </Link>
             </div>
             <div className="mt-4 flex items-center gap-3">
@@ -318,7 +325,7 @@ export default async function PortalPage() {
             </div>
             <dl className="mt-5 flex flex-col gap-2 border-t border-line pt-4 text-sm">
               <div className="flex items-center justify-between gap-3">
-                <dt className="text-muted">Member since</dt>
+                <dt className="text-muted">{t.memberSince}</dt>
                 <dd className="font-medium text-ink">
                   {profile?.created_at
                     ? fmt.format(new Date(profile.created_at))
@@ -326,25 +333,24 @@ export default async function PortalPage() {
                 </dd>
               </div>
               <div className="flex items-center justify-between gap-3">
-                <dt className="text-muted">Account type</dt>
-                <dd className="font-medium text-ink">Member</dd>
+                <dt className="text-muted">{t.accountType}</dt>
+                <dd className="font-medium text-ink">{t.member}</dd>
               </div>
             </dl>
           </Panel>
 
           <Panel className="p-6">
             <h3 className="text-xs font-semibold uppercase tracking-[0.18em] text-muted">
-              Need a hand?
+              {t.needHand}
             </h3>
             <p className="mt-3 text-sm leading-6 text-muted">
-              Stuck on tax or money? Ask in your own words and we&apos;ll reply
-              by email.
+              {t.needHandBody}
             </p>
             <Link
               href="/contact"
               className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-primary-600 transition-colors duration-200 hover:text-primary-500"
             >
-              Ask a question
+              {t.ask}
               <Icon name="arrowUpRight" className="h-3.5 w-3.5" />
             </Link>
           </Panel>

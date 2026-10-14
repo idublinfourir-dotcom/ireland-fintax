@@ -1,12 +1,15 @@
 import type { CSSProperties, ReactNode } from "react";
-import Link from "next/link";
-import { Button, Container, Eyebrow, SectionHeading } from "./ui";
+import Link from "./locale-link";
+import { Button, Container, Emphasis, Eyebrow, SectionHeading } from "./ui";
 import { Reveal } from "./reveal";
 import { ClipReveal } from "./clip-reveal";
 import { Accordion } from "./accordion";
 import { HeroVideo } from "./hero-video";
 import { images } from "../lib/images";
 import { serviceCategories } from "../lib/content";
+import { getMessages } from "../lib/messages";
+import type { Locale } from "../lib/i18n";
+import { LocaleLink } from "./locale-link";
 
 function bg(url: string): CSSProperties {
   return { backgroundImage: `url(${url})` };
@@ -14,13 +17,14 @@ function bg(url: string): CSSProperties {
 
 /* ---------- hero ---------- */
 
-export function Hero() {
+export async function Hero() {
+  const { locale, t } = await getMessages();
   return (
     <section className="relative isolate flex min-h-[88vh] items-center overflow-hidden bg-navy-900 text-white">
       <HeroVideo
         clips={[
           // All three are Dublin's financial quarter — the Docklands and the
-          // IFSC — rather than city landmarks. The brief is "Ireland Fintax",
+          // IFSC — rather than city landmarks. The brief is "Irish Fintax",
           // so the footage has to read as a business district, not a tourist
           // skyline, and no clip may carry another country's tax paperwork.
           //
@@ -56,23 +60,20 @@ export function Hero() {
       <Container className="py-28 sm:py-36 lg:py-44">
         <div className="max-w-4xl">
           <span className="animate-fade-up block">
-            <Eyebrow tone="dark">
-              Free finance learning · Ireland
-            </Eyebrow>
+            <Eyebrow tone="dark">{t.hero.eyebrow}</Eyebrow>
           </span>
           <h1 className="animate-fade-up mt-7 font-display text-5xl font-bold leading-[0.95] tracking-[-0.03em] text-balance [animation-delay:80ms] sm:text-6xl lg:text-7xl">
-            Understand tax and money,{" "}
-            <em className="text-primary-300 not-italic">in plain English.</em>
+            <Emphasis text={t.hero.title} className="text-primary-300 not-italic" />
           </h1>
           <p className="animate-fade-up mt-7 max-w-xl text-lg leading-8 text-white/80 [animation-delay:150ms] sm:text-xl">
-            Free calculators, guides and templates for Irish tax, mortgages,
-            investing and starting a company. Learn how it works, then run
-            your own numbers.
+            {t.hero.lede}
           </p>
           <div className="animate-fade-up mt-10 flex flex-col items-start gap-3 [animation-delay:220ms] sm:flex-row sm:items-center sm:gap-4">
-            <Button href="/tools/ireland-income-tax">Try the calculators</Button>
-            <Button href="/contact" variant="outlineLight">
-              Ask a question
+            <Button locale={locale} href="/tools/ireland-income-tax">
+              {t.hero.cta}
+            </Button>
+            <Button locale={locale} href="/contact" variant="outlineLight">
+              {t.hero.ask}
             </Button>
           </div>
         </div>
@@ -129,45 +130,23 @@ function EntryGlyph({ name }: { name: EntryIcon }) {
   }
 }
 
-const quickEntries: {
-  icon: EntryIcon;
-  title: string;
-  note: string;
-  href: string;
-}[] = [
-  {
-    icon: "chip",
-    title: "Tax calculators",
-    note: "Income tax, VAT, CGT, CAT and more, for Ireland.",
-    href: "/tools/ireland-income-tax",
-  },
-  {
-    icon: "user",
-    title: "Personal finance",
-    note: "Work out a mortgage and compare ways to invest.",
-    href: "/personal/mortgage",
-  },
-  {
-    icon: "building",
-    title: "Starting a company",
-    note: "Memos, templates and setup guides for founders.",
-    href: "/toolkits",
-  },
-  {
-    icon: "compass",
-    title: "Ask a question",
-    note: "Stuck on something? Ask, and we’ll explain it.",
-    href: "/contact",
-  },
+/* Paired by index with t.quickEntries (title, note). */
+const quickEntries: { icon: EntryIcon; href: string }[] = [
+  { icon: "chip", href: "/tools/ireland-income-tax" },
+  { icon: "user", href: "/personal/mortgage" },
+  { icon: "building", href: "/toolkits" },
+  { icon: "compass", href: "/contact" },
 ];
 
-export function QuickEntry() {
+export async function QuickEntry() {
+  const { locale, t } = await getMessages();
   return (
     <section className="bg-navy-800 text-white">
       <Container className="grid grid-cols-1 gap-px bg-white/10 sm:grid-cols-2 lg:grid-cols-4">
-        {quickEntries.map((entry) => (
-          <Link
-            key={entry.title}
+        {quickEntries.map((entry, i) => (
+          <LocaleLink
+            key={entry.href}
+            locale={locale}
             href={entry.href}
             className="group flex items-start gap-4 bg-navy-800 px-5 py-7 transition-colors duration-200 hover:bg-navy-700"
           >
@@ -176,7 +155,7 @@ export function QuickEntry() {
             </span>
             <span className="flex flex-col">
               <span className="flex items-center gap-1.5 font-display text-base font-semibold tracking-tight text-white">
-                {entry.title}
+                {t.quickEntries[i].title}
                 <span
                   aria-hidden="true"
                   className="translate-x-0 text-primary-300 transition-transform duration-200 group-hover:translate-x-1"
@@ -185,10 +164,10 @@ export function QuickEntry() {
                 </span>
               </span>
               <span className="mt-1 text-sm leading-6 text-white/60">
-                {entry.note}
+                {t.quickEntries[i].note}
               </span>
             </span>
-          </Link>
+          </LocaleLink>
         ))}
       </Container>
     </section>
@@ -200,49 +179,28 @@ export function QuickEntry() {
 /* Says what the platform is and how it works, never who runs it: no names,
    faces or credentials until real ones are supplied (see CLAUDE.md on the
    invented team this replaced). */
-const principles = [
-  {
-    title: "Free, for everyone",
-    note: "Every calculator, guide and template is free, and you don’t need an account to start.",
-  },
-  {
-    title: "Plain English",
-    note: "The rules explained the way you’d explain them to a friend, without the jargon.",
-  },
-  {
-    title: "Built on public sources",
-    note: "The calculators use Revenue’s published rates and link to where each figure comes from.",
-  },
-  {
-    title: "Information, not advice",
-    note: "We help you understand. For a decision that hinges on your situation, see a regulated adviser.",
-  },
-];
-
-export function WhoWeAre() {
+export async function WhoWeAre() {
+  const { locale, t } = await getMessages();
   return (
     <section className="bg-white">
       <Container className="grid gap-14 py-20 sm:py-28 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
         <Reveal>
           <SectionHeading
-            eyebrow="Who we are"
-            title="A free place to learn how Irish tax and money work."
+            eyebrow={t.who.eyebrow}
+            title={t.who.title}
           />
           <div className="mt-6 flex flex-col gap-5 text-[15px] leading-7 text-ink-body">
-            <p>
-              Ireland Fintax is a free learning platform. We explain Irish tax
-              and personal finance in plain English, and give you calculators
-              to try your own numbers, so you understand what is going on
-              before you decide anything.
-            </p>
-            <p>No fees, nothing to sell you, and no sign-up to get started.</p>
+            {t.who.body.map((para) => (
+              <p key={para}>{para}</p>
+            ))}
           </div>
-          <Link
+          <LocaleLink
+            locale={locale}
             href="/about"
             className="mt-6 inline-block text-sm font-semibold text-primary-500 transition-colors duration-200 hover:text-primary-600"
           >
-            More about us <span aria-hidden="true">→</span>
-          </Link>
+            {t.who.more} <span aria-hidden="true">→</span>
+          </LocaleLink>
           <ClipReveal
             // Not deskFinance: that photo is IRS forms and a dollar bill.
             url={images.teamLaptops}
@@ -251,7 +209,7 @@ export function WhoWeAre() {
         </Reveal>
         <Reveal delay={120}>
           <ul className="grid gap-px overflow-hidden border border-line bg-line sm:grid-cols-2">
-            {principles.map((p) => (
+            {t.who.principles.map((p) => (
               <li key={p.title} className="bg-surface p-6">
                 <h3 className="font-display text-lg font-medium tracking-tight text-ink">
                   {p.title}
@@ -346,7 +304,9 @@ export function PromoBanner({
   ctaLabel,
   image,
   reverse = false,
+  locale,
 }: {
+  locale?: Locale;
   eyebrow: string;
   title: ReactNode;
   body: string;
@@ -372,7 +332,9 @@ export function PromoBanner({
             </h2>
             <p className="mt-5 text-lg leading-8 text-ink-body">{body}</p>
             <div className="mt-9">
-              <Button href={ctaHref}>{ctaLabel}</Button>
+              <Button locale={locale} href={ctaHref}>
+                {ctaLabel}
+              </Button>
             </div>
           </Reveal>
         </div>
@@ -430,25 +392,11 @@ function AiGlyph({ name }: { name: AiIcon }) {
   }
 }
 
-const aiCapabilities: { icon: AiIcon; title: string; note: string }[] = [
-  {
-    icon: "tax",
-    title: "Learn",
-    note: "Plain-English memos and guides on the things people actually get stuck on.",
-  },
-  {
-    icon: "forecast",
-    title: "Try",
-    note: "Put your own figures into the calculators and see what changes.",
-  },
-  {
-    icon: "automate",
-    title: "Ask",
-    note: "Still unsure? Ask in your own words and get an answer by email.",
-  },
-];
+/* Paired by index with t.learn.items (title, note). */
+const aiIcons: AiIcon[] = ["tax", "forecast", "automate"];
 
-export function AiBand() {
+export async function AiBand() {
+  const { t } = await getMessages();
   return (
     <section className="relative isolate overflow-hidden bg-navy-900 text-white">
       <div
@@ -462,24 +410,22 @@ export function AiBand() {
       <Container className="py-24 sm:py-32">
         <Reveal>
           <div className="max-w-2xl border-l-2 border-primary-400 pl-6 sm:pl-8">
-            <Eyebrow tone="dark">How to learn here</Eyebrow>
+            <Eyebrow tone="dark">{t.learn.eyebrow}</Eyebrow>
             <h2 className="mt-6 font-display text-4xl font-bold leading-[1.03] tracking-[-0.02em] text-balance sm:text-5xl">
-              Learn it, try it,{" "}
-              <em className="text-primary-300 not-italic">ask about it.</em>
+              <Emphasis text={t.learn.title} className="text-primary-300 not-italic" />
             </h2>
             <p className="mt-6 text-lg leading-8 text-white/80">
-              Start wherever suits you. Most people read a little, run their
-              own numbers, and only ask when something still doesn’t add up.
+              {t.learn.lede}
             </p>
           </div>
           <div className="mt-14 grid grid-cols-1 gap-px overflow-hidden border border-white/12 bg-white/12 sm:grid-cols-3">
-            {aiCapabilities.map((cap) => (
+            {t.learn.items.map((cap, i) => (
               <div
-                key={cap.title}
+                key={aiIcons[i]}
                 className="flex flex-col bg-navy-900 px-7 py-9"
               >
                 <span className="text-primary-300">
-                  <AiGlyph name={cap.icon} />
+                  <AiGlyph name={aiIcons[i]} />
                 </span>
                 <h3 className="mt-5 font-display text-lg font-medium tracking-tight text-white">
                   {cap.title}
@@ -499,49 +445,27 @@ export function AiBand() {
 /* ---------- who it's for (was: industries) ---------- */
 
 /* Life situations the site actually covers, each pointing at its tool. Was the
-   firm's sector list (`industries` in content.ts, now unused). */
-const audiences = [
-  {
-    name: "Employees",
-    note: "See your take-home pay and what the Budget changes mean for it.",
-    href: "/tools/ireland-income-tax",
-  },
-  {
-    name: "Sole traders",
-    note: "When to register for VAT, which rate applies, and the returns cycle.",
-    href: "/tools/ireland-vat",
-  },
-  {
-    name: "Company founders",
-    note: "Corporation tax, the R&D credit, capital allowances and setup guides.",
-    href: "/tools/ireland-corporation-tax",
-  },
-  {
-    name: "Investors and landlords",
-    note: "Capital gains on shares or property, and investment options compared.",
-    href: "/tools/ireland-cgt",
-  },
-  {
-    name: "Families",
-    note: "Gifts and inheritances, and the tax-free thresholds that apply.",
-    href: "/tools/ireland-cat",
-  },
-  {
-    name: "Homebuyers",
-    note: "Work out a mortgage before you talk to a lender.",
-    href: "/personal/mortgage",
-  },
+   firm's sector list (`industries` in content.ts, now unused).
+   Paired by index with t.audiences.items (name, note). */
+const audienceHrefs = [
+  "/tools/ireland-income-tax",
+  "/tools/ireland-vat",
+  "/tools/ireland-corporation-tax",
+  "/tools/ireland-cgt",
+  "/tools/ireland-cat",
+  "/personal/mortgage",
 ];
 
-export function Industries() {
+export async function Industries() {
+  const { locale, t } = await getMessages();
   return (
     <section className="border-t border-line bg-white">
       <Container className="grid gap-14 py-20 sm:py-28 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
         <Reveal>
           <SectionHeading
-            eyebrow="Who it’s for"
-            title="Whatever you’re dealing with, start here."
-            lede="Tax and money questions tend to arrive with life events. These are the ones the site covers today."
+            eyebrow={t.audiences.eyebrow}
+            title={t.audiences.title}
+            lede={t.audiences.lede}
           />
           <ClipReveal
             url={images.meeting}
@@ -550,17 +474,18 @@ export function Industries() {
         </Reveal>
         <Reveal delay={120}>
         <ul className="grid gap-px overflow-hidden border border-line bg-line sm:grid-cols-2">
-          {audiences.map((a) => (
-            <li key={a.name}>
-              <Link
-                href={a.href}
+          {t.audiences.items.map((a, i) => (
+            <li key={audienceHrefs[i]}>
+              <LocaleLink
+                locale={locale}
+                href={audienceHrefs[i]}
                 className="group block h-full bg-surface p-6 transition-colors duration-200 hover:bg-secondary-50/50"
               >
                 <h3 className="font-display text-lg font-medium tracking-tight text-ink transition-colors duration-200 group-hover:text-primary-500">
                   {a.name} <span aria-hidden="true">→</span>
                 </h3>
                 <p className="mt-2 text-sm leading-6 text-muted">{a.note}</p>
-              </Link>
+              </LocaleLink>
             </li>
           ))}
         </ul>
@@ -572,26 +497,8 @@ export function Industries() {
 
 /* ---------- process ---------- */
 
-const steps = [
-  {
-    title: "Pick a topic",
-    description: "Income tax, VAT, a mortgage, starting a company: whatever it’s about.",
-  },
-  {
-    title: "Ask in your own words",
-    description: "No jargon needed. Ask it the way you’d ask a friend.",
-  },
-  {
-    title: "Get a plain-English answer",
-    description: "A real person reads it and replies by email.",
-  },
-  {
-    title: "Keep it in one place",
-    description: "Ask while signed in and every answer stays in your free account.",
-  },
-];
-
-export function Process() {
+export async function Process() {
+  const { t } = await getMessages();
   return (
     <section
       id="process"
@@ -600,12 +507,12 @@ export function Process() {
       <Container className="py-20 sm:py-28">
         <Reveal>
         <SectionHeading
-          eyebrow="Ask a question"
-          title="Got a question? Here’s what happens."
-          lede="If the calculators and guides don’t cover it, ask. It’s free, and there’s no such thing as too basic."
+          eyebrow={t.process.eyebrow}
+          title={t.process.title}
+          lede={t.process.lede}
         />
         <ol className="mt-14 grid gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-4">
-          {steps.map((step, index) => (
+          {t.process.steps.map((step, index) => (
             <li key={step.title} className="relative border-t-2 border-ink/10 pt-6">
               <span
                 aria-hidden="true"
@@ -631,37 +538,15 @@ export function Process() {
 
 /* ---------- faq ---------- */
 
-const faqs = [
-  {
-    question: "Is it really free?",
-    answer:
-      "Yes. Every calculator, guide and template here is free to use, and so is asking a question.",
-  },
-  {
-    question: "Is this financial or tax advice?",
-    answer:
-      "No. Everything here is general information to help you understand how things work. Rates and rules change and your own situation matters, so check with Revenue or a qualified, regulated adviser before acting on a big decision.",
-  },
-  {
-    question: "Do I need an account?",
-    answer:
-      "No. The calculators and guides are open to everyone. A free account is only useful for questions: ask while signed in and your questions and our answers stay together in one place.",
-  },
-  {
-    question: "Is it only about Ireland?",
-    answer:
-      "Mostly. The calculators use Irish rates and rules, and some of the founder resources also cover the UK.",
-  },
-];
-
-export function Faq() {
+export async function Faq() {
+  const { t } = await getMessages();
   return (
     <section id="faq" className="scroll-mt-24 border-t border-line bg-white">
       <Container className="py-20 sm:py-28">
         <Reveal className="mx-auto max-w-3xl">
-          <SectionHeading eyebrow="FAQ" title="Questions, answered straight." />
+          <SectionHeading eyebrow={t.faq.eyebrow} title={t.faq.title} />
           <div className="mt-10">
-            <Accordion items={faqs} />
+            <Accordion items={t.faq.items} />
           </div>
         </Reveal>
       </Container>
@@ -727,7 +612,8 @@ export function RelatedServices({
 
 /* ---------- contact cta ---------- */
 
-export function ContactCta({ children }: { children?: ReactNode }) {
+export async function ContactCta({ children }: { children?: ReactNode }) {
+  const { locale, t } = await getMessages();
   return (
     <section id="contact" className="scroll-mt-24 bg-canvas">
       <Container className="py-20 sm:py-24">
@@ -743,17 +629,18 @@ export function ContactCta({ children }: { children?: ReactNode }) {
           />
           <div className="px-6 py-16 text-center sm:px-16 sm:py-20">
             <Eyebrow tone="dark" align="center">
-              Ask a question
+              {t.cta.eyebrow}
             </Eyebrow>
             <h2 className="mx-auto mt-5 max-w-2xl font-display text-3xl font-medium leading-[1.12] tracking-tight text-balance sm:text-4xl">
-              {children ?? "Stuck on something?"}
+              {children ?? t.cta.title}
             </h2>
             <p className="mx-auto mt-4 max-w-xl leading-7 text-white/75">
-              Ask about tax or money the way you’d ask a friend, and we’ll reply
-              by email with a plain-English answer. It’s free.
+              {t.cta.body}
             </p>
             <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
-              <Button href="/contact">Ask a question</Button>
+              <Button locale={locale} href="/contact">
+                {t.cta.button}
+              </Button>
             </div>
           </div>
         </div>

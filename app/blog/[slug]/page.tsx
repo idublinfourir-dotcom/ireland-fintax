@@ -16,6 +16,8 @@ import { getPublishedPost, getRelatedPosts, type Post } from "../../lib/posts";
 import { headingAnchors, splitPages, tableOfContents } from "../../lib/post-blocks";
 import { imageUrl, POST_DISCLAIMER } from "../../lib/post-types";
 import { site } from "../../lib/content";
+import { DEFAULT_LOCALE } from "../../lib/i18n";
+import { getLocale } from "../../lib/messages";
 
 type Params = Promise<{ slug: string }>;
 type Search = Promise<{ page?: string | string[] }>;
@@ -126,61 +128,66 @@ export default async function BlogPostPage({
   const toc = tableOfContents(post.blocks);
   const showToc = toc.length >= 2;
   const url = `${site.url}/blog/${post.slug}`;
-  const related = await getRelatedPosts(post);
+  const [related, locale] = await Promise.all([getRelatedPosts(post), getLocale()]);
 
+  /* lang="en": the post is English even under /ga, /es or /pt, where the
+     header, footer and call to action are not (CHROME_ONLY_PATHS). */
   return (
     <>
-      <article>
-        <PostHeader post={post} url={url} page={page} pages={pages.length} />
-        {page === 1 && <PostCover image={post.cover} />}
+      <div lang="en">
+        <article>
+          <PostHeader post={post} url={url} page={page} pages={pages.length} />
+          {page === 1 && <PostCover image={post.cover} />}
 
-        <div className="relative pb-6 pt-12 sm:pt-16">
-          {/* Wide screens: the contents sit in the left margin, beside the
-              reading column, and stay in view while reading. */}
-          {showToc && (
-            <aside className="absolute inset-y-0 left-0 hidden w-[calc((100%-56rem)/2)] xl:block">
-              <div className="sticky top-28 ml-auto max-w-[14rem] pl-6 pr-8">
-                <TableOfContents entries={toc} slug={post.slug} page={page} variant="side" />
-              </div>
-            </aside>
-          )}
-
-          <div className="post-grid [&>:first-child]:mt-0">
+          <div className="relative pb-6 pt-12 sm:pt-16">
+            {/* Wide screens: the contents sit in the left margin, beside the
+                reading column, and stay in view while reading. */}
             {showToc && (
-              <div className="xl:hidden">
-                <TableOfContents entries={toc} slug={post.slug} page={page} variant="inline" />
-              </div>
+              <aside className="absolute inset-y-0 left-0 hidden w-[calc((100%-56rem)/2)] xl:block">
+                <div className="sticky top-28 ml-auto max-w-[14rem] pl-6 pr-8">
+                  <TableOfContents entries={toc} slug={post.slug} page={page} variant="side" />
+                </div>
+              </aside>
             )}
 
-            <PostBlocks blocks={pages[page - 1]} anchors={anchors} />
+            <div className="post-grid [&>:first-child]:mt-0">
+              {showToc && (
+                <div className="xl:hidden">
+                  <TableOfContents entries={toc} slug={post.slug} page={page} variant="inline" />
+                </div>
+              )}
 
-            <PageNav slug={post.slug} page={page} pages={pages.length} />
+              <PostBlocks blocks={pages[page - 1]} anchors={anchors} />
 
-            <div className="mt-14 border-t border-line pt-8">
-              {post.sources && post.sources.length > 0 && <PostSources sources={post.sources} />}
-              <ShareLinks url={url} title={post.title} />
-              <p className="mt-8 text-sm leading-6 text-muted">{POST_DISCLAIMER}</p>
+              <PageNav slug={post.slug} page={page} pages={pages.length} />
+
+              <div className="mt-14 border-t border-line pt-8">
+                {post.sources && post.sources.length > 0 && <PostSources sources={post.sources} />}
+                <ShareLinks url={url} title={post.title} />
+                <p className="mt-8 text-sm leading-6 text-muted">{POST_DISCLAIMER}</p>
+              </div>
             </div>
           </div>
-        </div>
-      </article>
+        </article>
 
-      {related.length > 0 && (
-        <section className="mt-10 border-t border-line bg-surface-muted">
-          <Container className="py-16 sm:py-20">
-            <SectionHeading eyebrow="Keep reading" title="More from the blog" />
-            <ul className="mt-10 grid gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
-              {related.map((p) => (
-                <li key={p.id}>
-                  <PostCard post={p} headingLevel={3} />
-                </li>
-              ))}
-            </ul>
-          </Container>
-        </section>
-      )}
+        {related.length > 0 && (
+          <section className="mt-10 border-t border-line bg-surface-muted">
+            <Container className="py-16 sm:py-20">
+              <SectionHeading eyebrow="Keep reading" title="More from the blog" />
+              <ul className="mt-10 grid gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
+                {related.map((p) => (
+                  <li key={p.id}>
+                    <PostCard post={p} headingLevel={3} />
+                  </li>
+                ))}
+              </ul>
+            </Container>
+          </section>
+        )}
+      </div>
 
-      <ContactCta>Still have a question?</ContactCta>
+      {/* This heading is English only; other languages keep the shared one. */}
+      <ContactCta>{locale === DEFAULT_LOCALE ? "Still have a question?" : undefined}</ContactCta>
     </>
   );
 }

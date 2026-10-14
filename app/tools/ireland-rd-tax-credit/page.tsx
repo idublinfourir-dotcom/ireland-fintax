@@ -1,33 +1,24 @@
 import type { Metadata } from "next";
 import { Breadcrumbs, BudgetNote, Container, PageHero } from "../../components/ui";
 import { ContactCta } from "../../components/sections";
-import { CalculatorTabs } from "../../components/calculator-tabs";
+import { CalculatorTabs } from "../../components/tool-tabs";
 import { IrelandRdTaxCreditCalculator } from "../../components/ireland-rd-tax-credit-calculator";
 import { RD_LAST_REVIEWED } from "../../lib/ireland-rd-tax-credit";
 import { getRdData } from "../../lib/rd-data";
+import { getMessages, getT } from "../../lib/messages";
+import { rdMessages } from "../../lib/messages/rd";
+import { calcMessages } from "../../lib/messages/calc";
+import { localDate, percent } from "../../lib/i18n";
 
-export const metadata: Metadata = {
-  title: "Ireland R&D Tax Credit Calculator: 35% Credit & 3-Year Instalments",
-  description:
-    "Estimate the Irish R&D Corporation Tax Credit at 35% of qualifying expenditure, with the three-year instalment schedule and the ~47.5% combined benefit. Republic of Ireland.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  return (await getT(rdMessages)).meta;
+}
 
-const notes = [
-  {
-    title: "35% of qualifying spend",
-    body: "The credit is 35% of qualifying R&D expenditure, on top of the 12.5% trading deduction the same spend attracts, a combined benefit of about 47.5%. Rate applies for accounting periods commencing on or after 1 January 2026.",
-  },
-  {
-    title: "Paid over three years",
-    body: "The first €87,500 (or 50% of the credit, whichever is greater) is payable in year one; the balance follows across years two and three. You elect cash refund or offset against tax due, it isn't netted against Corporation Tax first.",
-  },
-  {
-    title: "Qualifying is the hard part",
-    body: "The science test, eligible cost categories, subcontractor and grant limits and the capital/revenue split shape a real claim, and Revenue can audit it. Use this to size the benefit, then let us build the claim.",
-  },
-];
 
 export default async function IrelandRdTaxCreditPage() {
+  const { locale } = await getMessages();
+  const t = await getT(rdMessages);
+  const c = await getT(calcMessages);
   const { config } = await getRdData();
 
   return (
@@ -37,14 +28,16 @@ export default async function IrelandRdTaxCreditPage() {
         breadcrumb={
           <Breadcrumbs
             items={[
-              { label: "Home", href: "/" },
-              { label: "Tools" },
-              { label: "Ireland R&D tax credit" },
+              { label: c.home, href: "/" },
+              { label: c.tools },
+              { label: t.crumb },
             ]}
           />
         }
-        title="Ireland R&D tax credit calculator"
-        lede={`Estimate the ${config.ratePercent}% R&D Corporation Tax Credit and how it's paid out over three years, figures current as of ${RD_LAST_REVIEWED}.`}
+        title={t.title}
+        lede={t.lede
+          .replace("{date}", localDate(locale, RD_LAST_REVIEWED))
+          .replace("{rate}", percent(locale, config.ratePercent))}
       />
 
       <Container className="py-16 sm:py-20">
@@ -54,12 +47,10 @@ export default async function IrelandRdTaxCreditPage() {
           <IrelandRdTaxCreditCalculator config={config} />
         </div>
 
-        <BudgetNote>
-          Budget 2027 announced a higher first-year payment (€87,500 to €105,000) and wider subcontracting limits. The Finance Act will set when they start, so this calculator still uses the current rules.
-        </BudgetNote>
+        <BudgetNote>{t.budgetNote}</BudgetNote>
 
         <div className="mt-12 grid gap-6 sm:grid-cols-3">
-          {notes.map((note) => (
+          {t.notes.map((note) => (
             <div key={note.title} className="rounded-none border border-line bg-surface p-6">
               <h2 className="font-display text-base font-medium tracking-tight text-ink">
                 {note.title}

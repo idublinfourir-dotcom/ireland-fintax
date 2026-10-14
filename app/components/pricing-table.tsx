@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
+import Link from "./locale-link";
 import { CheckIcon } from "./ui";
 import type { PricingTier } from "../lib/content";
 

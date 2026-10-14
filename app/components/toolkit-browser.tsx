@@ -10,32 +10,15 @@
    the file over by hand. */
 
 import { useState } from "react";
-import Link from "next/link";
+import Link from "./locale-link";
 import {
   TOOLKIT_CATEGORIES,
   toolkitSlug,
   type ToolkitCategory,
 } from "../lib/toolkit-types";
 import { STARTER_RESOURCES, type StarterResource } from "../lib/toolkit-content";
-
-/* Short tab labels so the strip scans like the calculators one. */
-const TAB_LABELS: Record<ToolkitCategory, string> = {
-  memo: "Memos",
-  template: "Templates",
-  "tax-form": "Tax forms",
-  "vat-form": "VAT forms",
-  guide: "Setup guides",
-  other: "Other",
-};
-
-const CATEGORY_INTROS: Record<ToolkitCategory, string> = {
-  memo: "Short technical notes on the tax questions founders ask us most.",
-  template: "Ready-to-use statements, workings and checklists for day-to-day reporting.",
-  "tax-form": "Walkthroughs and checklists for the Revenue forms you actually file.",
-  "vat-form": "VAT registration and the returns cycle, for Ireland and the UK.",
-  guide: "Step-by-step playbooks for setting up, running and closing a company.",
-  other: "Everything else worth having to hand.",
-};
+import { useT } from "./locale-link";
+import { toolkitMessages, type ToolkitMessages } from "../lib/messages/toolkits";
 
 /* ---------- tab visuals (mirrors calculator-tabs.tsx exactly) ---------- */
 
@@ -90,32 +73,33 @@ function Badge({ tone, children }: { tone: "framework" | "format"; children: Rea
 
 /* ---------- catalogue list ---------- */
 
-function StarterRow({ resource }: { resource: StarterResource }) {
+function StarterRow({ resource, t }: { resource: StarterResource; t: ToolkitMessages }) {
+  const text = t.resources[resource.title] ?? resource;
   return (
     <li className="flex items-center justify-between gap-4 px-4 py-3.5">
       <div className="min-w-0">
         <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-          <p className="text-sm font-medium text-ink">{resource.title}</p>
+          <p className="text-sm font-medium text-ink">{text.title}</p>
           {resource.framework && <Badge tone="framework">{resource.framework}</Badge>}
           <Badge tone="format">{resource.format}</Badge>
         </div>
-        <p className="mt-1 text-xs leading-5 text-muted">{resource.description}</p>
+        <p className="mt-1 text-xs leading-5 text-muted">{text.description}</p>
       </div>
       <Link
         href={`/toolkits/request/${toolkitSlug(resource.title)}`}
         className={`${ctaLink} shrink-0`}
       >
-        Request a copy <span aria-hidden="true">→</span>
+        {t.browser.request} <span aria-hidden="true">→</span>
       </Link>
     </li>
   );
 }
 
-function StarterList({ items }: { items: StarterResource[] }) {
+function StarterList({ items, t }: { items: StarterResource[]; t: ToolkitMessages }) {
   return (
     <ul className="divide-y divide-line rounded-none border border-line bg-surface-muted/40">
       {items.map((resource) => (
-        <StarterRow key={resource.title} resource={resource} />
+        <StarterRow key={resource.title} resource={resource} t={t} />
       ))}
     </ul>
   );
@@ -124,6 +108,7 @@ function StarterList({ items }: { items: StarterResource[] }) {
 /* ---------- browser ---------- */
 
 export function ToolkitBrowser() {
+  const t = useT(toolkitMessages);
   /* Only show a tab that has something behind it. */
   const categories = TOOLKIT_CATEGORIES.filter((c) =>
     STARTER_RESOURCES.some((r) => r.category === c.value),
@@ -136,9 +121,9 @@ export function ToolkitBrowser() {
 
   return (
     <div>
-      <nav aria-label="Resource categories" className="mb-8">
+      <nav aria-label={t.browser.nav} className="mb-8">
         <p className="mb-3 text-xs font-semibold uppercase tracking-[0.16em] text-muted">
-          Founder resources
+          {t.browser.heading}
         </p>
         <div role="tablist" className="flex flex-wrap gap-x-3 gap-y-2">
           {categories.map((category) => {
@@ -152,23 +137,21 @@ export function ToolkitBrowser() {
                 onClick={() => setActive(category.value)}
                 className="group relative inline-block cursor-pointer outline-none"
               >
-                <TabInner label={TAB_LABELS[category.value]} active={isActive} />
+                <TabInner label={t.browser.tabs[category.value]} active={isActive} />
               </button>
             );
           })}
         </div>
       </nav>
 
-      <p className="text-sm leading-6 text-muted">{CATEGORY_INTROS[active]}</p>
+      <p className="text-sm leading-6 text-muted">{t.browser.intros[active]}</p>
 
       {items.length > 0 && (
         <section className="mt-8">
           <p className="mb-4 text-sm leading-6 text-muted">
-            Nothing to download here: tell us which one you need and we email it
-            to you, free, so you get the current version and can ask us about
-            it.
+            {t.browser.nothingToDownload}
           </p>
-          <StarterList items={items} />
+          <StarterList items={items} t={t} />
         </section>
       )}
     </div>

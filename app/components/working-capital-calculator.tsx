@@ -10,31 +10,25 @@ import {
   computeWorkingCapital,
   type WorkingCapitalResult,
 } from "../lib/working-capital";
-import { CurrencyField, LegendDot, ProportionBar } from "./calculator-fields";
-
-const money = (n: number) =>
-  new Intl.NumberFormat("en-IE", {
-    style: "currency",
-    currency: "EUR",
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(n);
-
-const ratio = (n: number) => `${n.toFixed(2)}×`;
+import { CurrencyField, LegendDot, ProportionBar, useFormat } from "./calculator-fields";
+import { useT } from "./locale-link";
+import { numberFormat } from "../lib/i18n";
+import { caMessages, type CaMessages } from "../lib/messages/ca";
 
 /* Rule-of-thumb reading of a ratio — deliberately hedged. */
-function currentRatioBand(r: number | null): string {
-  if (r === null) return "No current liabilities to cover.";
-  if (r < 1) return "Under 1: current liabilities exceed current assets.";
-  if (r < 1.5) return "1–1.5: adequate, but tight.";
-  if (r <= 3) return "1.5–3: generally considered healthy.";
-  return "Over 3: comfortable, but may signal idle cash or stock.";
+type Bands = CaMessages["wc"]["bands"];
+function currentRatioBand(r: number | null, b: Bands): string {
+  if (r === null) return b.none;
+  if (r < 1) return b.currentUnder1;
+  if (r < 1.5) return b.current1to15;
+  if (r <= 3) return b.current15to3;
+  return b.currentOver3;
 }
 
-function quickRatioBand(r: number | null): string {
-  if (r === null) return "No current liabilities to cover.";
-  if (r < 1) return "Under 1: can't cover liabilities without selling stock.";
-  return "1 or above: liabilities covered from liquid assets alone.";
+function quickRatioBand(r: number | null, b: Bands): string {
+  if (r === null) return b.none;
+  if (r < 1) return b.quickUnder1;
+  return b.quickOk;
 }
 
 function RatioCard({
@@ -65,27 +59,27 @@ function RatioCard({
 }
 
 function ResultCard({ r }: { r: WorkingCapitalResult }) {
+  const t = useT(caMessages).wc;
+  const { money } = useFormat();
+  const copy = t.verdict[r.direction];
   const view = {
-    surplus: {
-      tag: { text: "Surplus", cls: "bg-primary-500 text-white" },
-      sub: "current assets exceed current liabilities: short-term obligations are covered.",
+    sub: copy.sub,
+    tag: {
+      text: copy.tag,
+      cls: {
+        surplus: "bg-primary-500 text-white",
+        deficit: "bg-navy-900 text-white",
+        balanced: "border border-line bg-surface-muted text-muted",
+      }[r.direction],
     },
-    deficit: {
-      tag: { text: "Deficit", cls: "bg-navy-900 text-white" },
-      sub: "current liabilities exceed current assets: a short-term funding gap.",
-    },
-    balanced: {
-      tag: { text: "Balanced", cls: "border border-line bg-surface-muted text-muted" },
-      sub: "current assets exactly match current liabilities.",
-    },
-  }[r.direction];
+  };
 
   return (
     <div className="border border-line bg-surface">
       <div className="border-b border-line px-5 py-5 sm:px-6">
         <div className="flex items-baseline justify-between gap-4">
           <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted">
-            Working capital
+            {t.heading}
           </p>
           <span
             className={`rounded-none px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide ${view.tag.cls}`}
@@ -101,12 +95,12 @@ function ResultCard({ r }: { r: WorkingCapitalResult }) {
           <ProportionBar
             segments={[
               {
-                label: `Current assets ${money(r.currentAssets)}`,
+                label: t.barAssets.replace("{amount}", money(r.currentAssets)),
                 value: r.currentAssets,
                 className: "bg-primary-500",
               },
               {
-                label: `Current liabilities ${money(r.currentLiabilities)}`,
+                label: t.barLiabilities.replace("{amount}", money(r.currentLiabilities)),
                 value: r.currentLiabilities,
                 className: "bg-navy-900",
               },
@@ -118,7 +112,7 @@ function ResultCard({ r }: { r: WorkingCapitalResult }) {
         <div className="flex items-baseline justify-between gap-4 px-5 py-3.5 sm:px-6">
           <div className="flex items-baseline gap-2.5">
             <LegendDot className="bg-primary-500" />
-            <span className="text-sm text-ink-body">Current assets</span>
+            <span className="text-sm text-ink-body">{t.assets}</span>
           </div>
           <span className="text-sm font-medium text-ink tabular-nums">
             {money(r.currentAssets)}
@@ -127,7 +121,7 @@ function ResultCard({ r }: { r: WorkingCapitalResult }) {
         <div className="flex items-baseline justify-between gap-4 px-5 py-3.5 sm:px-6">
           <div className="flex items-baseline gap-2.5">
             <LegendDot className="bg-navy-900" />
-            <span className="text-sm text-ink-body">Current liabilities</span>
+            <span className="text-sm text-ink-body">{t.liabilities}</span>
           </div>
           <span className="text-sm font-medium text-ink tabular-nums">
             {money(r.currentLiabilities)}
@@ -135,7 +129,7 @@ function ResultCard({ r }: { r: WorkingCapitalResult }) {
         </div>
         <div className="flex items-baseline justify-between gap-4 bg-surface-muted px-5 py-3.5 sm:px-6">
           <span className="text-sm font-semibold text-ink">
-            Working capital (assets − liabilities)
+            {t.total}
           </span>
           <span className="font-display text-sm font-semibold text-ink tabular-nums">
             {money(r.workingCapital)}
@@ -147,6 +141,11 @@ function ResultCard({ r }: { r: WorkingCapitalResult }) {
 }
 
 export function WorkingCapitalCalculator() {
+  const t = useT(caMessages).wc;
+  const { locale } = useFormat();
+  // "1.50×" / "1,50×": two decimals in the page's language.
+  const two = numberFormat(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2, useGrouping: false });
+  const ratio = (n: number) => `${two.format(n)}×`;
   const [currentAssets, setCurrentAssets] = useState(0);
   const [currentLiabilities, setCurrentLiabilities] = useState(0);
   const [inventory, setInventory] = useState(0);
@@ -161,39 +160,34 @@ export function WorkingCapitalCalculator() {
       {/* inputs */}
       <div className="flex flex-col gap-5">
         <div className="border-l-[3px] border-primary-500 bg-surface-muted px-4 py-3 text-xs leading-5 text-ink-body">
-          <span className="font-semibold text-ink">Liquidity, not tax.</span> Working
-          capital is what&rsquo;s left of your short-term assets after short-term
-          debts: the buffer that funds day-to-day trading. Enter the balance-sheet
-          figures and the ratios are worked out for you.
+          <span className="font-semibold text-ink">{t.introTitle}</span> {t.introBody}
         </div>
 
         <CurrencyField
-          label="Current assets"
+          label={t.assets}
           value={currentAssets}
           onChange={setCurrentAssets}
-          hint="Cash, trade receivables (debtors), stock and other assets due within 12 months."
+          hint={t.assetsHint}
         />
         <CurrencyField
-          label="Current liabilities"
+          label={t.liabilities}
           value={currentLiabilities}
           onChange={setCurrentLiabilities}
-          hint="Trade payables (creditors), tax, overdraft and other debts due within 12 months."
+          hint={t.liabilitiesHint}
         />
         <CurrencyField
-          label="Inventory / stock (optional)"
+          label={t.inventory}
           value={inventory}
           onChange={setInventory}
-          hint="Part of current assets. Entering it gives the quick (acid-test) ratio, which strips out stock."
+          hint={t.inventoryHint}
         />
 
         <div className="mt-auto border border-line bg-surface p-4">
           <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted">
-            A snapshot, not the whole story
+            {t.snapshotTitle}
           </p>
           <p className="mt-2 text-xs leading-5 text-muted">
-            Working capital is a point-in-time figure. Read it alongside cash flow,
-            seasonality and the cash-conversion cycle: what&rsquo;s &ldquo;healthy&rdquo;
-            varies a lot by industry.
+            {t.snapshotBody}
           </p>
         </div>
       </div>
@@ -203,22 +197,20 @@ export function WorkingCapitalCalculator() {
         <ResultCard r={r} />
         <div className="grid gap-5 sm:grid-cols-2">
           <RatioCard
-            title="Current ratio"
+            title={t.currentRatio}
             value={r.currentRatio === null ? "—" : ratio(r.currentRatio)}
-            formula="assets ÷ liabilities"
-            reading={currentRatioBand(r.currentRatio)}
+            formula={t.currentFormula}
+            reading={currentRatioBand(r.currentRatio, t.bands)}
           />
           <RatioCard
-            title="Quick ratio"
+            title={t.quickRatio}
             value={r.quickRatio === null ? "—" : ratio(r.quickRatio)}
-            formula="(assets − stock) ÷ liabilities"
-            reading={quickRatioBand(r.quickRatio)}
+            formula={t.quickFormula}
+            reading={quickRatioBand(r.quickRatio, t.bands)}
           />
         </div>
         <p className="border-t border-line pt-6 text-xs leading-5 text-muted">
-          Indicative only, not financial advice. Ratio &ldquo;health&rdquo; is a rule
-          of thumb that varies by industry and season: read these figures alongside
-          cash flow and your specific circumstances.
+          {t.disclaimer}
         </p>
       </div>
     </div>

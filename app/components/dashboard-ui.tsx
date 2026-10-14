@@ -1,9 +1,11 @@
 import type { ReactNode } from "react";
-import Link from "next/link";
+import Link from "./locale-link";
 import { signOutAction } from "../auth/actions";
 import { LogoutButton } from "./logout-button";
 import { Icon } from "./dashboard-icons";
 import { DashNav, type DashNavItem } from "./dashboard-nav";
+import { portalMessages, type PortalMessages } from "../lib/messages/portal";
+import { INTL_LOCALE, type Locale } from "../lib/i18n";
 
 /** First letters of up to two words — "Jane Doe" → "JD", "jane@x.com" → "J". */
 export function initialsOf(name: string | null | undefined, email: string) {
@@ -32,19 +34,20 @@ export function Avatar({
   );
 }
 
-const relDateFmt = new Intl.DateTimeFormat("en-GB", {
-  day: "2-digit",
-  month: "short",
-});
 
 /** "just now", "4m ago", "3h ago", "2d ago", then "12 Mar". */
-export function timeAgo(d: Date) {
+export function timeAgo(d: Date, locale: Locale = "en") {
+  const t = portalMessages[locale].timeAgo;
+  const n = (v: number) => String(Math.floor(v));
   const s = Math.floor((Date.now() - d.getTime()) / 1000);
-  if (s < 60) return "just now";
-  if (s < 3600) return `${Math.floor(s / 60)}m ago`;
-  if (s < 86400) return `${Math.floor(s / 3600)}h ago`;
-  if (s < 7 * 86400) return `${Math.floor(s / 86400)}d ago`;
-  return relDateFmt.format(d);
+  if (s < 60) return t.justNow;
+  if (s < 3600) return t.minutes.replace("{n}", n(s / 60));
+  if (s < 86400) return t.hours.replace("{n}", n(s / 3600));
+  if (s < 7 * 86400) return t.days.replace("{n}", n(s / 86400));
+  return new Intl.DateTimeFormat(locale === "en" ? "en-GB" : INTL_LOCALE[locale], {
+    day: "2-digit",
+    month: "short",
+  }).format(d);
 }
 
 const badgeTones = {
@@ -64,6 +67,7 @@ export function DashboardShell({
   navItems,
   dueHrefs,
   user,
+  labels = portalMessages.en.shell,
   children,
 }: {
   /** Topbar heading, e.g. "Admin console". */
@@ -75,10 +79,13 @@ export function DashboardShell({
   /** Nav hrefs flagged with a "review due" dot. */
   dueHrefs?: string[];
   user: { email: string; name?: string | null };
+  /** In the page's language; /portal passes them, /admin keeps English. */
+  labels?: PortalMessages["shell"];
   children: ReactNode;
 }) {
   const initials = initialsOf(user.name, user.email);
-  const badgeLabel = badge === "admin" ? "Admin" : "Member";
+  const t = labels;
+  const badgeLabel = badge === "admin" ? t.admin : t.member;
 
   return (
     <div className="flex min-h-screen bg-surface-muted">
@@ -93,7 +100,7 @@ export function DashboardShell({
           </span>
           <span className="flex flex-col leading-tight">
             <span className="font-display text-base font-semibold tracking-tight">
-              Ireland Fintax
+              Irish Fintax
             </span>
             <span className="text-[11px] font-medium uppercase tracking-[0.16em] text-white/40">
               {title}
@@ -122,7 +129,7 @@ export function DashboardShell({
             className="flex items-center gap-2 rounded-none px-3 py-2 text-sm text-white/55 transition-colors duration-200 hover:bg-white/5 hover:text-white"
           >
             <Icon name="arrowLeft" className="h-4 w-4" />
-            Back to site
+            {t.backToSite}
           </Link>
         </div>
       </aside>

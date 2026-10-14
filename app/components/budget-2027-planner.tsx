@@ -13,7 +13,7 @@
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import dynamic from "next/dynamic";
-import Link from "next/link";
+import Link from "./locale-link";
 import {
   EMPTY_PROFILE,
   YEARS,
@@ -26,24 +26,53 @@ import {
 } from "../lib/budget-2027";
 import type { YearRates } from "../lib/ireland-income-tax";
 import { CheckIcon, Chevron, GroupRow } from "./ui";
-import { btnOutline, btnPrimary, CurrencyField, NumericField } from "./calculator-fields";
+import { btnOutline, btnPrimary, CurrencyField, NumericField, useFormat } from "./calculator-fields";
+import { useT } from "./locale-link";
+import { budgetMessages, type BudgetMessages } from "../lib/messages/budget";
+import { budgetWords } from "../lib/budget-2027-words";
+import { numberFormat } from "../lib/i18n";
 
 /* Only needed once someone opens the full breakdown, so it is not in the
    page's first download. */
 const IrelandIncomeTaxCalculator = dynamic(
   () => import("./ireland-income-tax-calculator").then((m) => m.IrelandIncomeTaxCalculator),
-  { ssr: false, loading: () => <p className="text-sm text-muted">Loading the breakdown…</p> },
+  { ssr: false, loading: () => <BreakdownLoading /> },
 );
 
-/* ---------- formatting and styles ---------- */
+function BreakdownLoading() {
+  return <p className="text-sm text-muted">{useT(budgetMessages).planner.loading}</p>;
+}
 
-const SIGNED = new Intl.NumberFormat("en-IE", {
-  style: "currency",
-  currency: "EUR",
-  maximumFractionDigits: 0,
-  signDisplay: "exceptZero",
-});
-const signed = (n: number) => SIGNED.format(Math.round(n));
+/* ---------- the page's language ---------- */
+
+/* Copy and numbers for the planner. `line` phrases a measure in this
+   language from the figures it carries (lib/budget-2027-words.ts). */
+function useBudget() {
+  const t = useT(budgetMessages);
+  const { locale, eur0, money } = useFormat();
+  const signedFmt = numberFormat(locale, {
+    style: "currency",
+    currency: "EUR",
+    maximumFractionDigits: 0,
+    signDisplay: "exceptZero",
+  });
+  const fmt = {
+    eur: (n: number) => eur0(Math.round(n)),
+    eur2: money,
+    num: (n: number) => numberFormat(locale).format(n),
+    pct: (points: number) => numberFormat(locale, { style: "percent", maximumFractionDigits: 2 }).format(points / 100),
+  };
+  const m = (l: PersonalLine) => t.measures[l.id];
+  return {
+    t,
+    signed: (n: number) => signedFmt.format(Math.round(n)),
+    words: (l: PersonalLine) => budgetWords(l, t, fmt),
+    title: (l: { id: string; title: string }) => t.measures[l.id]?.title ?? l.title,
+    starts: (l: PersonalLine) => m(l)?.starts ?? l.starts.label,
+  };
+}
+
+/* ---------- formatting and styles ---------- */
 
 const textBtn =
   "cursor-pointer text-sm font-semibold text-primary-600 underline decoration-primary-300 underline-offset-4 transition-colors duration-200 hover:text-primary-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500";
@@ -55,6 +84,7 @@ type BoolKey = {
   [K in keyof BudgetProfile]: BudgetProfile[K] extends boolean ? K : never;
 }[keyof BudgetProfile];
 
+/* Labels: budgetMessages.planner.situationGroups / situations, by key. */
 const SITUATIONS: { group: string; items: { key: BoolKey; label: string }[] }[] = [
   {
     group: "Work",
@@ -146,44 +176,45 @@ function Tick({ on }: { on: boolean }) {
 
 type Field = { key: keyof BudgetProfile; label: string; euro?: boolean; hint?: string };
 
-function figuresFor(p: BudgetProfile): { group: string; fields: Field[] }[] {
-  const optional = "Optional.";
+function figuresFor(p: BudgetProfile, t: BudgetMessages["planner"]): { group: string; fields: Field[] }[] {
+  const optional = t.optional;
+  const L = t.fields;
   const income: Field[] = [];
   if (p.employee || p.minimumWage)
-    income.push({ key: "employmentIncome", label: "Your pay before tax, per year", euro: true, hint: `Your ${YEARS.before} pay.` });
-  if (p.selfEmployed) income.push({ key: "selfEmploymentIncome", label: "Your self-employed profit, per year", euro: true });
-  if (p.minimumWage) income.push({ key: "minimumWageHours", label: "Hours you work a week" });
+    income.push({ key: "employmentIncome", label: L.employmentIncome, euro: true, hint: L.employmentIncomeHint.replace("{year}", String(YEARS.before)) });
+  if (p.selfEmployed) income.push({ key: "selfEmploymentIncome", label: L.selfEmploymentIncome, euro: true });
+  if (p.minimumWage) income.push({ key: "minimumWageHours", label: L.minimumWageHours });
   if (p.married)
-    income.push({ key: "spouseIncome", label: "Your spouse or partner’s pay, per year", euro: true, hint: "Leave at 0 if they have no income." });
+    income.push({ key: "spouseIncome", label: L.spouseIncome, euro: true, hint: L.spouseIncomeHint });
 
   const home: Field[] = [];
-  if (p.renting) home.push({ key: "rentMonthly", label: "Rent you pay, per month", euro: true, hint: "Your share, if you split it." });
+  if (p.renting) home.push({ key: "rentMonthly", label: L.rentMonthly, euro: true, hint: L.rentMonthlyHint });
   if (p.buyingFirstHome) {
-    home.push({ key: "homePrice", label: "Price of the new home", euro: true });
+    home.push({ key: "homePrice", label: L.homePrice, euro: true });
     home.push({
       key: "taxPaidFourYears",
-      label: "Income tax and DIRT you paid in the last four years",
+      label: L.taxPaidFourYears,
       euro: true,
-      hint: "Optional. Help to Buy cannot be more than this; Revenue’s myAccount shows it.",
+      hint: L.taxPaidFourYearsHint,
     });
   }
 
   const family: Field[] = [];
   if (p.hasChildren) {
-    family.push({ key: "childrenUnder12", label: "Children under 12" });
-    family.push({ key: "children12Plus", label: "Children aged 12 or over" });
+    family.push({ key: "childrenUnder12", label: L.childrenUnder12 });
+    family.push({ key: "children12Plus", label: L.children12Plus });
   }
-  if (p.childcare) family.push({ key: "childcareHours", label: "Childcare hours a week", hint: optional });
-  if (p.college) family.push({ key: "studentsInCollege", label: "How many are in college" });
+  if (p.childcare) family.push({ key: "childcareHours", label: L.childcareHours, hint: optional });
+  if (p.college) family.push({ key: "studentsInCollege", label: L.studentsInCollege });
 
   const spending: Field[] = [];
-  if (p.petrol) spending.push({ key: "petrolLitresPerWeek", label: "Litres of petrol a week", hint: optional });
-  if (p.diesel) spending.push({ key: "dieselLitresPerWeek", label: "Litres of diesel a week", hint: optional });
+  if (p.petrol) spending.push({ key: "petrolLitresPerWeek", label: L.petrolLitresPerWeek, hint: optional });
+  if (p.diesel) spending.push({ key: "dieselLitresPerWeek", label: L.dieselLitresPerWeek, hint: optional });
   if (p.heatingOil)
-    spending.push({ key: "heatingOilLitresPerYear", label: "Litres of heating oil a year", hint: "Optional. Your oil delivery receipts show it." });
+    spending.push({ key: "heatingOilLitresPerYear", label: L.heatingOilLitresPerYear, hint: L.heatingOilLitresPerYearHint });
   if (p.gas)
-    spending.push({ key: "gasKwhPerYear", label: "Gas used a year, in kWh", hint: "Optional. It’s on your bill; the Budget takes 11,000 as a typical home." });
-  if (p.smoker) spending.push({ key: "packsPerWeek", label: "Packs of 20 a week", hint: optional });
+    spending.push({ key: "gasKwhPerYear", label: L.gasKwhPerYear, hint: L.gasKwhPerYearHint });
+  if (p.smoker) spending.push({ key: "packsPerWeek", label: L.packsPerWeek, hint: optional });
 
   return [
     { group: "Income", fields: income },
@@ -197,14 +228,15 @@ function figuresFor(p: BudgetProfile): { group: string; fields: Field[] }[] {
 
 /* Why, from when, status, source: shown only when a line is opened. */
 function LineFacts({ line }: { line: PersonalLine }) {
+  const { t, starts } = useBudget();
   const dt = "font-semibold text-ink-body";
   return (
     <dl className="mt-3 grid gap-x-6 gap-y-1.5 text-xs leading-5 text-muted sm:grid-cols-[auto_1fr]">
-      <dt className={dt}>Starts</dt>
-      <dd>{line.starts.label}</dd>
-      <dt className={dt}>Status</dt>
-      <dd>{line.statusLabel}</dd>
-      <dt className={dt}>Source</dt>
+      <dt className={dt}>{t.planner.starts}</dt>
+      <dd>{starts(line)}</dd>
+      <dt className={dt}>{t.planner.status}</dt>
+      <dd>{t.statuses[line.status] ?? line.statusLabel}</dd>
+      <dt className={dt}>{t.planner.source}</dt>
       <dd>
         <a
           href={line.source.url}
@@ -217,10 +249,10 @@ function LineFacts({ line }: { line: PersonalLine }) {
       </dd>
       {line.calculator && (
         <>
-          <dt className={dt}>Work it out</dt>
+          <dt className={dt}>{t.planner.workItOut}</dt>
           <dd>
             <Link href={line.calculator.href} className="font-semibold text-primary-600 underline-offset-2 hover:underline">
-              {line.calculator.label}
+              {t.calculators[line.calculator.label] ?? line.calculator.label}
             </Link>
           </dd>
         </>
@@ -247,14 +279,15 @@ function LineDetails({ line, summary, body }: { line: PersonalLine; summary: Rea
 }
 
 function StatementLine({ line }: { line: ExactLine }) {
+  const { signed, words, title } = useBudget();
   const amount = line.impact.amount;
   return (
     <LineDetails
       line={line}
-      body={line.impact.detail}
+      body={words(line).body}
       summary={
         <>
-          <span className="text-[15px] font-medium text-ink">{line.title}</span>
+          <span className="text-[15px] font-medium text-ink">{title(line)}</span>
           <span aria-hidden="true" className={leader} />
           <span
             className={`font-display text-lg font-semibold tabular-nums ${
@@ -270,6 +303,7 @@ function StatementLine({ line }: { line: ExactLine }) {
 }
 
 function TotalLine({ label, amount }: { label: string; amount: number }) {
+  const { signed } = useBudget();
   return (
     <div className="flex items-baseline justify-between gap-4 border-t-[3px] border-double border-ink py-4">
       <span className="text-[15px] font-semibold text-ink">{label}</span>
@@ -292,19 +326,21 @@ function Ledger({ lines, total, label }: { lines: ExactLine[]; total: number; la
 /* Lines without a sum: usage-based and good-to-know. Phones put a per-unit
    change under the title; wider screens lead to it on the right. */
 function NoteList({ lines }: { lines: PersonalLine[] }) {
+  const { words, title } = useBudget();
   return (
     <div className="border-t border-ink">
       {lines.map((line) => {
         const unit = line.impact.kind === "perUnit" ? line.impact : null;
+        const said = words(line);
         return (
           <LineDetails
             key={line.id}
             line={line}
-            body={line.impact.kind === "exact" ? line.impact.detail : line.impact.text}
+            body={said.body}
             summary={
               <span className="min-w-0 flex-1">
                 <span className="flex flex-col gap-0.5 sm:flex-row sm:items-baseline sm:gap-3">
-                  <span className="text-[15px] font-medium text-ink">{line.title}</span>
+                  <span className="text-[15px] font-medium text-ink">{title(line)}</span>
                   {unit && (
                     <>
                       <span aria-hidden="true" className={`hidden sm:block ${leader}`} />
@@ -313,12 +349,12 @@ function NoteList({ lines }: { lines: PersonalLine[] }) {
                           unit.cheaper ? "text-primary-600" : "text-ink-body"
                         }`}
                       >
-                        {unit.change}
+                        {said.change}
                       </span>
                     </>
                   )}
                 </span>
-                {unit?.estimate && <span className="mt-1 block text-sm text-muted">{unit.estimate}</span>}
+                {said.estimate && <span className="mt-1 block text-sm text-muted">{said.estimate}</span>}
               </span>
             }
           />
@@ -352,13 +388,14 @@ function Statement({
   ratesByYear: Record<number, YearRates>;
 }) {
   const [showBreakdown, setShowBreakdown] = useState(false);
+  const { t: all, title } = useBudget();
+  const t = all.planner;
   const hasTax = result.yearly.some((l) => l.id === "income-tax");
 
   if (result.exact.length + result.perUnit.length + result.info.length === 0) {
     return (
       <p className="max-w-xl text-base leading-7 text-ink-body">
-        Nothing you picked is changed by Budget 2027. Go back and add more, or read the full list
-        further down this page.
+        {t.nothing}
       </p>
     );
   }
@@ -368,13 +405,13 @@ function Statement({
       {result.exact.length > 0 && (
         <Section
           id="statement-money"
-          title={`Your money, ${YEARS.after} against ${YEARS.before}`}
-          note="Worked out from the published rules and your figures. Open a line to see why."
+          title={t.moneyTitle.replace("{after}", String(YEARS.after)).replace("{before}", String(YEARS.before))}
+          note={t.moneyNote}
         >
-          {result.yearly.length > 0 && <Ledger lines={result.yearly} total={result.totalPerYear} label="Each year" />}
+          {result.yearly.length > 0 && <Ledger lines={result.yearly} total={result.totalPerYear} label={t.eachYear} />}
           {result.once.length > 0 && (
             <div className={result.yearly.length > 0 ? "mt-8" : ""}>
-              <Ledger lines={result.once} total={result.totalOnce} label="One-off" />
+              <Ledger lines={result.once} total={result.totalOnce} label={t.oneOff} />
             </div>
           )}
 
@@ -386,7 +423,7 @@ function Statement({
                 aria-expanded={showBreakdown}
                 onClick={() => setShowBreakdown((v) => !v)}
               >
-                {showBreakdown ? "Hide the full income tax breakdown" : "Show the full income tax breakdown"}
+                {showBreakdown ? t.hideBreakdown : t.showBreakdown}
               </button>
               {showBreakdown && (
                 <div className="mt-6 border border-line bg-white p-5 sm:p-8">
@@ -406,25 +443,29 @@ function Statement({
       {result.perUnit.length > 0 && (
         <Section
           id="statement-usage"
-          title="Depends on how much you use"
-          note="The official change per litre, pack or hour. Not added to your totals."
+          title={t.usageTitle}
+          note={t.usageNote}
         >
           <NoteList lines={result.perUnit} />
         </Section>
       )}
 
       {result.info.length > 0 && (
-        <Section id="statement-info" title="Good to know" note="Nothing changes for you until you act on these.">
+        <Section id="statement-info" title={t.infoTitle} note={t.infoNote}>
           <NoteList lines={result.info} />
         </Section>
       )}
 
-      <Section id="statement-dates" title="Your dates" note="When each of your changes starts.">
+      <Section id="statement-dates" title={t.datesTitle} note={t.datesNote}>
         <ol className="grid gap-px border border-line bg-line sm:grid-cols-2 lg:grid-cols-3">
-          {result.timeline.map((t) => (
-            <li key={t.title} className="bg-white p-4">
-              <p className="font-display text-base font-semibold text-ink">{t.starts.label}</p>
-              <p className="mt-1 text-sm leading-6 text-ink-body">{t.title}</p>
+          {result.timeline.map((item) => (
+            <li key={item.title} className="bg-white p-4">
+              <p className="font-display text-base font-semibold text-ink">
+                {all.measures[idByTitle(result, item.title)]?.starts ?? item.starts.label}
+              </p>
+              <p className="mt-1 text-sm leading-6 text-ink-body">
+                {title({ id: idByTitle(result, item.title), title: item.title })}
+              </p>
             </li>
           ))}
         </ol>
@@ -433,15 +474,17 @@ function Statement({
   );
 }
 
+/* The timeline carries titles, not ids; find the line each came from. */
+function idByTitle(result: PersonalBudget, title: string): string {
+  return [...result.exact, ...result.perUnit, ...result.info].find((l) => l.title === title)?.id ?? "";
+}
+
 /* ---------- the planner ---------- */
 
-const STEPS = [
-  { label: "Your situation", title: "Which of these apply to you?", sub: "Pick as many as you like. You can change them later." },
-  { label: "Your figures", title: "A few figures", sub: "Only what’s needed to work out your amounts. Optional ones can stay at 0." },
-  { label: "Your Budget", title: "Your Budget 2027", sub: "Only the changes that touch what you picked." },
-] as const;
-
 export function Budget2027Planner({ ratesByYear }: { ratesByYear: Record<number, YearRates> }) {
+  const { t: all } = useBudget();
+  const t = all.planner;
+  const STEPS = t.steps;
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [profile, setProfile] = useState<BudgetProfile>(EMPTY_PROFILE);
   const headingRef = useRef<HTMLHeadingElement>(null);
@@ -459,7 +502,7 @@ export function Budget2027Planner({ ratesByYear }: { ratesByYear: Record<number,
 
   const toggle = (key: BoolKey) => setProfile((p) => ({ ...p, [key]: !p[key] }));
 
-  const figures = figuresFor(profile);
+  const figures = figuresFor(profile, t);
   const picked = SITUATIONS.reduce((n, g) => n + g.items.filter((i) => profile[i.key]).length, 0);
   const result = step === 3 ? personalise(profile, ratesByYear) : null;
   const heading = STEPS[step - 1];
@@ -510,7 +553,7 @@ export function Budget2027Planner({ ratesByYear }: { ratesByYear: Record<number,
         {step === 3 && (
           <div className="flex gap-6">
             <button type="button" className={textBtn} onClick={() => setStep(figures.length > 0 ? 2 : 1)}>
-              Edit answers
+              {t.edit}
             </button>
             <button
               type="button"
@@ -520,7 +563,7 @@ export function Budget2027Planner({ ratesByYear }: { ratesByYear: Record<number,
                 setStep(1);
               }}
             >
-              Start again
+              {t.startAgain}
             </button>
           </div>
         )}
@@ -529,8 +572,8 @@ export function Budget2027Planner({ ratesByYear }: { ratesByYear: Record<number,
       {step === 1 && (
         <div className="mt-8">
           {SITUATIONS.map((g) => (
-            <GroupRow key={g.group} title={g.group}>
-              <div role="group" aria-label={g.group} className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
+            <GroupRow key={g.group} title={t.situationGroups[g.group] ?? g.group}>
+              <div role="group" aria-label={t.situationGroups[g.group] ?? g.group} className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
                 {g.items.map((item) => {
                   const on = profile[item.key];
                   return (
@@ -546,7 +589,7 @@ export function Budget2027Planner({ ratesByYear }: { ratesByYear: Record<number,
                       }`}
                     >
                       <Tick on={on} />
-                      {item.label}
+                      {t.situations[item.key] ?? item.label}
                     </button>
                   );
                 })}
@@ -561,7 +604,7 @@ export function Budget2027Planner({ ratesByYear }: { ratesByYear: Record<number,
             className="sticky bottom-0 z-10 flex items-center justify-between gap-4 border-t border-line bg-white/95 py-4 backdrop-blur-sm"
           >
             <p className="text-sm text-muted" aria-live="polite">
-              {picked === 0 ? "Nothing picked yet." : `${picked} picked.`}
+              {picked === 0 ? t.nothingPicked : t.picked.replace("{n}", String(picked))}
             </p>
             <button
               type="button"
@@ -569,7 +612,7 @@ export function Budget2027Planner({ ratesByYear }: { ratesByYear: Record<number,
               disabled={picked === 0}
               onClick={() => setStep(figures.length > 0 ? 2 : 3)}
             >
-              Continue
+              {t.continue}
             </button>
           </div>
         </div>
@@ -584,7 +627,7 @@ export function Budget2027Planner({ ratesByYear }: { ratesByYear: Record<number,
           }}
         >
           {figures.map((g) => (
-            <GroupRow key={g.group} title={g.group}>
+            <GroupRow key={g.group} title={t.figureGroups[g.group] ?? g.group}>
               <div className="grid max-w-2xl gap-5 sm:grid-cols-2">
                 {g.fields.map((f) => {
                   const Field = f.euro ? CurrencyField : NumericField;
@@ -603,10 +646,10 @@ export function Budget2027Planner({ ratesByYear }: { ratesByYear: Record<number,
           ))}
           <div className="flex flex-wrap gap-3 border-t border-line pt-6">
             <button type="submit" className={btnPrimary}>
-              Show my Budget
+              {t.show}
             </button>
             <button type="button" className={btnOutline} onClick={() => setStep(1)}>
-              Back
+              {t.back}
             </button>
           </div>
         </form>
@@ -619,8 +662,7 @@ export function Budget2027Planner({ ratesByYear }: { ratesByYear: Record<number,
       )}
 
       <p className="mt-12 max-w-2xl text-xs leading-5 text-muted">
-        Worked out in your browser: nothing you enter is sent or stored. General information only,
-        not financial, tax or legal advice.
+        {t.footer}
       </p>
     </div>
   );

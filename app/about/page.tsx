@@ -1,75 +1,40 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import Link from "../components/locale-link";
 import { Container, PageHero, SectionHeading } from "../components/ui";
 import { ContactCta } from "../components/sections";
 import { Reveal } from "../components/reveal";
 import { ClipReveal } from "../components/clip-reveal";
 import { images } from "../lib/images";
+import { getT } from "../lib/messages";
+import { aboutMessages } from "../lib/messages/about";
 
-export const metadata: Metadata = {
-  title: "About",
-  description:
-    "Ireland Fintax is a free place to learn how Irish tax and personal finance work, with calculators, guides and templates in plain English.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  return (await getT(aboutMessages)).meta;
+}
 
 /* What is actually on the site, each pointing at it. No firm story, team or
-   credentials: this is a free learning platform. */
-const sections = [
-  {
-    title: "Tax Calculation Hub",
-    description:
-      "Calculators for income tax, VAT, corporation tax, the R&D credit, capital allowances, CGT and CAT, using Irish rates.",
-    href: "/tools/ireland-income-tax",
-  },
-  {
-    title: "Personal Finance Tools",
-    description:
-      "Work out a mortgage, and compare investment options side by side on risk, tax and access to your money.",
-    href: "/personal/mortgage",
-  },
-  {
-    title: "Accounts and Finance",
-    description:
-      "Memos, templates, tax and VAT forms and setup guides for starting and running a company.",
-    href: "/toolkits",
-  },
-  {
-    title: "Ask a question",
-    description:
-      "Stuck on something the tools don’t cover? Ask it in your own words and get a plain-English answer by email.",
-    href: "/contact",
-  },
-];
+   credentials: this is a free learning platform. Copy: aboutMessages.sections,
+   paired by index. */
+const sectionHrefs = ["/tools/ireland-income-tax", "/personal/mortgage", "/toolkits", "/contact"];
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  const t = await getT(aboutMessages);
   return (
     <>
       <PageHero
-        eyebrow="About"
-        title="Learn how the money side works."
-        lede="Ireland Fintax is a free learning platform for Irish tax and personal finance: plain-English explanations and calculators you can run yourself."
+        eyebrow={t.hero.eyebrow}
+        title={t.hero.title}
+        lede={t.hero.lede}
         image="office"
       />
 
       <Container className="grid gap-14 py-16 sm:py-20 lg:grid-cols-[1.1fr_0.9fr] lg:items-start">
         <Reveal>
-          <SectionHeading eyebrow="Why it exists" title="Tax shouldn’t need a translator." />
+          <SectionHeading eyebrow={t.whyEyebrow} title={t.whyTitle} />
           <div className="mt-6 flex flex-col gap-5 text-[15px] leading-7 text-ink-body">
-            <p>
-              Most people meet tax and money questions at the worst moment: a
-              first payslip, selling shares, buying a home, starting a company.
-              The rules are public, but they are written for specialists.
-            </p>
-            <p>
-              This site puts them in plain English and lets you try your own
-              numbers, so you understand what is going on before you decide
-              anything. Everything here is free.
-            </p>
-            <p>
-              It is general information, not advice. Rates and rules change and
-              your own situation matters, so check with Revenue or a qualified,
-              regulated adviser before acting on a big decision.
-            </p>
+            {t.body.map((para) => (
+              <p key={para}>{para}</p>
+            ))}
           </div>
         </Reveal>
 
@@ -78,10 +43,10 @@ export default function AboutPage() {
             url={images.teamLaptops}
             className="h-48 w-full rounded-none"
           />
-          {sections.map((section) => (
+          {t.sections.map((section, i) => (
             <Link
-              key={section.title}
-              href={section.href}
+              key={sectionHrefs[i]}
+              href={sectionHrefs[i]}
               className="group border-l-2 border-primary-400 bg-surface py-1 pl-5"
             >
               <h3 className="font-display text-lg font-medium tracking-tight text-ink transition-colors duration-200 group-hover:text-primary-500">

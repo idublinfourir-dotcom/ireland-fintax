@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import Link from "../components/locale-link";
 import { useActionState, useState } from "react";
 import {
   requestResetCode,
@@ -9,6 +9,8 @@ import {
   type RequestCodeState,
 } from "./actions";
 import { PasswordInput } from "../components/password-input";
+import { useT } from "../components/locale-link";
+import { accountMessages } from "../lib/messages/account";
 
 /* Two SEPARATE <form>s posting to two SEPARATE actions, so rendering one at a
    time is correct here.
@@ -38,6 +40,7 @@ function Alert({ children }: { children: React.ReactNode }) {
 }
 
 export function ForgotPasswordForm() {
+  const t = useT(accountMessages);
   const [requestState, requestAction, requestPending] = useActionState(
     requestResetCode,
     requestInitial,
@@ -59,9 +62,16 @@ export function ForgotPasswordForm() {
         {/* Says only that we have finished, never whether an account was found.
             The wording has to hold for an address with no account at all. */}
         <p className="rounded-none border border-primary-300 bg-primary-50 px-4 py-3 text-sm text-primary-600">
-          If <span className="font-medium">{requestState.email}</span> has an
-          account with us, a reset code is on its way. Enter it below to set a
-          new password.
+          {t.forgot.sentIf.split("{email}").map((part, i) =>
+            i === 0 ? (
+              part
+            ) : (
+              <span key={i}>
+                <span className="font-medium">{requestState.email}</span>
+                {part}
+              </span>
+            ),
+          )}
         </p>
 
         {completeState.error && <Alert>{completeState.error}</Alert>}
@@ -71,7 +81,7 @@ export function ForgotPasswordForm() {
 
           <div>
             <label htmlFor="code" className="mb-1.5 block text-sm font-medium text-ink">
-              Reset code
+              {t.forgot.code}
             </label>
             <input
               id="code"
@@ -87,11 +97,10 @@ export function ForgotPasswordForm() {
               /* No digit count, here or in the label: the length is one
                  constant in lib/auth/reset-tokens.ts and copy that counts the
                  digits would be a lie the moment it moved. */
-              placeholder="Code from your email"
+              placeholder={t.forgot.codePlaceholder}
             />
             <p className="mt-1.5 text-xs text-muted">
-              It expires in 15 minutes and can be used once. Check your spam
-              folder if it hasn&rsquo;t arrived.
+              {t.forgot.codeHint}
             </p>
           </div>
 
@@ -100,7 +109,7 @@ export function ForgotPasswordForm() {
               htmlFor="password"
               className="mb-1.5 block text-sm font-medium text-ink"
             >
-              New password
+              {t.forgot.newPassword}
             </label>
             <PasswordInput
               id="password"
@@ -108,7 +117,7 @@ export function ForgotPasswordForm() {
               autoComplete="new-password"
               minLength={8}
             />
-            <p className="mt-1.5 text-xs text-muted">At least 8 characters.</p>
+            <p className="mt-1.5 text-xs text-muted">{t.forgot.atLeast8}</p>
           </div>
 
           <div>
@@ -116,7 +125,7 @@ export function ForgotPasswordForm() {
               htmlFor="confirm"
               className="mb-1.5 block text-sm font-medium text-ink"
             >
-              Confirm new password
+              {t.forgot.confirmNew}
             </label>
             <PasswordInput
               id="confirm"
@@ -131,17 +140,17 @@ export function ForgotPasswordForm() {
             disabled={completePending}
             className="inline-flex h-12 cursor-pointer items-center justify-center gap-2 rounded-none bg-primary-500 px-7 text-sm font-semibold text-white transition-colors duration-200 hover:bg-primary-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500 disabled:cursor-default disabled:opacity-60"
           >
-            {completePending ? "Setting your password…" : "Set new password"}
+            {completePending ? t.forgot.setting : t.forgot.set}
           </button>
 
           <p className="text-sm text-muted">
-            Wrong address?{" "}
+            {t.forgot.wrongAddress}{" "}
             <button
               type="button"
               onClick={() => setRestarted(true)}
               className="cursor-pointer font-medium text-primary-500 underline-offset-2 transition-colors duration-200 hover:text-primary-600 hover:underline"
             >
-              Start again
+              {t.forgot.startAgain}
             </button>
           </p>
         </form>
@@ -161,7 +170,7 @@ export function ForgotPasswordForm() {
       >
         <div>
           <label htmlFor="email" className="mb-1.5 block text-sm font-medium text-ink">
-            Email
+            {t.email}
           </label>
           <input
             id="email"
@@ -171,10 +180,10 @@ export function ForgotPasswordForm() {
             required
             defaultValue={requestState.email ?? ""}
             className={inputClasses}
-            placeholder="jane@company.co"
+            placeholder={t.emailPlaceholder}
           />
           <p className="mt-1.5 text-xs text-muted">
-            We&rsquo;ll email you a code to set a new password.
+            {t.forgot.emailHint}
           </p>
         </div>
 
@@ -183,16 +192,16 @@ export function ForgotPasswordForm() {
           disabled={requestPending}
           className="inline-flex h-12 cursor-pointer items-center justify-center gap-2 rounded-none bg-primary-500 px-7 text-sm font-semibold text-white transition-colors duration-200 hover:bg-primary-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500 disabled:cursor-default disabled:opacity-60"
         >
-          {requestPending ? "Sending…" : "Send reset code"}
+          {requestPending ? t.forgot.sending : t.forgot.send}
         </button>
 
         <p className="text-sm text-muted">
-          Remembered it?{" "}
+          {t.forgot.remembered}{" "}
           <Link
             href="/login"
             className="font-medium text-primary-500 transition-colors duration-200 hover:text-primary-600"
           >
-            Back to sign in
+            {t.forgot.backToSignIn}
           </Link>
         </p>
       </form>

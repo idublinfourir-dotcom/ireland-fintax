@@ -56,7 +56,7 @@ test("the shell escapes the firm name and keeps the 600px table", () => {
 test("the shell carries no <style> block or class attribute", () => {
   // Gmail strips <style>, and a class with no stylesheet behind it is dead
   // weight. Everything has to be an inline style.
-  const html = emailShell({ firmName: "Ireland Fintax", bodyHtml: paragraph("hi") });
+  const html = emailShell({ firmName: "Irish Fintax", bodyHtml: paragraph("hi") });
   assert.doesNotMatch(html, /<style/i);
   assert.doesNotMatch(html, /class=/i);
 });

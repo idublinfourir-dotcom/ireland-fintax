@@ -7,7 +7,6 @@ import { allowPublicAction } from "../lib/rate-limit";
 import { hashPassword } from "../lib/auth/password";
 import { createVerificationToken } from "../lib/auth/tokens";
 import {
-  AUTH_NOT_CONFIGURED,
   isAuthConfigured,
   isGoogleEnabled,
   isSignupEmailConfigured,
@@ -26,6 +25,8 @@ import {
 } from "../lib/signup-existing-email";
 import { resolveEmailOrigin } from "../lib/site-origin";
 import { site } from "../lib/content";
+import { getT } from "../lib/messages";
+import { accountMessages } from "../lib/messages/account";
 
 export interface SignupState {
   error?: string;
@@ -119,18 +120,19 @@ export async function signup(
   _prev: SignupState,
   formData: FormData,
 ): Promise<SignupState> {
+  const t = (await getT(accountMessages)).errors;
   const fullName = String(formData.get("full_name") ?? "").trim();
   const email = String(formData.get("email") ?? "").trim();
   const password = String(formData.get("password") ?? "");
   const values = { email, fullName };
 
-  if (fullName.length < 2) return { error: "Please tell us your name.", values };
+  if (fullName.length < 2) return { error: t.tellName, values };
   if (!EMAIL_RE.test(email))
-    return { error: "Please enter a valid email address.", values };
+    return { error: t.emailInvalid, values };
   if (password.length < 8)
-    return { error: "Password must be at least 8 characters.", values };
+    return { error: t.passwordShort, values };
 
-  if (!isAuthConfigured()) return { error: AUTH_NOT_CONFIGURED, values };
+  if (!isAuthConfigured()) return { error: t.notConfigured, values };
 
   /* Refuse before writing anything. The confirmation link is the second half
      of this flow, not a nicety: without it the account is created, cannot be
@@ -140,8 +142,8 @@ export async function signup(
   if (!isSignupEmailConfigured()) {
     return {
       error: isGoogleEnabled()
-        ? "Email sign-up is unavailable right now — we can’t send the confirmation link. Use “Continue with Google” instead."
-        : "Sign-up is unavailable right now — we can’t send the confirmation link. Please contact us and we’ll set your account up.",
+        ? t.signupNoEmailGoogle
+        : t.signupNoEmail,
       values,
     };
   }
@@ -155,7 +157,7 @@ export async function signup(
   if (!allowed) {
     return {
       error:
-        "Too many account creation attempts. Please wait an hour and try again.",
+        t.tooManySignups,
       values,
     };
   }
@@ -244,7 +246,7 @@ export async function signup(
     }
     console.error("[signup] could not create the account:", err);
     return {
-      error: "Account creation is temporarily unavailable. Please try again.",
+      error: t.signupFailed,
       values,
     };
   }

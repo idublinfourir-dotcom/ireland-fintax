@@ -1,5 +1,5 @@
 export const site = {
-  name: "Ireland Fintax",
+  name: "Irish Fintax",
   // Canonical host. `www` is canonical: the apex 308-redirects to it in Vercel,
   // so this must carry the www prefix or every canonical URL and sitemap entry
   // points at a redirect. Drives metadataBase, sitemap.xml and robots.txt.

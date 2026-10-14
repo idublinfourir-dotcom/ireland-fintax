@@ -1,12 +1,15 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
+import { LocaleLink, useT } from "./locale-link";
+import { calcMessages } from "../lib/messages/calc";
 import { usePathname } from "next/navigation";
 import { CALCULATOR_TOOLS } from "./calculator-tabs";
 import { PERSONAL_TOOLS } from "./personal-tabs";
 import { BUDGETS, LATEST_BUDGET } from "../lib/budgets";
 import type { SessionUser } from "../lib/auth/guards";
+import { splitLocale, type Locale } from "../lib/i18n";
+import type { Messages } from "../lib/messages/en";
 
 /* Pricing is hidden site-wide while the fee model is being decided; restore
    { href: "/pricing", label: "Pricing" } here to bring it back.
@@ -16,20 +19,11 @@ import type { SessionUser } from "../lib/auth/guards";
    lib/budgets.ts): the "Ask a question" button beside the links, and at the
    foot of the mobile menu, already goes to /contact, so the link was a
    duplicate. */
-const secondaryLinks = [
-  { href: "/blog", label: "Blog" },
-  { href: "/about", label: "About" },
-];
+const secondaryHrefs = ["/blog", "/about"] as const;
 
-/* Founders Hub resource categories, shown in the nav dropdown. Each links to
-   the single /toolkits page (which carries its own category tabs). */
-const FOUNDER_RESOURCES = [
-  { label: "Memos", desc: "Technical notes on common questions" },
-  { label: "Templates", desc: "Statements, workings and checklists" },
-  { label: "Tax forms", desc: "Revenue form walkthroughs" },
-  { label: "VAT forms", desc: "Registration and the returns cycle" },
-  { label: "Setup guides", desc: "Starting and running a company" },
-] as const;
+/* Founders Hub resource categories (t.founderResources), shown in the nav
+   dropdown. Each links to the single /toolkits page (which carries its own
+   category tabs). */
 
 function isActive(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(`${href}/`);
@@ -83,12 +77,12 @@ function Avatar({ user, size = 36 }: { user: SessionUser; size?: number }) {
   );
 }
 
-function Logo({ onClick }: { onClick?: () => void }) {
+function Logo({ locale, onClick }: { locale: Locale; onClick?: () => void }) {
   return (
-    <Link href="/" className="flex items-center" onClick={onClick}>
+    <LocaleLink locale={locale} href="/" className="flex items-center" onClick={onClick}>
       <span className="flex flex-col leading-none">
         <span className="font-display text-lg font-semibold tracking-tight text-ink">
-          IRELAND
+          IRISH
         </span>
         {/* Back to the wider 0.16em: the descriptor is one short word now, so
             the nav row has the room the old four-word lockup did not. */}
@@ -96,11 +90,28 @@ function Logo({ onClick }: { onClick?: () => void }) {
           Fintax
         </span>
       </span>
-    </Link>
+    </LocaleLink>
   );
 }
 
-export function SiteHeader({ user }: { user: SessionUser | null }) {
+export function SiteHeader({
+  user,
+  locale,
+  t,
+}: {
+  user: SessionUser | null;
+  locale: Locale;
+  t: Messages["header"];
+}) {
+  // A menu entry in this language, or the English one it was built from.
+  const entry = <T extends { href: string; label: string; desc: string }>(e: T) =>
+    t.tools[e.href] ?? e;
+  const secondaryLinks = secondaryHrefs.map((h) => ({
+    href: h,
+    label: h === "/blog" ? t.blog : t.about,
+  }));
+  const FOUNDER_RESOURCES = t.founderResources;
+  const nav = useT(calcMessages);
   const [menuOpen, setMenuOpen] = useState(false);
   const [mobileToolsOpen, setMobileToolsOpen] = useState(false);
   const [mobilePersonalOpen, setMobilePersonalOpen] = useState(false);
@@ -113,7 +124,7 @@ export function SiteHeader({ user }: { user: SessionUser | null }) {
   const [scrolled, setScrolled] = useState(false);
   const [hidden, setHidden] = useState(false);
   const lastY = useRef(0);
-  const pathname = usePathname();
+  const pathname = splitLocale(usePathname()).path;
   const toolsActive = isActive(pathname, "/tools");
   const personalActive = isActive(pathname, "/personal");
   const foundersActive = isActive(pathname, "/toolkits");
@@ -141,7 +152,7 @@ export function SiteHeader({ user }: { user: SessionUser | null }) {
   const firstName =
     user?.name?.trim().split(" ")[0] ??
     user?.email?.split("@")[0] ??
-    "Account";
+    t.account;
 
   // Auto-hide: slide the header away on scroll-down, reveal it on scroll-up.
   useEffect(() => {
@@ -194,10 +205,10 @@ export function SiteHeader({ user }: { user: SessionUser | null }) {
             signed-in pill drops its name at xl. Another top-level link needs
             the row re-thought, not another entry. */}
         <nav
-          aria-label="Main"
+          aria-label={nav.mainNav}
           className="relative mx-auto flex h-[4.5rem] w-full max-w-7xl items-center justify-between px-5 sm:px-8"
         >
-          <Logo onClick={closeMobile} />
+          <Logo locale={locale} onClick={closeMobile} />
 
           {/* xl breakpoint: with "Entrepreneur Toolkits" the full nav no longer
               fits at 1024px — below xl the hamburger menu takes over.
@@ -211,7 +222,8 @@ export function SiteHeader({ user }: { user: SessionUser | null }) {
               onMouseEnter={() => setToolsClosed(false)}
               onFocus={() => setToolsClosed(false)}
             >
-              <Link
+              <LocaleLink
+                locale={locale}
                 href="/tools/ireland-income-tax"
                 aria-current={toolsActive ? "page" : undefined}
                 onClick={closeTools}
@@ -219,14 +231,14 @@ export function SiteHeader({ user }: { user: SessionUser | null }) {
                   toolsActive ? "text-primary-600" : "text-ink-body hover:text-ink"
                 }`}
               >
-                Tax Calculation Hub
+                {t.taxHub}
                 <Chevron className="text-muted transition-transform duration-200 group-hover:rotate-180 group-focus-within:rotate-180" />
                 <span
                   className={`pointer-events-none absolute -bottom-1.5 left-0 h-0.5 w-full origin-left bg-primary-500 transition-transform duration-200 ease-snappy ${
                     toolsActive ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100"
                   }`}
                 />
-              </Link>
+              </LocaleLink>
 
               <div
                 className={`invisible absolute left-1/2 top-full z-50 w-[min(52rem,calc(100vw-2rem))] -translate-x-1/2 pt-4 opacity-0 transition-all duration-200 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100 ${
@@ -235,11 +247,12 @@ export function SiteHeader({ user }: { user: SessionUser | null }) {
               >
                 <div className="rounded-none border border-line bg-white p-6 shadow-2xl shadow-navy-900/15">
                   <p className="mb-4 text-[11px] font-semibold uppercase tracking-[0.16em] text-muted">
-                    Ireland calculators
+                    {t.calculatorsHeading}
                   </p>
                   <div className="grid grid-cols-2 gap-x-8 gap-y-4 lg:grid-cols-3">
                     {CALCULATOR_TOOLS.map((tool) => (
-                      <Link
+                      <LocaleLink
+                        locale={locale}
                         key={tool.href}
                         href={tool.href}
                         onClick={closeTools}
@@ -247,22 +260,23 @@ export function SiteHeader({ user }: { user: SessionUser | null }) {
                         className="group/item block"
                       >
                         <span className="font-display text-sm font-semibold text-ink transition-colors duration-200 group-hover/item:text-primary-500">
-                          {tool.label}
+                          {entry(tool).label}
                         </span>
                         <span className="mt-0.5 block text-[13px] leading-5 text-muted">
-                          {tool.desc}
+                          {entry(tool).desc}
                         </span>
-                      </Link>
+                      </LocaleLink>
                     ))}
                   </div>
                   <div className="mt-6 border-t border-line pt-4">
-                    <Link
+                    <LocaleLink
+                      locale={locale}
                       href="/tools/ireland-income-tax"
                       onClick={closeTools}
                       className="text-sm font-semibold text-primary-500 transition-colors duration-200 hover:text-primary-600"
                     >
-                      Open the calculators <span aria-hidden="true">→</span>
-                    </Link>
+                      {t.openCalculators} <span aria-hidden="true">→</span>
+                    </LocaleLink>
                   </div>
                 </div>
               </div>
@@ -274,7 +288,8 @@ export function SiteHeader({ user }: { user: SessionUser | null }) {
               onMouseEnter={() => setFoundersClosed(false)}
               onFocus={() => setFoundersClosed(false)}
             >
-              <Link
+              <LocaleLink
+                locale={locale}
                 href="/toolkits"
                 aria-current={foundersActive ? "page" : undefined}
                 onClick={closeFounders}
@@ -282,14 +297,14 @@ export function SiteHeader({ user }: { user: SessionUser | null }) {
                   foundersActive ? "text-primary-600" : "text-ink-body hover:text-ink"
                 }`}
               >
-                Accounts and Finance
+                {t.accounts}
                 <Chevron className="text-muted transition-transform duration-200 group-hover:rotate-180 group-focus-within:rotate-180" />
                 <span
                   className={`pointer-events-none absolute -bottom-1.5 left-0 h-0.5 w-full origin-left bg-primary-500 transition-transform duration-200 ease-snappy ${
                     foundersActive ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100"
                   }`}
                 />
-              </Link>
+              </LocaleLink>
 
               <div
                 className={`invisible absolute left-1/2 top-full z-50 w-[min(44rem,calc(100vw-2rem))] -translate-x-1/2 pt-4 opacity-0 transition-all duration-200 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100 ${
@@ -298,11 +313,12 @@ export function SiteHeader({ user }: { user: SessionUser | null }) {
               >
                 <div className="rounded-none border border-line bg-white p-6 shadow-2xl shadow-navy-900/15">
                   <p className="mb-4 text-[11px] font-semibold uppercase tracking-[0.16em] text-muted">
-                    Founder resources
+                    {t.founderHeading}
                   </p>
                   <div className="grid grid-cols-2 gap-x-8 gap-y-4 lg:grid-cols-3">
                     {FOUNDER_RESOURCES.map((res) => (
-                      <Link
+                      <LocaleLink
+                        locale={locale}
                         key={res.label}
                         href="/toolkits"
                         onClick={closeFounders}
@@ -314,17 +330,18 @@ export function SiteHeader({ user }: { user: SessionUser | null }) {
                         <span className="mt-0.5 block text-[13px] leading-5 text-muted">
                           {res.desc}
                         </span>
-                      </Link>
+                      </LocaleLink>
                     ))}
                   </div>
                   <div className="mt-6 border-t border-line pt-4">
-                    <Link
+                    <LocaleLink
+                      locale={locale}
                       href="/toolkits"
                       onClick={closeFounders}
                       className="text-sm font-semibold text-primary-500 transition-colors duration-200 hover:text-primary-600"
                     >
-                      Browse Accounts and Finance <span aria-hidden="true">→</span>
-                    </Link>
+                      {t.browseAccounts} <span aria-hidden="true">→</span>
+                    </LocaleLink>
                   </div>
                 </div>
               </div>
@@ -338,7 +355,8 @@ export function SiteHeader({ user }: { user: SessionUser | null }) {
               onMouseEnter={() => setPersonalClosed(false)}
               onFocus={() => setPersonalClosed(false)}
             >
-              <Link
+              <LocaleLink
+                locale={locale}
                 href="/personal/mortgage"
                 aria-current={personalActive ? "page" : undefined}
                 onClick={closePersonal}
@@ -348,7 +366,7 @@ export function SiteHeader({ user }: { user: SessionUser | null }) {
                     : "text-ink-body hover:text-ink"
                 }`}
               >
-                Personal Finance Tools
+                {t.personal}
                 <Chevron className="text-muted transition-transform duration-200 group-hover:rotate-180 group-focus-within:rotate-180" />
                 <span
                   className={`pointer-events-none absolute -bottom-1.5 left-0 h-0.5 w-full origin-left bg-primary-500 transition-transform duration-200 ease-snappy ${
@@ -357,7 +375,7 @@ export function SiteHeader({ user }: { user: SessionUser | null }) {
                       : "scale-x-0 group-hover:scale-x-100"
                   }`}
                 />
-              </Link>
+              </LocaleLink>
 
               {/* Narrower panel than the Accountants Hub: two entries, not seven. */}
               <div
@@ -367,11 +385,12 @@ export function SiteHeader({ user }: { user: SessionUser | null }) {
               >
                 <div className="rounded-none border border-line bg-white p-6 shadow-2xl shadow-navy-900/15">
                   <p className="mb-4 text-[11px] font-semibold uppercase tracking-[0.16em] text-muted">
-                    Personal finance
+                    {t.personalHeading}
                   </p>
                   <div className="grid grid-cols-1 gap-x-8 gap-y-4 sm:grid-cols-2">
                     {PERSONAL_TOOLS.map((tool) => (
-                      <Link
+                      <LocaleLink
+                        locale={locale}
                         key={tool.href}
                         href={tool.href}
                         onClick={closePersonal}
@@ -379,22 +398,23 @@ export function SiteHeader({ user }: { user: SessionUser | null }) {
                         className="group/item block"
                       >
                         <span className="font-display text-sm font-semibold text-ink transition-colors duration-200 group-hover/item:text-primary-500">
-                          {tool.label}
+                          {entry(tool).label}
                         </span>
                         <span className="mt-0.5 block text-[13px] leading-5 text-muted">
-                          {tool.desc}
+                          {entry(tool).desc}
                         </span>
-                      </Link>
+                      </LocaleLink>
                     ))}
                   </div>
                   <div className="mt-6 border-t border-line pt-4">
-                    <Link
+                    <LocaleLink
+                      locale={locale}
                       href="/personal/mortgage"
                       onClick={closePersonal}
                       className="text-sm font-semibold text-primary-500 transition-colors duration-200 hover:text-primary-600"
                     >
-                      Open Personal Finance Tools <span aria-hidden="true">→</span>
-                    </Link>
+                      {t.openPersonal} <span aria-hidden="true">→</span>
+                    </LocaleLink>
                   </div>
                 </div>
               </div>
@@ -407,7 +427,8 @@ export function SiteHeader({ user }: { user: SessionUser | null }) {
               onMouseEnter={() => setBudgetClosed(false)}
               onFocus={() => setBudgetClosed(false)}
             >
-              <Link
+              <LocaleLink
+                locale={locale}
                 href={LATEST_BUDGET.href}
                 aria-current={budgetActive ? "page" : undefined}
                 onClick={closeBudget}
@@ -415,14 +436,14 @@ export function SiteHeader({ user }: { user: SessionUser | null }) {
                   budgetActive ? "text-primary-600" : "text-ink-body hover:text-ink"
                 }`}
               >
-                Budget
+                {t.budget}
                 <Chevron className="text-muted transition-transform duration-200 group-hover:rotate-180 group-focus-within:rotate-180" />
                 <span
                   className={`pointer-events-none absolute -bottom-1.5 left-0 h-0.5 w-full origin-left bg-primary-500 transition-transform duration-200 ease-snappy ${
                     budgetActive ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100"
                   }`}
                 />
-              </Link>
+              </LocaleLink>
               <div
                 className={`invisible absolute left-1/2 top-full z-50 w-[min(20rem,calc(100vw-2rem))] -translate-x-1/2 pt-4 opacity-0 transition-all duration-200 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100 ${
                   budgetClosed ? "!invisible !opacity-0" : ""
@@ -431,7 +452,8 @@ export function SiteHeader({ user }: { user: SessionUser | null }) {
                 <div className="rounded-none border border-line bg-white p-5 shadow-2xl shadow-navy-900/15">
                   <div className="flex flex-col gap-4">
                     {BUDGETS.map((b) => (
-                      <Link
+                      <LocaleLink
+                        locale={locale}
                         key={b.href}
                         href={b.href}
                         onClick={closeBudget}
@@ -439,12 +461,12 @@ export function SiteHeader({ user }: { user: SessionUser | null }) {
                         className="group/item block"
                       >
                         <span className="font-display text-sm font-semibold text-ink transition-colors duration-200 group-hover/item:text-primary-500">
-                          {b.label}
+                          {entry(b).label}
                         </span>
                         <span className="mt-0.5 block text-[13px] leading-5 text-muted">
-                          {b.desc}
+                          {entry(b).desc}
                         </span>
-                      </Link>
+                      </LocaleLink>
                     ))}
                   </div>
                 </div>
@@ -454,7 +476,8 @@ export function SiteHeader({ user }: { user: SessionUser | null }) {
             {secondaryLinks.map((link) => {
               const active = isActive(pathname, link.href);
               return (
-                <Link
+                <LocaleLink
+                  locale={locale}
                   key={link.href}
                   href={link.href}
                   aria-current={active ? "page" : undefined}
@@ -468,19 +491,20 @@ export function SiteHeader({ user }: { user: SessionUser | null }) {
                       active ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100"
                     }`}
                   />
-                </Link>
+                </LocaleLink>
               );
             })}
           </div>
 
           <div className="flex items-center gap-2.5 sm:gap-3 lg:gap-4">
             {user ? (
-              <Link
+              <LocaleLink
+                locale={locale}
                 href={user.role === "admin" ? "/admin" : "/portal"}
                 aria-label={
-                  user.role === "admin" ? "Admin dashboard" : "My dashboard"
+                  user.role === "admin" ? t.adminDashboard : t.myDashboard
                 }
-                title={`${firstName}: ${user.role === "admin" ? "Admin dashboard" : "My dashboard"}`}
+                title={`${firstName}: ${user.role === "admin" ? t.adminDashboard : t.myDashboard}`}
                 className="group flex items-center gap-2.5 rounded-full border border-line bg-surface py-1 pl-1 pr-1.5 shadow-sm transition-all duration-200 hover:border-primary-300 hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500 sm:pr-4 xl:pr-1.5"
               >
                 <span className="rounded-full ring-2 ring-primary-300/60 ring-offset-2 ring-offset-surface">
@@ -494,30 +518,32 @@ export function SiteHeader({ user }: { user: SessionUser | null }) {
                     {firstName}
                   </span>
                   <span className="text-xs font-medium text-primary-600 transition-colors duration-200 group-hover:text-primary-500">
-                    {user.role === "admin" ? "Admin dashboard" : "My dashboard"}
+                    {user.role === "admin" ? t.adminDashboard : t.myDashboard}
                   </span>
                 </span>
-              </Link>
+              </LocaleLink>
             ) : (
-              <Link
+              <LocaleLink
+                locale={locale}
                 href="/login"
                 className="inline-flex h-10 cursor-pointer items-center whitespace-nowrap rounded-none border border-line px-4 text-sm font-semibold text-ink transition-colors duration-200 hover:bg-secondary-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500"
               >
-                Sign in
-              </Link>
+                {t.signIn}
+              </LocaleLink>
             )}
-            <Link
+            <LocaleLink
+              locale={locale}
               href="/contact"
               className="hidden h-10 cursor-pointer items-center rounded-none bg-primary-500 px-5 text-sm font-semibold text-white transition-colors duration-200 hover:bg-primary-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500 sm:inline-flex"
             >
-              Ask a question
-            </Link>
+              {t.ask}
+            </LocaleLink>
             <button
               type="button"
               className="grid h-10 w-10 cursor-pointer place-items-center rounded-none border border-line text-ink transition-colors duration-200 hover:bg-secondary-50 xl:hidden"
               aria-expanded={menuOpen}
               aria-controls="mobile-menu"
-              aria-label={menuOpen ? "Close menu" : "Open menu"}
+              aria-label={menuOpen ? t.closeMenu : t.openMenu}
               onClick={() => setMenuOpen((open) => !open)}
             >
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
@@ -558,7 +584,7 @@ export function SiteHeader({ user }: { user: SessionUser | null }) {
                     : "text-ink-body hover:bg-secondary-50"
                 }`}
               >
-                Tax Calculation Hub
+                {t.taxHub}
                 <Chevron
                   className={`text-muted transition-transform duration-200 ${
                     mobileToolsOpen ? "rotate-180" : ""
@@ -568,15 +594,16 @@ export function SiteHeader({ user }: { user: SessionUser | null }) {
               {mobileToolsOpen && (
                 <div className="mb-1 ml-3 flex flex-col gap-0.5 border-l border-line pl-3">
                   {CALCULATOR_TOOLS.map((tool) => (
-                    <Link
+                    <LocaleLink
+                      locale={locale}
                       key={tool.href}
                       href={tool.href}
                       onClick={closeMobile}
                       aria-current={pathname === tool.href ? "page" : undefined}
                       className="rounded-none px-3 py-2 text-sm text-muted transition-colors duration-200 hover:bg-secondary-50 hover:text-primary-500"
                     >
-                      {tool.label}
-                    </Link>
+                      {entry(tool).label}
+                    </LocaleLink>
                   ))}
                 </div>
               )}
@@ -592,7 +619,7 @@ export function SiteHeader({ user }: { user: SessionUser | null }) {
                     : "text-ink-body hover:bg-secondary-50"
                 }`}
               >
-                Accounts and Finance
+                {t.accounts}
                 <Chevron
                   className={`text-muted transition-transform duration-200 ${
                     mobileFoundersOpen ? "rotate-180" : ""
@@ -602,14 +629,15 @@ export function SiteHeader({ user }: { user: SessionUser | null }) {
               {mobileFoundersOpen && (
                 <div className="mb-1 ml-3 flex flex-col gap-0.5 border-l border-line pl-3">
                   {FOUNDER_RESOURCES.map((res) => (
-                    <Link
+                    <LocaleLink
+                      locale={locale}
                       key={res.label}
                       href="/toolkits"
                       onClick={closeMobile}
                       className="rounded-none px-3 py-2 text-sm text-muted transition-colors duration-200 hover:bg-secondary-50 hover:text-primary-500"
                     >
                       {res.label}
-                    </Link>
+                    </LocaleLink>
                   ))}
                 </div>
               )}
@@ -625,7 +653,7 @@ export function SiteHeader({ user }: { user: SessionUser | null }) {
                     : "text-ink-body hover:bg-secondary-50"
                 }`}
               >
-                Personal Finance Tools
+                {t.personal}
                 <Chevron
                   className={`text-muted transition-transform duration-200 ${
                     mobilePersonalOpen ? "rotate-180" : ""
@@ -635,15 +663,16 @@ export function SiteHeader({ user }: { user: SessionUser | null }) {
               {mobilePersonalOpen && (
                 <div className="mb-1 ml-3 flex flex-col gap-0.5 border-l border-line pl-3">
                   {PERSONAL_TOOLS.map((tool) => (
-                    <Link
+                    <LocaleLink
+                      locale={locale}
                       key={tool.href}
                       href={tool.href}
                       onClick={closeMobile}
                       aria-current={pathname === tool.href ? "page" : undefined}
                       className="rounded-none px-3 py-2 text-sm text-muted transition-colors duration-200 hover:bg-secondary-50 hover:text-primary-500"
                     >
-                      {tool.label}
-                    </Link>
+                      {entry(tool).label}
+                    </LocaleLink>
                   ))}
                 </div>
               )}
@@ -659,7 +688,7 @@ export function SiteHeader({ user }: { user: SessionUser | null }) {
                     : "text-ink-body hover:bg-secondary-50"
                 }`}
               >
-                Budget
+                {t.budget}
                 <Chevron
                   className={`text-muted transition-transform duration-200 ${
                     mobileBudgetOpen ? "rotate-180" : ""
@@ -669,21 +698,23 @@ export function SiteHeader({ user }: { user: SessionUser | null }) {
               {mobileBudgetOpen && (
                 <div className="mb-1 ml-3 flex flex-col gap-0.5 border-l border-line pl-3">
                   {BUDGETS.map((b) => (
-                    <Link
+                    <LocaleLink
+                      locale={locale}
                       key={b.href}
                       href={b.href}
                       onClick={closeMobile}
                       aria-current={pathname === b.href ? "page" : undefined}
                       className="rounded-none px-3 py-2 text-sm text-muted transition-colors duration-200 hover:bg-secondary-50 hover:text-primary-500"
                     >
-                      {b.label}
-                    </Link>
+                      {entry(b).label}
+                    </LocaleLink>
                   ))}
                 </div>
               )}
 
               {secondaryLinks.map((link) => (
-                <Link
+                <LocaleLink
+                  locale={locale}
                   key={link.href}
                   href={link.href}
                   aria-current={isActive(pathname, link.href) ? "page" : undefined}
@@ -695,15 +726,16 @@ export function SiteHeader({ user }: { user: SessionUser | null }) {
                   onClick={closeMobile}
                 >
                   {link.label}
-                </Link>
+                </LocaleLink>
               ))}
-              <Link
+              <LocaleLink
+                locale={locale}
                 href="/contact"
                 className="mt-2 inline-flex h-11 items-center justify-center rounded-none bg-primary-500 px-5 text-sm font-semibold text-white"
                 onClick={closeMobile}
               >
-                Ask a question
-              </Link>
+                {t.ask}
+              </LocaleLink>
             </div>
           </div>
         )}

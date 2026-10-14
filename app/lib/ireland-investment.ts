@@ -1004,37 +1004,83 @@ export interface OptionResult {
   gain: number;
   /** Per-option cautions: caps exceeded, guarantee ceilings, lump-sum fit. */
   flags: string[];
+  /** The same cautions as data, for pages in another language to phrase. */
+  flagCodes: OptionFlag[];
 }
+
+/* Every message the planner produces, as data. The English strings above
+   and below are built from these (flagText, exclusionText, noticeText), so
+   another language phrases exactly the same facts. */
+export type OptionFlag =
+  | { kind: "cap"; cap: number }
+  | { kind: "dgs"; limit: number }
+  | { kind: "monthly" }
+  | { kind: "pension" };
+
+export type Exclusion =
+  | { kind: "lock"; years: number; horizon: Horizon }
+  | { kind: "risk"; risk: number }
+  | { kind: "notState" }
+  | { kind: "notPrivate" }
+  | { kind: "noGuarantee" }
+  | { kind: "minimum"; minimum: number };
+
+export type PlanNotice =
+  | { kind: "dgs"; limit: number }
+  | { kind: "inflation"; inflation: number }
+  | { kind: "none" }
+  | { kind: "risk5" };
 
 export interface PlanResult {
   years: number;
   results: OptionResult[];
   /** Options ruled out, with the reason, so nothing disappears silently. */
-  excluded: { option: InvestmentOption; reason: string }[];
+  excluded: { option: InvestmentOption; reason: string; why: Exclusion }[];
   warnings: string[];
+  notices: PlanNotice[];
 }
 
-function optionFlags(option: InvestmentOption, inputs: PlannerInputs): string[] {
-  const flags: string[] = [];
+function optionFlagCodes(option: InvestmentOption, inputs: PlannerInputs): OptionFlag[] {
+  const flags: OptionFlag[] = [];
   if (option.capAmount !== undefined && inputs.amount > option.capAmount) {
-    flags.push(
-      `Caps at ${formatEuro(option.capAmount)} — the balance needs another home.`,
-    );
+    flags.push({ kind: "cap", cap: option.capAmount });
   }
   if (option.guarantee === "dgs" && inputs.amount > DGS_LIMIT) {
-    flags.push(
-      `Deposit guarantee covers ${formatEuro(DGS_LIMIT)} per person per institution — spread this across several.`,
-    );
+    flags.push({ kind: "dgs", limit: DGS_LIMIT });
   }
-  if (!option.lumpSum) {
-    flags.push("Cannot absorb a lump sum — it takes monthly contributions only.");
-  }
-  if (option.category === "pension") {
-    flags.push(
-      "Shown before the tax relief going in and the income tax on the way out, which broadly offset.",
-    );
-  }
+  if (!option.lumpSum) flags.push({ kind: "monthly" });
+  if (option.category === "pension") flags.push({ kind: "pension" });
   return flags;
+}
+
+function flagText(flag: OptionFlag): string {
+  switch (flag.kind) {
+    case "cap":
+      return `Caps at ${formatEuro(flag.cap)} — the balance needs another home.`;
+    case "dgs":
+      return `Deposit guarantee covers ${formatEuro(flag.limit)} per person per institution — spread this across several.`;
+    case "monthly":
+      return "Cannot absorb a lump sum — it takes monthly contributions only.";
+    case "pension":
+      return "Shown before the tax relief going in and the income tax on the way out, which broadly offset.";
+  }
+}
+
+function exclusionText(why: Exclusion): string {
+  switch (why.kind) {
+    case "lock":
+      return `Locks capital for ${why.years} years, beyond a ${HORIZON_BY_VALUE[why.horizon].label.toLowerCase()} horizon.`;
+    case "risk":
+      return `Risk ${why.risk} of 5 is above the level you set.`;
+    case "notState":
+      return "Not State-backed.";
+    case "notPrivate":
+      return "State-backed rather than private-sector.";
+    case "noGuarantee":
+      return "Carries no capital guarantee.";
+    case "minimum":
+      return `Needs at least ${formatEuro(why.minimum)}.`;
+  }
 }
 
 /**
@@ -1050,37 +1096,33 @@ export function planInvestments(inputs: PlannerInputs): PlanResult {
   const years = horizon.projectionYears;
 
   const results: OptionResult[] = [];
-  const excluded: { option: InvestmentOption; reason: string }[] = [];
+  const excluded: { option: InvestmentOption; reason: string; why: Exclusion }[] = [];
+  const exclude = (option: InvestmentOption, why: Exclusion) =>
+    excluded.push({ option, reason: exclusionText(why), why });
 
   for (const option of INVESTMENT_OPTIONS) {
     if (option.lockYears > horizon.maxLockYears) {
-      excluded.push({
-        option,
-        reason: `Locks capital for ${option.lockYears} years, beyond a ${horizon.label.toLowerCase()} horizon.`,
-      });
+      exclude(option, { kind: "lock", years: option.lockYears, horizon: inputs.horizon });
       continue;
     }
     if (option.risk > inputs.risk) {
-      excluded.push({ option, reason: `Risk ${option.risk} of 5 is above the level you set.` });
+      exclude(option, { kind: "risk", risk: option.risk });
       continue;
     }
     if (inputs.sector === "state" && !STATE_SECTORS.includes(option.sector)) {
-      excluded.push({ option, reason: "Not State-backed." });
+      exclude(option, { kind: "notState" });
       continue;
     }
     if (inputs.sector === "private" && STATE_SECTORS.includes(option.sector)) {
-      excluded.push({ option, reason: "State-backed rather than private-sector." });
+      exclude(option, { kind: "notPrivate" });
       continue;
     }
     if (inputs.guaranteedOnly && option.guarantee === "none") {
-      excluded.push({ option, reason: "Carries no capital guarantee." });
+      exclude(option, { kind: "noGuarantee" });
       continue;
     }
     if (inputs.amount < option.minimum) {
-      excluded.push({
-        option,
-        reason: `Needs at least ${formatEuro(option.minimum)}.`,
-      });
+      exclude(option, { kind: "minimum", minimum: option.minimum });
       continue;
     }
 
@@ -1094,7 +1136,8 @@ export function planInvestments(inputs: PlannerInputs): PlanResult {
       realReturn: net - inputs.inflation,
       projectedValue,
       gain: projectedValue - inputs.amount,
-      flags: optionFlags(option, inputs),
+      flagCodes: optionFlagCodes(option, inputs),
+      flags: optionFlagCodes(option, inputs).map(flagText),
     });
   }
 
@@ -1107,33 +1150,34 @@ export function planInvestments(inputs: PlannerInputs): PlanResult {
       a.option.name.localeCompare(b.option.name),
   );
 
-  return { years, results, excluded, warnings: planWarnings(inputs, results) };
+  const notices = planNotices(inputs, results);
+  return { years, results, excluded, warnings: notices.map(noticeText), notices };
 }
 
-function planWarnings(inputs: PlannerInputs, results: OptionResult[]): string[] {
-  const warnings: string[] = [];
-
+function planNotices(inputs: PlannerInputs, results: OptionResult[]): PlanNotice[] {
+  const notices: PlanNotice[] = [];
   if (inputs.amount > DGS_LIMIT && results.some((r) => r.option.guarantee === "dgs")) {
-    warnings.push(
-      `Deposit guarantee cover is ${formatEuro(DGS_LIMIT)} per person per institution. A cash balance above that has to be spread across institutions, or held somewhere carrying the full State guarantee.`,
-    );
+    notices.push({ kind: "dgs", limit: DGS_LIMIT });
   }
   if (results.every((r) => r.realReturn <= 0) && results.length > 0) {
-    warnings.push(
-      `Every option that fits these answers returns less than ${(inputs.inflation * 100).toFixed(0)}% inflation after tax, so the money loses purchasing power. Widening the horizon or the risk level is what changes that.`,
-    );
+    notices.push({ kind: "inflation", inflation: inputs.inflation });
   }
-  if (results.length === 0) {
-    warnings.push(
-      "Nothing matches these answers. Try a longer horizon, a higher risk level, or turn off the capital-guarantee filter.",
-    );
+  if (results.length === 0) notices.push({ kind: "none" });
+  if (inputs.risk >= 5) notices.push({ kind: "risk5" });
+  return notices;
+}
+
+function noticeText(notice: PlanNotice): string {
+  switch (notice.kind) {
+    case "dgs":
+      return `Deposit guarantee cover is ${formatEuro(notice.limit)} per person per institution. A cash balance above that has to be spread across institutions, or held somewhere carrying the full State guarantee.`;
+    case "inflation":
+      return `Every option that fits these answers returns less than ${(notice.inflation * 100).toFixed(0)}% inflation after tax, so the money loses purchasing power. Widening the horizon or the risk level is what changes that.`;
+    case "none":
+      return "Nothing matches these answers. Try a longer horizon, a higher risk level, or turn off the capital-guarantee filter.";
+    case "risk5":
+      return "Risk level 5 includes options where losing the entire amount is a realistic outcome, and several cannot be sold for years.";
   }
-  if (inputs.risk >= 5) {
-    warnings.push(
-      "Risk level 5 includes options where losing the entire amount is a realistic outcome, and several cannot be sold for years.",
-    );
-  }
-  return warnings;
 }
 
 /* ---------- formatting shared by the UI and the tests ---------- */

@@ -88,6 +88,26 @@ export const NEWS_SOURCES: NewsSource[] = [
   },
 ];
 
+/* Press feeds, read for their HEADLINES ONLY, as a hint to triage of what
+   the public is paying attention to. Their items are never candidates: no
+   article page is fetched, nothing is sent to the drafting model, nothing is
+   cited or stored. Checked Oct 2026, and a paper is listed only if its own
+   terms allow even this:
+   - The Irish Times: copyright page limits use to personal, non-commercial,
+     no derivative works; silent on automated reading. Headlines as a private
+     hint stay inside that.
+   - RTÉ: OUT. Its terms forbid "any text or data mining or web scraping in
+     relation to RTÉ.ie" and producing summaries.
+   - Irish Independent: OUT. Its robots.txt reserves text and data mining,
+     extraction, scraping and robots (an Art. 4 DSM opt-out).
+   - TheJournal: OUT. Its robots.txt disallows the agent.
+   None of them may be a NEWS_SOURCE: each forbids summaries or derivative
+   works, which is what a draft is. */
+export const PRESS_SIGNALS: { label: string; url: string }[] = [
+  { label: "Irish Times Business", url: "https://www.irishtimes.com/arc/outboundfeeds/rss/category/business/" },
+  { label: "Irish Times Your Money", url: "https://www.irishtimes.com/arc/outboundfeeds/rss/category/your-money/" },
+];
+
 export function getNewsSource(id: string): NewsSource | undefined {
   return NEWS_SOURCES.find((s) => s.id === id);
 }
@@ -119,6 +139,9 @@ export const NEWS_LIMITS = {
   maxDrafts: 3,
   /** Triage score (0 to 10) a story needs to be drafted at all. */
   minScore: 7,
+  /** Press headlines shown to triage, newest first. About 15 tokens each,
+      counted against the same 8K-a-minute Groq budget as the items. */
+  pressHeadlines: 40,
   /** Most stories a round-up covers. */
   roundupMax: 6,
   /** Items older than this are ignored, so a long gap is not a flood. */
@@ -140,13 +163,13 @@ export const NEWS_LIMITS = {
 
 /** Bumped whenever the prompts change, and stored on every draft, so a bad
     draft can be traced to the prompt that wrote it. */
-export const PROMPT_VERSION = "news-v1";
+export const PROMPT_VERSION = "news-v2";
 
 /** Identifies the agent honestly. The `compatible;` form is the convention
     crawlers use (Googlebot does the same): gov.ie's CloudFront rejects a bare
     product token but accepts this, and it still names us and links back. */
 export const NEWS_USER_AGENT =
-  "Mozilla/5.0 (compatible; IrelandFintaxNewsBot/1.0; +https://www.irishfintax.ie/about)";
+  "Mozilla/5.0 (compatible; IrishFintaxNewsBot/1.0; +https://www.irishfintax.ie/about)";
 
 /* ── calculators a story can affect ────────────────────────────────────── */
 

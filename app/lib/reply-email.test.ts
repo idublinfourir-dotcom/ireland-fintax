@@ -6,7 +6,7 @@ const base = {
   clientName: "Aoife Ni Bhriain",
   body: "Your Form 11 is filed.",
   service: "Income tax return",
-  firmName: "Ireland Fintax",
+  firmName: "Irish Fintax",
 };
 
 test("the subject names the service the enquiry was about", () => {
@@ -22,7 +22,7 @@ test("the plain-text part carries the reply verbatim", () => {
   const text = replyText(base);
   assert.match(text, /^Hi Aoife,/);
   assert.match(text, /Your Form 11 is filed\./);
-  assert.match(text, /Ireland Fintax$/);
+  assert.match(text, /Irish Fintax$/);
 });
 
 test("nothing is appended to the reply", () => {

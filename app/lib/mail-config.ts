@@ -7,6 +7,8 @@
  *
  * app/lib/mailer.ts is the counterpart that actually sends. */
 
+import { site } from "./content";
+
 export interface MailerConfig {
   host: string;
   port: number;
@@ -33,9 +35,9 @@ export function isMailerConfigured(): boolean {
  * SMTP settings, or null when the deploy has no mail backend.
  *
  * Only the three authentication keys are required. `MAIL_FROM` defaults to the
- * authenticated mailbox because most providers reject a From the account does
- * not own; a display name in front of it ("Ireland Fintax <box@example.ie>")
- * is fine, the address itself is what is checked. `MAIL_REPLY_TO` defaults to
+ * authenticated mailbox, shown under the site's name ("Irish Fintax
+ * <box@example.ie>"): most providers reject a From the account does not own,
+ * but the name in front of it is free, only the address is checked. `MAIL_REPLY_TO` defaults to
  * the same place, so replying to anything this site sends reaches a human.
  *
  * `quiet` suppresses the warning for the callers that ask merely to find out
@@ -72,7 +74,7 @@ export function readMailerConfig(quiet = true): MailerConfig | null {
     port: Number.isFinite(port) && port > 0 ? port : 465,
     user: user!,
     pass: pass!,
-    from: from || user!,
+    from: from || `${site.name} <${user}>`,
     replyTo: replyTo || from || user!,
   };
 }

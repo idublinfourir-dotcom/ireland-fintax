@@ -8,6 +8,8 @@ import {
   updatePasswordAction,
   type SettingsState,
 } from "./actions";
+import { useT } from "../../components/locale-link";
+import { accountMessages } from "../../lib/messages/account";
 
 const initial: SettingsState = {};
 
@@ -45,6 +47,7 @@ export function SettingsForm({
   fullName: string;
   email: string;
 }) {
+  const t = useT(accountMessages).settings;
   const [nameState, nameAction, namePending] = useActionState(
     updateNameAction,
     initial,
@@ -59,12 +62,12 @@ export function SettingsForm({
       {/* Display name */}
       <Panel className="p-6">
         <h3 className="text-xs font-semibold uppercase tracking-[0.18em] text-muted">
-          Display name
+          {t.displayName}
         </h3>
         <form action={nameAction} className="mt-4 flex flex-col gap-4">
           <div>
             <label htmlFor="full_name" className={labelClasses}>
-              Full name
+              {t.fullName}
             </label>
             <input
               id="full_name"
@@ -73,16 +76,18 @@ export function SettingsForm({
               autoComplete="name"
               defaultValue={fullName}
               className={inputClasses}
-              placeholder="Jane Doe"
+              placeholder={t.namePlaceholder}
             />
           </div>
           <p className="text-sm text-muted">
-            Signed in as <span className="text-ink">{email}</span>
+            {t.signedInAs.split("{email}")[0]}
+            <span className="text-ink">{email}</span>
+            {t.signedInAs.split("{email}")[1]}
           </p>
           <Message state={nameState} />
           <div>
             <button type="submit" disabled={namePending} className={buttonClasses}>
-              {namePending ? "Saving…" : "Save name"}
+              {namePending ? t.saving : t.saveName}
             </button>
           </div>
         </form>
@@ -91,12 +96,12 @@ export function SettingsForm({
       {/* Password */}
       <Panel className="p-6">
         <h3 className="text-xs font-semibold uppercase tracking-[0.18em] text-muted">
-          Password
+          {t.password}
         </h3>
         <form action={pwAction} className="mt-4 flex flex-col gap-4">
           <div>
             <label htmlFor="password" className={labelClasses}>
-              New password
+              {t.newPassword}
             </label>
             <PasswordInput
               id="password"
@@ -106,7 +111,7 @@ export function SettingsForm({
           </div>
           <div>
             <label htmlFor="confirm" className={labelClasses}>
-              Confirm new password
+              {t.confirmNew}
             </label>
             <PasswordInput
               id="confirm"
@@ -117,7 +122,7 @@ export function SettingsForm({
           <Message state={pwState} />
           <div>
             <button type="submit" disabled={pwPending} className={buttonClasses}>
-              {pwPending ? "Updating…" : "Update password"}
+              {pwPending ? t.updating : t.updatePassword}
             </button>
           </div>
         </form>

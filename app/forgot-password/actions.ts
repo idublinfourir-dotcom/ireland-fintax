@@ -1,6 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { localePath } from "../lib/messages";
 import { AuthError } from "next-auth";
 import { signIn } from "../../auth";
 import { usersCollection } from "../lib/collections";
@@ -11,11 +12,13 @@ import {
   consumePasswordResetCode,
   createPasswordResetCode,
 } from "../lib/auth/reset-tokens";
-import { AUTH_NOT_CONFIGURED, isAuthConfigured } from "../lib/auth/config";
+import { isAuthConfigured } from "../lib/auth/config";
 import { looksLikeCode, validatePassword } from "../lib/account-validation";
 import { sendMail } from "../lib/mailer";
 import { resetHtml, resetSubject, resetText } from "../lib/reset-email";
 import { site } from "../lib/content";
+import { getT } from "../lib/messages";
+import { accountMessages } from "../lib/messages/account";
 
 /* Two actions, not one, because the two steps have different abuse profiles.
    Asking for a code is an email-volume and cost problem; submitting one is a
@@ -30,8 +33,6 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
  *  Deliberately one message for all of them. Telling them apart would reveal
  *  whether a code was ever issued for that address, which is the fact this
  *  whole flow is built to withhold. */
-const CODE_REJECTED =
-  "That code isn't valid. It may have expired or already been used. Request a new one and try again.";
 
 export interface RequestCodeState {
   error?: string;
@@ -109,15 +110,16 @@ export async function requestResetCode(
   _prev: RequestCodeState,
   formData: FormData,
 ): Promise<RequestCodeState> {
+  const t = (await getT(accountMessages)).errors;
   const email = String(formData.get("email") ?? "").trim();
 
   // A malformed address is rejected: it reveals nothing, since it could not
   // belong to an account either way, and it saves a pointless round trip.
   if (!EMAIL_RE.test(email)) {
-    return { error: "Please enter a valid email address." };
+    return { error: t.emailInvalid };
   }
 
-  if (!isAuthConfigured()) return { error: AUTH_NOT_CONFIGURED };
+  if (!isAuthConfigured()) return { error: t.notConfigured };
 
   const allowed = await allowPublicAction({
     action: "password-reset-request",
@@ -127,7 +129,7 @@ export async function requestResetCode(
   });
   if (!allowed) {
     return {
-      error: "Too many reset requests. Please wait an hour and try again.",
+      error: t.tooManyResets,
       email,
     };
   }
@@ -151,6 +153,7 @@ export async function resetPasswordWithCode(
   _prev: CompleteResetState,
   formData: FormData,
 ): Promise<CompleteResetState> {
+  const t = (await getT(accountMessages)).errors;
   const email = String(formData.get("email") ?? "").trim().toLowerCase();
   const code = String(formData.get("code") ?? "").trim();
   const password = String(formData.get("password") ?? "");
@@ -163,15 +166,15 @@ export async function resetPasswordWithCode(
 
      The validator is the one the settings page uses. Two different minimum
      lengths in one app is a bug, whichever of them is the stricter. */
-  const invalid = validatePassword(password, confirm);
+  const invalid = validatePassword(password, confirm, t);
   if (invalid) return { error: invalid };
 
   /* Shape only. Its one job is to keep obvious nonsense from spending a
      throttle attempt; whether the code is right is decided by redeeming it. */
-  if (!looksLikeCode(code)) return { error: CODE_REJECTED };
+  if (!looksLikeCode(code)) return { error: t.codeRejected };
 
-  if (!EMAIL_RE.test(email)) return { error: CODE_REJECTED };
-  if (!isAuthConfigured()) return { error: AUTH_NOT_CONFIGURED };
+  if (!EMAIL_RE.test(email)) return { error: t.codeRejected };
+  if (!isAuthConfigured()) return { error: t.notConfigured };
 
   /* THE brute-force cap. A code short enough to type is only safe while the
      attempts are capped, and this is the visible half of that. The other half
@@ -188,7 +191,7 @@ export async function resetPasswordWithCode(
   });
   if (!allowed) {
     return {
-      error: "Too many attempts. Please wait an hour and request a new code.",
+      error: t.tooManyCodeAttempts,
     };
   }
 
@@ -203,9 +206,9 @@ export async function resetPasswordWithCode(
 
     // Same message as a wrong code: an unknown address must not be
     // distinguishable from a bad guess.
-    if (!account || !account.emailVerified) return { error: CODE_REJECTED };
+    if (!account || !account.emailVerified) return { error: t.codeRejected };
     if (!(await consumePasswordResetCode(account._id, code))) {
-      return { error: CODE_REJECTED };
+      return { error: t.codeRejected };
     }
 
     role = account.role === "admin" ? "admin" : "client";
@@ -232,7 +235,7 @@ export async function resetPasswordWithCode(
   } catch (err) {
     console.error("[reset] could not complete the password reset:", err);
     return {
-      error: "Couldn't reset your password. Please try again.",
+      error: t.resetFailed,
     };
   }
 
@@ -253,9 +256,9 @@ export async function resetPasswordWithCode(
   }
 
   // `redirect` throws, so it stays outside the try blocks above.
-  if (!signedIn) redirect("/login?notice=reset");
+  if (!signedIn) redirect(await localePath("/login?notice=reset"));
 
   // Same convention as the login action: admins to /admin, everyone else to
   // /portal. Do not invent a second rule for this.
-  redirect(role === "admin" ? "/admin" : "/portal");
+  redirect(await localePath(role === "admin" ? "/admin" : "/portal"));
 }

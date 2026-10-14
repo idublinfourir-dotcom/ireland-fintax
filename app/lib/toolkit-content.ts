@@ -5,8 +5,8 @@
    public browser can import it directly. Adding a resource = adding an entry
    here. */
 
-import { toolkitSlug } from "./toolkit-types";
-import type { ToolkitCategory, ToolkitFramework } from "./toolkit-types";
+import { toolkitSlug } from "./toolkit-types.ts";
+import type { ToolkitCategory, ToolkitFramework } from "./toolkit-types.ts";
 
 export type ResourceFormat = "PDF" | "DOCX" | "XLSX";
 

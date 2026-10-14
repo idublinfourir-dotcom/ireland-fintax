@@ -1,10 +1,12 @@
 "use client";
 
-import Link from "next/link";
+import Link from "../components/locale-link";
 import { useActionState } from "react";
 import { login, type AuthState } from "./actions";
 import { PasswordInput } from "../components/password-input";
 import { GoogleButton } from "../components/google-button";
+import { useT } from "../components/locale-link";
+import { accountMessages } from "../lib/messages/account";
 
 const inputClasses =
   "w-full rounded-none border border-line bg-canvas px-4 py-3 text-[15px] text-ink placeholder:text-muted focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-primary-500";
@@ -20,6 +22,7 @@ export function LoginForm({
   notice?: string;
   googleEnabled: boolean;
 }) {
+  const t = useT(accountMessages);
   const [state, formAction, isPending] = useActionState(login, initialState);
   const email = state.values?.email ?? "";
 
@@ -43,7 +46,7 @@ export function LoginForm({
 
       <div className="flex items-center gap-3 text-xs font-medium uppercase tracking-wide text-muted">
         <span className="h-px flex-1 bg-line" />
-        or
+        {t.or}
         <span className="h-px flex-1 bg-line" />
       </div>
 
@@ -52,7 +55,7 @@ export function LoginForm({
 
         <div>
           <label htmlFor="email" className="mb-1.5 block text-sm font-medium text-ink">
-            Email
+            {t.email}
           </label>
           <input
             id="email"
@@ -62,7 +65,7 @@ export function LoginForm({
             required
             defaultValue={email}
             className={inputClasses}
-            placeholder="jane@company.co"
+            placeholder={t.emailPlaceholder}
           />
         </div>
 
@@ -71,7 +74,7 @@ export function LoginForm({
             htmlFor="password"
             className="mb-1.5 block text-sm font-medium text-ink"
           >
-            Password
+            {t.password}
           </label>
           <PasswordInput
             id="password"
@@ -85,7 +88,7 @@ export function LoginForm({
           disabled={isPending}
           className="inline-flex h-12 cursor-pointer items-center justify-center gap-2 rounded-none bg-primary-500 px-7 text-sm font-semibold text-white transition-colors duration-200 hover:bg-primary-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500 disabled:cursor-default disabled:opacity-60"
         >
-          {isPending ? "Signing in…" : "Sign in"}
+          {isPending ? t.login.signingIn : t.login.signIn}
         </button>
 
         {/* Both entry points live in this footer row. "Forgot your password?"
@@ -94,12 +97,12 @@ export function LoginForm({
             simply mistyped. */}
         <div className="flex flex-col gap-1.5 text-sm text-muted">
           <p>
-            New here?{" "}
+            {t.login.newHere}{" "}
             <Link
               href="/signup"
               className="font-medium text-primary-500 transition-colors duration-200 hover:text-primary-600"
             >
-              Create an account
+              {t.login.createAccount}
             </Link>
           </p>
           <p>
@@ -107,7 +110,7 @@ export function LoginForm({
               href="/forgot-password"
               className="font-medium text-primary-500 transition-colors duration-200 hover:text-primary-600"
             >
-              Forgot your password?
+              {t.login.forgot}
             </Link>
           </p>
         </div>

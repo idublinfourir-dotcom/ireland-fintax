@@ -1,4 +1,4 @@
-## Ireland Fintax — Agent Instructions
+## Irish Fintax — Agent Instructions
 
 Persistent rules for repo. Apply **every Agent session** automatically.
 Git push/merge workflow: see `CLAUDE.md`.
@@ -6,7 +6,7 @@ Git push/merge workflow: see `CLAUDE.md`.
 
 ## Project
 
-**Ireland Fintax** is a free learning platform for Irish tax and personal
+**Irish Fintax** is a free learning platform for Irish tax and personal
 finance (Oct 2026 direction): calculators, guides and an "Ask a question"
 form, not a firm with services or fees. UK copy + tone: professional, plain
 English, no jargon. See "Direction: FREE LEARNING PLATFORM" in `CLAUDE.md`.
@@ -394,7 +394,7 @@ Whenever anything else gets hidden rather than deleted, add a row here.
   free of the MongoDB driver. Do not collapse the two mail modules into one.
 - Currently pointed at the **AIBN Chartered Accountants Zoho mailbox**
   (`smtp.zoho.com:465`), the account already proven from the CA Farm project,
-  with `MAIL_FROM` carrying the Ireland Fintax display name in front of it.
+  with `MAIL_FROM` carrying the Irish Fintax display name in front of it.
   Zoho wants a 12-character **app password**, not the login password, and
   `smtppro.zoho.com` answers `554 5.7.8 Access Restricted` for this account on
   both 465 and 587: do not "fix" the host to it. `node scripts/mail-check.mjs
@@ -611,8 +611,8 @@ Whenever anything else gets hidden rather than deleted, add a row here.
   CC BY 4.0), the ECB (reuse with the source cited). Each source carries its
   attribution, which is copied into the post and rendered under it with an
   AI disclosure (`PostSources` in `app/blog/[slug]/page.tsx`). Adding a source
-  means reading its licence first. **Not used, on purpose**: press feeds (RTÉ,
-  Irish Times; the press publishers' right), Google News RSS (its terms
+  means reading its licence first. **Not used as sources, on purpose**: press
+  feeds (RTÉ, Irish Times; the press publishers' right), Google News RSS (its terms
   forbid this use) and gov.ie (its article pages answer bots with a WAF
   challenge; the agent takes no for an answer and never routes around one).
 - **The model never writes stored blocks.** It fills a fixed outline under a
@@ -626,6 +626,15 @@ Whenever anything else gets hidden rather than deleted, add a row here.
   model never picks pictures: it may ask for a slot, which is an empty
   Picture block, and the existing validator refuses to publish until it is
   filled or removed.
+- **Press feeds are a triage signal only** (`PRESS_SIGNALS`: Irish Times
+  Business and Your Money; RTÉ and the Independent forbid even this, see the
+  comment there, and no paper may be a writing source). Their
+  headlines go into the triage prompt as "IN THE PRESS" so an official item
+  the papers are covering can score 1 higher. Never fetch their article
+  pages, send their text to the drafting model, cite them or store them:
+  that is the line that keeps them outside the press publishers' right. A
+  new feed must answer the agent's user agent, allow it in robots.txt, and
+  have terms read first, same as a source.
 - `BLOCKED_TITLES` keeps enforcement and court items (Central Bank warnings
   on unauthorised firms, Revenue seizures and defaulters lists) away from the
   model entirely: they name real firms and people, where a model error is a

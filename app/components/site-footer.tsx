@@ -1,22 +1,26 @@
-import Link from "next/link";
+import { LocaleLink } from "./locale-link";
 import { site } from "../lib/content";
 import { images } from "../lib/images";
 import { LATEST_BUDGET } from "../lib/budgets";
+import { LIVE_LOCALES, LOCALE_NAMES, localeHref } from "../lib/i18n";
+import { getMessages } from "../lib/messages";
 
 /* Pricing and Services stay hidden (app/_pricing, app/_services): this is a
-   free learning site, not a firm. */
-const exploreLinks = [
-  { label: "Budget", href: LATEST_BUDGET.href },
-  { label: "Tax calculators", href: "/tools/ireland-income-tax" },
-  { label: "Personal finance", href: "/personal/mortgage" },
-  { label: "Accounts and Finance", href: "/toolkits" },
-  { label: "Blog", href: "/blog" },
-  { label: "About", href: "/about" },
-  { label: "FAQ", href: "/#faq" },
-  { label: "Ask a question", href: "/contact" },
-];
+   free learning site, not a firm. Labels are t.footer.links. */
+const exploreHrefs = {
+  budget: LATEST_BUDGET.href,
+  calculators: "/tools/ireland-income-tax",
+  personal: "/personal/mortgage",
+  accounts: "/toolkits",
+  blog: "/blog",
+  about: "/about",
+  faq: "/#faq",
+  ask: "/contact",
+} as const;
 
-export function SiteFooter() {
+export async function SiteFooter() {
+  const { locale, t: all } = await getMessages();
+  const t = all.footer;
   return (
     <footer className="relative isolate overflow-hidden bg-navy-900 text-white">
       {/* photographic backdrop — Irish countryside at dusk */}
@@ -38,38 +42,38 @@ export function SiteFooter() {
       <div className="mx-auto w-full max-w-6xl px-5 py-16 sm:px-8">
         <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1.2fr]">
           <div>
-            <Link href="/" className="flex items-center gap-2.5">
+            <LocaleLink locale={locale} href="/" className="flex items-center gap-2.5">
               <span className="grid h-9 w-9 shrink-0 place-items-center rounded-none bg-white/10 font-display text-[13px] font-semibold tracking-tight text-primary-300">
                 IF
               </span>
               <span className="flex flex-col leading-none">
                 <span className="font-display text-lg font-semibold tracking-tight text-white">
-                  IRELAND
+                  IRISH
                 </span>
                 <span className="mt-0.5 whitespace-nowrap text-[10px] font-medium uppercase tracking-[0.16em] text-white/50">
                   Fintax
                 </span>
               </span>
-            </Link>
+            </LocaleLink>
             <p className="mt-4 max-w-xs text-sm leading-6 text-white/60">
-              Free calculators, guides and templates that explain Irish tax
-              and personal finance in plain English.
+              {t.blurb}
             </p>
           </div>
 
-          <nav aria-label="Explore">
+          <nav aria-label={t.explore}>
             <h3 className="text-xs font-semibold uppercase tracking-[0.18em] text-primary-300">
-              Explore
+              {t.explore}
             </h3>
             <ul className="mt-4 flex flex-col gap-2.5 text-sm text-white/70">
-              {exploreLinks.map((link) => (
-                <li key={link.href}>
-                  <Link
-                    href={link.href}
+              {(Object.keys(exploreHrefs) as (keyof typeof exploreHrefs)[]).map((key) => (
+                <li key={key}>
+                  <LocaleLink
+                    locale={locale}
+                    href={exploreHrefs[key]}
                     className="transition-colors duration-200 hover:text-white"
                   >
-                    {link.label}
-                  </Link>
+                    {t.links[key]}
+                  </LocaleLink>
                 </li>
               ))}
             </ul>
@@ -77,7 +81,7 @@ export function SiteFooter() {
 
           <div>
             <h3 className="text-xs font-semibold uppercase tracking-[0.18em] text-primary-300">
-              Get in touch
+              {t.getInTouch}
             </h3>
             <a
               href={`mailto:${site.email}`}
@@ -85,12 +89,37 @@ export function SiteFooter() {
             >
               {site.email}
             </a>
+
+            {/* Each language's home page: the only page translated so far
+                (TRANSLATED_PATHS). Point these at the current page's
+                translation once inner pages have one. Plain <a>: switching
+                language swaps <html lang>, which lives in the root layout. */}
+            <h3 className="mt-8 text-xs font-semibold uppercase tracking-[0.18em] text-primary-300">
+              {t.language}
+            </h3>
+            <ul className="mt-4 flex flex-wrap gap-x-4 gap-y-2 text-sm text-white/70">
+              {LIVE_LOCALES.map((l) => (
+                <li key={l}>
+                  <a
+                    href={localeHref(l, "/")}
+                    hrefLang={l}
+                    lang={l}
+                    aria-current={l === locale ? "true" : undefined}
+                    className={`transition-colors duration-200 hover:text-white ${
+                      l === locale ? "font-semibold text-white" : ""
+                    }`}
+                  >
+                    {LOCALE_NAMES[l]}
+                  </a>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
 
         <div className="mt-14 flex flex-col gap-2 border-t border-white/10 pt-6 text-xs text-white/45 sm:flex-row sm:items-center sm:justify-between">
-          <p>© {new Date().getFullYear()} Ireland Fintax. All rights reserved.</p>
-          <p>General information only, not financial, tax or legal advice.</p>
+          <p>© {new Date().getFullYear()} Irish Fintax. {t.rights}</p>
+          <p>{t.disclaimer}</p>
         </div>
       </div>
     </footer>

@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { useT } from "./locale-link";
+import { accountMessages } from "../lib/messages/account";
 
 const base =
   "w-full rounded-none border border-line bg-canvas px-4 py-3 pr-11 text-[15px] text-ink placeholder:text-muted focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-primary-500";
@@ -20,6 +22,7 @@ export function PasswordInput({
   minLength?: number;
 }) {
   const [show, setShow] = useState(false);
+  const t = useT(accountMessages);
 
   return (
     <div className="relative">
@@ -36,7 +39,7 @@ export function PasswordInput({
       <button
         type="button"
         onClick={() => setShow((s) => !s)}
-        aria-label={show ? "Hide password" : "Show password"}
+        aria-label={show ? t.hidePassword : t.showPassword}
         aria-pressed={show}
         className="absolute right-2 top-1/2 grid h-8 w-8 -translate-y-1/2 cursor-pointer place-items-center rounded-none text-muted transition-colors duration-200 hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-primary-500"
       >

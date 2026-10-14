@@ -33,23 +33,35 @@ import {
   ResultDisclaimer,
   SelectField,
 } from "./calculator-fields";
+import { useLocale, useT } from "./locale-link";
+import { vatMessages } from "../lib/messages/vat";
+import { localDate, numberFormat, percent } from "../lib/i18n";
+import { Emphasis, fill } from "./ui";
 
 type Side = "received" | "paid";
 
-const money = (n: number) =>
-  new Intl.NumberFormat("en-IE", {
-    style: "currency",
-    currency: "EUR",
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(n);
+/* Money in the page's language: €1,234.50 / 1.234,50 € / € 1.234,50. */
+function useMoney() {
+  const locale = useLocale();
+  const two = numberFormat(locale, { style: "currency", currency: "EUR", minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const zero = numberFormat(locale, { style: "currency", currency: "EUR", maximumFractionDigits: 0 });
+  return { money: (n: number) => two.format(n), eur0: (n: number) => zero.format(n) };
+}
 
-const eur0 = (n: number) =>
-  new Intl.NumberFormat("en-IE", {
-    style: "currency",
-    currency: "EUR",
-    maximumFractionDigits: 0,
-  }).format(n);
+/* A rate's name and text in the page's language, or as stored. */
+function useRateText() {
+  const t = useT(vatMessages);
+  const locale = useLocale();
+  return (r: VatRate) => {
+    const tr = t.rates[r.key];
+    return {
+      name: tr?.name ?? r.label.split(": ")[0],
+      group: tr ? `${tr.name}: ${percent(locale, r.percent)}` : r.label,
+      applies: tr?.applies ?? r.applies,
+      note: r.note ? (tr?.note ?? r.note) : undefined,
+    };
+  };
+}
 
 const keyOf = (label: string) =>
   (VAT_CATEGORIES.find((c) => c.label === label) ?? VAT_CATEGORIES[0]).rateKey;
@@ -69,16 +81,18 @@ function CategorySelect({
   hint?: React.ReactNode;
   rates: VatRate[];
 }) {
+  const t = useT(vatMessages);
+  const rateText = useRateText();
   return (
     <SelectField label={label} value={value} onChange={onChange} hint={hint}>
       {rates.map((r) => {
         const items = VAT_CATEGORIES.filter((c) => c.rateKey === r.key);
         if (items.length === 0) return null;
         return (
-          <optgroup key={r.key} label={r.label}>
+          <optgroup key={r.key} label={rateText(r).group}>
             {items.map((c) => (
               <option key={c.label} value={c.label}>
-                {c.label}
+                {t.categories[c.label] ?? c.label}
               </option>
             ))}
           </optgroup>
@@ -92,27 +106,20 @@ function CategorySelect({
 
 function VerdictCard({ pos }: { pos: VatPosition }) {
   const { outputVat: received, inputVat: paid, netVat, direction } = pos;
-
+  const t = useT(vatMessages);
+  const { money } = useMoney();
+  const copy = t.verdict[direction];
   const view = {
-    payable: {
-      tag: { text: "Payable", cls: "bg-navy-900 text-white" },
-      eyebrow: "VAT payable",
-      sub: "payable to Revenue for the period: you received more VAT on sales than you paid on purchases.",
-      netLabel: "Net VAT payable (T3)",
+    ...copy,
+    tag: {
+      text: copy.tag,
+      cls: {
+        payable: "bg-navy-900 text-white",
+        receivable: "bg-primary-500 text-white",
+        balanced: "border border-line bg-surface-muted text-muted",
+      }[direction],
     },
-    receivable: {
-      tag: { text: "Receivable", cls: "bg-primary-500 text-white" },
-      eyebrow: "VAT receivable",
-      sub: "receivable from Revenue for the period: you paid more VAT on purchases than you received on sales.",
-      netLabel: "Net VAT repayable (T4)",
-    },
-    balanced: {
-      tag: { text: "Balanced", cls: "border border-line bg-surface-muted text-muted" },
-      eyebrow: "VAT position",
-      sub: "VAT received and VAT paid are equal: nothing due either way.",
-      netLabel: "Net VAT position",
-    },
-  }[direction];
+  };
 
   return (
     <div className="border border-line bg-surface">
@@ -135,12 +142,12 @@ function VerdictCard({ pos }: { pos: VatPosition }) {
           <ProportionBar
             segments={[
               {
-                label: `VAT received ${money(received)}`,
+                label: t.receivedBar.replace("{amount}", money(received)),
                 value: received,
                 className: "bg-navy-900",
               },
               {
-                label: `VAT paid ${money(paid)}`,
+                label: t.paidBar.replace("{amount}", money(paid)),
                 value: paid,
                 className: "bg-primary-500",
               },
@@ -153,7 +160,7 @@ function VerdictCard({ pos }: { pos: VatPosition }) {
           <div className="flex items-baseline gap-2.5">
             <LegendDot className="bg-navy-900" />
             <span className="text-sm text-ink-body">
-              VAT received on sales (output: T1)
+              {t.receivedRow}
             </span>
           </div>
           <span className="text-sm font-medium text-ink tabular-nums">
@@ -164,7 +171,7 @@ function VerdictCard({ pos }: { pos: VatPosition }) {
           <div className="flex items-baseline gap-2.5">
             <LegendDot className="bg-primary-500" />
             <span className="text-sm text-ink-body">
-              VAT paid on purchases (input: T2)
+              {t.paidRow}
             </span>
           </div>
           <span className="text-sm font-medium text-ink tabular-nums">{money(paid)}</span>
@@ -177,8 +184,7 @@ function VerdictCard({ pos }: { pos: VatPosition }) {
         </div>
       </dl>
       <p className="border-t border-line px-5 py-3 text-xs leading-5 text-muted sm:px-6">
-        Mirrors the VAT3 return: T1 VAT on sales, T2 VAT on purchases; only the
-        difference changes hands with Revenue.
+        {t.mirrorsVat3}
       </p>
     </div>
   );
@@ -187,25 +193,26 @@ function VerdictCard({ pos }: { pos: VatPosition }) {
 /* ---------- registration thresholds ---------- */
 
 function ThresholdsCard({ thresholds }: { thresholds: VatThresholds }) {
+  const t = useT(vatMessages);
+  const locale = useLocale();
+  const { eur0 } = useMoney();
   return (
     <div className="mt-5 border border-line bg-surface p-5">
       <h3 className="text-xs font-semibold uppercase tracking-[0.16em] text-muted">
-        VAT registration thresholds
+        {t.thresholdsTitle}
       </h3>
       <div className="mt-3 flex flex-wrap gap-x-8 gap-y-2 text-sm text-ink-body">
         <span>
-          Goods:{" "}
+          {t.goods}{" "}
           <span className="font-semibold text-ink">{eur0(thresholds.goods)}</span>
         </span>
         <span>
-          Services:{" "}
+          {t.services}{" "}
           <span className="font-semibold text-ink">{eur0(thresholds.services)}</span>
         </span>
       </div>
       <p className="mt-2 text-xs leading-5 text-muted">
-        Turnover limits in any 12-month period, in force since {thresholds.since}.
-        You must register once turnover exceeds, or is likely to exceed, the limit
-        for your activity.
+        {t.thresholdsBody.replace("{since}", localDate(locale, thresholds.since))}
       </p>
     </div>
   );
@@ -215,6 +222,9 @@ function ThresholdsCard({ thresholds }: { thresholds: VatThresholds }) {
 
 export function IrelandVatCalculator({ config }: { config: VatConfig }) {
   const { rates, thresholds } = config;
+  const t = useT(vatMessages);
+  const { money } = useMoney();
+  const rateText = useRateText();
   const [side, setSide] = useState<Side>("received");
   const [salesAmount, setSalesAmount] = useState(0);
   const [purchaseAmount, setPurchaseAmount] = useState(0);
@@ -239,24 +249,22 @@ export function IrelandVatCalculator({ config }: { config: VatConfig }) {
   const pos = vatPosition(sales.vat, purchases.vat);
 
   const received = side === "received";
+  const locale = useLocale();
 
   return (
     <div className="grid gap-10 lg:grid-cols-2">
       {/* inputs — tabbed by side */}
       <div className="flex flex-col gap-5">
         <div className="border-l-[3px] border-primary-500 bg-surface-muted px-4 py-3 text-xs leading-5 text-ink-body">
-          <span className="font-semibold text-ink">How VAT settles.</span> Fill both
-          tabs: the VAT you <span className="font-medium text-ink">receive</span> on
-          sales and the VAT you <span className="font-medium text-ink">pay</span> on
-          purchases. The result on the right nets them into what&rsquo;s payable to,
-          or receivable from, Revenue.
+          <span className="font-semibold text-ink">{t.introTitle}</span>{" "}
+          <Emphasis text={t.introBody} className="font-medium not-italic text-ink" />
         </div>
 
         {/* side tabs */}
         <div>
           <div
             role="tablist"
-            aria-label="VAT side"
+            aria-label={t.sideLabel}
             className="flex gap-1.5 rounded-none border border-line bg-surface-muted p-1"
           >
             {(["received", "paid"] as Side[]).map((s) => {
@@ -272,7 +280,7 @@ export function IrelandVatCalculator({ config }: { config: VatConfig }) {
                     active ? "bg-surface text-ink shadow-sm" : "text-muted hover:text-ink"
                   }`}
                 >
-                  {s === "received" ? "VAT received (sales)" : "VAT paid (purchases)"}
+                  {s === "received" ? t.tabReceived : t.tabPaid}
                 </button>
               );
             })}
@@ -287,7 +295,7 @@ export function IrelandVatCalculator({ config }: { config: VatConfig }) {
               <div className="flex items-baseline gap-2.5">
                 <LegendDot className={received ? "bg-navy-900" : "bg-primary-500"} />
                 <h3 className="text-sm font-semibold text-ink">
-                  {received ? "VAT received on sales" : "VAT paid on purchases"}
+                  {received ? t.headReceived : t.headPaid}
                 </h3>
               </div>
               <span
@@ -295,52 +303,54 @@ export function IrelandVatCalculator({ config }: { config: VatConfig }) {
                   received ? "bg-navy-900" : "bg-primary-500"
                 }`}
               >
-                {(received ? salesRate : purchaseRate).percent}%
+                {percent(locale, (received ? salesRate : purchaseRate).percent)}
               </span>
             </div>
             <p className="mt-1 text-xs leading-5 text-muted">
-              {received
-                ? "VAT you charge customers: owed to Revenue (output VAT)."
-                : "VAT you pay suppliers: reclaimable from Revenue (input VAT)."}
+              {received ? t.descReceived : t.descPaid}
             </p>
 
             <div className="mt-4 flex flex-col gap-4">
               {received ? (
                 <CategorySelect
-                  label="What you sell"
+                  label={t.whatYouSell}
                   value={salesCategory}
                   onChange={setSalesCategory}
                   rates={rates}
                   hint={
                     <>
-                      {salesRate.label.split(": ")[0]} rate: {salesRate.applies}.
-                      {salesRate.note && <span className="block">{salesRate.note}</span>}
+                      {t.rateApplies
+                        .replace("{rate}", rateText(salesRate).name)
+                        .replace("{applies}", rateText(salesRate).applies)}
+                      {rateText(salesRate).note && (
+                        <span className="block">{rateText(salesRate).note}</span>
+                      )}
                     </>
                   }
                 />
               ) : (
                 <CategorySelect
-                  label="What you buy"
+                  label={t.whatYouBuy}
                   value={purchaseCategory}
                   onChange={setPurchaseCategoryOverride}
                   rates={rates}
                   hint={
                     <>
-                      {purchaseRate.label.split(": ")[0]} rate: {purchaseRate.applies}.
-                      {purchaseRate.note && (
-                        <span className="block">{purchaseRate.note}</span>
+                      {t.rateApplies
+                        .replace("{rate}", rateText(purchaseRate).name)
+                        .replace("{applies}", rateText(purchaseRate).applies)}
+                      {rateText(purchaseRate).note && (
+                        <span className="block">{rateText(purchaseRate).note}</span>
                       )}
                       <span className="mt-0.5 block text-muted">
-                        {purchaseMirrored
-                          ? "Mirrors what you sell: change if you buy at a different rate."
-                          : "Set independently. "}
+                        {purchaseMirrored ? t.mirrored : t.independent}
                         {!purchaseMirrored && (
                           <button
                             type="button"
                             onClick={() => setPurchaseCategoryOverride(null)}
                             className="font-medium text-primary-500 underline-offset-2 hover:underline"
                           >
-                            Match what you sell
+                            {t.matchSell}
                           </button>
                         )}
                       </span>
@@ -351,17 +361,17 @@ export function IrelandVatCalculator({ config }: { config: VatConfig }) {
 
               {received ? (
                 <CurrencyField
-                  label="Sales for the period (excluding VAT)"
+                  label={t.salesLabel}
                   value={salesAmount}
                   onChange={setSalesAmount}
-                  hint="Everything you invoiced before VAT: a year, a quarter or one VAT period."
+                  hint={t.salesHint}
                 />
               ) : (
                 <CurrencyField
-                  label="Purchases for the period (including VAT)"
+                  label={t.purchasesLabel}
                   value={purchaseAmount}
                   onChange={setPurchaseAmount}
-                  hint="Supplier invoice totals you actually paid, VAT included."
+                  hint={t.purchasesHint}
                 />
               )}
             </div>
@@ -369,22 +379,20 @@ export function IrelandVatCalculator({ config }: { config: VatConfig }) {
             <p className="mt-3 border-t border-line pt-3 text-xs leading-5 text-muted">
               {received ? (
                 sales.gross > 0 ? (
-                  <>
-                    VAT received:{" "}
-                    <span className="font-medium text-ink">{money(sales.vat)}</span>, and
-                    customers pay {money(sales.gross)} gross.
-                  </>
+                  fill(t.salesSummary, {
+                    vat: <span className="font-medium text-ink">{money(sales.vat)}</span>,
+                    gross: money(sales.gross),
+                  })
                 ) : (
-                  "Enter your sales to see the VAT you receive."
+                  t.salesEmpty
                 )
               ) : purchases.gross > 0 ? (
-                <>
-                  VAT paid:{" "}
-                  <span className="font-medium text-ink">{money(purchases.vat)}</span>,
-                  on a net cost of {money(purchases.net)}.
-                </>
+                fill(t.purchasesSummary, {
+                  vat: <span className="font-medium text-ink">{money(purchases.vat)}</span>,
+                  net: money(purchases.net),
+                })
               ) : (
-                "Enter your purchases to see the VAT you pay."
+                t.purchasesEmpty
               )}
             </p>
           </div>
@@ -393,11 +401,11 @@ export function IrelandVatCalculator({ config }: { config: VatConfig }) {
         {/* both-sides recap, so switching tabs never hides a figure */}
         <div className="flex flex-wrap gap-x-6 gap-y-1 border border-line bg-surface-muted px-4 py-3 text-xs text-ink-body">
           <span>
-            VAT received:{" "}
+            {t.recapReceived}{" "}
             <span className="font-semibold text-ink tabular-nums">{money(sales.vat)}</span>
           </span>
           <span>
-            VAT paid:{" "}
+            {t.recapPaid}{" "}
             <span className="font-semibold text-ink tabular-nums">
               {money(purchases.vat)}
             </span>

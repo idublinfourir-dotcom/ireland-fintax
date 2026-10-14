@@ -13,6 +13,8 @@ import { revalidatePath } from "next/cache";
 import { findRequestableResourceBySlug } from "../lib/toolkit-content";
 import { createRequest } from "../lib/toolkit-requests";
 import { allowPublicAction } from "../lib/rate-limit";
+import { getT } from "../lib/messages";
+import { toolkitMessages } from "../lib/messages/toolkits";
 
 export interface RequestState {
   status: "idle" | "sent" | "error";
@@ -65,36 +67,37 @@ export async function submitResourceRequestAction(
   const website = String(formData.get("website") ?? "").trim();
   const purpose = String(formData.get("purpose") ?? "").trim();
 
+  const t = (await getT(toolkitMessages)).errors;
   const errors: Record<string, string> = {};
 
-  if (!name) errors.name = "Please tell us your name.";
-  else if (name.length > LIMITS.name) errors.name = "That name is too long.";
+  if (!name) errors.name = t.nameMissing;
+  else if (name.length > LIMITS.name) errors.name = t.nameLong;
 
-  if (!phone) errors.phone = "Please give us a phone number.";
-  else if (phone.length > LIMITS.phone) errors.phone = "That number is too long.";
+  if (!phone) errors.phone = t.phoneMissing;
+  else if (phone.length > LIMITS.phone) errors.phone = t.phoneLong;
   else if (!PHONE_RE.test(phone) || (phone.replace(/\D/g, "").length < 7))
-    errors.phone = "Enter a valid phone number.";
+    errors.phone = t.phoneInvalid;
 
-  if (!email) errors.email = "Please give us an email address.";
-  else if (email.length > LIMITS.email) errors.email = "That address is too long.";
-  else if (!EMAIL_RE.test(email)) errors.email = "Enter a valid email address.";
+  if (!email) errors.email = t.emailMissing;
+  else if (email.length > LIMITS.email) errors.email = t.emailLong;
+  else if (!EMAIL_RE.test(email)) errors.email = t.emailInvalid;
 
   let normalisedWebsite = "";
-  if (!website) errors.website = "Please give us your organisation's website.";
+  if (!website) errors.website = t.websiteMissing;
   else if (website.length > LIMITS.website)
-    errors.website = "That address is too long.";
+    errors.website = t.websiteLong;
   else {
     const parsed = normaliseWebsite(website);
-    if (!parsed) errors.website = "Enter a valid website address, e.g. acme.ie";
+    if (!parsed) errors.website = t.websiteInvalid;
     else normalisedWebsite = parsed;
   }
 
-  if (!purpose) errors.purpose = "Let us know what you need it for.";
+  if (!purpose) errors.purpose = t.purposeMissing;
   else if (purpose.length > LIMITS.purpose)
-    errors.purpose = "Please keep this under 1000 characters.";
+    errors.purpose = t.purposeLong;
 
   if (Object.keys(errors).length > 0) {
-    return { status: "error", message: "Please check the fields below.", errors };
+    return { status: "error", message: t.checkFields, errors };
   }
 
   // Resolve the slug server-side rather than trusting a posted title.
@@ -102,7 +105,7 @@ export async function submitResourceRequestAction(
   if (!resource) {
     return {
       status: "error",
-      message: "That resource is no longer available. Please go back and pick another.",
+      message: t.gone,
     };
   }
 
@@ -124,7 +127,7 @@ export async function submitResourceRequestAction(
   if (!allowed) {
     return {
       status: "error",
-      message: "That is a lot of requests in one go. Please try again later.",
+      message: t.rateLimited,
     };
   }
 
@@ -141,7 +144,7 @@ export async function submitResourceRequestAction(
     console.error("[toolkits] could not record request:", err);
     return {
       status: "error",
-      message: "Something went wrong saving your request. Please try again.",
+      message: t.saveFailed,
     };
   }
 

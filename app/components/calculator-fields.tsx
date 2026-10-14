@@ -6,6 +6,11 @@
    the VAT and Corporation Tax calculators both draw from. */
 
 import { useId, useState } from "react";
+import Link, { useLocale, useT } from "./locale-link";
+import { calcMessages } from "../lib/messages/calc";
+import { toolNames } from "../lib/messages/tool-names";
+import { localDate, numberFormat, percent } from "../lib/i18n";
+import { LATEST_BUDGET } from "../lib/budgets";
 
 /* ---------- buttons (match ui.tsx Button) ---------- */
 
@@ -219,12 +224,13 @@ export interface BarSegment {
 }
 
 export function ProportionBar({ segments }: { segments: BarSegment[] }) {
+  const t = useT(calcMessages);
   const total = segments.reduce((sum, s) => sum + Math.max(0, s.value), 0);
   const summary = segments.map((s) => s.label).join(", ");
   return (
     <div
       role="img"
-      aria-label={total > 0 ? summary : "No amount entered yet"}
+      aria-label={total > 0 ? summary : t.noAmount}
       className="flex h-2.5 w-full overflow-hidden border border-line bg-surface-muted"
     >
       {total > 0 &&
@@ -254,6 +260,52 @@ export function LegendDot({ className }: { className: string }) {
   );
 }
 
+/* ---------- numbers in the page's language ---------- */
+
+/** The formatters every calculator used with "en-IE", now in the page's
+    language: €1,234.50 / 1.234,50 € / € 1.234,50. */
+export function useFormat() {
+  const locale = useLocale();
+  const money2 = numberFormat(locale, { style: "currency", currency: "EUR", minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const money0 = numberFormat(locale, { style: "currency", currency: "EUR", maximumFractionDigits: 0 });
+  const pct2 = numberFormat(locale, { style: "percent", minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const pct1 = numberFormat(locale, { style: "percent", minimumFractionDigits: 1, maximumFractionDigits: 1 });
+  const num = numberFormat(locale);
+  return {
+    locale,
+    money: (n: number) => money2.format(n),
+    eur0: (n: number) => money0.format(n),
+    pct2: (fraction: number) => pct2.format(fraction),
+    pct1: (fraction: number) => pct1.format(fraction),
+    num: (n: number) => num.format(n),
+    /** A rate given in percent points: 12.5 → "12.5%" / "12,5 %". */
+    rate: (points: number) => percent(locale, points),
+  };
+}
+
+/* ---------- breadcrumb landmark ---------- */
+
+/** The breadcrumb's <nav>, named in the page's language (Breadcrumbs in ui.tsx). */
+export function BreadcrumbNav({ children }: { children: React.ReactNode }) {
+  return <nav aria-label={useT(calcMessages).breadcrumb}>{children}</nav>;
+}
+
+/* ---------- the newest Budget ---------- */
+
+/** BudgetNote's link (ui.tsx), here because it needs the page's language. */
+export function BudgetNoteLink() {
+  const t = useT(calcMessages);
+  const label = useT(toolNames)[LATEST_BUDGET.href]?.label ?? LATEST_BUDGET.label;
+  return (
+    <Link
+      href={LATEST_BUDGET.href}
+      className="font-semibold text-primary-600 transition-colors duration-200 hover:text-primary-500"
+    >
+      {t.budgetLink.replace("{budget}", label)}
+    </Link>
+  );
+}
+
 /* ---------- compliance chrome (mandatory on a regulated CA-firm site) ---------- */
 
 /** "Rates current as of …" stamp, read from the tool's config. */
@@ -264,16 +316,18 @@ export function RateStamp({
   asOf: string;
   sourceUrl: string;
 }) {
+  const t = useT(calcMessages);
+  const locale = useLocale();
   return (
     <p className="text-xs text-muted">
-      Rates current as of {asOf}.{" "}
+      {t.ratesAsOf.replace("{date}", localDate(locale, asOf))}{" "}
       <a
         href={sourceUrl}
         target="_blank"
         rel="noopener noreferrer"
         className="font-medium text-primary-500 underline-offset-2 hover:underline"
       >
-        Source: revenue.ie
+        {t.source}
       </a>
     </p>
   );
@@ -287,12 +341,12 @@ export function ResultDisclaimer({
   asOf: string;
   sourceUrl: string;
 }) {
+  const t = useT(calcMessages);
+  const [before, after] = t.disclaimer.split("{link}");
   return (
     <div className="mt-8 border-t border-line pt-6">
       <p className="text-xs leading-5 text-muted">
-        This is an indicative estimate only, not tax advice. Figures are
-        general and may not reflect reliefs, exemptions or your specific
-        circumstances. Confirm any figure with a qualified adviser or{" "}
+        {before}
         <a
           href={sourceUrl}
           target="_blank"
@@ -300,8 +354,8 @@ export function ResultDisclaimer({
           className="font-medium text-primary-500 underline-offset-2 hover:underline"
         >
           revenue.ie
-        </a>{" "}
-        before acting on it.
+        </a>
+        {after}
       </p>
       <div className="mt-3">
         <RateStamp asOf={asOf} sourceUrl={sourceUrl} />

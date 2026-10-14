@@ -6,11 +6,13 @@ import { signIn, updateSession } from "../../../auth";
 import { requireUser } from "../../lib/auth/guards";
 import { toObjectId, usersCollection } from "../../lib/collections";
 import { hashPassword } from "../../lib/auth/password";
-import { AUTH_NOT_CONFIGURED, isAuthConfigured } from "../../lib/auth/config";
+import { isAuthConfigured } from "../../lib/auth/config";
 import {
   validateDisplayName,
   validatePassword,
 } from "../../lib/account-validation";
+import { getT } from "../../lib/messages";
+import { accountMessages } from "../../lib/messages/account";
 
 export type SettingsState = { ok?: string; error?: string };
 
@@ -31,16 +33,17 @@ export async function updateNameAction(
   _prev: SettingsState,
   formData: FormData,
 ): Promise<SettingsState> {
+  const t = (await getT(accountMessages)).errors;
   const user = await requireUser();
   const fullName = String(formData.get("full_name") ?? "").trim();
 
-  const invalid = validateDisplayName(fullName);
+  const invalid = validateDisplayName(fullName, t);
   if (invalid) return { error: invalid };
 
-  if (!isAuthConfigured()) return { error: AUTH_NOT_CONFIGURED };
+  if (!isAuthConfigured()) return { error: t.notConfigured };
 
   const id = toObjectId(user.id);
-  if (!id) return { error: "Couldn't save your name. Please try again." };
+  if (!id) return { error: t.nameSaveFailed };
 
   try {
     const users = await usersCollection();
@@ -51,13 +54,13 @@ export async function updateNameAction(
     await updateSession({ user: { name: fullName } });
   } catch (err) {
     console.error("[settings] name update failed:", err);
-    return { error: "Couldn't save your name. Please try again." };
+    return { error: t.nameSaveFailed };
   }
 
   revalidatePath("/portal/settings");
   revalidatePath("/portal");
   revalidatePath("/admin/settings");
-  return { ok: "Name updated." };
+  return { ok: t.nameSaved };
 }
 
 /** Change the password on the active session. No current-password re-auth
@@ -66,17 +69,18 @@ export async function updatePasswordAction(
   _prev: SettingsState,
   formData: FormData,
 ): Promise<SettingsState> {
+  const t = (await getT(accountMessages)).errors;
   const user = await requireUser();
   const password = String(formData.get("password") ?? "");
   const confirm = String(formData.get("confirm") ?? "");
 
-  const invalid = validatePassword(password, confirm);
+  const invalid = validatePassword(password, confirm, t);
   if (invalid) return { error: invalid };
 
-  if (!isAuthConfigured()) return { error: AUTH_NOT_CONFIGURED };
+  if (!isAuthConfigured()) return { error: t.notConfigured };
 
   const id = toObjectId(user.id);
-  if (!id) return { error: "Couldn't update your password. Please try again." };
+  if (!id) return { error: t.passwordSaveFailed };
 
   try {
     const users = await usersCollection();
@@ -98,7 +102,7 @@ export async function updatePasswordAction(
     );
   } catch (err) {
     console.error("[settings] password update failed:", err);
-    return { error: "Couldn't update your password. Please try again." };
+    return { error: t.passwordSaveFailed };
   }
 
   /* Re-mint THIS browser's session, or the stamp above would sign the author
@@ -116,5 +120,5 @@ export async function updatePasswordAction(
     console.error("[settings] password changed but re-signing in failed:", err.type);
   }
 
-  return { ok: "Password updated." };
+  return { ok: t.passwordSaved };
 }

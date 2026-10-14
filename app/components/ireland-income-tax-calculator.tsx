@@ -8,23 +8,28 @@
 import { useEffect, useId, useRef, useState } from "react";
 import {
   compareYears,
-  eur,
   RATES_BY_YEAR,
   type IncomeTaxInput,
   type IncomeTaxResult,
   type YearComparison,
   type YearRates,
 } from "../lib/ireland-income-tax";
+import { useT } from "./locale-link";
+import { incomeTaxMessages, type IncomeTaxMessages } from "../lib/messages/income-tax";
+import { useFormat } from "./calculator-fields";
 
 /* Money in the results table: whole euros (rounded like Deloitte) shown as .00.
    Negatives come out as "-€4,987.00"; deduction rows wrap in parentheses. */
-const money = (n: number) =>
-  new Intl.NumberFormat("en-IE", {
-    style: "currency",
-    currency: "EUR",
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(Math.round(n));
+function useMoney() {
+  const { money } = useFormat();
+  return (n: number) => money(Math.round(n));
+}
+
+/* A rate held as a fraction (0.2) in the page's language: 20% / 20 %. */
+function useRateLabel() {
+  const { rate } = useFormat();
+  return (fraction: number) => rate(+(fraction * 100).toFixed(2));
+}
 
 /* ---------- button styles (match app/components/ui.tsx Button) ---------- */
 
@@ -85,14 +90,15 @@ function YesNoField({
   value: boolean;
   onChange: (v: boolean) => void;
 }) {
+  const t = useT(incomeTaxMessages);
   return (
     <SegmentedField<"yes" | "no">
       label={label}
       value={value ? "yes" : "no"}
       onChange={(v) => onChange(v === "yes")}
       options={[
-        { value: "yes", label: "Yes" },
-        { value: "no", label: "No" },
+        { value: "yes", label: t.yes },
+        { value: "no", label: t.no },
       ]}
     />
   );
@@ -206,38 +212,41 @@ interface RowDef {
   spouseOnly?: boolean;
 }
 
-const rateLabel = (rate: number) => `${+(rate * 100).toFixed(2)}%`;
-
-const buildRows = (rates: YearRates): RowDef[] => [
-  { label: "Total Income", value: (r) => r.grossIncome },
-  { label: "Your Income", value: (r) => r.yourIncome },
-  { label: "Spouse Income", value: (r) => r.spouseIncome, spouseOnly: true },
-  { label: "Qualifying Pension Deduction", value: (r) => r.pension.qualifying, deduct: true },
+const buildRows = (
+  rates: YearRates,
+  t: IncomeTaxMessages["rows"],
+  rateLabel: (fraction: number) => string,
+): RowDef[] => [
+  { label: t.total, value: (r) => r.grossIncome },
+  { label: t.yours, value: (r) => r.yourIncome },
+  { label: t.spouse, value: (r) => r.spouseIncome, spouseOnly: true },
+  { label: t.pension, value: (r) => r.pension.qualifying, deduct: true },
   {
-    label: "Tax @ Lower Rate",
+    label: t.lower,
     rate: rateLabel(rates.incomeTax.standardRate),
     value: (r) => r.incomeTax.taxAtStandard,
   },
   {
-    label: "Tax @ Higher Rate",
+    label: t.higher,
     rate: rateLabel(rates.incomeTax.higherRate),
     value: (r) => r.incomeTax.taxAtHigher,
   },
-  { label: "Tax Credits", value: (r) => r.incomeTax.totalCredits, deduct: true },
-  { label: "Net Tax", value: (r) => r.incomeTax.netTax, deduct: true, variant: "emphasis" },
-  { label: "Universal Social Charge", value: (r) => r.usc.total + r.spouseUsc.total, deduct: true },
+  { label: t.credits, value: (r) => r.incomeTax.totalCredits, deduct: true },
+  { label: t.netTax, value: (r) => r.incomeTax.netTax, deduct: true, variant: "emphasis" },
+  { label: t.usc, value: (r) => r.usc.total + r.spouseUsc.total, deduct: true },
   {
-    label: "Annual Net Income before deduction for PRSI",
+    label: t.beforePrsi,
     value: (r) => r.netIncomeBeforePrsi,
     variant: "emphasis",
   },
-  { label: "PRSI", value: (r) => r.prsi.total + r.spousePrsi.total, deduct: true },
-  { label: "Annual Net Income", value: (r) => r.netIncome, variant: "net" },
-  { label: "Monthly Net Income", value: (r) => r.monthlyNetIncome, variant: "net" },
-  { label: "Weekly Net Income", value: (r) => r.weeklyNetIncome, variant: "net" },
+  { label: t.prsi, value: (r) => r.prsi.total + r.spousePrsi.total, deduct: true },
+  { label: t.annual, value: (r) => r.netIncome, variant: "net" },
+  { label: t.monthly, value: (r) => r.monthlyNetIncome, variant: "net" },
+  { label: t.weekly, value: (r) => r.weeklyNetIncome, variant: "net" },
 ];
 
 function AmountCell({ row, r }: { row: RowDef; r: IncomeTaxResult }) {
+  const money = useMoney();
   const text = row.deduct ? `(${money(row.value(r))})` : money(row.value(r));
   return (
     <td className="px-4 py-2.5 text-right tabular-nums text-ink">
@@ -259,7 +268,9 @@ function ResultsTable({
   priorYear: number;
 }) {
   const { current, prior, delta } = comparison;
-  const ROWS = buildRows(rates).filter(
+  const t = useT(incomeTaxMessages);
+  const money = useMoney();
+  const ROWS = buildRows(rates, t.rows, useRateLabel()).filter(
     (row) => !row.spouseOnly || current.spouseIncome > 0,
   );
   const rowBg = (variant: RowVariant | undefined, i: number) => {
@@ -298,13 +309,13 @@ function ResultsTable({
       {/* difference block */}
       <div className="mt-8">
         <h3 className="text-center font-display text-base font-medium text-ink">
-          Total difference between {currentYear} and {priorYear}
+          {t.difference.replace("{current}", String(currentYear)).replace("{prior}", String(priorYear))}
         </h3>
         <dl className="mx-auto mt-4 max-w-xl">
           {[
-            { label: "Annual Net Income", v: delta.annual },
-            { label: "Monthly Net Income", v: delta.monthly },
-            { label: "Weekly Net Income", v: delta.weekly },
+            { label: t.rows.annual, v: delta.annual },
+            { label: t.rows.monthly, v: delta.monthly },
+            { label: t.rows.weekly, v: delta.weekly },
           ].map((d) => (
             <div
               key={d.label}
@@ -357,6 +368,9 @@ export function IrelandIncomeTaxCalculator({
       hands over the visitor's own). */
   initialInput?: IncomeTaxInput;
 }) {
+  const t = useT(incomeTaxMessages);
+  const { eur0 } = useFormat();
+  const rateLabel = useRateLabel();
   const [form, setForm] = useState<IncomeTaxInput>(() => ({ ...DEFAULTS, ...initialInput }));
   const [result, setResult] = useState<YearComparison | null>(() =>
     initialInput ? compareYears(form, currentYear, priorYear, ratesByYear) : null,
@@ -392,21 +406,18 @@ export function IrelandIncomeTaxCalculator({
         />
         <div className="mt-10 flex flex-wrap justify-center gap-4">
           <button type="button" className={btnOutline} onClick={() => setResult(null)}>
-            ← Go Back
+            {t.goBack}
           </button>
           <button type="button" className={btnPrimary} onClick={newCalculation}>
-            New Calculation
+            {t.newCalc}
           </button>
         </div>
         <p className="mt-8 text-center text-xs leading-5 text-muted">
-          Estimate for the Republic of Ireland. PRSI uses the flat rate at the start of each
-          year ({rateLabel(ratesByYear[currentYear].prsi.rate)} for {currentYear},{" "}
-          {rateLabel(ratesByYear[priorYear].prsi.rate)} for {priorYear}). Married couples are
-          jointly assessed with the second-income band increase, or the Home Carer credit
-          where that is worth more; spouse USC and PRSI are computed on the spouse&apos;s own
-          income (spouse assumed in the same USC age band). The rent credit assumes your
-          tenancy qualifies. Excludes widowed bereavement-year uplift, medical-card USC
-          relief and the 66+ state-pension PRSI exemption.
+          {t.footnote
+            .replace("{currentRate}", rateLabel(ratesByYear[currentYear].prsi.rate))
+            .replace("{current}", String(currentYear))
+            .replace("{priorRate}", rateLabel(ratesByYear[priorYear].prsi.rate))
+            .replace("{prior}", String(priorYear))}
         </p>
       </div>
     );
@@ -421,43 +432,43 @@ export function IrelandIncomeTaxCalculator({
       }}
     >
       <div className="flex flex-col gap-5">
-        <h3 className="font-display text-lg font-medium text-ink">Status</h3>
+        <h3 className="font-display text-lg font-medium text-ink">{t.status}</h3>
         <SegmentedField
-          label="Marital status"
+          label={t.marital}
           value={form.maritalStatus}
           onChange={(v) => set("maritalStatus", v)}
           options={[
-            { value: "single", label: "Single" },
-            { value: "married", label: "Married" },
-            { value: "widowed", label: "Widowed" },
+            { value: "single", label: t.single },
+            { value: "married", label: t.married },
+            { value: "widowed", label: t.widowed },
           ]}
         />
         <YesNoField
-          label="Do you have a child(ren) in respect of whom you are in receipt of child benefit?"
+          label={t.childBenefit}
           value={form.hasChildOnChildBenefit}
           onChange={(v) => set("hasChildOnChildBenefit", v)}
         />
         <YesNoField
-          label="Do you have any dependent child(ren) of which you are the principal carer?"
+          label={t.principalCarer}
           value={form.isPrincipalCarerOfDependentChild}
           onChange={(v) => set("isPrincipalCarerOfDependentChild", v)}
         />
         <NumberField
-          label={`Your age attained during ${currentYear}`}
+          label={t.age.replace("{current}", String(currentYear))}
           value={form.age}
           onChange={(v) => set("age", v)}
         />
 
         <h3 className="mt-4 font-display text-lg font-medium text-ink">
-          Income and allowances
+          {t.income}
         </h3>
         <CurrencyField
-          label="Employment income"
+          label={t.employment}
           value={form.employmentIncome}
           onChange={(v) => set("employmentIncome", v)}
         />
         <CurrencyField
-          label="Self-employment / other income"
+          label={t.selfEmployment}
           value={form.selfEmploymentOrOtherIncome}
           onChange={(v) => set("selfEmploymentOrOtherIncome", v)}
         />
@@ -465,21 +476,21 @@ export function IrelandIncomeTaxCalculator({
         {form.maritalStatus === "married" && (
           <>
             <h3 className="mt-4 font-display text-lg font-medium text-ink">
-              Spouse / civil partner income
+              {t.spouseHeading}
             </h3>
             <CurrencyField
-              label="Spouse employment income"
+              label={t.spouseEmployment}
               value={form.spouseEmploymentIncome ?? 0}
               onChange={(v) => set("spouseEmploymentIncome", v)}
             />
             <CurrencyField
-              label="Spouse self-employment / other income"
+              label={t.spouseSelf}
               value={form.spouseSelfEmploymentOrOtherIncome ?? 0}
               onChange={(v) => set("spouseSelfEmploymentOrOtherIncome", v)}
-              hint={`Married couples are jointly assessed: a second income raises the 20% band by up to ${eur(ratesByYear[currentYear].incomeTax.srcop.marriedBandIncrease)}.`}
+              hint={t.spouseHint.replace("{amount}", eur0(ratesByYear[currentYear].incomeTax.srcop.marriedBandIncrease))}
             />
             <YesNoField
-              label="Does one of you work in the home caring for a child, someone aged 65 or over, or someone permanently incapacitated?"
+              label={t.homeCarer}
               value={form.claimHomeCarerCredit ?? false}
               onChange={(v) => set("claimHomeCarerCredit", v)}
             />
@@ -487,26 +498,26 @@ export function IrelandIncomeTaxCalculator({
         )}
 
         <CurrencyField
-          label="Rent paid for your home in the year"
+          label={t.rent}
           value={form.rentPaid ?? 0}
           onChange={(v) => set("rentPaid", v)}
-          hint="For the Rent Tax Credit. Not available with HAP, RAS, Rent Supplement or an approved housing body, and the tenancy must be registered with the RTB where that is required."
+          hint={t.rentHint}
         />
 
         <CurrencyField
-          label="Your pension contribution"
+          label={t.pensionContribution}
           value={form.pensionContribution}
           onChange={(v) => set("pensionContribution", v)}
-          hint="Relief is capped by your age band and €115,000 of earnings: any excess gets no relief."
+          hint={t.pensionHint}
         />
       </div>
 
       <div className="mt-8 flex flex-wrap justify-center gap-4">
         <button type="submit" className={btnPrimary}>
-          Calculate Tax
+          {t.calculate}
         </button>
         <button type="button" className={btnOutline} onClick={newCalculation}>
-          Clear Form
+          {t.clear}
         </button>
       </div>
     </form>

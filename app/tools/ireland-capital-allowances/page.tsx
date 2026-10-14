@@ -1,18 +1,23 @@
 import type { Metadata } from "next";
 import { Breadcrumbs, BudgetNote, Container, PageHero } from "../../components/ui";
 import { ContactCta } from "../../components/sections";
-import { CalculatorTabs } from "../../components/calculator-tabs";
+import { CalculatorTabs } from "../../components/tool-tabs";
 import { CapitalAllowancesTool } from "../../components/capital-allowances-tool";
 import { CA_LAST_REVIEWED } from "../../lib/ireland-capital-allowances";
 import { getCaData } from "../../lib/ca-data";
+import { getMessages, getT } from "../../lib/messages";
+import { caMessages } from "../../lib/messages/ca";
+import { calcMessages } from "../../lib/messages/calc";
+import { localDate } from "../../lib/i18n";
 
-export const metadata: Metadata = {
-  title: "Ireland Capital Allowances & Working Capital Calculator",
-  description:
-    "Two tools in one: Irish capital allowances (tax), plant & machinery 12.5% over 8 years, cars capped at €24,000 with CO2 limits, industrial buildings 4%, and 100% accelerated allowances for energy-efficient equipment, plus working capital (finance): current assets minus current liabilities with the current and quick ratios. Republic of Ireland.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  return (await getT(caMessages)).meta;
+}
 
 export default async function IrelandCapitalAllowancesPage() {
+  const { locale } = await getMessages();
+  const t = await getT(caMessages);
+  const c = await getT(calcMessages);
   const { config } = await getCaData();
 
   return (
@@ -22,23 +27,21 @@ export default async function IrelandCapitalAllowancesPage() {
         breadcrumb={
           <Breadcrumbs
             items={[
-              { label: "Home", href: "/" },
-              { label: "Tools" },
-              { label: "Capital allowances & working capital" },
+              { label: c.home, href: "/" },
+              { label: c.tools },
+              { label: t.crumb },
             ]}
           />
         }
-        title="Capital allowances & working capital"
-        lede={`Capital allowances (tax depreciation on plant, cars, buildings and energy-efficient equipment) and working capital (a liquidity snapshot) in one place, tax figures current as of ${CA_LAST_REVIEWED}.`}
+        title={t.title}
+        lede={t.lede.replace("{date}", localDate(locale, CA_LAST_REVIEWED))}
       />
 
       <Container className="py-16 sm:py-20">
         <CalculatorTabs current="/tools/ireland-capital-allowances" />
         <CapitalAllowancesTool config={config} />
 
-        <BudgetNote>
-          Budget 2027 extends the accelerated allowances on farm safety equipment to the end of 2029 and adds 12 items.
-        </BudgetNote>
+        <BudgetNote>{t.budgetNote}</BudgetNote>
       </Container>
 
       <ContactCta />
