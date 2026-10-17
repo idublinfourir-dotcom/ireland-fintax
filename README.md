@@ -1,7 +1,8 @@
 # Irish Fintax
 
 A free site for learning Irish tax and personal finance: calculators, guides
-and a client/admin area, with no firm, services or fees attached. Next.js 16
+and a client/admin area, with no firm, services or fees attached. In English
+and Irish (`/ga`). Next.js 16
 (App Router), React 19, TypeScript, Tailwind v4, **MongoDB** and **Auth.js v5**.
 
 Working rules for the codebase live in [`AGENTS.md`](./AGENTS.md). The database
@@ -98,8 +99,9 @@ app/
   api/auth/[...nextauth]/                                    # Auth.js handler
   lib/mongodb.ts, lib/collections.ts                         # data access
   lib/auth/                                                  # guards, roles, passwords, tokens
+  lib/i18n.ts, lib/messages/                                 # languages + translated copy
 auth.ts, auth.config.ts                                      # Auth.js (split, see below)
-proxy.ts                                                     # middleware: gates /portal, /admin
+proxy.ts                                                     # middleware: gates /portal, /admin; language prefix
 db/schema.md                                                 # collections + indexes
 scripts/db-*.mjs                                             # check · indexes · seed
 ```
@@ -117,6 +119,13 @@ do it on every route.
 **All data access goes through `app/lib/collections.ts`**, which names every
 collection and types every document. There is no client-side database access
 and no public database API.
+
+**Languages are a URL prefix, not a folder.** English is at the bare URLs and
+Irish under `/ga`. `proxy.ts` strips the prefix, rewrites to the same route
+and passes the locale on in a header, so nothing under `app/` moves. Copy lives in `app/lib/messages/`, both languages side by
+side. The blog stays in English, but under `/ga` it keeps the Irish header and
+footer, and points its canonical at the English page. The full rules are under
+"Languages" in [`AGENTS.md`](./AGENTS.md).
 
 ---
 
