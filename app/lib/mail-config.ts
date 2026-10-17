@@ -7,7 +7,7 @@
  *
  * app/lib/mailer.ts is the counterpart that actually sends. */
 
-import { site } from "./content";
+import { site } from "./content.ts";
 
 export interface MailerConfig {
   host: string;

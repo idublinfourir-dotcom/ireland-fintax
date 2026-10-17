@@ -9,7 +9,7 @@ Git push/merge workflow: see `CLAUDE.md`.
 **Irish Fintax** is a free learning platform for Irish tax and personal
 finance (Oct 2026 direction): calculators, guides and an "Ask a question"
 form, not a firm with services or fees. UK copy + tone: professional, plain
-English, no jargon. See "Direction: FREE LEARNING PLATFORM" in `CLAUDE.md`.
+English, no jargon. Public pages are in English and Irish: see "Languages" below. See "Direction: FREE LEARNING PLATFORM" in `CLAUDE.md`.
 
 
 
@@ -40,6 +40,8 @@ app/
   components/      # UI, layout, sections + motion primitives
   api/auth/[...nextauth]/  # Auth.js handler (sign-in, OAuth callback, sign-out)
   lib/content.ts   # site config, services, pricing, copy data
+  lib/i18n.ts      # languages, URL prefix rules, number/plural/date helpers (pure)
+  lib/messages/    # translated copy, one module per area, all languages side by side
   lib/images.ts    # curated Unsplash URLs (used as CSS background-image)
   lib/mongodb.ts   # lazy MongoClient singleton + getDb()
   lib/db-config.ts # connection-string env reads, driver-free (edge-safe)
@@ -54,7 +56,7 @@ app/
   globals.css      # brand tokens, easing/animation tokens, base styles
 auth.ts            # Auth.js: adapter + Credentials + Google (Node runtime only)
 auth.config.ts     # edge-safe half: session strategy, callbacks, Google
-proxy.ts           # (Next 16 middleware) gates /portal, /admin
+proxy.ts           # (Next 16 middleware) gates /portal, /admin; language prefix; CSP
 db/schema.md       # collections, indexes, and why each shape is what it is
 scripts/db-*.mjs   # check connectivity · create indexes · seed
 scripts/news-agent.ts  # the news agent (GitHub Actions); app/lib/news-*.ts
@@ -67,6 +69,7 @@ scripts/news-agent.ts  # the news agent (GitHub Actions); app/lib/news-*.ts
 
 - **Pages** compose section components; keep pages thin.
 - **Copy + structured data** live in `app/lib/content.ts` — edit there, don't hardcode in components.
+  Copy on a translated page lives in `app/lib/messages/` instead, in every language (see "Languages").
 - **Reusable UI** (`Button`, `Card`, etc.) → `app/components/ui.tsx`.
 - **Page sections** (Hero, Faq, etc.) → `app/components/sections.tsx`.
 - **Server actions** → colocate with route (e.g. `app/contact/actions.ts`).
@@ -522,6 +525,41 @@ Whenever anything else gets hidden rather than deleted, add a row here.
   yet") raises a check in `/admin/news`. There is no rate editor behind it:
   a real change is an edit to `budget-2027.ts`.
 
+### Languages (`/ga`, Oct 2026)
+
+- English lives at the bare URLs and Irish under `/ga`. There is **no
+  `app/[lang]/` folder**: `proxy.ts` strips the prefix, rewrites to the same route and passes the locale in the
+  `x-locale` header (and the unprefixed path in `x-locale-path`). Server code
+  reads it with `getLocale()` / `getT()` from `app/lib/messages`; client
+  components with `useLocale()` / `useT()` from `components/locale-link.tsx`.
+- **The live languages** are `PRODUCTION_LOCALES` in `app/lib/i18n.ts`
+  (`["en", "ga"]`). Use `LIVE_LOCALES`, never `LOCALES`, for anything a
+  visitor sees: the switcher, hreflang and the sitemap all read it.
+- **Which pages have a language prefix** is decided in `app/lib/i18n.ts`:
+  `TRANSLATED_PATHS` are fully translated; `CHROME_ONLY_PATHS` (the blog)
+  keep an English body under the reader's header, footer and call to action.
+  Anything else under a prefix redirects to English: `/admin`, the API and
+  auth routes. Emails are English only.
+- **Chrome-only pages** wrap their English body in `lang="en"`, set their
+  canonical to the English URL and get no hreflang, so only the English page
+  is indexed. Google warns against a translated nav over an untranslated
+  body; the canonical is what makes it safe.
+- **Copy** lives in `app/lib/messages/<area>.ts`, both languages side by side,
+  with English as the shape the rest follow. `i18n.test.ts` fails if a
+  language misses a key English has. A new string on a translated page goes
+  in there in every language, not hardcoded in the component.
+- **Links**: every non-admin link is `LocaleLink`, which prefixes targets that
+  have a route in the reader's language and uses a plain `<a>` when a link
+  changes language (a client navigation never re-renders the root layout, so
+  `<html lang>` and the header would stay in the old language). Server
+  redirects go through `localePath()`.
+- **Numbers, plurals, dates**: `useFormat()` (calculator-fields) or
+  `numberFormat()`, `plural()` (Irish has five forms), `localDate()`. The
+  calculator modules keep their English sentences for their own tests and also
+  return the facts as data, which the pages phrase per language.
+- **The Irish was machine-drafted.** Have fluent speakers read the
+  disclaimers, the tax terms and the rest of it before relying on it.
+
 ### Blog (`/blog`)
 
 - Posts are rows in `posts`, written in `/admin/posts` with a **block editor**
@@ -582,6 +620,8 @@ Whenever anything else gets hidden rather than deleted, add a row here.
   `onDragOver` also sets `dropEffect = "move"`: Safari cancels the drop
   unless it matches the `effectAllowed` set on dragstart (Chrome and Firefox
   are lenient). Tested in Chromium, Firefox and WebKit (Oct 2026).
+- Posts are written in English. Under `/ga` the blog keeps the Irish header
+  and footer around them (chrome-only; see "Languages").
 - Public reads never throw: no database means an empty blog, logged. The
   sitemap is `force-dynamic` so it lists posts published after a deploy and
   the build does not need the database.
