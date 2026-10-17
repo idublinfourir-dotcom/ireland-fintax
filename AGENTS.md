@@ -525,15 +525,15 @@ Whenever anything else gets hidden rather than deleted, add a row here.
   yet") raises a check in `/admin/news`. There is no rate editor behind it:
   a real change is an edit to `budget-2027.ts`.
 
-### Languages (`/ga`, Oct 2026)
+### Languages (`/ga`, `/es`, `/pt`, Oct 2026)
 
-- English lives at the bare URLs and Irish under `/ga`. There is **no
+- English lives at the bare URLs and Irish, Spanish and Portuguese under `/ga`, `/es` and `/pt`. There is **no
   `app/[lang]/` folder**: `proxy.ts` strips the prefix, rewrites to the same route and passes the locale in the
   `x-locale` header (and the unprefixed path in `x-locale-path`). Server code
   reads it with `getLocale()` / `getT()` from `app/lib/messages`; client
   components with `useLocale()` / `useT()` from `components/locale-link.tsx`.
 - **The live languages** are `PRODUCTION_LOCALES` in `app/lib/i18n.ts`
-  (`["en", "ga"]`). Use `LIVE_LOCALES`, never `LOCALES`, for anything a
+  (`["en", "ga", "es", "pt"]`). Use `LIVE_LOCALES`, never `LOCALES`, for anything a
   visitor sees: the switcher, hreflang and the sitemap all read it.
 - **Which pages have a language prefix** is decided in `app/lib/i18n.ts`:
   `TRANSLATED_PATHS` are fully translated; `CHROME_ONLY_PATHS` (the blog)
@@ -557,7 +557,7 @@ Whenever anything else gets hidden rather than deleted, add a row here.
   `numberFormat()`, `plural()` (Irish has five forms), `localDate()`. The
   calculator modules keep their English sentences for their own tests and also
   return the facts as data, which the pages phrase per language.
-- **The Irish was machine-drafted.** Have fluent speakers read the
+- **The Irish, Spanish and Portuguese were machine-drafted.** Have fluent speakers read the
   disclaimers, the tax terms and the rest of it before relying on it.
 
 ### Blog (`/blog`)
