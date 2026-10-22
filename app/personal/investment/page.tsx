@@ -69,7 +69,12 @@ export default async function PersonalInvestmentPage() {
           <IrelandInvestmentPlanner />
         </div>
 
-        <BudgetNote>{t.budgetNote}</BudgetNote>
+        <BudgetNote>
+          {t.budgetNote}{" "}
+          <Link href="/investment-account" className="font-medium text-primary-500 underline-offset-2 hover:underline">
+            {t.accountLink}
+          </Link>
+        </BudgetNote>
 
         <div className="mt-16 max-w-3xl border-t border-line pt-12">
           <h2 className="font-display text-3xl font-bold leading-tight tracking-[-0.02em] text-ink sm:text-4xl">

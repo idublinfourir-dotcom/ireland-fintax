@@ -627,7 +627,7 @@ export const INVESTMENT_OPTIONS: InvestmentOption[] = [
     cap: "None",
     guarantee: "none",
     lumpSum: true,
-    note: "The cheapest, most diversified equity exposure there is, and the worst treated by Irish tax: 35% on gains (38% until the end of 2026), no annual exemption, no loss offset, no step-up on death, and a forced tax event every eight years. Excellent inside a pension, painful outside one.",
+    note: "The cheapest, most diversified equity exposure there is, and the worst treated by Irish tax: 35% on gains (38% until the end of 2026), no annual exemption, no loss offset, no step-up on death, and a forced tax event every eight years. Excellent inside a pension or, from July 2027, the new Investment Account; painful outside them.",
     link: {
       label: "How ETFs are taxed in Ireland",
       url: "https://etf.ie/tax/",
@@ -1235,7 +1235,7 @@ export const SOURCES: { topic: string; source: string; url: string }[] = [
   {
     topic: "Exit tax cut to 35% from 1 January 2027",
     source: "Department of Finance, Budget 2027 Tax Policy Changes, section 2.2",
-    url: "https://assets.gov.ie/static/documents/c6792805/Budget_2027_Tax_Policy_Changes_v2.pdf",
+    url: "https://assets.gov.ie/static/documents/c6792805/20261012_Budget_2027_Tax_Policy_Changes_Book.pdf",
   },
   {
     topic: "Exit tax cut to 38%, deemed disposal",
@@ -1288,8 +1288,8 @@ export const SOURCES: { topic: string; source: string; url: string }[] = [
     url: "https://live.euronext.com/sites/default/files/documentation/index-fact-sheets/ISEQ_20_Index_Factsheet.pdf",
   },
   {
-    topic: "Personal Investment Account (2027)",
-    source: "Raisin — Irish Personal Investment Account guide",
-    url: "https://www.raisin.com/en-ie/press/irelands-new-savings-scheme-what-is-it/",
+    topic: "Investment Account (from 1 July 2027)",
+    source: "CCPC, New Investment Account",
+    url: "https://www.ccpc.ie/manage-your-money/saving-and-investments/new-investment-account",
   },
 ];

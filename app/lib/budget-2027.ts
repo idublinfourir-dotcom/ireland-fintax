@@ -44,7 +44,7 @@ export const BUDGET_DATA_AS_OF = "13 October 2026";
 export const BUDGET_SOURCES = {
   dofTax: {
     label: "Department of Finance, Budget 2027 Tax Policy Changes",
-    url: "https://assets.gov.ie/static/documents/c6792805/Budget_2027_Tax_Policy_Changes_v2.pdf",
+    url: "https://assets.gov.ie/static/documents/c6792805/20261012_Budget_2027_Tax_Policy_Changes_Book.pdf",
   },
   budgetInBrief: {
     label: "Budget in Brief 2027",
@@ -879,11 +879,11 @@ const MEASURES: MeasureDef[] = [
     starts: { date: "2027-07-01", label: "1 July 2027" },
     status: "awaiting-finance-act",
     source: "dofTax",
-    calculator: { href: "/personal/investment", label: "Investment planner" },
+    calculator: { href: "/investment-account", label: "Investment Account guide" },
     appliesTo: (p) => p.funds || p.mightSell,
     impact: () => ({
       kind: "info",
-      text: "For Irish residents aged 18 and over: 1% a year on the account's value above €50,000, up to €12,000 paid in a year, no deemed disposal, and the provider handles the tax. Shares, bonds, funds and insurance investment products only; no crypto or derivatives.",
+      text: "For people resident in Ireland, aged 18 or over, with a PPS number: 1% a year on the account's average value above €50,000, up to €12,000 paid in a year, no deemed disposal, and the provider handles the tax. Shares, bonds, UCITS funds (most European ETFs) and insurance-based investment products only; no crypto or derivatives.",
     }),
   },
 

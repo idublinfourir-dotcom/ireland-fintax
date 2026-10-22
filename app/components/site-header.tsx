@@ -19,7 +19,7 @@ import type { Messages } from "../lib/messages/en";
    lib/budgets.ts): the "Ask a question" button beside the links, and at the
    foot of the mobile menu, already goes to /contact, so the link was a
    duplicate. */
-const secondaryHrefs = ["/blog", "/about"] as const;
+const secondaryHrefs = ["/blog", "/investment-account"] as const;
 
 /* Founders Hub resource categories (t.founderResources), shown in the nav
    dropdown. Each links to the single /toolkits page (which carries its own
@@ -108,7 +108,7 @@ export function SiteHeader({
     t.tools[e.href] ?? e;
   const secondaryLinks = secondaryHrefs.map((h) => ({
     href: h,
-    label: h === "/blog" ? t.blog : t.about,
+    label: h === "/blog" ? t.blog : t.investmentAccount,
   }));
   const FOUNDER_RESOURCES = t.founderResources;
   const nav = useT(calcMessages);

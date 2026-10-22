@@ -69,7 +69,7 @@ function SegmentedField<T extends string>({
               aria-checked={active}
               onClick={() => onChange(opt.value)}
               className={`flex-1 cursor-pointer rounded-none px-3 py-1.5 text-xs font-semibold whitespace-nowrap transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500 ${
-                active ? "bg-surface text-ink shadow-sm" : "text-muted hover:text-ink"
+                active ? "bg-primary-500 text-white" : "text-ink hover:bg-surface"
               }`}
             >
               {opt.label}
