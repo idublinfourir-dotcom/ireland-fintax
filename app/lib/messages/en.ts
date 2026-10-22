@@ -34,6 +34,7 @@ export const en = {
     budget: "Budget",
     blog: "Blog",
     about: "About",
+    investmentAccount: "Investment Account",
     adminDashboard: "Admin dashboard",
     myDashboard: "My dashboard",
     account: "Account",

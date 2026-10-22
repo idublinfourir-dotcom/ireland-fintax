@@ -30,6 +30,7 @@ export const pt: Messages = {
     budget: "Orçamento",
     blog: "Blog",
     about: "Sobre nós",
+    investmentAccount: "Conta de investimento",
     adminDashboard: "Painel de administração",
     myDashboard: "Meu painel",
     account: "Conta",

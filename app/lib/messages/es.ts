@@ -30,6 +30,7 @@ export const es: Messages = {
     budget: "Presupuesto",
     blog: "Blog",
     about: "Quiénes somos",
+    investmentAccount: "Cuenta de inversión",
     adminDashboard: "Panel de administración",
     myDashboard: "Mi panel",
     account: "Cuenta",

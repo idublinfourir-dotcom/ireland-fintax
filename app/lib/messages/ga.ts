@@ -31,6 +31,7 @@ export const ga: Messages = {
     budget: "Buiséad",
     blog: "Blag",
     about: "Fúinn",
+    investmentAccount: "Cuntas Infheistíochta",
     adminDashboard: "Painéal riaracháin",
     myDashboard: "Mo phainéal",
     account: "Cuntas",
