@@ -55,7 +55,7 @@ const en = {
   acqYearHint: "Picks the indexation multiplier. Only pre-2003 years uplift the cost.",
   indexedCost: "Indexed cost: {cost} × {multiplier} = {indexed}",
   saleMonth: "Month of sale (optional)",
-  saleMonthHint: "Sets the CGT payment date: Jan–Nov is due 15 December, December is due 31 January.",
+  saleMonthHint: "Sets the CGT payment date: a sale from January to November is due 15 December, and a December sale is due 31 January.",
   selectMonth: "Select a month…",
   enhancementToggle: "Improvement / enhancement costs",
   enhancement: "Enhancement expenditure",
@@ -74,7 +74,7 @@ const en = {
   monthsOwned: "Months owned",
   monthsOwnedHint: "Total months you owned the property.",
   monthsOccupied: "Months lived in as your main home",
-  monthsOccupiedHint: "The last 12 months always count if it was ever your main home.",
+  monthsOccupiedHint: "Leave out your final 12 months of ownership: if it was ever your main home, those are added for you.",
   computed: {
     "Entrepreneur Relief": "Entrepreneur Relief",
     "Standard rate": "Standard rate",
@@ -83,7 +83,7 @@ const en = {
     "31 January (following year)": "31 January (following year)",
     "15 December (same year)": "15 December (same year)",
     "1974/75 or earlier": "1974/75 or earlier",
-    "2001 (6 Apr–31 Dec)": "2001 (6 Apr–31 Dec)",
+    "2001 (6 Apr–31 Dec)": "2001 (6 Apr to 31 Dec)",
   } as Record<string, string>,
 };
 
@@ -160,7 +160,7 @@ export const cgtMessages: Translations<CgtMessages> = {
     monthsOwned: "Meses en propiedad",
     monthsOwnedHint: "Total de meses que fuiste propietario del inmueble.",
     monthsOccupied: "Meses en que fue tu vivienda habitual",
-    monthsOccupiedHint: "Los últimos 12 meses siempre cuentan si alguna vez fue tu vivienda habitual.",
+    monthsOccupiedHint: "No cuentes los últimos 12 meses de propiedad: si alguna vez fue tu vivienda habitual, se suman automáticamente.",
     computed: {
       "Entrepreneur Relief": "Deducción para emprendedores",
       "Standard rate": "Tipo general",
@@ -241,7 +241,7 @@ export const cgtMessages: Translations<CgtMessages> = {
     monthsOwned: "Meses como proprietário",
     monthsOwnedHint: "Total de meses em que você foi dono do imóvel.",
     monthsOccupied: "Meses morando como residência principal",
-    monthsOccupiedHint: "Os últimos 12 meses sempre contam se ele já foi sua residência principal.",
+    monthsOccupiedHint: "Não conte os últimos 12 meses de propriedade: se já foi sua residência principal, eles são somados automaticamente.",
     computed: {
       "Entrepreneur Relief": "Alívio para empreendedores",
       "Standard rate": "Alíquota padrão",
@@ -322,7 +322,7 @@ export const cgtMessages: Translations<CgtMessages> = {
     monthsOwned: "Míonna faoi úinéireacht",
     monthsOwnedHint: "Líon iomlán na míonna a bhí an mhaoin agat.",
     monthsOccupied: "Míonna a raibh cónaí ort ann mar phríomhtheach",
-    monthsOccupiedHint: "Áirítear na 12 mhí deiridh i gcónaí má bhí sé riamh mar phríomhtheach agat.",
+    monthsOccupiedHint: "Fág amach na 12 mhí deiridh den úinéireacht: má bhí sé riamh mar phríomhtheach agat, cuirtear leis iad go huathoibríoch.",
     computed: {
       "Entrepreneur Relief": "Faoiseamh Fiontraithe",
       "Standard rate": "Ráta caighdeánach",
