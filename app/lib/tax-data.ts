@@ -121,6 +121,7 @@ export function parseYearRates(year: number, raw: unknown): YearRates | null {
         credits: {
           personalSingle: req(credits.personalSingle),
           personalMarried: req(credits.personalMarried),
+          personalWidowed: reqOr(credits.personalWidowed, base?.credits.personalWidowed),
           employeePaye: req(credits.employeePaye),
           earnedIncome: req(credits.earnedIncome),
           employmentCombinedCap: req(credits.employmentCombinedCap),
@@ -160,6 +161,8 @@ export function parseYearRates(year: number, raw: unknown): YearRates | null {
         earningsCap: req(pension.earningsCap),
         ageBands,
       },
+      // Statutory and not admin-editable: always the code's value.
+      autoEnrolment: FALLBACK[year]?.autoEnrolment ?? FALLBACK[Math.max(...TAX_YEARS)].autoEnrolment,
     };
   } catch (err) {
     if (err instanceof BadRates) return null;

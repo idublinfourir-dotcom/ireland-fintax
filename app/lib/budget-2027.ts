@@ -468,7 +468,7 @@ const MEASURES: MeasureDef[] = [
         amount: diff,
         period: "year",
         detail:
-          "Not part of this Budget: PRSI rose from 4.2% to 4.35% on 1 October 2026 and rises to 4.5% on 1 October 2027 under a 2024 law. This compares a full year at each start-of-year rate.",
+          "Not part of this Budget: PRSI rose from 4.2% to 4.35% on 1 October 2026 and rises to 4.5% on 1 October 2027 under a 2024 law. Each year uses its blended rate: nine months at the old rate and three at the new one.",
       };
     },
   },

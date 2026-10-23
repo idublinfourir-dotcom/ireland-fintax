@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { taxRatesCollection } from "../../lib/collections";
 import { requireAdmin } from "../../lib/auth/guards";
 import { TAX_YEARS, yearRatesToJson } from "../../lib/tax-data";
-import type { YearRates } from "../../lib/ireland-income-tax";
+import { RATES_BY_YEAR, type YearRates } from "../../lib/ireland-income-tax";
 
 export interface ActionState {
   status: "idle" | "saved" | "error";
@@ -60,6 +60,8 @@ function parseYearForm(formData: FormData): { year: number; rates: YearRates } {
 
   const rates: YearRates = {
     year,
+    // Statutory, not on the form: always the code's value for the year.
+    autoEnrolment: RATES_BY_YEAR[year].autoEnrolment,
     incomeTax: {
       standardRate: pctFrac(formData, "it_standard_rate", "Standard income tax rate"),
       higherRate: pctFrac(formData, "it_higher_rate", "Higher income tax rate"),
@@ -76,6 +78,7 @@ function parseYearForm(formData: FormData): { year: number; rates: YearRates } {
       credits: {
         personalSingle: euro(formData, "credit_personal_single", "Personal credit (single)"),
         personalMarried: euro(formData, "credit_personal_married", "Personal credit (married)"),
+        personalWidowed: euro(formData, "credit_personal_widowed", "Personal credit (widowed, no children)"),
         employeePaye: euro(formData, "credit_employee_paye", "Employee PAYE credit"),
         earnedIncome: euro(formData, "credit_earned_income", "Earned income credit"),
         employmentCombinedCap: euro(

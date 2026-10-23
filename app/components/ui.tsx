@@ -34,7 +34,6 @@ export function Eyebrow({
         align === "center" ? "justify-center" : ""
       } ${tone === "dark" ? "text-primary-300" : "text-primary-500"}`}
     >
-      <span aria-hidden="true" className="h-px w-7 bg-current opacity-60" />
       {children}
     </p>
   );

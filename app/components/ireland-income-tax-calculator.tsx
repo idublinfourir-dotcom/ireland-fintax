@@ -28,7 +28,7 @@ function useMoney() {
 /* A rate held as a fraction (0.2) in the page's language: 20% / 20 %. */
 function useRateLabel() {
   const { rate } = useFormat();
-  return (fraction: number) => rate(+(fraction * 100).toFixed(2));
+  return (fraction: number) => rate(+(fraction * 100).toFixed(4));
 }
 
 /* ---------- button styles (match app/components/ui.tsx Button) ---------- */
@@ -210,6 +210,8 @@ interface RowDef {
   variant?: RowVariant;
   /** Row only shown when the calculation includes a spouse income. */
   spouseOnly?: boolean;
+  /** Row hidden when it is zero in both years. */
+  hideIfZero?: boolean;
 }
 
 const buildRows = (
@@ -240,6 +242,7 @@ const buildRows = (
     variant: "emphasis",
   },
   { label: t.prsi, value: (r) => r.prsi.total + r.spousePrsi.total, deduct: true },
+  { label: t.autoEnrolment, value: (r) => r.autoEnrolment, deduct: true, hideIfZero: true },
   { label: t.annual, value: (r) => r.netIncome, variant: "net" },
   { label: t.monthly, value: (r) => r.monthlyNetIncome, variant: "net" },
   { label: t.weekly, value: (r) => r.weeklyNetIncome, variant: "net" },
@@ -271,7 +274,9 @@ function ResultsTable({
   const t = useT(incomeTaxMessages);
   const money = useMoney();
   const ROWS = buildRows(rates, t.rows, useRateLabel()).filter(
-    (row) => !row.spouseOnly || current.spouseIncome > 0,
+    (row) =>
+      (!row.spouseOnly || current.spouseIncome > 0) &&
+      (!row.hideIfZero || row.value(current) > 0 || row.value(prior) > 0),
   );
   const rowBg = (variant: RowVariant | undefined, i: number) => {
     if (variant === "net") return "bg-primary-50 font-semibold";

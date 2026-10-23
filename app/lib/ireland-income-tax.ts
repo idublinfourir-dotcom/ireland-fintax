@@ -115,6 +115,9 @@ export interface YearRates {
     credits: {
       personalSingle: number;
       personalMarried: number;
+      /** Widowed / surviving civil partner without dependent children, from the
+          year after the bereavement year (revenue.ie tax-relief-charts). */
+      personalWidowed: number;
       /** Employee (PAYE) credit — applies when employmentIncome > 0. */
       employeePaye: number;
       /** Earned Income credit — applies when self-employment income > 0. */
@@ -162,12 +165,11 @@ export interface YearRates {
 
   prsi: {
     /**
-     * Employee (Class A) / self-employed (Class S) rate.
-     * DECISION: a single FLAT rate per year — the rate in effect at the START
-     * of the tax year — to match the reference calculator exactly (4.2% for
-     * 2026, 4.1% for 2025). The employee rate actually rises to 4.35% from
-     * 1 Oct 2026, so a full-year "blended" estimate would use ~4.2375%. To
-     * switch to blended, change THIS ONE value.
+     * Employee (Class A) / self-employed (Class S) rate, blended over the year:
+     * the rate rises each 1 October (4.1% from 2024, 4.2% from 2025, 4.35%
+     * from 2026, 4.5% from 2027, Social Welfare (Miscellaneous Provisions)
+     * Act 2024), so a year is 9/12 at the old rate and 3/12 at the new one.
+     * The Deloitte Ireland calculator does the same ("a composite rate").
      */
     rate: number;
     /** Class S (self-employed) minimum annual contribution. */
@@ -188,7 +190,33 @@ export interface YearRates {
     /** Age-banded maximum relief as a % of capped earnings. */
     ageBands: PensionAgeBand[];
   };
+
+  /** MyFutureFund auto-enrolment, from 1 January 2026 (Automatic Enrolment
+      Retirement Savings System Act 2024). Set by statute, so it is not in the
+      admin editor; the stored-rates parser always takes it from code. */
+  autoEnrolment: AutoEnrolmentRates;
 }
+
+export interface AutoEnrolmentRates {
+  /** Employee contribution as a fraction of pay; 0 before the scheme began. */
+  employeeRate: number;
+  /** Enrolled when the age reached in the year is strictly between these. */
+  minAge: number;
+  maxAge: number;
+  /** Employment income must be more than this. */
+  minEarnings: number;
+  /** No contribution on pay above this (s.58 of the 2024 Act). */
+  earningsCap: number;
+}
+
+/* 1.5% for the first three years (2026 to 2028), then 3%, 4.5% and 6%. */
+const AUTO_ENROLMENT: AutoEnrolmentRates = {
+  employeeRate: 0.015,
+  minAge: 23,
+  maxAge: 60,
+  minEarnings: 20_000,
+  earningsCap: 80_000,
+};
 
 /* Age-banded pension relief % — identical across years.
    revenue.ie/en/jobs-and-pensions/pensions/tax-relief-for-pension-contributions
@@ -216,6 +244,7 @@ export const RATES_2026: YearRates = {
     credits: {
       personalSingle: 2_000,
       personalMarried: 4_000,
+      personalWidowed: 2_540,
       employeePaye: 2_000,
       earnedIncome: 2_000,
       employmentCombinedCap: 2_000, // PAYE + Earned Income share ONE €2,000 ceiling
@@ -252,7 +281,7 @@ export const RATES_2026: YearRates = {
     selfEmployedSurchargeRate: 0.03,
   },
   prsi: {
-    rate: 0.042, // FLAT 4.2% (rate at start of 2026). See note on the field.
+    rate: 0.042375, // 9/12 at 4.2% + 3/12 at 4.35%
     selfEmployedMinimum: 650,
     weeklyExemptionThreshold: 352,
     weeklyCreditMax: 12,
@@ -263,6 +292,7 @@ export const RATES_2026: YearRates = {
     earningsCap: 115_000,
     ageBands: PENSION_AGE_BANDS,
   },
+  autoEnrolment: AUTO_ENROLMENT,
 };
 
 export const RATES_2025: YearRates = {
@@ -280,6 +310,7 @@ export const RATES_2025: YearRates = {
     credits: {
       personalSingle: 2_000,
       personalMarried: 4_000,
+      personalWidowed: 2_540,
       employeePaye: 2_000,
       earnedIncome: 2_000,
       employmentCombinedCap: 2_000,
@@ -313,7 +344,7 @@ export const RATES_2025: YearRates = {
     selfEmployedSurchargeRate: 0.03,
   },
   prsi: {
-    rate: 0.041, // FLAT 4.1% (rate at start of 2025).
+    rate: 0.04125, // 9/12 at 4.1% + 3/12 at 4.2%
     selfEmployedMinimum: 650,
     weeklyExemptionThreshold: 352,
     weeklyCreditMax: 12,
@@ -324,6 +355,7 @@ export const RATES_2025: YearRates = {
     earningsCap: 115_000,
     ageBands: PENSION_AGE_BANDS,
   },
+  autoEnrolment: { ...AUTO_ENROLMENT, employeeRate: 0 }, // began 1 Jan 2026
 };
 
 /* 2027: Budget 2027 (6 Oct 2026), Department of Finance "Tax Policy Changes"
@@ -343,6 +375,9 @@ export const RATES_2027: YearRates = {
       ...RATES_2026.incomeTax.credits,
       personalSingle: 2_125, // +€125
       personalMarried: 4_250,
+      // Not itemised in the Tax Policy Changes book; the Deloitte Ireland
+      // calculator applies the same +€125. Re-check against Revenue's 2027 chart.
+      personalWidowed: 2_665,
       employeePaye: 2_125,
       earnedIncome: 2_125,
       employmentCombinedCap: 2_125,
@@ -362,11 +397,7 @@ export const RATES_2027: YearRates = {
   },
   prsi: {
     ...RATES_2026.prsi,
-    // Flat rate at the start of the year, like the other years: 4.35% from
-    // 1 Oct 2026, rising to 4.5% on 1 Oct 2027 (Social Welfare (Miscellaneous
-    // Provisions) Act 2024). The Department's tables blend the two; the
-    // year-on-year difference is the same either way.
-    rate: 0.0435,
+    rate: 0.043875, // 9/12 at 4.35% + 3/12 at 4.5%
   },
 };
 
@@ -463,6 +494,9 @@ export interface IncomeTaxResult {
   spousePrsi: IncomeTaxResult["prsi"];
 
   netIncomeBeforePrsi: number;
+  /** MyFutureFund contributions, yours plus your spouse's. Taken from net pay,
+      with no tax relief, so they change take-home but not the tax. */
+  autoEnrolment: number;
   netIncome: number;
   monthlyNetIncome: number;
   weeklyNetIncome: number;
@@ -601,29 +635,33 @@ export function computeIncomeTax(
       reason: "Married",
     });
   } else {
-    // TODO: a widowed person's credit varies by years since bereavement
-    // (1st yr €4,000 … reverting to €2,540). The form has no year-of-bereavement
-    // field, so we apply the standard single credit and flag this as an
-    // estimate that excludes bereavement-year uplifts.
+    // A widowed person without dependent children gets the higher widowed
+    // credit; with children it is the single credit (plus the SPCCC below).
+    // The bereavement year itself (€4,000) and the Widowed Parent credit need a
+    // year-of-bereavement field the form doesn't have, so they are excluded.
+    const widowedNoChildren = input.maritalStatus === "widowed" && !input.hasChildOnChildBenefit;
     credits.push({
       name: "Personal Tax Credit",
-      amount: it.credits.personalSingle,
+      amount: widowedNoChildren ? it.credits.personalWidowed : it.credits.personalSingle,
       reason:
         input.maritalStatus === "widowed"
-          ? "Widowed: standard credit (excludes bereavement-year uplift, see TODO)"
+          ? widowedNoChildren
+            ? "Widowed, without dependent children"
+            : "Widowed, with dependent children"
           : "Single",
     });
   }
 
-  // Employee PAYE + Earned Income credits share ONE combined ceiling.
+  // Employee PAYE + Earned Income credits share ONE combined ceiling, and each
+  // is limited to 20% of the income it relates to (revenue.ie employee tax
+  // credit and earned income credit pages).
   const hasEmployment = employment > 0;
   const hasSelfEmp = selfEmp > 0;
-  const rawEmploymentCredit =
-    (hasEmployment ? it.credits.employeePaye : 0) +
-    (hasSelfEmp ? it.credits.earnedIncome : 0);
+  const rawEmploymentCredit = employmentCredits(employment, selfEmp, it.credits);
   const employmentCredit = Math.min(rawEmploymentCredit, it.credits.employmentCombinedCap);
   if (employmentCredit > 0) {
-    const capped = rawEmploymentCredit > employmentCredit;
+    const capped =
+      hasEmployment && hasSelfEmp && rawEmploymentCredit > employmentCredit;
     const label =
       hasEmployment && hasSelfEmp
         ? "Employee PAYE + Earned Income Credit"
@@ -643,9 +681,7 @@ export function computeIncomeTax(
 
   // Spouse's own Employee PAYE / Earned Income credits (same combined cap).
   if (married) {
-    const spouseRaw =
-      (spouse.employment > 0 ? it.credits.employeePaye : 0) +
-      (spouse.selfEmp > 0 ? it.credits.earnedIncome : 0);
+    const spouseRaw = employmentCredits(spouse.employment, spouse.selfEmp, it.credits);
     const spouseCredit = Math.min(spouseRaw, it.credits.employmentCombinedCap);
     if (spouseCredit > 0) {
       credits.push({
@@ -833,11 +869,18 @@ function computePrsiClassA(employment: number, rates: YearRates): number {
   return gross;
 }
 
-/** Class S (self-employment / other income). */
-function computePrsiClassS(selfEmp: number, rates: YearRates): number {
+/** Self-employment / other income under this pays no PRSI (revenue.ie). */
+const PRSI_OTHER_INCOME_THRESHOLD = 5_000;
+
+/** Class S (self-employment / other income). The €650 minimum is for the
+    self-employed; on top of a PAYE job the rate alone applies, as in the
+    Deloitte calculator (the field also covers rent and interest, which carry
+    no minimum). */
+function computePrsiClassS(selfEmp: number, employment: number, rates: YearRates): number {
   const p = rates.prsi;
-  if (selfEmp <= 0) return 0;
-  return Math.max(selfEmp * p.rate, p.selfEmployedMinimum);
+  if (selfEmp < PRSI_OTHER_INCOME_THRESHOLD) return 0;
+  const charge = selfEmp * p.rate;
+  return employment > 0 ? charge : Math.max(charge, p.selfEmployedMinimum);
 }
 
 function prsiForPerson(
@@ -846,15 +889,18 @@ function prsiForPerson(
   rates: YearRates,
 ): IncomeTaxResult["prsi"] {
   const classA = computePrsiClassA(employment, rates);
-  const classS = computePrsiClassS(selfEmp, rates);
+  const classS = computePrsiClassS(selfEmp, employment, rates);
   return { classA, classS, total: classA + classS };
 }
 
+/** Age from which PRSI stops being charged. */
+export const PRSI_EXEMPT_AGE = 66;
+
 export function computePRSI(input: IncomeTaxInput, rates: YearRates): IncomeTaxResult["prsi"] {
-  // TODO: PRSI generally stops once someone is 66+ AND receiving the State
-  // Pension (Contributory). The form has an age field but no "receiving state
-  // pension" flag, so we do NOT auto-exempt at 66 (that would misfire for
-  // deferred pensions). Flagged, not hard-coded.
+  // No PRSI from 66, as the Deloitte calculator also assumes: that holds for
+  // anyone getting the State Pension (Contributory). Someone who defers it
+  // keeps paying until 70 (revenue.ie, since 1 Jan 2024); the footnote says so.
+  if (input.age >= PRSI_EXEMPT_AGE) return { classA: 0, classS: 0, total: 0 };
   return prsiForPerson(
     sanitize(input.employmentIncome),
     sanitize(input.selfEmploymentOrOtherIncome),
@@ -867,8 +913,45 @@ export function computeSpousePRSI(
   input: IncomeTaxInput,
   rates: YearRates,
 ): IncomeTaxResult["prsi"] {
+  // The form has no spouse age; like USC, the spouse is taken to be in your band.
+  if (input.age >= PRSI_EXEMPT_AGE) return { classA: 0, classS: 0, total: 0 };
   const spouse = spouseIncomes(input);
   return prsiForPerson(spouse.employment, spouse.selfEmp, rates);
+}
+
+/** Employee PAYE + Earned Income credits before the shared ceiling, each
+    limited to 20% of its own income. */
+function employmentCredits(
+  employment: number,
+  selfEmp: number,
+  credits: YearRates["incomeTax"]["credits"],
+): number {
+  return (
+    Math.min(credits.employeePaye, employment * 0.2) +
+    Math.min(credits.earnedIncome, selfEmp * 0.2)
+  );
+}
+
+/* ========================================================================== */
+/* MyFutureFund auto-enrolment                                                 */
+/* ========================================================================== */
+
+/** One person's yearly contribution, as the Deloitte calculator assumes it:
+    an employee aged over 23 and under 60 (age reached in the year), earning
+    over €20,000, who is enrolled because no pension contribution was entered.
+    The boundaries follow Deloitte and the published summaries ("over
+    €20,000"); the Act's own wording on the ages is not checked here. The form has no
+    spouse age, so the spouse is taken to be in your age range. */
+export function computeAutoEnrolment(
+  input: IncomeTaxInput,
+  rates: YearRates,
+  employmentIncome: number,
+): number {
+  const ae = rates.autoEnrolment;
+  if (ae.employeeRate <= 0 || sanitize(input.pensionContribution) > 0) return 0;
+  if (input.age <= ae.minAge || input.age >= ae.maxAge) return 0;
+  if (employmentIncome <= ae.minEarnings) return 0;
+  return Math.min(employmentIncome, ae.earningsCap) * ae.employeeRate;
 }
 
 /* ========================================================================== */
@@ -905,7 +988,10 @@ export function computeIrishTax(
   // it leaves take-home; the non-qualifying excess is NOT subtracted here.
   const netIncomeBeforePrsi =
     grossIncome - incomeTax.netTax - uscTotal - pension.qualifying;
-  const netIncome = netIncomeBeforePrsi - prsiTotal;
+  const autoEnrolment =
+    computeAutoEnrolment(input, rates, sanitize(input.employmentIncome)) +
+    computeAutoEnrolment(input, rates, spouseIncomes(input).employment);
+  const netIncome = netIncomeBeforePrsi - prsiTotal - autoEnrolment;
 
   const totalDeductions = incomeTax.netTax + uscTotal + prsiTotal;
 
@@ -926,6 +1012,7 @@ export function computeIrishTax(
     prsi,
     spousePrsi,
     netIncomeBeforePrsi,
+    autoEnrolment,
     netIncome,
     monthlyNetIncome: netIncome / 12,
     weeklyNetIncome: netIncome / 52,

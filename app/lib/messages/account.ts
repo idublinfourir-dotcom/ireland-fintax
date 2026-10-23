@@ -89,7 +89,7 @@ const en = {
   },
 
   errors: {
-    notConfigured: "Accounts are unavailable right now — this site has no authentication backend configured yet.",
+    notConfigured: "Accounts are unavailable right now: this site has no authentication backend configured yet.",
     loginRejected: "Invalid login credentials. If you've just signed up, check your inbox (and your spam folder) for the confirmation link.",
     enterBoth: "Enter your email and password.",
     tooManySignIns: "Too many sign-in attempts. Please wait a few minutes and try again.",
@@ -98,8 +98,8 @@ const en = {
     emailInvalid: "Please enter a valid email address.",
     passwordShort: "Password must be at least 8 characters.",
     passwordMismatch: "Passwords do not match.",
-    signupNoEmailGoogle: "Email sign-up is unavailable right now — we can’t send the confirmation link. Use “Continue with Google” instead.",
-    signupNoEmail: "Sign-up is unavailable right now — we can’t send the confirmation link. Please contact us and we’ll set your account up.",
+    signupNoEmailGoogle: "Email sign-up is unavailable right now because we can’t send the confirmation link. Use “Continue with Google” instead.",
+    signupNoEmail: "Sign-up is unavailable right now because we can’t send the confirmation link. Please contact us and we’ll set your account up.",
     tooManySignups: "Too many account creation attempts. Please wait an hour and try again.",
     signupFailed: "Account creation is temporarily unavailable. Please try again.",
     codeRejected: "That code isn't valid. It may have expired or already been used. Request a new one and try again.",
