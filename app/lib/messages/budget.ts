@@ -60,7 +60,7 @@ const en = {
       title: "PRSI rise",
       summary: "Not a Budget measure: PRSI went from 4.2% to 4.35% on 1 October 2026 and goes to 4.5% on 1 October 2027 under a 2024 law.",
       starts: "1 October 2026, then 1 October 2027",
-      body: "Not part of this Budget: PRSI rose from 4.2% to 4.35% on 1 October 2026 and rises to 4.5% on 1 October 2027 under a 2024 law. This compares a full year at each start-of-year rate.",
+      body: "Not part of this Budget: PRSI rose from 4.2% to 4.35% on 1 October 2026 and rises to 4.5% on 1 October 2027 under a 2024 law. Each year uses its blended rate: nine months at the old rate and three at the new one.",
     },
     "minimum-wage": {
       title: "Minimum wage",
@@ -405,7 +405,7 @@ export const budgetMessages: Translations<BudgetMessages> = {
         title: "Subida del PRSI",
         summary: "No es una medida del Presupuesto: el PRSI pasó del 4,2 % al 4,35 % el 1 de octubre de 2026 y pasará al 4,5 % el 1 de octubre de 2027 por una ley de 2024.",
         starts: "1 de octubre de 2026 y después 1 de octubre de 2027",
-        body: "No forma parte de este Presupuesto: el PRSI subió del 4,2 % al 4,35 % el 1 de octubre de 2026 y sube al 4,5 % el 1 de octubre de 2027 por una ley de 2024. Esto compara un año completo al tipo vigente al principio de cada año.",
+        body: "No forma parte de este Presupuesto: el PRSI subió del 4,2 % al 4,35 % el 1 de octubre de 2026 y sube al 4,5 % el 1 de octubre de 2027 por una ley de 2024. Cada año usa su tipo combinado: nueve meses al tipo anterior y tres al nuevo.",
       },
       "minimum-wage": {
         title: "Salario mínimo",
@@ -744,7 +744,7 @@ export const budgetMessages: Translations<BudgetMessages> = {
         title: "Aumento do PRSI",
         summary: "Não é uma medida do Orçamento: o PRSI passou de 4,2% para 4,35% em 1º de outubro de 2026 e vai para 4,5% em 1º de outubro de 2027 por uma lei de 2024.",
         starts: "1º de outubro de 2026, depois 1º de outubro de 2027",
-        body: "Não faz parte deste Orçamento: o PRSI subiu de 4,2% para 4,35% em 1º de outubro de 2026 e sobe para 4,5% em 1º de outubro de 2027 por uma lei de 2024. Isto compara um ano inteiro com a alíquota do início de cada ano.",
+        body: "Não faz parte deste Orçamento: o PRSI subiu de 4,2% para 4,35% em 1º de outubro de 2026 e sobe para 4,5% em 1º de outubro de 2027 por uma lei de 2024. Cada ano usa a sua alíquota combinada: nove meses à alíquota anterior e três à nova.",
       },
       "minimum-wage": {
         title: "Salário mínimo",
@@ -1083,7 +1083,7 @@ export const budgetMessages: Translations<BudgetMessages> = {
         title: "Ardú ÁSPC",
         summary: "Ní beart Buiséid é: chuaigh ÁSPC ó 4.2% go 4.35% ar 1 Deireadh Fómhair 2026 agus rachaidh sé go 4.5% ar 1 Deireadh Fómhair 2027 faoi dhlí 2024.",
         starts: "1 Deireadh Fómhair 2026, ansin 1 Deireadh Fómhair 2027",
-        body: "Ní cuid den Bhuiséad seo é: d’ardaigh ÁSPC ó 4.2% go 4.35% ar 1 Deireadh Fómhair 2026 agus ardaíonn sé go 4.5% ar 1 Deireadh Fómhair 2027 faoi dhlí 2024. Cuireann sé seo bliain iomlán ag ráta tús gach bliana i gcomparáid.",
+        body: "Ní cuid den Bhuiséad seo é: d’ardaigh ÁSPC ó 4.2% go 4.35% ar 1 Deireadh Fómhair 2026 agus ardaíonn sé go 4.5% ar 1 Deireadh Fómhair 2027 faoi dhlí 2024. Úsáideann gach bliain a ráta measctha: naoi mí ag an seanráta agus trí mhí ag an ráta nua.",
       },
       "minimum-wage": {
         title: "Íosphá",

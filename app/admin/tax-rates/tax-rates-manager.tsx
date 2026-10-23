@@ -103,6 +103,7 @@ function YearForm({ rates }: { rates: YearRates }) {
       <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <Euro name="credit_personal_single" value={it.credits.personalSingle} label="Personal — single" />
         <Euro name="credit_personal_married" value={it.credits.personalMarried} label="Personal — married" />
+        <Euro name="credit_personal_widowed" value={it.credits.personalWidowed} label="Personal — widowed, no children" />
         <Euro name="credit_employee_paye" value={it.credits.employeePaye} label="Employee PAYE" />
         <Euro name="credit_earned_income" value={it.credits.earnedIncome} label="Earned income" />
         <Euro name="credit_employment_cap" value={it.credits.employmentCombinedCap} label="PAYE + earned cap" />
@@ -141,7 +142,7 @@ function YearForm({ rates }: { rates: YearRates }) {
 
       <SectionTitle>PRSI</SectionTitle>
       <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        <Pct name="prsi_rate" value={prsi.rate} label="Flat rate" />
+        <Pct name="prsi_rate" value={prsi.rate} label="Blended rate for the year" />
         <Euro name="prsi_min" value={prsi.selfEmployedMinimum} label="Class S minimum (€)" />
         <Euro name="prsi_weekly_exemption" value={prsi.weeklyExemptionThreshold} label="Weekly exemption (€)" />
         <Euro name="prsi_weekly_credit_max" value={prsi.weeklyCreditMax} label="Weekly credit max (€)" />

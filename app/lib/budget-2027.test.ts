@@ -2,8 +2,8 @@
    Run: node --test app/lib/budget-2027.test.ts   (Node 22.6+ strips types)
 
    The worked examples are the Department of Finance's ("Budget 2027 Tax Policy
-   Changes", 6 Oct 2026). Its PRSI blends the October rate rise; ours uses the
-   start-of-year rate, so a total can differ from theirs by a euro. */
+   Changes", 6 Oct 2026). Its PRSI blends the October rate rise, and so does ours
+   (see RATES_<year>.prsi). A total can still differ from theirs by a euro. */
 
 import { test } from "node:test";
 import assert from "node:assert/strict";

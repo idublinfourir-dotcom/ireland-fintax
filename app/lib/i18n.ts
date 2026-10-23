@@ -159,5 +159,5 @@ export function localDate(locale: Locale, text: string): string {
 
 /** A rate in `locale`'s style: 13.5% (en, ga), 13,5 % (es), 13,5% (pt). */
 export function percent(locale: Locale, n: number): string {
-  return numberFormat(locale, { style: "percent", maximumFractionDigits: 3 }).format(n / 100);
+  return numberFormat(locale, { style: "percent", maximumFractionDigits: 4 }).format(n / 100);
 }

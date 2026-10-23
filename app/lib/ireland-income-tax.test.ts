@@ -58,8 +58,10 @@ test("(b) VERIFIED REFERENCE CASE — €4M employment + €1M self-emp + €2M 
   assert.equal(round(r.incomeTax.netTax), 1_978_000, "Net Tax");
   assert.equal(round(r.usc.total), 423_031, "USC");
   assert.equal(round(r.netIncomeBeforePrsi), 2_575_969, "Net income before PRSI");
-  assert.equal(round(r.prsi.total), 210_000, "PRSI");
-  assert.equal(round(r.netIncome), 2_365_969, "Annual Net Income");
+  // Deloitte now blends the 1 October PRSI rise (4.2375% for 2026); the
+  // original capture used the flat 4.2% (210,000 and 2,365,969).
+  assert.equal(round(r.prsi.total), 211_875, "PRSI");
+  assert.equal(round(r.netIncome), 2_364_094, "Annual Net Income");
 
   // Combined employment credit must NOT stack (2,000, not 4,000) — both income types.
   const employmentCredit = r.incomeTax.credits.find((c) =>
@@ -102,12 +104,15 @@ test("(c) married, two incomes — €80,000 + €30,000 spouse, age 40, 2026", 
   assert.equal(round(r.usc.total), 2_431, "Your USC");
   assert.equal(round(r.spouseUsc.total), 433, "Spouse USC");
 
-  // PRSI per person at 4.2%: 3,360 + 1,260.
-  assert.equal(round(r.prsi.total), 3_360, "Your PRSI");
-  assert.equal(round(r.spousePrsi.total), 1_260, "Spouse PRSI");
+  // PRSI per person at the blended 4.2375%: 3,390 + 1,271.25.
+  assert.equal(round(r.prsi.total), 3_390, "Your PRSI");
+  assert.equal(round(r.spousePrsi.total), 1_271, "Spouse PRSI");
 
-  // Net: 110,000 − 19,400 − 2,863.44 − 4,620 = 83,116.56.
-  assert.equal(round(r.netIncome), 83_117, "Household net income");
+  // Both are auto-enrolled in MyFutureFund: 1.5% × (80,000 + 30,000) = 1,650.
+  assert.equal(r.autoEnrolment, 1_650, "MyFutureFund");
+
+  // Net: 110,000 − 19,400 − 2,863.44 − 4,661.25 − 1,650 = 81,425.31.
+  assert.equal(round(r.netIncome), 81_425, "Household net income");
 });
 
 test("(d) married, one income — spouse fields empty keep the €53,000 band", () => {
@@ -277,4 +282,107 @@ test("comparisonYears: follows the calendar, held to years with rates", () => {
   assert.deepEqual(comparisonYears(new Date("2027-01-01T00:00:00Z")), { current: 2027, prior: 2026 });
   assert.deepEqual(comparisonYears(new Date("2028-06-01T00:00:00Z")), { current: 2027, prior: 2026 }, "no 2028 rates yet");
   assert.deepEqual(comparisonYears(new Date("2024-06-01T00:00:00Z")), { current: 2026, prior: 2025 }, "never before the earliest pair");
+});
+
+/* Captured from the Deloitte Ireland calculator (2027 vs 2026) on 23 Oct 2026. */
+test("Deloitte 2027: widowed, no children, €45,000, age 55 gets the widowed credit", () => {
+  const input: IncomeTaxInput = {
+    maritalStatus: "widowed",
+    hasChildOnChildBenefit: false,
+    isPrincipalCarerOfDependentChild: false,
+    age: 55,
+    employmentIncome: 45_000,
+    selfEmploymentOrOtherIncome: 0,
+    pensionContribution: 0,
+  };
+  for (const [year, credits, netTax, usc] of [[2027, 4_790, 4_210, 867], [2026, 4_540, 4_660, 883]]) {
+    const r = computeIrishTax(input, year);
+    assert.equal(round(r.incomeTax.totalCredits), credits, `${year} credits`);
+    assert.equal(round(r.incomeTax.netTax), netTax, `${year} net tax`);
+    assert.equal(round(r.usc.total), usc, `${year} USC`);
+  }
+});
+
+test("Deloitte 2027: no PRSI from age 66, for you or your spouse", () => {
+  const single: IncomeTaxInput = {
+    maritalStatus: "single",
+    hasChildOnChildBenefit: false,
+    isPrincipalCarerOfDependentChild: false,
+    age: 67,
+    employmentIncome: 40_000,
+    selfEmploymentOrOtherIncome: 0,
+    pensionContribution: 0,
+  };
+  const r = computeIrishTax(single, 2027);
+  assert.equal(round(r.incomeTax.netTax), 3_505, "net tax");
+  assert.equal(round(r.usc.total), 717, "USC");
+  assert.equal(r.prsi.total, 0, "PRSI");
+  const couple = computeIrishTax({ ...single, maritalStatus: "married", spouseEmploymentIncome: 20_000 }, 2027);
+  assert.equal(couple.spousePrsi.total, 0, "spouse PRSI");
+  assert.ok(computeIrishTax({ ...single, age: 65 }, 2027).prsi.total > 0, "still charged at 65");
+});
+
+test("Deloitte 2027: blended PRSI and MyFutureFund give the same take-home", () => {
+  const base: IncomeTaxInput = {
+    maritalStatus: "single",
+    hasChildOnChildBenefit: false,
+    isPrincipalCarerOfDependentChild: false,
+    age: 35,
+    employmentIncome: 50_000,
+    selfEmploymentOrOtherIncome: 0,
+    pensionContribution: 0,
+  };
+  // [year, PRSI, MyFutureFund, annual net income], as Deloitte shows them.
+  for (const [year, prsi, ae, net] of [[2027, 2_194, 750, 39_589], [2026, 2_119, 750, 38_898]]) {
+    const r = computeIrishTax(base, year);
+    assert.equal(round(r.prsi.total), prsi, `${year} PRSI`);
+    assert.equal(r.autoEnrolment, ae, `${year} MyFutureFund`);
+    assert.equal(round(r.netIncome), net, `${year} net income`);
+  }
+  // Contributions stop at €80,000 of pay (s.58), and nobody is enrolled who
+  // pays into a pension, is over 60, or before the scheme began in 2026.
+  assert.equal(computeIrishTax({ ...base, employmentIncome: 120_000 }, 2027).autoEnrolment, 1_200);
+  assert.equal(computeIrishTax({ ...base, pensionContribution: 1 }, 2027).autoEnrolment, 0);
+  assert.equal(computeIrishTax({ ...base, age: 61 }, 2027).autoEnrolment, 0);
+  assert.equal(computeIrishTax({ ...base, employmentIncome: 19_999 }, 2027).autoEnrolment, 0);
+  assert.equal(computeIrishTax(base, 2025).autoEnrolment, 0);
+});
+
+test("Deloitte 2027: credits capped at 20% of income, and PRSI on small or side income", () => {
+  const base: IncomeTaxInput = {
+    maritalStatus: "single",
+    hasChildOnChildBenefit: false,
+    isPrincipalCarerOfDependentChild: false,
+    age: 40,
+    employmentIncome: 0,
+    selfEmploymentOrOtherIncome: 4_000,
+    pensionContribution: 0,
+  };
+  // €4,000 self-employed: Earned Income Credit is 20% of it (€800), and no
+  // PRSI under €5,000.
+  const small = computeIrishTax(base, 2027);
+  assert.equal(small.incomeTax.totalCredits, 2_125 + 800, "credits");
+  assert.equal(small.prsi.total, 0, "PRSI under €5,000");
+  // Self-employed only, above €5,000: the €650 minimum applies.
+  assert.equal(computeIrishTax({ ...base, selfEmploymentOrOtherIncome: 10_000 }, 2027).prsi.total, 650);
+  // €67,000 PAYE + €12,000 other: the rate on both, no €650 minimum.
+  const side = computeIrishTax({ ...base, age: 58, employmentIncome: 67_000, selfEmploymentOrOtherIncome: 12_000 }, 2027);
+  assert.equal(round(side.prsi.total), 3_466, "PRSI");
+});
+
+test("Deloitte 2027: MyFutureFund boundaries", () => {
+  const base: IncomeTaxInput = {
+    maritalStatus: "single",
+    hasChildOnChildBenefit: false,
+    isPrincipalCarerOfDependentChild: false,
+    age: 40,
+    employmentIncome: 30_000,
+    selfEmploymentOrOtherIncome: 0,
+    pensionContribution: 0,
+  };
+  assert.equal(computeIrishTax({ ...base, age: 23 }, 2027).autoEnrolment, 0, "age 23");
+  assert.equal(computeIrishTax({ ...base, age: 24 }, 2027).autoEnrolment, 450, "age 24");
+  assert.equal(computeIrishTax({ ...base, age: 59 }, 2027).autoEnrolment, 450, "age 59");
+  assert.equal(computeIrishTax({ ...base, age: 60 }, 2027).autoEnrolment, 0, "age 60");
+  assert.equal(computeIrishTax({ ...base, employmentIncome: 20_000 }, 2027).autoEnrolment, 0, "exactly €20,000");
 });
