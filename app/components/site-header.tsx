@@ -217,7 +217,9 @@ export function SiteHeader({
               avatar pill is ~120px wider than the Sign in button and the row
               was down to its last few pixels at xl. */}
           <div className="hidden items-center gap-5 xl:flex">
-            {/* Tools dropdown (CSS hover + focus-within) */}
+            {/* Tools dropdown (CSS hover + focus-within). Left-aligned to the
+                trigger, not centred: this item sits near the left edge, and a
+                centred 52rem panel ran off-screen below ~1700px wide. */}
             <div
               className="group relative"
               onMouseEnter={() => setToolsClosed(false)}
@@ -242,7 +244,7 @@ export function SiteHeader({
               </LocaleLink>
 
               <div
-                className={`invisible absolute left-1/2 top-full z-50 w-[min(52rem,calc(100vw-2rem))] -translate-x-1/2 pt-4 opacity-0 transition-all duration-200 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100 ${
+                className={`invisible absolute left-0 top-full z-50 w-[min(52rem,calc(100vw-2rem))] pt-4 opacity-0 transition-all duration-200 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100 ${
                   toolsClosed ? "!invisible !opacity-0" : ""
                 }`}
               >
@@ -308,7 +310,7 @@ export function SiteHeader({
               </LocaleLink>
 
               <div
-                className={`invisible absolute left-1/2 top-full z-50 w-[min(44rem,calc(100vw-2rem))] -translate-x-1/2 pt-4 opacity-0 transition-all duration-200 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100 ${
+                className={`invisible absolute left-0 top-full z-50 w-[min(44rem,calc(100vw-2rem))] pt-4 opacity-0 transition-all duration-200 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100 ${
                   foundersClosed ? "!invisible !opacity-0" : ""
                 }`}
               >
