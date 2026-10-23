@@ -19,7 +19,7 @@ const en = {
   budgetNote: "Budget 2027 raised Help to Buy for first-time buyers of a new home from €30,000 to €35,000, for applications from 7 October 2026.",
   notes: [
     { title: "Compare Irish lenders", body: "Monthly repayments across AIB, Haven, Bank of Ireland, Avant Money, PTSB and ICS, with each product's interest rate, APRC and incentives side by side." },
-    { title: "Every rate type", body: "Filter variable, 2–10 year fixed and full-term fixed rates, including green mortgage rates for energy-efficient homes and cashback offers." },
+    { title: "Every rate type", body: "Filter variable, 2 to 10 year fixed and full-term fixed rates, including green mortgage rates for energy-efficient homes and cashback offers." },
     { title: "Central Bank guardrails", body: "Flags where your loan sits against the loan-to-income and loan-to-value limits, and where your term runs past typical lender age caps." },
   ],
   steps: ["Mortgage", "Applicants", "Results"],

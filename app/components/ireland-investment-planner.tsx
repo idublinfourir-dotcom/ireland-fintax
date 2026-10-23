@@ -254,7 +254,7 @@ function ResultRow({ result, rank, years }: { result: OptionResult; rank: number
           <dd className="mt-0.5 tabular-nums text-ink">
             {option.grossLow === option.grossHigh
               ? pct(option.grossLow)
-              : `${pct(option.grossLow)} – ${pct(option.grossHigh)}`}
+              : t.range.replace("{low}", pct(option.grossLow)).replace("{high}", pct(option.grossHigh))}
           </dd>
         </div>
         <div>
@@ -552,7 +552,7 @@ export function IrelandInvestmentPlanner() {
               {plan.excluded.map(({ option, why }) => (
                 <li key={option.id} className="text-sm leading-6">
                   <span className="text-ink">{data.options[option.id]?.name ?? option.name}</span>{" "}
-                  <span className="text-muted">— {reason(why)}</span>
+                  <span className="block text-muted">{reason(why)}</span>
                 </li>
               ))}
             </ul>

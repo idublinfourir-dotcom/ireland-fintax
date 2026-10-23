@@ -29,7 +29,7 @@ export async function generateMetadata(): Promise<Metadata> {
     alternates: await languageAlternates(),
     title: {
       default: t.meta.title,
-      template: "%s — Irish Fintax",
+      template: "%s | Irish Fintax",
     },
     description: t.meta.description,
     openGraph: {

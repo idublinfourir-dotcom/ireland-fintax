@@ -70,9 +70,9 @@ export const en = {
 
   hero: {
     eyebrow: "Free finance learning · Ireland",
-    title: "Understand tax and money, *in plain English.*",
+    title: "Learn how Irish tax and money *work.*",
     lede:
-      "Free calculators, guides and templates for Irish tax, mortgages, investing and starting a company. Learn how it works, then run your own numbers.",
+      "Free calculators, guides and templates for Irish tax, mortgages, investing and starting a company. Read how a tax works, then try it with your own figures.",
     cta: "Try the calculators",
     ask: "Ask a question",
   },
@@ -81,22 +81,22 @@ export const en = {
     { title: "Tax calculators", note: "Income tax, VAT, CGT, CAT and more, for Ireland." },
     { title: "Personal finance", note: "Work out a mortgage and compare ways to invest." },
     { title: "Starting a company", note: "Memos, templates and setup guides for founders." },
-    { title: "Ask a question", note: "Stuck on something? Ask, and we’ll explain it." },
+    { title: "Ask a question", note: "If something doesn’t make sense, ask us." },
   ],
 
   who: {
     eyebrow: "Who we are",
-    title: "A free place to learn how Irish tax and money work.",
+    title: "What this site is",
     body: [
-      "Irish Fintax is a free learning platform. We explain Irish tax and personal finance in plain English, and give you calculators to try your own numbers, so you understand what is going on before you decide anything.",
-      "No fees, nothing to sell you, and no sign-up to get started.",
+      "Irish Fintax explains Irish tax and personal finance without the jargon, with calculators so you can try your own numbers before you decide anything.",
+      "It is a learning site, and nothing here is for sale.",
     ],
     more: "More about us",
     principles: [
-      { title: "Free, for everyone", note: "Every calculator, guide and template is free, and you don’t need an account to start." },
-      { title: "Plain English", note: "The rules explained the way you’d explain them to a friend, without the jargon." },
+      { title: "Free", note: "Calculators, guides, templates and questions all cost nothing, and you don’t need an account to start." },
+      { title: "Plain English", note: "Each rule is explained in ordinary words, with the technical term alongside where you’ll need it." },
       { title: "Built on public sources", note: "The calculators use Revenue’s published rates and link to where each figure comes from." },
-      { title: "Information, not advice", note: "We help you understand. For a decision that hinges on your situation, see a regulated adviser." },
+      { title: "Information, not advice", note: "For a decision that depends on your own situation, see a regulated adviser." },
     ],
   },
 
@@ -104,29 +104,29 @@ export const en = {
     budget: {
       /* {budget} is the Budget's label in this language, from header.tools. */
       title: "What does {budget} change for you?",
-      body: "Tick what applies to you, from renting or buying a first home to a pension, a car or a family, and see only the changes that affect you, in euro where the rules make it exact. Built from the official figures, worked out in your browser.",
+      body: "Tick what applies to you (renting, buying a first home, a pension, a car, a family) and see only the changes that affect you, in euro where the rules give an exact figure. It uses the official Budget figures and runs in your browser.",
       cta: "See what changes for you",
     },
     calculators: {
       eyebrow: "Calculators",
-      title: "Don’t just read about it. Run your own numbers.",
-      body: "Income tax, VAT, CGT, CAT, corporation tax and more, all using Irish rates. Change a figure and watch what happens: it’s the quickest way to understand how a tax really works.",
+      title: "Run your own numbers",
+      body: "Income tax, VAT, CGT, CAT, corporation tax and more, at Irish rates. Change one figure and see what moves with it.",
       cta: "Try the calculators",
     },
     company: {
       eyebrow: "Accounting Hub",
-      title: "Starting a company? Start here.",
-      body: "Memos, templates, tax and VAT forms and step-by-step setup guides for Ireland and the UK. All free: tell us which one you need and we’ll email it over.",
+      title: "Setting up a company",
+      body: "Memos, templates, tax and VAT forms and step-by-step setup guides for Ireland and the UK. They’re free: tell us which one you need and we’ll email it to you.",
       cta: "Browse the Accounting Hub",
     },
   },
 
   learn: {
     eyebrow: "How to learn here",
-    title: "Learn it, try it, *ask about it.*",
-    lede: "Start wherever suits you. Most people read a little, run their own numbers, and only ask when something still doesn’t add up.",
+    title: "How people use the *site*",
+    lede: "Most people read a little, try their own numbers, and ask only when something still doesn’t add up.",
     items: [
-      { title: "Learn", note: "Plain-English memos and guides on the things people actually get stuck on." },
+      { title: "Learn", note: "Memos and guides on the things people most often get stuck on." },
       { title: "Try", note: "Put your own figures into the calculators and see what changes." },
       { title: "Ask", note: "Still unsure? Ask in your own words and get an answer by email." },
     ],
@@ -134,8 +134,8 @@ export const en = {
 
   audiences: {
     eyebrow: "Who it’s for",
-    title: "Whatever you’re dealing with, start here.",
-    lede: "Tax and money questions tend to arrive with life events. These are the ones the site covers today.",
+    title: "Who the site covers",
+    lede: "Tax questions usually come with a change in your life. These are the ones the site covers so far.",
     items: [
       { name: "Employees", note: "See your take-home pay and what the Budget changes mean for it." },
       { name: "Sole traders", note: "When to register for VAT, which rate applies, and the returns cycle." },
@@ -148,19 +148,19 @@ export const en = {
 
   process: {
     eyebrow: "Ask a question",
-    title: "Got a question? Here’s what happens.",
-    lede: "If the calculators and guides don’t cover it, ask. It’s free, and there’s no such thing as too basic.",
+    title: "How asking a question works",
+    lede: "If the calculators and guides don’t answer it, you can ask us. It’s free, and basic questions are welcome.",
     steps: [
-      { title: "Pick a topic", description: "Income tax, VAT, a mortgage, starting a company: whatever it’s about." },
-      { title: "Ask in your own words", description: "No jargon needed. Ask it the way you’d ask a friend." },
-      { title: "Get a plain-English answer", description: "A real person reads it and replies by email." },
+      { title: "Pick a topic", description: "Income tax, VAT, a mortgage, starting a company, or something else." },
+      { title: "Ask in your own words", description: "You don’t need the technical terms." },
+      { title: "Get an answer by email", description: "A person reads your question and writes back." },
       { title: "Keep it in one place", description: "Ask while signed in and every answer stays in your free account." },
     ],
   },
 
   faq: {
     eyebrow: "FAQ",
-    title: "Questions, answered straight.",
+    title: "Frequently asked questions",
     items: [
       { question: "Is it really free?", answer: "Yes. Every calculator, guide and template here is free to use, and so is asking a question." },
       { question: "Is this financial or tax advice?", answer: "No. Everything here is general information to help you understand how things work. Rates and rules change and your own situation matters, so check with Revenue or a qualified, regulated adviser before acting on a big decision." },
@@ -172,7 +172,7 @@ export const en = {
   cta: {
     eyebrow: "Ask a question",
     title: "Stuck on something?",
-    body: "Ask about tax or money the way you’d ask a friend, and we’ll reply by email with a plain-English answer. It’s free.",
+    body: "Ask about tax or money in your own words and we’ll reply by email. It’s free.",
     button: "Ask a question",
   },
 };
