@@ -146,7 +146,7 @@ function CurrencyField({
         {label}
       </label>
       <div className="relative mt-1.5">
-        <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted">
+        <span className="pointer-events-none absolute inset-s-3 top-1/2 -translate-y-1/2 text-sm text-muted">
           €
         </span>
         <input
@@ -158,7 +158,7 @@ function CurrencyField({
           placeholder="0"
           value={text}
           onChange={(e) => handleChange(e.target.value)}
-          className="h-11 w-full rounded-none border border-line bg-surface pl-7 pr-3 text-sm text-ink tabular-nums transition-colors duration-200 focus:border-primary-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-400/40"
+          className="h-11 w-full rounded-none border border-line bg-surface ps-7 pe-3 text-sm text-ink tabular-nums transition-colors duration-200 focus:border-primary-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-400/40"
         />
       </div>
       {hint && <p className="mt-1 text-xs text-muted">{hint}</p>}
@@ -197,10 +197,10 @@ function NumberField({
           placeholder="0"
           value={text}
           onChange={(e) => handleChange(e.target.value)}
-          className="h-11 w-full rounded-none border border-line bg-surface px-3 pr-14 text-sm text-ink tabular-nums transition-colors duration-200 focus:border-primary-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-400/40"
+          className="h-11 w-full rounded-none border border-line bg-surface px-3 pe-14 text-sm text-ink tabular-nums transition-colors duration-200 focus:border-primary-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-400/40"
         />
         {suffix && (
-          <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted">
+          <span className="pointer-events-none absolute inset-e-3 top-1/2 -translate-y-1/2 text-sm text-muted">
             {suffix}
           </span>
         )}

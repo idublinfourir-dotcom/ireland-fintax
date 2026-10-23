@@ -2,7 +2,7 @@ import { LocaleLink } from "./locale-link";
 import { site } from "../lib/content";
 import { images } from "../lib/images";
 import { LATEST_BUDGET } from "../lib/budgets";
-import { LIVE_LOCALES, LOCALE_NAMES, localeHref } from "../lib/i18n";
+import { LanguageList } from "./language-menu";
 import { getMessages } from "../lib/messages";
 
 /* Pricing and Services stay hidden (app/_pricing, app/_services): this is a
@@ -90,30 +90,11 @@ export async function SiteFooter() {
               {site.email}
             </a>
 
-            {/* Each language's home page: the only page translated so far
-                (TRANSLATED_PATHS). Point these at the current page's
-                translation once inner pages have one. Plain <a>: switching
-                language swaps <html lang>, which lives in the root layout. */}
+            {/* The same page in each language: see language-menu.tsx. */}
             <h3 className="mt-8 text-xs font-semibold uppercase tracking-[0.18em] text-primary-300">
               {t.language}
             </h3>
-            <ul className="mt-4 flex flex-wrap gap-x-4 gap-y-2 text-sm text-white/70">
-              {LIVE_LOCALES.map((l) => (
-                <li key={l}>
-                  <a
-                    href={localeHref(l, "/")}
-                    hrefLang={l}
-                    lang={l}
-                    aria-current={l === locale ? "true" : undefined}
-                    className={`transition-colors duration-200 hover:text-white ${
-                      l === locale ? "font-semibold text-white" : ""
-                    }`}
-                  >
-                    {LOCALE_NAMES[l]}
-                  </a>
-                </li>
-              ))}
-            </ul>
+            <LanguageList />
           </div>
         </div>
 

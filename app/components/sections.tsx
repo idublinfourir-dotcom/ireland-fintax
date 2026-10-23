@@ -158,7 +158,7 @@ export async function QuickEntry() {
                 {t.quickEntries[i].title}
                 <span
                   aria-hidden="true"
-                  className="translate-x-0 text-primary-300 transition-transform duration-200 group-hover:translate-x-1"
+                  className="translate-x-0 text-primary-300 inline-block rtl:-scale-x-100 transition-transform duration-200 group-hover:translate-x-1 rtl:group-hover:-translate-x-1"
                 >
                   →
                 </span>
@@ -199,7 +199,7 @@ export async function WhoWeAre() {
             href="/about"
             className="mt-6 inline-block text-sm font-semibold text-primary-500 transition-colors duration-200 hover:text-primary-600"
           >
-            {t.who.more} <span aria-hidden="true">→</span>
+            {t.who.more} <span aria-hidden="true" className="inline-block rtl:-scale-x-100">→</span>
           </LocaleLink>
           <ClipReveal
             // Not deskFinance: that photo is IRS forms and a dollar bill.
@@ -241,7 +241,7 @@ export function Services() {
             href="/services"
             className="text-sm font-semibold text-primary-500 transition-colors duration-200 hover:text-primary-600"
           >
-            All services <span aria-hidden="true">→</span>
+            All services <span aria-hidden="true" className="inline-block rtl:-scale-x-100">→</span>
           </Link>
         </div>
         <div className="mt-14 grid gap-px overflow-hidden border border-line bg-line sm:grid-cols-2 lg:grid-cols-3">
@@ -253,7 +253,7 @@ export function Services() {
             >
               <span
                 aria-hidden="true"
-                className="absolute left-0 top-0 h-1 w-0 bg-primary-500 transition-all duration-300 group-hover:w-full"
+                className="absolute inset-s-0 top-0 h-1 w-0 bg-primary-500 transition-all duration-300 group-hover:w-full"
               />
               <h3 className="flex flex-wrap items-center gap-2 font-display text-xl font-bold tracking-[-0.01em] text-ink">
                 {category.title}
@@ -265,7 +265,7 @@ export function Services() {
               </h3>
               <span
                 aria-hidden="true"
-                className="text-primary-500 transition-transform duration-200 group-hover:translate-x-1"
+                className="text-primary-500 inline-block rtl:-scale-x-100 transition-transform duration-200 group-hover:translate-x-1 rtl:group-hover:-translate-x-1"
               >
                 →
               </span>
@@ -282,7 +282,7 @@ export function Services() {
             </h3>
             <span
               aria-hidden="true"
-              className="text-primary-300 transition-transform duration-200 group-hover:translate-x-1"
+              className="text-primary-300 inline-block rtl:-scale-x-100 transition-transform duration-200 group-hover:translate-x-1 rtl:group-hover:-translate-x-1"
             >
               →
             </span>
@@ -321,8 +321,8 @@ export function PromoBanner({
         <div
           className={`flex flex-col justify-center px-5 py-16 sm:px-8 sm:py-20 lg:py-28 ${
             reverse
-              ? "lg:order-2 lg:ml-0 lg:mr-auto lg:max-w-xl lg:pl-16"
-              : "lg:ml-auto lg:mr-0 lg:max-w-xl lg:pr-16"
+              ? "lg:order-2 lg:ms-0 lg:me-auto lg:max-w-xl lg:ps-16"
+              : "lg:ms-auto lg:me-0 lg:max-w-xl lg:pe-16"
           }`}
         >
           <Reveal>
@@ -405,11 +405,11 @@ export async function AiBand() {
       />
       <div
         aria-hidden="true"
-        className="absolute -right-32 -top-32 -z-10 h-96 w-96 rounded-full bg-primary-500/20 blur-3xl"
+        className="absolute -inset-e-32 -top-32 -z-10 h-96 w-96 rounded-full bg-primary-500/20 blur-3xl"
       />
       <Container className="py-24 sm:py-32">
         <Reveal>
-          <div className="max-w-2xl border-l-2 border-primary-400 pl-6 sm:pl-8">
+          <div className="max-w-2xl border-s-2 border-primary-400 ps-6 sm:ps-8">
             <Eyebrow tone="dark">{t.learn.eyebrow}</Eyebrow>
             <h2 className="mt-6 font-display text-4xl font-bold leading-[1.03] tracking-[-0.02em] text-balance sm:text-5xl">
               <Emphasis text={t.learn.title} className="text-primary-300 not-italic" />
@@ -482,7 +482,7 @@ export async function Industries() {
                 className="group block h-full bg-surface p-6 transition-colors duration-200 hover:bg-secondary-50/50"
               >
                 <h3 className="font-display text-lg font-medium tracking-tight text-ink transition-colors duration-200 group-hover:text-primary-500">
-                  {a.name} <span aria-hidden="true">→</span>
+                  {a.name} <span aria-hidden="true" className="inline-block rtl:-scale-x-100">→</span>
                 </h3>
                 <p className="mt-2 text-sm leading-6 text-muted">{a.note}</p>
               </LocaleLink>
@@ -516,7 +516,7 @@ export async function Process() {
             <li key={step.title} className="relative border-t-2 border-ink/10 pt-6">
               <span
                 aria-hidden="true"
-                className="absolute -top-0.5 left-0 h-0.5 w-14 bg-primary-400"
+                className="absolute -top-0.5 inset-s-0 h-0.5 w-14 bg-primary-400"
               />
               <span className="font-display text-3xl font-medium text-primary-500">
                 {String(index + 1).padStart(2, "0")}
@@ -578,7 +578,7 @@ export function RelatedServices({
             href="/services"
             className="text-sm font-semibold text-primary-500 transition-colors duration-200 hover:text-primary-600"
           >
-            All services <span aria-hidden="true">→</span>
+            All services <span aria-hidden="true" className="inline-block rtl:-scale-x-100">→</span>
           </Link>
         </div>
         <div className="mt-8 grid gap-px overflow-hidden border border-line bg-line sm:grid-cols-2 lg:grid-cols-4">
@@ -590,7 +590,7 @@ export function RelatedServices({
             >
               <span
                 aria-hidden="true"
-                className="absolute left-0 top-0 h-0.5 w-0 bg-primary-400 transition-all duration-300 group-hover:w-full"
+                className="absolute inset-s-0 top-0 h-0.5 w-0 bg-primary-400 transition-all duration-300 group-hover:w-full"
               />
               <h3 className="font-display text-base font-semibold tracking-tight text-ink">
                 {category.title}
@@ -599,7 +599,7 @@ export function RelatedServices({
                 {category.blurb}
               </p>
               <span className="mt-auto pt-4 text-sm font-semibold text-primary-500">
-                Learn more <span aria-hidden="true">→</span>
+                Learn more <span aria-hidden="true" className="inline-block rtl:-scale-x-100">→</span>
               </span>
             </Link>
           ))}

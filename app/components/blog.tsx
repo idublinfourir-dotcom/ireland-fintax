@@ -119,7 +119,7 @@ export function ShareLinks({ url, title, centered = false }: { url: string; titl
   ];
   return (
     <div className={`flex flex-wrap items-center gap-2 ${centered ? "justify-center" : ""}`}>
-      <span className="mr-1 text-xs font-semibold uppercase tracking-[0.14em] text-muted">Share</span>
+      <span className="me-1 text-xs font-semibold uppercase tracking-[0.14em] text-muted">Share</span>
       <CopyLinkButton url={url} className={chip} />
       {services.map((s) => (
         <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer" className={chip}>
@@ -230,18 +230,18 @@ export function TableOfContents({
 }) {
   const multiPage = entries.some((e) => e.page !== entries[0]?.page);
   const list = (
-    <ol className="mt-3 space-y-0.5 border-l border-line">
+    <ol className="mt-3 space-y-0.5 border-s border-line">
       {entries.map((e) => (
         <li key={e.anchor}>
           <a
             href={tocHref(e, slug, page)}
-            className={`-ml-px block border-l border-transparent py-1 leading-snug text-muted transition-colors duration-200 hover:border-primary-500 hover:text-ink ${
-              e.level === 3 ? "pl-7" : "pl-4"
+            className={`-ms-px block border-s border-transparent py-1 leading-snug text-muted transition-colors duration-200 hover:border-primary-500 hover:text-ink ${
+              e.level === 3 ? "ps-7" : "ps-4"
             }`}
           >
             {e.text}
             {multiPage && e.page !== page && (
-              <span className="ml-1.5 text-[11px] text-muted/80">p. {e.page}</span>
+              <span className="ms-1.5 text-[11px] text-muted/80">p. {e.page}</span>
             )}
           </a>
         </li>

@@ -294,7 +294,7 @@ export function ContactForm() {
         <FieldError id="message-error" message={serverErrors.message} />
 
         {related.length > 0 && (
-          <div className="rounded-none border-l-[3px] border-primary-400 bg-surface-muted p-4">
+          <div className="rounded-none border-s-[3px] border-primary-400 bg-surface-muted p-4">
             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted">
               {t.mightHelp}
             </p>

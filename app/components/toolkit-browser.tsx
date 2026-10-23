@@ -89,7 +89,7 @@ function StarterRow({ resource, t }: { resource: StarterResource; t: ToolkitMess
         href={`/toolkits/request/${toolkitSlug(resource.title)}`}
         className={`${ctaLink} shrink-0`}
       >
-        {t.browser.request} <span aria-hidden="true">→</span>
+        {t.browser.request} <span aria-hidden="true" className="inline-block rtl:-scale-x-100">→</span>
       </Link>
     </li>
   );

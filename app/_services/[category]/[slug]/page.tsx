@@ -68,7 +68,7 @@ export default async function SubServicePage({
 
       <Container className="grid items-start gap-12 py-14 sm:py-16 lg:grid-cols-[1fr_22rem]">
         <Reveal>
-          <p className="max-w-2xl border-l-[3px] border-primary-500 pl-6 font-display text-xl font-light leading-9 text-ink sm:text-[1.7rem] sm:leading-[2.6rem]">
+          <p className="max-w-2xl border-s-[3px] border-primary-500 ps-6 font-display text-xl font-light leading-9 text-ink sm:text-[1.7rem] sm:leading-[2.6rem]">
             {item.overview}
           </p>
           <div className="mt-12 flex items-baseline justify-between gap-4 border-t border-line pt-6">
@@ -140,7 +140,7 @@ export default async function SubServicePage({
               {item.bestFor.map((entry) => (
                 <li
                   key={entry}
-                  className="border-l-2 border-primary-400 pl-3 text-sm leading-6 text-ink-body"
+                  className="border-s-2 border-primary-400 ps-3 text-sm leading-6 text-ink-body"
                 >
                   {entry}
                 </li>
@@ -174,7 +174,7 @@ export default async function SubServicePage({
                 >
                   <span
                     aria-hidden="true"
-                    className="absolute left-0 top-0 h-0.5 w-0 bg-primary-400 transition-all duration-300 group-hover:w-full"
+                    className="absolute inset-s-0 top-0 h-0.5 w-0 bg-primary-400 transition-all duration-300 group-hover:w-full"
                   />
                   <h3 className="font-display text-base font-semibold tracking-tight text-ink">
                     {sibling.title}

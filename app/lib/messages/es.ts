@@ -39,6 +39,7 @@ export const es: Messages = {
     openMenu: "Abrir menú",
     skip: "Saltar al contenido",
     closeMenu: "Cerrar menú",
+    language: "Idioma",
     tools: toolNames.es,
   },
 

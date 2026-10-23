@@ -270,7 +270,7 @@ function LineDetails({ line, summary, body }: { line: PersonalLine; summary: Rea
         <Chevron className="text-muted transition-transform duration-200 group-open:rotate-90" />
         {summary}
       </summary>
-      <div className="pb-5 pl-6">
+      <div className="pb-5 ps-6">
         <p className="max-w-2xl text-sm leading-6 text-ink-body">{body}</p>
         <LineFacts line={line} />
       </div>
@@ -345,7 +345,7 @@ function NoteList({ lines }: { lines: PersonalLine[] }) {
                     <>
                       <span aria-hidden="true" className={`hidden sm:block ${leader}`} />
                       <span
-                        className={`text-[15px] font-semibold sm:text-right ${
+                        className={`text-[15px] font-semibold sm:text-end ${
                           unit.cheaper ? "text-primary-600" : "text-ink-body"
                         }`}
                       >
@@ -582,7 +582,7 @@ export function Budget2027Planner({ ratesByYear }: { ratesByYear: Record<number,
                       type="button"
                       aria-pressed={on}
                       onClick={() => toggle(item.key)}
-                      className={`flex min-h-12 cursor-pointer items-center gap-3 border px-4 py-3 text-left text-sm transition-colors duration-150 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500 ${
+                      className={`flex min-h-12 cursor-pointer items-center gap-3 border px-4 py-3 text-start text-sm transition-colors duration-150 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500 ${
                         on
                           ? "border-primary-500 bg-primary-50 font-medium text-ink"
                           : "border-line bg-white text-ink-body hover:border-ink/30"

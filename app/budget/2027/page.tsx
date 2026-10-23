@@ -112,7 +112,7 @@ export default async function Budget2027Page() {
                 {t.sources}
               </span>
             </summary>
-            <div className="mt-5 max-w-3xl pl-6">
+            <div className="mt-5 max-w-3xl ps-6">
               <p className="text-sm leading-6 text-ink-body">
                 {t.sourcesBody.replace("{date}", localDate(locale, BUDGET_DATA_AS_OF))}
               </p>

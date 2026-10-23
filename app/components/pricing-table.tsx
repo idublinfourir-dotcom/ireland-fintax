@@ -28,7 +28,7 @@ export function PricingTable({ tiers }: { tiers: PricingTier[] }) {
         >
           <span
             className={`absolute top-1 h-5 w-5 rounded-full bg-white shadow transition-all duration-200 ${
-              annual ? "left-6" : "left-1"
+              annual ? "inset-s-6" : "inset-s-1"
             }`}
           />
         </button>
@@ -36,7 +36,7 @@ export function PricingTable({ tiers }: { tiers: PricingTier[] }) {
           className={`text-sm font-medium ${annual ? "text-ink" : "text-muted"}`}
         >
           Annual
-          <span className="ml-1.5 rounded-none bg-primary-50 px-2 py-0.5 text-xs font-semibold text-primary-600">
+          <span className="ms-1.5 rounded-none bg-primary-50 px-2 py-0.5 text-xs font-semibold text-primary-600">
             2 months free
           </span>
         </span>

@@ -154,7 +154,7 @@ export function DashboardShell({
           <div className="flex items-center gap-3 sm:gap-4">
             <div className="hidden items-center gap-3 sm:flex">
               <Avatar initials={initials} />
-              <div className="text-left leading-tight">
+              <div className="text-start leading-tight">
                 <p className="text-sm font-medium text-ink">
                   {user.name ?? user.email}
                 </p>

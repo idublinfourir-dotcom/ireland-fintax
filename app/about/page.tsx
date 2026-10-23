@@ -47,10 +47,10 @@ export default async function AboutPage() {
             <Link
               key={sectionHrefs[i]}
               href={sectionHrefs[i]}
-              className="group border-l-2 border-primary-400 bg-surface py-1 pl-5"
+              className="group border-s-2 border-primary-400 bg-surface py-1 ps-5"
             >
               <h3 className="font-display text-lg font-medium tracking-tight text-ink transition-colors duration-200 group-hover:text-primary-500">
-                {section.title} <span aria-hidden="true">→</span>
+                {section.title} <span aria-hidden="true" className="inline-block rtl:-scale-x-100">→</span>
               </h3>
               <p className="mt-2 text-sm leading-6 text-muted">
                 {section.description}

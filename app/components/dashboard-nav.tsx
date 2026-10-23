@@ -52,7 +52,7 @@ export function DashNav({
           >
             <span
               aria-hidden="true"
-              className={`absolute inset-y-0 left-0 w-0.5 transition-colors duration-200 ${
+              className={`absolute inset-y-0 inset-s-0 w-0.5 transition-colors duration-200 ${
                 active ? "bg-primary-400" : "bg-transparent"
               }`}
             />

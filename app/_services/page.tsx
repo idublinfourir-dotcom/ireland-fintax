@@ -37,7 +37,7 @@ export default function ServicesPage() {
               >
                 <span
                   aria-hidden="true"
-                  className="absolute left-0 top-0 h-0.5 w-0 bg-primary-400 transition-all duration-300 group-hover:w-full"
+                  className="absolute inset-s-0 top-0 h-0.5 w-0 bg-primary-400 transition-all duration-300 group-hover:w-full"
                 />
                 <div className="flex items-baseline justify-between gap-4">
                   <span className="font-display text-sm font-semibold text-primary-500">

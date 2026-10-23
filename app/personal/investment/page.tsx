@@ -137,7 +137,7 @@ export default async function PersonalInvestmentPage() {
               >
                 <span className="font-display text-base font-medium tracking-tight text-ink transition-colors duration-200 group-hover:text-primary-500">
                   {item.label}{" "}
-                  <span aria-hidden="true" className="text-primary-500">
+                  <span aria-hidden="true" className="inline-block rtl:-scale-x-100 text-primary-500">
                     →
                   </span>
                 </span>

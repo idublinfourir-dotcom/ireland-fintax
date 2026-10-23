@@ -40,6 +40,7 @@ export const ga: Messages = {
     openMenu: "Oscail an roghchlár",
     skip: "Léim go dtí an t-ábhar",
     closeMenu: "Dún an roghchlár",
+    language: "Teanga",
     tools: toolNames.ga,
   },
 
