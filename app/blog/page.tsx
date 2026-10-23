@@ -9,7 +9,7 @@ import { listPublishedPosts } from "../lib/posts";
 import { isPostCategory, POST_CATEGORY_LABELS } from "../lib/post-types";
 
 export const metadata: Metadata = {
-  title: "Blog: Irish tax and personal finance, explained",
+  title: "Insights: Irish tax and personal finance, explained",
   description:
     "Guides, explainers and news on Irish tax and personal finance in plain English: income tax, CGT, VAT, mortgages, investing and starting a company.",
   alternates: { canonical: "/blog" },
@@ -67,10 +67,10 @@ export default async function BlogPage({
         <section className="border-b border-line">
           <Container className="pb-4 pt-12 sm:pt-16">
             <div className="animate-fade-up">
-              <Breadcrumbs tone="light" items={[{ label: "Home", href: "/" }, { label: "Blog" }]} />
+              <Breadcrumbs tone="light" items={[{ label: "Home", href: "/" }, { label: "Insights" }]} />
             </div>
             <h1 className="animate-fade-up mt-6 font-display text-5xl font-bold leading-[0.98] tracking-[-0.025em] text-ink [animation-delay:80ms] sm:text-6xl lg:text-7xl">
-              {category ? POST_CATEGORY_LABELS[category] : "Blog"}
+              {category ? POST_CATEGORY_LABELS[category] : "Insights"}
             </h1>
             <p className="animate-fade-up mt-5 max-w-2xl text-lg leading-8 text-ink-body [animation-delay:150ms] sm:text-xl">
               Guides, explainers and news on Irish tax and personal finance, in plain English.

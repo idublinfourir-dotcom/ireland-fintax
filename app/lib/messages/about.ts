@@ -22,9 +22,9 @@ const en = {
     "It is general information, not advice. Rates and rules change and your own situation matters, so check with Revenue or a qualified, regulated adviser before acting on a big decision.",
   ],
   sections: [
-    { title: "Tax Calculation Hub", description: "Calculators for income tax, VAT, corporation tax, the R&D credit, capital allowances, CGT and CAT, using Irish rates." },
-    { title: "Personal Finance Tools", description: "Work out a mortgage, and compare investment options side by side on risk, tax and access to your money." },
-    { title: "Accounts and Finance", description: "Memos, templates, tax and VAT forms and setup guides for starting and running a company." },
+    { title: "Tax Calculators", description: "Calculators for income tax, VAT, corporation tax, the R&D credit, capital allowances, CGT and CAT, using Irish rates." },
+    { title: "Personal Finance", description: "Work out a mortgage, and compare investment options side by side on risk, tax and access to your money." },
+    { title: "Accounting Hub", description: "Memos, templates, tax and VAT forms and setup guides for starting and running a company." },
     { title: "Ask a question", description: "Stuck on something the tools don’t cover? Ask it in your own words and get a plain-English answer by email." },
   ],
   notFound: {
@@ -59,7 +59,7 @@ export const aboutMessages: Translations<typeof en> = {
     sections: [
       { title: "Calculadoras de impuestos", description: "Calculadoras del impuesto sobre la renta, IVA, impuesto de sociedades, crédito por I+D, amortizaciones fiscales, CGT y CAT, con los tipos irlandeses." },
       { title: "Finanzas personales", description: "Calcula una hipoteca y compara opciones de inversión una al lado de otra según riesgo, impuestos y acceso a tu dinero." },
-      { title: "Contabilidad y finanzas", description: "Notas, plantillas, formularios de impuestos y de IVA y guías para crear y gestionar una empresa." },
+      { title: "Centro de contabilidad", description: "Notas, plantillas, formularios de impuestos y de IVA y guías para crear y gestionar una empresa." },
       { title: "Haz una pregunta", description: "¿Te has atascado con algo que las herramientas no cubren? Pregúntalo con tus palabras y recibe por correo una respuesta clara." },
     ],
     notFound: {
@@ -91,7 +91,7 @@ export const aboutMessages: Translations<typeof en> = {
     sections: [
       { title: "Calculadoras de impostos", description: "Calculadoras de imposto de renda, IVA, imposto sobre empresas, crédito de P&D, depreciação fiscal, CGT e CAT, com as alíquotas irlandesas." },
       { title: "Finanças pessoais", description: "Simule um financiamento e compare opções de investimento lado a lado por risco, imposto e acesso ao seu dinheiro." },
-      { title: "Contabilidade e finanças", description: "Notas, modelos, formulários de impostos e de IVA e guias para abrir e administrar uma empresa." },
+      { title: "Central de contabilidade", description: "Notas, modelos, formulários de impostos e de IVA e guias para abrir e administrar uma empresa." },
       { title: "Faça uma pergunta", description: "Travou em algo que as ferramentas não cobrem? Pergunte com suas palavras e receba por e-mail uma resposta clara." },
     ],
     notFound: {
@@ -123,7 +123,7 @@ export const aboutMessages: Translations<typeof en> = {
     sections: [
       { title: "Áireamháin chánach", description: "Áireamháin do cháin ioncaim, CBL, cáin chorparáide, an creidmheas T&F, liúntais chaipitiúla, CGC agus CFC, le rátaí na hÉireann." },
       { title: "Airgeadas pearsanta", description: "Oibrigh amach morgáiste, agus cuir roghanna infheistíochta i gcomparáid taobh le taobh de réir riosca, cánach agus rochtana ar d’airgead." },
-      { title: "Cuntais agus Airgeadas", description: "Meabhráin, teimpléid, foirmeacha cánach agus CBL agus treoracha chun comhlacht a bhunú agus a reáchtáil." },
+      { title: "Mol Cuntasaíochta", description: "Meabhráin, teimpléid, foirmeacha cánach agus CBL agus treoracha chun comhlacht a bhunú agus a reáchtáil." },
       { title: "Cuir ceist", description: "Rud éigin nach gclúdaíonn na huirlisí? Cuir ceist i d’fhocail féin agus faigh freagra soiléir ar ríomhphost." },
     ],
     notFound: {

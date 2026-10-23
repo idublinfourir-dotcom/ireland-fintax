@@ -12,7 +12,7 @@ const en = {
     description:
       "Compare where to invest in Ireland by return after tax: State Savings, deposits, pensions, ETFs, shares, property and private markets, filtered by timeframe and risk.",
   },
-  crumbHub: "Personal Finance Tools",
+  crumbHub: "Personal Finance",
   crumb: "Personal investment",
   title: "Personal investment",
   lede: "Where €1 can go in Ireland, ranked by what is left after tax. Thirty-two options across the State-backed and private sectors, current at {date}.",

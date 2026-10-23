@@ -12,7 +12,7 @@ const en = {
     description:
       "Compare monthly mortgage repayments across Irish lenders, first-time buyer, trading up, switcher and investment rates with APRC, green mortgage and cashback offers.",
   },
-  crumbHub: "Personal Finance Tools",
+  crumbHub: "Personal Finance",
   crumb: "Ireland mortgage",
   title: "Ireland mortgage calculator",
   lede: "Compare monthly repayments across Irish lenders: variable, fixed and green rates as of {date}.",

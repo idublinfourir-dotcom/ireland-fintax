@@ -2,7 +2,7 @@ import type { Translations } from "../i18n";
 import type { ToolkitCategory } from "../toolkit-types.ts";
 import { STARTER_RESOURCES } from "../toolkit-content.ts";
 
-/* Accounts and Finance (/toolkits), the request page and its form/action.
+/* Accounting Hub (/toolkits), the request page and its form/action.
    `resources` is keyed by the catalogue's English title (toolkit-content.ts),
    which also gives each request URL its slug; a title missing here shows in
    English. Form names (TR1, CT1, VAT3, FRS 102) stay as Revenue and the
@@ -12,12 +12,12 @@ type Categories = Record<ToolkitCategory, string>;
 
 const en = {
   meta: {
-    title: "Accounts and Finance: memos, templates, tax & VAT forms",
+    title: "Accounting Hub: memos, templates, tax & VAT forms",
     description:
       "Free resources for founders and business owners: memos, templates, tax forms, VAT forms and business setup guides for Ireland and the UK.",
   },
   home: "Home",
-  title: "Accounts and Finance",
+  title: "Accounting Hub",
   lede: "Memos, templates, tax and VAT forms, and step-by-step business setup guides: free, practical resources for founders in Ireland and the UK.",
   notes: [
     { title: "Free to use", body: "Every memo, template and walkthrough is free. Tell us which one you need and we'll email it over." },
@@ -46,8 +46,8 @@ const en = {
   ) as Record<string, { title: string; description: string }>,
   request: {
     meta: {
-      title: "Request a copy from Accounts and Finance",
-      description: "Request a copy of an Irish Fintax Accounts and Finance resource and we will email it to you.",
+      title: "Request a copy from the Accounting Hub",
+      description: "Request a copy of an Irish Fintax Accounting Hub resource and we will email it to you.",
     },
     title: "Request a copy",
     lede: "Tell us where to send it and we’ll email the file over. It’s free.",
@@ -66,7 +66,7 @@ const en = {
     cancel: "Cancel",
     thanksTitle: "Thank you for submitting the form",
     thanksBody: "We will send you the file shortly via your email.",
-    back: "Back to Accounts and Finance",
+    back: "Back to the Accounting Hub",
   },
   errors: {
     nameMissing: "Please tell us your name.",
@@ -96,12 +96,12 @@ export const toolkitMessages: Translations<ToolkitMessages> = {
 
   es: {
     meta: {
-      title: "Contabilidad y finanzas: notas, plantillas y formularios de impuestos e IVA",
+      title: "Centro de contabilidad: notas, plantillas y formularios de impuestos e IVA",
       description:
         "Recursos gratuitos para emprendedores y empresarios: notas, plantillas, formularios de impuestos y de IVA y guías para crear una empresa en Irlanda y el Reino Unido.",
     },
     home: "Inicio",
-    title: "Contabilidad y finanzas",
+    title: "Centro de contabilidad",
     lede: "Notas, plantillas, formularios de impuestos y de IVA y guías paso a paso para crear una empresa: recursos prácticos y gratuitos para emprendedores en Irlanda y el Reino Unido.",
     notes: [
       { title: "De uso gratuito", body: "Todas las notas, plantillas y guías son gratuitas. Dinos cuál necesitas y te la enviamos por correo." },
@@ -156,8 +156,8 @@ export const toolkitMessages: Translations<ToolkitMessages> = {
     },
     request: {
       meta: {
-        title: "Pedir una copia de Contabilidad y finanzas",
-        description: "Pide una copia de un recurso de Contabilidad y finanzas de Irish Fintax y te lo enviaremos por correo.",
+        title: "Pedir una copia del Centro de contabilidad",
+        description: "Pide una copia de un recurso del Centro de contabilidad de Irish Fintax y te lo enviaremos por correo.",
       },
       title: "Pedir una copia",
       lede: "Dinos dónde enviarlo y te mandamos el archivo por correo. Es gratis.",
@@ -176,7 +176,7 @@ export const toolkitMessages: Translations<ToolkitMessages> = {
       cancel: "Cancelar",
       thanksTitle: "Gracias por enviar el formulario",
       thanksBody: "Te enviaremos el archivo por correo en breve.",
-      back: "Volver a Contabilidad y finanzas",
+      back: "Volver al Centro de contabilidad",
     },
     errors: {
       nameMissing: "Dinos tu nombre, por favor.",
@@ -201,12 +201,12 @@ export const toolkitMessages: Translations<ToolkitMessages> = {
 
   pt: {
     meta: {
-      title: "Contabilidade e finanças: notas, modelos e formulários de impostos e IVA",
+      title: "Central de contabilidade: notas, modelos e formulários de impostos e IVA",
       description:
         "Recursos gratuitos para empreendedores e donos de empresa: notas, modelos, formulários de impostos e de IVA e guias para abrir uma empresa na Irlanda e no Reino Unido.",
     },
     home: "Início",
-    title: "Contabilidade e finanças",
+    title: "Central de contabilidade",
     lede: "Notas, modelos, formulários de impostos e de IVA e guias passo a passo para abrir uma empresa: recursos práticos e gratuitos para empreendedores na Irlanda e no Reino Unido.",
     notes: [
       { title: "Uso gratuito", body: "Todas as notas, modelos e guias são gratuitos. Diga qual você precisa e enviamos por e-mail." },
@@ -261,8 +261,8 @@ export const toolkitMessages: Translations<ToolkitMessages> = {
     },
     request: {
       meta: {
-        title: "Pedir uma cópia de Contabilidade e finanças",
-        description: "Peça uma cópia de um recurso de Contabilidade e finanças da Irish Fintax e enviaremos por e-mail.",
+        title: "Pedir uma cópia da Central de contabilidade",
+        description: "Peça uma cópia de um recurso da Central de contabilidade da Irish Fintax e enviaremos por e-mail.",
       },
       title: "Pedir uma cópia",
       lede: "Diga para onde enviar e mandamos o arquivo por e-mail. É grátis.",
@@ -281,7 +281,7 @@ export const toolkitMessages: Translations<ToolkitMessages> = {
       cancel: "Cancelar",
       thanksTitle: "Obrigado por enviar o formulário",
       thanksBody: "Enviaremos o arquivo para o seu e-mail em breve.",
-      back: "Voltar para Contabilidade e finanças",
+      back: "Voltar para a Central de contabilidade",
     },
     errors: {
       nameMissing: "Por favor, diga seu nome.",
@@ -306,12 +306,12 @@ export const toolkitMessages: Translations<ToolkitMessages> = {
 
   ga: {
     meta: {
-      title: "Cuntais agus Airgeadas: meabhráin, teimpléid, foirmeacha cánach agus CBL",
+      title: "Mol Cuntasaíochta: meabhráin, teimpléid, foirmeacha cánach agus CBL",
       description:
         "Acmhainní saor in aisce do bhunaitheoirí agus d’úinéirí gnó: meabhráin, teimpléid, foirmeacha cánach agus CBL agus treoracha bunaithe gnó d’Éirinn agus don Ríocht Aontaithe.",
     },
     home: "Baile",
-    title: "Cuntais agus Airgeadas",
+    title: "Mol Cuntasaíochta",
     lede: "Meabhráin, teimpléid, foirmeacha cánach agus CBL, agus treoracha céim ar chéim chun gnó a bhunú: acmhainní praiticiúla saor in aisce do bhunaitheoirí in Éirinn agus sa Ríocht Aontaithe.",
     notes: [
       { title: "Saor in aisce", body: "Tá gach meabhrán, teimpléad agus treoir saor in aisce. Inis dúinn cé acu atá uait agus seolfaimid chugat é ar ríomhphost." },
@@ -386,7 +386,7 @@ export const toolkitMessages: Translations<ToolkitMessages> = {
       cancel: "Cealaigh",
       thanksTitle: "Go raibh maith agat as an bhfoirm a chur isteach",
       thanksBody: "Seolfaimid an comhad chugat ar ríomhphost go luath.",
-      back: "Ar ais chuig Cuntais agus Airgeadas",
+      back: "Ar ais chuig an Mol Cuntasaíochta",
     },
     errors: {
       nameMissing: "Inis d’ainm dúinn, le do thoil.",

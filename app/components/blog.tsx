@@ -153,7 +153,7 @@ export function PostHeader({
             tone="light"
             items={[
               { label: "Home", href: "/" },
-              { label: "Blog", href: "/blog" },
+              { label: "Insights", href: "/blog" },
               { label: category, href: `/blog?category=${post.category}` },
             ]}
           />
