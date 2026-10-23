@@ -78,4 +78,21 @@ export const calcMessages: Translations<CalcMessages> = {
     mainNav: "Príomh",
     backToTop: "Ar ais go barr",
   },
+  ar: {
+    calculatorsHeading: "حاسبات الضرائب",
+    personalHeading: "التمويل الشخصي",
+    home: "الرئيسية",
+    tools: "الأدوات",
+    personal: "شخصي",
+    ratesAsOf: "المعدلات سارية حتى {date}.",
+    figuresAsOf: "الأرقام سارية حتى {date}.",
+    source: "المصدر: revenue.ie",
+    disclaimer:
+      "هذا تقدير إرشادي فقط، وليس نصيحة ضريبية. الأرقام عامة وقد لا تعكس الإعفاءات أو الاستثناءات أو ظروفك الخاصة. تحقق من أي رقم مع مستشار مؤهل أو {link} قبل أن تتصرف بناءً عليه.",
+    noAmount: "لم يُدخل أي مبلغ بعد",
+    budgetLink: "اعرف ما الذي تغيّره {budget} بالنسبة لك ←",
+    breadcrumb: "مسار التنقل",
+    mainNav: "الرئيسية",
+    backToTop: "العودة إلى الأعلى",
+  },
 };

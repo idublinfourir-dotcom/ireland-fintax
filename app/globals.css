@@ -14,8 +14,8 @@
 }
 
 @theme inline {
-  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
-  --font-display: "AmpUpright", var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-geist-sans), var(--font-arabic), ui-sans-serif, system-ui, sans-serif;
+  --font-display: "AmpUpright", var(--font-archivo), var(--font-arabic), ui-sans-serif, system-ui, sans-serif;
 }
 
 /* Archivo's word space is narrow, and the tight tracking every heading uses
@@ -23,6 +23,13 @@
    as "Aska question". Widen it once here, for every display heading. */
 .font-display {
   word-spacing: 0.12em;
+}
+
+/* Arabic letters join, and any letter-spacing (the tracking-* utilities on
+   eyebrows and headings) pulls them apart. :lang, not [dir], so an English
+   blog post wrapped in lang="en" keeps its tracking. */
+:lang(ar) {
+  letter-spacing: normal !important;
 }
 
 @theme {

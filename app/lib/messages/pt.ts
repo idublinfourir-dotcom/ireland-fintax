@@ -39,6 +39,7 @@ export const pt: Messages = {
     openMenu: "Abrir menu",
     skip: "Pular para o conteúdo",
     closeMenu: "Fechar menu",
+    language: "Idioma",
     tools: toolNames.pt,
   },
 

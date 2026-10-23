@@ -130,11 +130,11 @@ export default async function BlogPostPage({
   const url = `${site.url}/blog/${post.slug}`;
   const [related, locale] = await Promise.all([getRelatedPosts(post), getLocale()]);
 
-  /* lang="en": the post is English even under /ga, /es or /pt, where the
+  /* lang="en" dir="ltr": the post is English even under /ga, /es, /pt or /ar, where the
      header, footer and call to action are not (CHROME_ONLY_PATHS). */
   return (
     <>
-      <div lang="en">
+      <div lang="en" dir="ltr">
         <article>
           <PostHeader post={post} url={url} page={page} pages={pages.length} />
           {page === 1 && <PostCover image={post.cover} />}
@@ -143,8 +143,8 @@ export default async function BlogPostPage({
             {/* Wide screens: the contents sit in the left margin, beside the
                 reading column, and stay in view while reading. */}
             {showToc && (
-              <aside className="absolute inset-y-0 left-0 hidden w-[calc((100%-56rem)/2)] xl:block">
-                <div className="sticky top-28 ml-auto max-w-[14rem] pl-6 pr-8">
+              <aside className="absolute inset-y-0 inset-s-0 hidden w-[calc((100%-56rem)/2)] xl:block">
+                <div className="sticky top-28 ms-auto max-w-[14rem] ps-6 pe-8">
                   <TableOfContents entries={toc} slug={post.slug} page={page} variant="side" />
                 </div>
               </aside>

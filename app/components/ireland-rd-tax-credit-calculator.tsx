@@ -77,7 +77,7 @@ export function IrelandRdTaxCreditCalculator({ config }: { config: RdConfig }) {
     <div className="grid gap-10 lg:grid-cols-2">
       {/* input */}
       <div className="flex flex-col gap-5">
-        <div className="border-l-[3px] border-primary-500 bg-surface-muted px-4 py-3 text-xs leading-5 text-ink-body">
+        <div className="border-s-[3px] border-primary-500 bg-surface-muted px-4 py-3 text-xs leading-5 text-ink-body">
           <span className="font-semibold text-ink">{t.introTitle}</span>{" "}
           {t.introBody
             .replace("{rate}", rate(config.ratePercent))

@@ -1,7 +1,7 @@
 /* Languages the site is offered in, and the URL rules that go with them.
  *
  * English lives at the bare URLs (/, /tools/...) and every other language
- * under its own prefix (/ga, /es, /pt), which is what Google asks for: one
+ * under its own prefix (/ga, /es, /pt, /ar), which is what Google asks for: one
  * crawlable URL per language, never a cookie or Accept-Language switch.
  * proxy.ts strips the prefix, rewrites to the same route and passes the
  * locale on in LOCALE_HEADER; nothing under app/ moves.
@@ -11,7 +11,7 @@
  *
  * Pure: proxy.ts (edge) and the unit tests import it. */
 
-export const LOCALES = ["en", "ga", "es", "pt"] as const;
+export const LOCALES = ["en", "ga", "es", "pt", "ar"] as const;
 export type Locale = (typeof LOCALES)[number];
 export const DEFAULT_LOCALE: Locale = "en";
 
@@ -27,6 +27,9 @@ export function isLive(locale: Locale): boolean {
   return LIVE_LOCALES.includes(locale);
 }
 
+/** Languages written right to left: the root layout sets <html dir="rtl">. */
+export const RTL_LOCALES: readonly Locale[] = ["ar"];
+
 /** Request headers proxy.ts sets; read back on the server (lib/messages). */
 export const LOCALE_HEADER = "x-locale";
 /** The page's path without its language prefix, for the hreflang tags. */
@@ -38,6 +41,7 @@ export const LOCALE_NAMES: Record<Locale, string> = {
   ga: "Gaeilge",
   es: "Español",
   pt: "Português",
+  ar: "العربية",
 };
 
 /* Pages that exist in every language: an exact path, or everything below it
@@ -105,14 +109,24 @@ export function localeHref(locale: Locale, href: string): string {
   return path === "/" ? `/${locale}${tail}` : `/${locale}${path}${tail}`;
 }
 
+/** Where the language switcher sends `path` in `locale`: the same page, or
+    that language's home page when the page is English only (/admin, ...). */
+export function switchHref(locale: Locale, path: string): string {
+  if (locale === DEFAULT_LOCALE || hasLocaleRoute(path)) return localeHref(locale, path);
+  return localeHref(locale, "/");
+}
+
 /* Formatting and plurals, on the Intl APIs i18next itself builds on.
    Irish and English follow Ireland's conventions (€85,000.50), Spanish
-   Spain's (85.000,50 €), Portuguese Brazil's (€ 85.000,50). */
+   Spain's (85.000,50 €), Portuguese Brazil's (€ 85.000,50), Arabic with
+   Western digits (€ 85,000.50), as euro amounts are written in Ireland,
+   rather than the Arabic-Indic ones some browsers default to. */
 export const INTL_LOCALE: Record<Locale, string> = {
   en: "en-IE",
   ga: "ga-IE",
   es: "es-ES",
   pt: "pt-BR",
+  ar: "ar-u-nu-latn",
 };
 
 /** Intl.NumberFormat for `locale`; pass the same options as before. */
@@ -120,7 +134,7 @@ export function numberFormat(locale: Locale, options?: Intl.NumberFormatOptions)
   return new Intl.NumberFormat(INTL_LOCALE[locale], options);
 }
 
-/** Forms by plural category. Irish uses all five; English only one/other. */
+/** Forms by plural category. Arabic uses all six, Irish five; English only one/other. */
 export type PluralForms = { other: string } & Partial<Record<Intl.LDMLPluralRule, string>>;
 
 /**

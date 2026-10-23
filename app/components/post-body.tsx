@@ -180,7 +180,7 @@ function BlockView({ block, anchor }: { block: Block; anchor?: string }): ReactN
     case "quote":
       if (!block.text) return null;
       return (
-        <figure className="mt-12 border-l-2 border-primary-500 pl-6 sm:pl-8">
+        <figure className="mt-12 border-s-2 border-primary-500 ps-6 sm:ps-8">
           <blockquote className="font-display text-2xl font-medium leading-snug tracking-tight text-ink sm:text-[1.75rem]">
             <RichText text={block.text} />
           </blockquote>
@@ -195,7 +195,7 @@ function BlockView({ block, anchor }: { block: Block; anchor?: string }): ReactN
     case "callout":
       if (!block.text && !block.title) return null;
       return (
-        <aside className="mt-10 border-l-2 border-primary-500 bg-primary-50/70 px-6 py-5 sm:px-7 sm:py-6">
+        <aside className="mt-10 border-s-2 border-primary-500 bg-primary-50/70 px-6 py-5 sm:px-7 sm:py-6">
           <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary-600">
             {block.title || "Key point"}
           </p>
@@ -211,16 +211,16 @@ function BlockView({ block, anchor }: { block: Block; anchor?: string }): ReactN
       const items = block.items.filter(Boolean);
       if (items.length === 0) return null;
       const lis = items.map((item, i) => (
-        <li key={i} className="pl-1.5">
+        <li key={i} className="ps-1.5">
           <RichText text={item} />
         </li>
       ));
       return block.style === "number" ? (
-        <ol className={`${body} list-decimal space-y-2 pl-6 marker:font-semibold marker:text-primary-500`}>
+        <ol className={`${body} list-decimal space-y-2 ps-6 marker:font-semibold marker:text-primary-500`}>
           {lis}
         </ol>
       ) : (
-        <ul className={`${body} list-disc space-y-2 pl-6 marker:text-primary-500`}>{lis}</ul>
+        <ul className={`${body} list-disc space-y-2 ps-6 marker:text-primary-500`}>{lis}</ul>
       );
     }
 
@@ -233,7 +233,7 @@ function BlockView({ block, anchor }: { block: Block; anchor?: string }): ReactN
             <thead className="bg-surface-muted">
               <tr>
                 {head.map((cell, c) => (
-                  <th key={c} scope="col" className="px-4 py-3 text-left font-semibold text-ink">
+                  <th key={c} scope="col" className="px-4 py-3 text-start font-semibold text-ink">
                     <RichText text={cell} />
                   </th>
                 ))}

@@ -146,7 +146,7 @@ function CurrencyField({
         {label}
       </label>
       <div className="relative mt-1.5">
-        <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted">
+        <span className="pointer-events-none absolute inset-s-3 top-1/2 -translate-y-1/2 text-sm text-muted">
           €
         </span>
         <input
@@ -158,7 +158,7 @@ function CurrencyField({
           placeholder="0"
           value={text}
           onChange={(e) => handleChange(e.target.value)}
-          className="h-11 w-full rounded-none border border-line bg-surface pl-7 pr-3 text-sm text-ink tabular-nums transition-colors duration-200 focus:border-primary-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-400/40"
+          className="h-11 w-full rounded-none border border-line bg-surface ps-7 pe-3 text-sm text-ink tabular-nums transition-colors duration-200 focus:border-primary-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-400/40"
         />
       </div>
       {hint && <p className="mt-1 text-xs text-muted">{hint}</p>}
@@ -252,8 +252,8 @@ function AmountCell({ row, r }: { row: RowDef; r: IncomeTaxResult }) {
   const money = useMoney();
   const text = row.deduct ? `(${money(row.value(r))})` : money(row.value(r));
   return (
-    <td className="px-4 py-2.5 text-right tabular-nums text-ink">
-      {row.rate && <span className="mr-3 text-xs text-muted">({row.rate})</span>}
+    <td className="px-4 py-2.5 text-end tabular-nums text-ink">
+      {row.rate && <span className="me-3 text-xs text-muted">({row.rate})</span>}
       {text}
     </td>
   );
@@ -290,11 +290,11 @@ function ResultsTable({
         <table className="w-full border-collapse text-sm">
           <thead>
             <tr className="bg-surface-muted">
-              <th className="px-4 py-3 text-left font-semibold text-muted" />
-              <th className="px-4 py-3 text-right font-display text-base font-semibold text-primary-600">
+              <th className="px-4 py-3 text-start font-semibold text-muted" />
+              <th className="px-4 py-3 text-end font-display text-base font-semibold text-primary-600">
                 {currentYear}
               </th>
-              <th className="px-4 py-3 text-right font-display text-base font-semibold text-ink">
+              <th className="px-4 py-3 text-end font-display text-base font-semibold text-ink">
                 {priorYear}
               </th>
             </tr>
@@ -302,7 +302,7 @@ function ResultsTable({
           <tbody>
             {ROWS.map((row, i) => (
               <tr key={row.label} className={rowBg(row.variant, i)}>
-                <td className="px-4 py-2.5 text-left text-ink">{row.label}</td>
+                <td className="px-4 py-2.5 text-start text-ink">{row.label}</td>
                 <AmountCell row={row} r={current} />
                 <AmountCell row={row} r={prior} />
               </tr>

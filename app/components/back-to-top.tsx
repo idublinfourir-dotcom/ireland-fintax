@@ -30,7 +30,7 @@ export function BackToTop() {
       aria-label={useT(calcMessages).backToTop}
       data-back-to-top
       tabIndex={visible ? 0 : -1}
-      className={`fixed bottom-6 right-6 z-40 grid h-11 w-11 cursor-pointer place-items-center rounded-none bg-navy-900 text-primary-300 shadow-lg shadow-navy-900/25 transition-all duration-300 hover:bg-navy-700 hover:text-primary-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500 ${
+      className={`fixed bottom-6 inset-e-6 z-40 grid h-11 w-11 cursor-pointer place-items-center rounded-none bg-navy-900 text-primary-300 shadow-lg shadow-navy-900/25 transition-all duration-300 hover:bg-navy-700 hover:text-primary-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500 ${
         visible
           ? "translate-y-0 opacity-100"
           : "pointer-events-none translate-y-3 opacity-0"

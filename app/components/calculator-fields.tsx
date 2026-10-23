@@ -88,7 +88,7 @@ export function SelectField({
           id={id}
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="h-11 w-full cursor-pointer appearance-none rounded-none border border-line bg-surface pl-3 pr-9 text-sm text-ink transition-colors duration-200 focus:border-primary-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-400/40"
+          className="h-11 w-full cursor-pointer appearance-none rounded-none border border-line bg-surface ps-3 pe-9 text-sm text-ink transition-colors duration-200 focus:border-primary-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-400/40"
         >
           {children}
         </select>
@@ -98,7 +98,7 @@ export function SelectField({
           viewBox="0 0 12 12"
           fill="none"
           aria-hidden="true"
-          className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-muted"
+          className="pointer-events-none absolute inset-e-3 top-1/2 -translate-y-1/2 text-muted"
         >
           <path
             d="M2.5 4.5L6 8l3.5-3.5"
@@ -155,7 +155,7 @@ export function CurrencyField({
         {label}
       </label>
       <div className="relative mt-1.5">
-        <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted">
+        <span className="pointer-events-none absolute inset-s-3 top-1/2 -translate-y-1/2 text-sm text-muted">
           €
         </span>
         <input
@@ -167,7 +167,7 @@ export function CurrencyField({
           placeholder="0"
           value={text}
           onChange={(e) => handleChange(e.target.value)}
-          className="h-11 w-full rounded-none border border-line bg-surface pl-7 pr-3 text-sm text-ink tabular-nums transition-colors duration-200 focus:border-primary-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-400/40"
+          className="h-11 w-full rounded-none border border-line bg-surface ps-7 pe-3 text-sm text-ink tabular-nums transition-colors duration-200 focus:border-primary-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-400/40"
         />
       </div>
       {hint && <p className="mt-1 text-xs leading-5 text-muted">{hint}</p>}
