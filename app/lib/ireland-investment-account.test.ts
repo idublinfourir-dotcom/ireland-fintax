@@ -1,95 +1,83 @@
 /* Unit tests for the Investment Account maths.
    Run: node --test app/lib/ireland-investment-account.test.ts   (Node 22.6+ strips types)
 
-   The goldens come from the design preview's simulate() (version 15), which
-   this module ports; the port matched it to the cent over 2,880 inputs. */
+   The by-hand cases use a 0% return, so every figure can be checked on paper;
+   the growth case is checked against the closed form for a daily average. */
 
 import { test } from "node:test";
 import assert from "node:assert/strict";
 
-import { accountTax, compareWrappers, eligibility, TOP_RATES, type CompareInputs } from "./ireland-investment-account.ts";
+import { accountTax, projectAccount, type ProjectInputs } from "./ireland-investment-account.ts";
 
-const [STANDARD, HIGHER, TOP] = TOP_RATES.map((t) => t.rate);
-const base: CompareInputs = { lump: 10_000, monthly: 500, years: 15, ret: 0.05, dividendYield: 0.02, topRate: TOP };
-const run = (o: Partial<CompareInputs>) => compareWrappers({ ...base, ...o });
-const near = (a: number, b: number, msg?: string) => assert.ok(Math.abs(a - b) < 0.5, `${msg ?? ""} ${a} vs ${b}`);
+const base: ProjectInputs = {
+  openYear: 2028, openMonth: 0, firstPayment: 0, monthly: 0, yearly: 0, untilYear: 2028, ret: 0, fee: 0,
+};
+const run = (o: Partial<ProjectInputs>) => projectAccount({ ...base, ...o });
+const near = (a: number, b: number, msg = "") => assert.ok(Math.abs(a - b) < 0.01, `${msg} ${a} vs ${b}`);
 
-test("account tax: the Minister's €52,000 → €20, KPMG's €55,000 → €50, nil below €50,000", () => {
+test("account tax: the Budget speech's €52,000 → €20, €55,000 → €50, nil below €50,000", () => {
   assert.equal(accountTax(52_000), 20);
   assert.equal(accountTax(55_000), 50);
+  assert.equal(accountTax(50_000), 0);
   assert.equal(accountTax(49_999), 0);
   assert.equal(accountTax(60_000), 100);
+  assert.equal(accountTax(50_123.456), 1.23);
 });
 
-test("2027 top rates: income tax + USC + PRSI", () => {
-  near(STANDARD * 1e4, 2735);
-  near(HIGHER * 1e4, 4735);
-  near(TOP * 1e4, 5235);
+test("a part year is averaged over the days open only, and the €50,000 is not reduced", () => {
+  const r = run({ openYear: 2027, openMonth: 6, untilYear: 2027, firstPayment: 12_000 });
+  assert.equal(r.rows[0].days, 184); // 1 July to 31 December
+  near(r.rows[0].average, 12_000);
+  assert.equal(r.rows[0].tax, 0);
 });
 
-test("goldens", () => {
-  const cases: [Partial<CompareInputs>, number, number, number, "etf" | "shares"][] = [
-    [{}, 148_561, 133_603, 131_289, "shares"],
-    [{ lump: 100_000, monthly: 0, years: 30 }, 344_499, 274_723, 269_907, "shares"],
-    [{ lump: 100_000, monthly: 0, years: 30, topRate: STANDARD }, 350_824, 274_723, 315_896, "shares"],
-    [{ lump: 0, monthly: 1_000, years: 30 }, 709_381, 622_625, 608_315, "etf"],
-    [{ lump: 0, monthly: 2_000, years: 30 }, 1_333_807, 1_245_249, 1_216_237, "etf"],
-    [{ lump: 100_000, monthly: 0, years: 30, ret: 0.02, topRate: STANDARD }, 153_092, 148_611, 154_151, "shares"],
-  ];
-  for (const [o, acc, etf, sh, held] of cases) {
-    const r = run(o);
-    const label = JSON.stringify(o);
-    near(r.account.final, acc, `${label} account`);
-    near(r.etf.final, etf, `${label} etf`);
-    near(r.shares.final, sh, `${label} shares`);
-    if (r.account.overflow > 0) assert.equal(r.account.heldAs, held, label);
-  }
+test("leap years count 366 days", () => {
+  assert.equal(run({ firstPayment: 1 }).rows[0].days, 366);
+  assert.equal(run({ openYear: 2029, untilYear: 2029, firstPayment: 1 }).rows[0].days, 365);
 });
 
-test("4 × €12,000 at 0% stays under €50,000: no tax", () => {
-  const r = run({ lump: 0, monthly: 1_000, years: 4, ret: 0, dividendYield: 0 });
-  assert.equal(r.account.tax, 0);
-  assert.equal(r.account.firstTaxYear, null);
-  near(r.account.final, 48_000);
+test("€12,000 each 1 January at 0%: no tax until the average passes €50,000, then 1% of the excess", () => {
+  const r = run({ firstPayment: 12_000, yearly: 12_000, untilYear: 2032 });
+  assert.deepEqual(r.rows.map((y) => Math.round(y.average)), [12_000, 24_000, 36_000, 48_000, 60_000]);
+  assert.deepEqual(r.rows.map((y) => y.tax), [0, 0, 0, 0, 100]);
+  assert.equal(r.firstTaxYear, 2032);
+  assert.equal(r.paid, 60_000);
+  near(r.final, 59_900);
+  near(r.growth, 0);
 });
 
-test("at 0% return with no dividends, the ETF and shares return what was paid in, and the account only loses its 1%", () => {
-  const r = run({ lump: 50_000, monthly: 500, years: 20, ret: 0, dividendYield: 0 });
-  near(r.etf.final, r.paid);
-  near(r.shares.final, r.paid);
-  near(r.account.final + r.account.tax, r.paid);
-  assert.ok(r.etf.final > r.account.final, "the 1% is on value, so a flat market favours the ETF");
+test("money paid in on 1 December counts for 31 days in a year it opens then, and all of the next year", () => {
+  const late = run({ openYear: 2029, openMonth: 11, untilYear: 2030, firstPayment: 12_000 });
+  assert.equal(late.rows[0].days, 31);
+  near(late.rows[0].average, 12_000);
+  assert.equal(late.rows[1].days, 365);
+  near(late.rows[1].average, 12_000);
 });
 
-test("money over the limit moves in each January; with no spare room it stays outside", () => {
-  const lump = run({ lump: 100_000, monthly: 0, years: 30 });
-  assert.equal(lump.account.overflow, 88_000);
-  assert.ok(lump.account.moved > 88_000 && lump.account.left < 0.5);
-  const full = run({ lump: 0, monthly: 2_000, years: 30 });
-  assert.equal(full.account.moved, 0);
-  assert.ok(full.account.left > 0);
+test("the €12,000 limit is per calendar year: anything over it is left out and counted", () => {
+  const r = run({ firstPayment: 20_000, monthly: 1_000, untilYear: 2029 });
+  assert.deepEqual(r.rows.map((y) => y.paidIn), [12_000, 12_000]);
+  // 2028: 20,000 + 12 × 1,000 planned, 12,000 in. 2029: 12 × 1,000, all in.
+  assert.equal(r.refused, 20_000);
+  const opening = run({ openYear: 2027, openMonth: 6, untilYear: 2027, monthly: 2_000 });
+  assert.equal(opening.rows[0].paidIn, 12_000); // no pro-rating for 2027
+  assert.equal(opening.refused, 0);
 });
 
-test("at 5% the account beats both outside homes; a bad year still charges the 1%", () => {
-  for (const lump of [0, 100_000]) for (const monthly of [0, 500, 2_000]) for (const topRate of [STANDARD, TOP]) {
-    if (!lump && !monthly) continue;
-    const r = run({ lump, monthly, years: 30, topRate });
-    assert.ok(r.account.final > r.etf.final && r.account.final > r.shares.final, JSON.stringify({ lump, monthly, topRate }));
-  }
-  const bad = run({ lump: 0, monthly: 1_000, years: 10, badYear: true });
-  assert.ok(bad.rows[2].accountTax >= 0 && bad.account.final < run({ lump: 0, monthly: 1_000, years: 10 }).account.final);
+test("a full year of daily growth compounds to exactly the yearly return, and the average matches the closed form", () => {
+  const L = 12_000, r = 0.07, N = 365;
+  const res = run({ openYear: 2029, untilYear: 2029, firstPayment: L, ret: r });
+  near(res.rows[0].endValue, L * (1 + r));
+  const g = Math.pow(1 + r, 1 / N) - 1;
+  near(res.rows[0].average, (L * (1 + g) * (Math.pow(1 + g, N) - 1)) / (g * N));
 });
 
-test("no deemed disposal before 8 years; the first falls in year 9 for money paid in during year 1", () => {
-  const r = run({ lump: 10_000, monthly: 0, years: 12 });
-  assert.ok(r.rows.slice(0, 8).every((row) => row.deemedTax === 0));
-  assert.ok(r.rows[8].deemedTax > 0);
-});
-
-test("eligibility reasons", () => {
-  const ok = { adult: true, resident: true, ppsn: true, hasAccount: false, closedThisYear: false };
-  assert.deepEqual(eligibility(ok), []);
-  assert.deepEqual(eligibility({ ...ok, adult: false, closedThisYear: true }), ["minor", "closedThisYear"]);
-  assert.deepEqual(eligibility({ adult: false, resident: false, ppsn: false, hasAccount: true, closedThisYear: true }),
-    ["minor", "nonResident", "noPpsn", "hasAccount", "closedThisYear"]);
+test("fees lower the value and the tax; a falling market still pays tax on an average over €50,000", () => {
+  const plain = run({ firstPayment: 12_000, yearly: 12_000, untilYear: 2040, ret: 0.05 });
+  const fees = run({ firstPayment: 12_000, yearly: 12_000, untilYear: 2040, ret: 0.05, fee: 0.005 });
+  assert.ok(fees.final < plain.final && fees.tax < plain.tax);
+  const falling = run({ firstPayment: 12_000, yearly: 12_000, untilYear: 2034, ret: -0.05 });
+  const last = falling.rows.at(-1)!;
+  assert.ok(last.growth < 0 && last.average > 50_000 && last.tax > 0);
+  for (const res of [plain, fees, falling]) near(res.paid + res.growth - res.tax, res.final, "paid + growth − tax = final");
 });
