@@ -19,7 +19,7 @@ import type { Messages } from "../lib/messages/en";
    lib/budgets.ts): the "Ask a question" button beside the links, and at the
    foot of the mobile menu, already goes to /contact, so the link was a
    duplicate. */
-const secondaryHrefs = ["/blog", "/investment-account"] as const;
+const secondaryHrefs = ["/investment-account", "/blog"] as const;
 
 /* Founders Hub resource categories (t.founderResources), shown in the nav
    dropdown. Each links to the single /toolkits page (which carries its own
@@ -200,8 +200,9 @@ export function SiteHeader({
             Entrepreneur Toolkits link was added, and Personal Hub took most of
             what was left. Blog is the sixth link now, in the slot Services
             left; Budget 2027 replaced Contact, which duplicated the "Ask a
-            question" button. The hub names were lengthened in Oct 2026 (Tax Calculation
-            Hub, Accounts and Finance, Personal Finance Tools), which is why the
+            question" button. The labels were renamed in Oct 2026 (Tax Calculators,
+            Accounting Hub, Personal Finance, Budget Explanation, IE Investment
+            Account, Insights), about as long in total as before, which is why the
             signed-in pill drops its name at xl. Another top-level link needs
             the row re-thought, not another entry. */}
         <nav

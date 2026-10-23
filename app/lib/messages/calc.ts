@@ -5,8 +5,8 @@ import type { Translations } from "../i18n";
    {date} and {budget} are filled in at runtime. */
 
 const en = {
-  calculatorsHeading: "Ireland calculators",
-  personalHeading: "Personal Finance Tools",
+  calculatorsHeading: "Tax Calculators",
+  personalHeading: "Personal Finance",
   home: "Home",
   tools: "Tools",
   personal: "Personal",
@@ -28,7 +28,7 @@ export type CalcMessages = typeof en;
 export const calcMessages: Translations<CalcMessages> = {
   en,
   es: {
-    calculatorsHeading: "Calculadoras para Irlanda",
+    calculatorsHeading: "Calculadoras de impuestos",
     personalHeading: "Finanzas personales",
     home: "Inicio",
     tools: "Herramientas",
@@ -45,7 +45,7 @@ export const calcMessages: Translations<CalcMessages> = {
     backToTop: "Volver arriba",
   },
   pt: {
-    calculatorsHeading: "Calculadoras para a Irlanda",
+    calculatorsHeading: "Calculadoras de impostos",
     personalHeading: "Finanças pessoais",
     home: "Início",
     tools: "Ferramentas",
@@ -62,7 +62,7 @@ export const calcMessages: Translations<CalcMessages> = {
     backToTop: "Voltar ao topo",
   },
   ga: {
-    calculatorsHeading: "Áireamháin d’Éirinn",
+    calculatorsHeading: "Áireamháin chánach",
     personalHeading: "Airgeadas pearsanta",
     home: "Baile",
     tools: "Uirlisí",
