@@ -32,6 +32,8 @@ const nextConfig: NextConfig = {
   outputFileTracingRoot: process.cwd(),
   turbopack: { root: process.cwd() },
 
+  experimental: { agentUpgrade: "security" },
+
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
   },
