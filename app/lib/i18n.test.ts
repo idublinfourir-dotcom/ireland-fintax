@@ -4,7 +4,8 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readdirSync } from "node:fs";
-import { LOCALES, localDate, localeHref, numberFormat, plural, splitLocale } from "./i18n.ts";
+import { LOCALES, localDate, localeHref, numberFormat, plural, splitLocale, switchHref } from "./i18n.ts";
+import { ar } from "./messages/ar.ts";
 import { en } from "./messages/en.ts";
 import { es } from "./messages/es.ts";
 import { ga } from "./messages/ga.ts";
@@ -16,6 +17,7 @@ test("splitLocale reads the prefix", () => {
   assert.deepEqual(splitLocale("/ga"), { locale: "ga", path: "/" });
   assert.deepEqual(splitLocale("/es/"), { locale: "es", path: "/" });
   assert.deepEqual(splitLocale("/pt/about"), { locale: "pt", path: "/about" });
+  assert.deepEqual(splitLocale("/ar/contact"), { locale: "ar", path: "/contact" });
   assert.deepEqual(splitLocale("/en/blog"), { locale: "en", path: "/blog" });
   // A segment that merely starts like a locale is a path, not a prefix.
   assert.deepEqual(splitLocale("/gallery"), { locale: "en", path: "/gallery" });
@@ -37,6 +39,15 @@ test("localeHref prefixes translated pages only", () => {
   assert.equal(localeHref("es", "/budget"), "/budget");
 });
 
+test("switchHref keeps the page, or falls back to that language's home", () => {
+  assert.equal(switchHref("ar", "/tools/ireland-vat"), "/ar/tools/ireland-vat");
+  assert.equal(switchHref("ar", "/blog/some-post"), "/ar/blog/some-post");
+  assert.equal(switchHref("en", "/tools/ireland-vat"), "/tools/ireland-vat");
+  // An English-only page has no Arabic version: go to the Arabic home page.
+  assert.equal(switchHref("ar", "/investment-account"), "/ar");
+  assert.equal(switchHref("en", "/investment-account"), "/investment-account");
+});
+
 test("plural picks the language's own category", () => {
   const years = { one: "{n} year", other: "{n} years" };
   assert.equal(plural("en", 1, years), "1 year");
@@ -45,6 +56,9 @@ test("plural picks the language's own category", () => {
   const ga = { one: "o{n}", two: "t{n}", few: "f{n}", many: "m{n}", other: "x{n}" };
   assert.deepEqual([1, 2, 3, 7, 11].map((n) => plural("ga", n, ga)), ["o1", "t2", "f3", "m7", "x11"]);
   // A category a language does not list falls back to `other`.
+  // Arabic has six: 0 zero, 1 one, 2 two, 3-10 few, 11-99 many, 100 other.
+  const arForms = { zero: "z{n}", one: "o{n}", two: "t{n}", few: "f{n}", many: "m{n}", other: "x{n}" };
+  assert.deepEqual([0, 1, 2, 3, 11, 100].map((n) => plural("ar", n, arForms)), ["z0", "o1", "t2", "f3", "m11", "x100"]);
   assert.equal(plural("es", 1000000, { one: "{n} año", other: "{n} años" }), "1.000.000 años");
 });
 
@@ -54,6 +68,8 @@ test("numberFormat follows each language's conventions", () => {
   assert.equal(numberFormat("ga", eur).format(85000.5), "€85,000.50");
   assert.equal(numberFormat("es", eur).format(85000.5), "85.000,50\u00a0€");
   assert.equal(numberFormat("pt", eur).format(85000.5), "€\u00a085.000,50");
+  // Arabic keeps Western digits, as euro amounts are written in Ireland.
+  assert.match(numberFormat("ar", eur).format(85000.5), /85,000\.50/);
 });
 
 const PLURAL_CATEGORIES = ["zero", "one", "two", "few", "many", "other"];
@@ -88,7 +104,7 @@ function shape(value: unknown, path = ""): string[] {
   return [path];
 }
 
-for (const [name, messages] of Object.entries({ es, ga, pt })) {
+for (const [name, messages] of Object.entries({ es, ga, pt, ar })) {
   test(`${name} has exactly the English keys`, () => {
     assert.deepEqual(shape(messages).sort(), shape(en).sort());
   });
@@ -97,7 +113,7 @@ for (const [name, messages] of Object.entries({ es, ga, pt })) {
 /* Every Translations export in messages/: each language carries exactly the
    English keys, so a string added in English and forgotten elsewhere fails. */
 const dir = new URL("./messages/", import.meta.url);
-for (const file of readdirSync(dir).filter((f) => !/^(index|en|es|ga|pt)\.ts$/.test(f))) {
+for (const file of readdirSync(dir).filter((f) => !/^(index|en|es|ga|pt|ar)\.ts$/.test(f))) {
   const mod: Record<string, unknown> = await import(new URL(file, dir).href);
   for (const [exportName, value] of Object.entries(mod)) {
     if (!value || typeof value !== "object" || !LOCALES.every((l) => l in value)) continue;
@@ -154,4 +170,12 @@ test("Budget 2027 English templates match the module's own sentences", async () 
     assert.equal(en.statuses[m.status], m.statusLabel, m.id);
     assert.equal(en.groups[m.group], m.group, m.id);
   }
+});
+
+/* The site is a free learning platform, not a firm: no offer to do the work
+   for the reader. The R&D page said "let us build the claim" until 26 Oct 2026. */
+test("R&D copy makes no firm offer, in any language", async () => {
+  const { rdMessages } = await import("./messages/rd.ts");
+  const firm = /let us build|build the claim|con nosotros|com a gente|lig dúinn|دعنا/i;
+  for (const locale of LOCALES) assert.doesNotMatch(JSON.stringify(rdMessages[locale]), firm, locale);
 });

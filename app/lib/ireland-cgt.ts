@@ -260,7 +260,15 @@ export function computeCgt(input: CgtInput, config: CgtConfig): CgtResult {
 
   const indexedAcquisition = round2(acquisitionCost * acqMult);
   const indexedEnhancement = round2(enhancementCost * enhMult);
-  const allowableCost = round2(indexedAcquisition + indexedEnhancement + disposalCosts);
+  /* s.556(4) TCA 1997: indexation can't turn a gain into a loss or make a loss
+     bigger. So the indexed cost counts only up to the proceeds, and never
+     below the cost actually paid. */
+  const allowableCost = round2(
+    Math.max(
+      acquisitionCost + enhancementCost + disposalCosts,
+      Math.min(indexedAcquisition + indexedEnhancement + disposalCosts, proceeds),
+    ),
+  );
   const rawGain = round2(proceeds - allowableCost);
 
   // PPR relief — proportional, positive gains only. The final 12 months count

@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { taxRatesCollection } from "../../lib/collections";
 import { requireAdmin } from "../../lib/auth/guards";
+import { formNumber } from "../../lib/form-number";
 import { TAX_YEARS, yearRatesToJson } from "../../lib/tax-data";
 import { RATES_BY_YEAR, type YearRates } from "../../lib/ireland-income-tax";
 
@@ -16,7 +17,7 @@ function revalidate() {
   revalidatePath("/admin/tax-rates");
 }
 
-const num = (v: FormDataEntryValue | null) => Number(String(v ?? "").trim());
+const num = formNumber;
 
 /* Percentages are ENTERED as percent (e.g. 20, 0.5) and STORED as fractions
    (0.2, 0.005), matching the mortgage admin convention. */

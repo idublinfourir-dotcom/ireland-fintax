@@ -43,6 +43,7 @@ export const en = {
     openMenu: "Open menu",
     skip: "Skip to content",
     closeMenu: "Close menu",
+    language: "Language",
     /* Menu entries by href. One a language lacks (a new Budget year, say)
        falls back to the English label in calculator-tabs / budgets.ts. */
     tools: toolNames.en,

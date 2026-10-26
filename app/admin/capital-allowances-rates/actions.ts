@@ -9,6 +9,7 @@
 
 import { revalidatePath } from "next/cache";
 import { requireAdmin } from "../../lib/auth/guards";
+import { formNumber } from "../../lib/form-number";
 import { saveCalculatorConfig } from "../../lib/calculator-settings";
 import { CA_SETTINGS_KEY, getCaData } from "../../lib/ca-data";
 import {
@@ -26,7 +27,7 @@ export type TwoPhaseState =
   | { status: "saved"; message: string }
   | { status: "error"; message: string };
 
-const num = (v: FormDataEntryValue | null) => Number(String(v ?? "").trim());
+const num = formNumber;
 const pctFmt = (v: unknown) => `${v}%`;
 const yearsFmt = (v: unknown) => (typeof v === "number" ? `${v} yr` : String(v));
 const euroFmt = (v: unknown) =>

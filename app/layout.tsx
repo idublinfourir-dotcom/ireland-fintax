@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Archivo, Geist } from "next/font/google";
+import { Archivo, Geist, IBM_Plex_Sans_Arabic } from "next/font/google";
 import { SiteHeader } from "./components/site-header";
 import { SiteFooter } from "./components/site-footer";
 import { BackToTop } from "./components/back-to-top";
@@ -7,6 +7,7 @@ import { ChromeGate } from "./components/chrome-gate";
 import { RouteProgress } from "./components/route-progress";
 import { getSessionUser } from "./lib/auth/guards";
 import { site } from "./lib/content";
+import { RTL_LOCALES } from "./lib/i18n";
 import { getMessages, languageAlternates } from "./lib/messages";
 import { LocaleProvider } from "./components/locale-link";
 import "./globals.css";
@@ -22,6 +23,16 @@ const geistSans = Geist({
   subsets: ["latin"],
 });
 
+/* Archivo and Geist have no Arabic glyphs, so Arabic text falls through to
+   this one (see the font stacks in globals.css). Not preloaded: its
+   unicode-range keeps every other language from downloading it. */
+const plexArabic = IBM_Plex_Sans_Arabic({
+  variable: "--font-arabic",
+  subsets: ["arabic"],
+  weight: ["400", "500", "600", "700"],
+  preload: false,
+});
+
 export async function generateMetadata(): Promise<Metadata> {
   const { locale, t } = await getMessages();
   return {
@@ -35,7 +46,7 @@ export async function generateMetadata(): Promise<Metadata> {
     openGraph: {
       siteName: "Irish Fintax",
       type: "website",
-      locale: { en: "en_GB", ga: "ga_IE", es: "es_ES", pt: "pt_BR" }[locale],
+      locale: { en: "en_GB", ga: "ga_IE", es: "es_ES", pt: "pt_BR", ar: "ar_AR" }[locale],
     },
   };
 }
@@ -56,8 +67,9 @@ export default async function RootLayout({
   return (
     <html
       lang={locale}
+      dir={RTL_LOCALES.includes(locale) ? "rtl" : "ltr"}
       data-scroll-behavior="smooth"
-      className={`${archivo.variable} ${geistSans.variable} h-full antialiased`}
+      className={`${archivo.variable} ${geistSans.variable} ${plexArabic.variable} h-full antialiased`}
     >
       <body
         className="min-h-full flex flex-col bg-canvas font-sans text-ink-body"
@@ -67,7 +79,7 @@ export default async function RootLayout({
           <RouteProgress />
           <a
             href="#main"
-            className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-none focus:bg-navy-900 focus:px-5 focus:py-3 focus:text-sm focus:text-white"
+            className="sr-only focus:not-sr-only focus:absolute focus:inset-s-4 focus:top-4 focus:z-50 focus:rounded-none focus:bg-navy-900 focus:px-5 focus:py-3 focus:text-sm focus:text-white"
           >
             {t.header.skip}
           </a>

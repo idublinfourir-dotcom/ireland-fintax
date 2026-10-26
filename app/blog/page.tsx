@@ -59,11 +59,11 @@ export default async function BlogPage({
   const featured = !category && page === 1 ? posts[0] : undefined;
   const rest = featured ? posts.slice(1) : posts;
 
-  /* lang="en": under /ga, /es or /pt the header, footer and call to action
+  /* lang="en" dir="ltr": under /ga, /es, /pt or /ar the header, footer and call to action
      are in that language, but the blog itself is English (CHROME_ONLY_PATHS). */
   return (
     <>
-      <div lang="en">
+      <div lang="en" dir="ltr">
         <section className="border-b border-line">
           <Container className="pb-4 pt-12 sm:pt-16">
             <div className="animate-fade-up">

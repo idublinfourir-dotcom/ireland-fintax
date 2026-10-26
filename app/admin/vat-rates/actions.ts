@@ -9,6 +9,7 @@
 
 import { revalidatePath } from "next/cache";
 import { requireAdmin } from "../../lib/auth/guards";
+import { formNumber } from "../../lib/form-number";
 import { saveCalculatorConfig } from "../../lib/calculator-settings";
 import { VAT_SETTINGS_KEY, getVatData } from "../../lib/vat-data";
 import {
@@ -27,7 +28,7 @@ export type TwoPhaseState =
   | { status: "saved"; message: string }
   | { status: "error"; message: string };
 
-const num = (v: FormDataEntryValue | null) => Number(String(v ?? "").trim());
+const num = formNumber;
 const str = (v: FormDataEntryValue | null) => String(v ?? "").trim();
 const pctFmt = (v: unknown) => `${v}%`;
 const euroFmt = (v: unknown) =>

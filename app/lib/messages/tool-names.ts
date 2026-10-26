@@ -55,4 +55,16 @@ export const toolNames: Translations<ToolNames> = {
     "/personal/investment": { label: "Investimento pessoal", desc: "Compare opções pelo retorno após impostos irlandeses" },
     "/budget/2027": { label: "Orçamento 2027", desc: "Anunciado em 6 de outubro de 2026. Veja o que muda para você." },
   },
+  ar: {
+    "/tools/ireland-income-tax": { label: "ضريبة الدخل", desc: "ضريبة الدخل وUSC وPRSI: مقارنة 2026 بعام 2025" },
+    "/tools/ireland-vat": { label: "ضريبة القيمة المضافة", desc: "صافي ضريبة القيمة المضافة: مستحقة الدفع أو قابلة للاسترداد" },
+    "/tools/ireland-corporation-tax": { label: "ضريبة الشركات", desc: "12.5% على النشاط التجاري و25% على الدخل السلبي: إجمالي الضريبة" },
+    "/tools/ireland-rd-tax-credit": { label: "ائتمان البحث والتطوير", desc: "ائتمان بنسبة 35% على الإنفاق المؤهل على البحث والتطوير" },
+    "/tools/ireland-capital-allowances": { label: "الخصومات الرأسمالية", desc: "الخصومات الرأسمالية (الضريبية) ورأس المال العامل" },
+    "/tools/ireland-cgt": { label: "ضريبة الأرباح الرأسمالية (CGT)", desc: "ضريبة الأرباح الرأسمالية مع إعفاء التعديل بالتضخم" },
+    "/tools/ireland-cat": { label: "الهبات والمواريث (CAT)", desc: "ضريبة الهبات والمواريث: الحدود المعفاة والإعفاءات" },
+    "/personal/mortgage": { label: "الرهن العقاري", desc: "قارن الأقساط بين المقرضين في أيرلندا" },
+    "/personal/investment": { label: "الاستثمار الشخصي", desc: "قارن الخيارات حسب العائد بعد الضريبة الأيرلندية" },
+    "/budget/2027": { label: "ميزانية 2027", desc: "أُعلنت في 6 أكتوبر 2026. اعرف ما الذي يتغير بالنسبة لك." },
+  },
 };

@@ -8,6 +8,7 @@
 
 import { revalidatePath } from "next/cache";
 import { requireAdmin } from "../../lib/auth/guards";
+import { formNumber } from "../../lib/form-number";
 import { saveCalculatorConfig } from "../../lib/calculator-settings";
 import { CAT_SETTINGS_KEY, getCatData } from "../../lib/cat-data";
 import { parseCatConfig, type CatConfig } from "../../lib/ireland-cat";
@@ -21,7 +22,7 @@ export type TwoPhaseState =
   | { status: "saved"; message: string }
   | { status: "error"; message: string };
 
-const num = (v: FormDataEntryValue | null) => Number(String(v ?? "").trim());
+const num = formNumber;
 const pctFmt = (v: unknown) => `${v}%`;
 const euroFmt = (v: unknown) =>
   typeof v === "number"

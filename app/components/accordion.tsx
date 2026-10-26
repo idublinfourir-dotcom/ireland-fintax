@@ -20,7 +20,7 @@ function AccordionItem({ question, answer }: FaqEntry) {
         aria-expanded={open}
         aria-controls={panelId}
         onClick={() => setOpen((value) => !value)}
-        className="flex w-full cursor-pointer items-center justify-between gap-4 py-5 text-left text-[17px] font-medium text-ink"
+        className="flex w-full cursor-pointer items-center justify-between gap-4 py-5 text-start text-[17px] font-medium text-ink"
       >
         {question}
         <svg

@@ -5,24 +5,18 @@
    /admin/enquiries with an unread badge, which is how the firm sees them.
    There is deliberately no notification email (see AGENTS.md).
 
+   It carries NOTHING the visitor typed, not the message and not the name. The
+   form is public and the recipient is whatever address was entered, so any
+   echoed text would let anyone send their own words to anyone from the firm's
+   mailbox. A fixed message makes the worst case one unwanted "we got your
+   question" email. Don't add the message or the name back.
+
    Pure: composes strings, sends nothing. Rendering rules live in
    email-layout.ts. */
 
-import {
-  emailShell,
-  greetingName,
-  paragraph,
-  paragraphs,
-  signOff,
-} from "./email-layout.ts";
+import { emailShell, paragraph, signOff } from "./email-layout.ts";
 
 export interface EnquiryAckInput {
-  /** The name they gave on the form, for the greeting. */
-  name: string;
-  /** What they wrote, echoed back so they can see what reached us. */
-  message: string;
-  /** What the enquiry was about. Subject line only; null for a general one. */
-  service: string | null;
   firmName: string;
 }
 
@@ -37,34 +31,12 @@ const ACK_LINE =
   "Thanks for your question. It has reached us, and a real person will reply by email.";
 
 export function ackText(input: EnquiryAckInput): string {
-  return [
-    `Hi ${greetingName(input.name)},`,
-    "",
-    ACK_LINE,
-    "",
-    "What you sent us:",
-    input.message,
-    "",
-    input.firmName,
-  ].join("\n");
+  return ["Hi there,", "", ACK_LINE, "", input.firmName].join("\n");
 }
 
 export function ackHtml(input: EnquiryAckInput): string {
   return emailShell({
     firmName: input.firmName,
-    bodyHtml: [
-      paragraph(`Hi ${greetingName(input.name)},`),
-      paragraph(ACK_LINE),
-      // Quoted back, indented, so the reader can see what actually arrived:
-      // people routinely submit a form and immediately doubt it went through.
-      `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 16px">
-    <tr>
-      <td style="border-left:3px solid #e0e3ec;padding:2px 0 2px 16px">
-        ${paragraphs(input.message)}
-      </td>
-    </tr>
-  </table>`,
-      signOff(input.firmName),
-    ].join("\n"),
+    bodyHtml: [paragraph("Hi there,"), paragraph(ACK_LINE), signOff(input.firmName)].join("\n"),
   });
 }

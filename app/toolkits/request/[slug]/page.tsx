@@ -44,7 +44,7 @@ export default async function RequestResourcePage({
       <Container className="py-16 sm:py-20">
         <div className="mx-auto max-w-xl">
           {/* What they are asking for, so the form is never ambiguous. */}
-          <div className="rounded-none border-l-2 border-primary-500 bg-surface-muted p-5">
+          <div className="rounded-none border-s-2 border-primary-500 bg-surface-muted p-5">
             <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted">
               {t.request.requesting}
             </p>

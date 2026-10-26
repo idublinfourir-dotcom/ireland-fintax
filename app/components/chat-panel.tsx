@@ -70,10 +70,10 @@ function Bubble({
         <div
           className={`rounded-lg px-3.5 py-2 text-sm leading-6 whitespace-pre-line ${
             mine
-              ? "rounded-br-none bg-primary-500 text-white"
+              ? "rounded-ee-none bg-primary-500 text-white"
               : item.sender === "admin"
-                ? "rounded-bl-none bg-navy-900 text-white"
-                : "rounded-bl-none border border-line bg-surface text-ink-body"
+                ? "rounded-es-none bg-navy-900 text-white"
+                : "rounded-es-none border border-line bg-surface text-ink-body"
           } ${item.pending ? "opacity-60" : ""}`}
         >
           {item.body}

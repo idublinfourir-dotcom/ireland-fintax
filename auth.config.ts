@@ -1,6 +1,7 @@
 import type { NextAuthConfig } from "next-auth";
 import Google from "next-auth/providers/google";
 import { isGoogleEnabled } from "./app/lib/auth/config";
+import { nameFromUpdate } from "./app/lib/auth/session-update";
 
 /* Edge-safe half of the Auth.js configuration.
  *
@@ -75,9 +76,9 @@ export default {
          this token, so without re-stamping it the old name would stay on
          screen until the next sign-in. `role` is deliberately NOT updatable
          this way: it is set once, at account creation. */
-      if (trigger === "update" && session && typeof session === "object") {
-        const name = (session as { name?: unknown }).name;
-        if (typeof name === "string") token.name = name;
+      if (trigger === "update") {
+        const name = nameFromUpdate(session);
+        if (name !== undefined) token.name = name;
       }
 
       return token;

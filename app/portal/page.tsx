@@ -145,11 +145,11 @@ export default async function PortalPage() {
       <section className="relative overflow-hidden rounded-none bg-navy-900 text-white">
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute -right-20 -top-28 h-72 w-72 rounded-full bg-primary-500/25 blur-3xl"
+          className="pointer-events-none absolute -inset-e-20 -top-28 h-72 w-72 rounded-full bg-primary-500/25 blur-3xl"
         />
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute -bottom-32 -left-20 h-64 w-64 rounded-full bg-primary-500/10 blur-3xl"
+          className="pointer-events-none absolute -bottom-32 -inset-s-20 h-64 w-64 rounded-full bg-primary-500/10 blur-3xl"
         />
         <div className="relative px-6 pt-8 sm:px-10 sm:pt-10">
           <p className="flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.2em] text-primary-300">
@@ -187,7 +187,7 @@ export default async function PortalPage() {
             {heroStats.map((stat) => (
               <div
                 key={stat.label}
-                className="py-4 lg:px-8 lg:py-5 lg:first:pl-0 lg:last:pr-0"
+                className="py-4 lg:px-8 lg:py-5 lg:first:ps-0 lg:last:pe-0"
               >
                 <dt className="text-[11px] font-semibold uppercase tracking-[0.16em] text-white/40">
                   {stat.label}

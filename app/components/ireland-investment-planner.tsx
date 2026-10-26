@@ -76,7 +76,7 @@ function usePlannerFormat() {
 /* ---------- small shared pieces ---------- */
 
 const cardBase =
-  "cursor-pointer rounded-none border p-4 text-left transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500";
+  "cursor-pointer rounded-none border p-4 text-start transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500";
 const cardOn = "border-primary-500 bg-primary-50 ring-1 ring-inset ring-primary-500";
 const cardOff = "border-line bg-surface hover:border-ink/30";
 
@@ -135,7 +135,7 @@ function AmountField({
         {t.amount}
       </label>
       <div className="relative mt-1.5">
-        <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted">
+        <span className="pointer-events-none absolute inset-s-3 top-1/2 -translate-y-1/2 text-sm text-muted">
           €
         </span>
         <input
@@ -151,7 +151,7 @@ function AmountField({
             const n = e.target.value === "" ? 0 : Number(e.target.value);
             onChange(Number.isFinite(n) ? n : 0);
           }}
-          className="h-11 w-full rounded-none border border-line bg-surface pl-7 pr-3 text-sm tabular-nums text-ink transition-colors duration-200 focus:border-primary-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-400/40"
+          className="h-11 w-full rounded-none border border-line bg-surface ps-7 pe-3 text-sm tabular-nums text-ink transition-colors duration-200 focus:border-primary-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-400/40"
         />
       </div>
     </div>
@@ -240,7 +240,7 @@ function ResultRow({ result, rank, years }: { result: OptionResult; rank: number
           </div>
         </div>
 
-        <div className="text-right">
+        <div className="text-end">
           <span className="block font-display text-2xl font-bold tabular-nums text-ink">
             {pct(result.netReturn)}
           </span>
@@ -307,7 +307,7 @@ function ResultRow({ result, rank, years }: { result: OptionResult; rank: number
       </dl>
 
       {taxFree && (
-        <p className="mt-4 border-l-2 border-primary-400 pl-3 text-sm leading-6 text-ink">
+        <p className="mt-4 border-s-2 border-primary-400 ps-3 text-sm leading-6 text-ink">
           {t.taxFree.replace("{rate}", pct(grossEquivalent(result.grossMid, 0.33)))}
         </p>
       )}
@@ -522,7 +522,7 @@ export function IrelandInvestmentPlanner() {
             {plan.notices.map(notice).map((warning) => (
               <li
                 key={warning}
-                className="border-l-2 border-primary-400 bg-primary-50/40 p-4 text-sm leading-6 text-ink"
+                className="border-s-2 border-primary-400 bg-primary-50/40 p-4 text-sm leading-6 text-ink"
               >
                 {warning}
               </li>
@@ -567,7 +567,7 @@ export function IrelandInvestmentPlanner() {
             href="/contact"
             className="mt-4 inline-flex text-sm font-semibold text-primary-500 transition-colors duration-200 hover:text-primary-600"
           >
-            {t.askTax} <span aria-hidden="true">→</span>
+            {t.askTax} <span aria-hidden="true" className="inline-block rtl:-scale-x-100">→</span>
           </Link>
         </div>
       </section>

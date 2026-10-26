@@ -48,7 +48,7 @@ export function PortalConversation({
     >
       <span
         aria-hidden="true"
-        className={`absolute inset-y-0 left-0 w-0.5 ${
+        className={`absolute inset-y-0 inset-s-0 w-0.5 ${
           open || unread ? "bg-primary-400" : "bg-transparent"
         }`}
       />
@@ -56,7 +56,7 @@ export function PortalConversation({
         type="button"
         onClick={() => setOpen((o) => !o)}
         aria-expanded={open}
-        className="flex w-full cursor-pointer items-start gap-4 p-5 text-left"
+        className="flex w-full cursor-pointer items-start gap-4 p-5 text-start"
       >
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center justify-between gap-2">

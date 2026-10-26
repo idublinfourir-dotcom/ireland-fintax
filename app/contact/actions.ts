@@ -35,21 +35,12 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
  * Best-effort: the stored enquiry is the source of truth, so a failed email is
  * logged and the submission still succeeded. sendMail never throws.
  */
-async function sendEnquiryAck(values: {
-  name: string;
-  email: string;
-  service: string;
-  message: string;
-}) {
-  const input = {
-    name: values.name,
-    message: values.message,
-    service: values.service || null,
-    firmName: site.name,
-  };
+async function sendEnquiryAck(email: string) {
+  // Fixed text only: see the header of lib/enquiry-email.ts.
+  const input = { firmName: site.name };
 
   const sent = await sendMail({
-    to: values.email,
+    to: email,
     subject: ackSubject(),
     html: ackHtml(input),
     text: ackText(input),
@@ -63,12 +54,10 @@ export async function submitEnquiry(
   formData: FormData,
 ): Promise<EnquiryState> {
   const values = {
-    name: String(formData.get("name") ?? "").trim(),
+    name: String(formData.get("name") ?? "").trim().slice(0, 120),
     email: String(formData.get("email") ?? "").trim(),
-    company: String(formData.get("company") ?? "").trim(),
-    service: String(formData.get("service") ?? "").trim(),
-    // Capped where it is read, not only where it is stored, so the enquiry
-    // document and the acknowledgement always carry the same text.
+    company: String(formData.get("company") ?? "").trim().slice(0, 200),
+    service: String(formData.get("service") ?? "").trim().slice(0, 120),
     message: String(formData.get("message") ?? "")
       .trim()
       .slice(0, 4000),
@@ -77,7 +66,7 @@ export async function submitEnquiry(
   const t = (await getT(contactMessages)).errors;
   const errors: EnquiryState["errors"] = {};
   if (values.name.length < 2) errors.name = t.name;
-  if (!EMAIL_RE.test(values.email)) errors.email = t.email;
+  if (!EMAIL_RE.test(values.email) || values.email.length > 254) errors.email = t.email;
   if (values.message.length < 10) errors.message = t.message;
 
   if (Object.keys(errors).length > 0) {
@@ -139,7 +128,7 @@ export async function submitEnquiry(
 
   // Acknowledge AFTER the response is returned, so the form submission is
   // never blocked by the SMTP round-trip.
-  after(() => sendEnquiryAck(values));
+  after(() => sendEnquiryAck(values.email));
 
   return { status: "success" };
 }

@@ -1,4 +1,4 @@
-import NextAuth from "next-auth";
+import NextAuth, { CredentialsSignin } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { MongoDBAdapter } from "@auth/mongodb-adapter";
 import type { Adapter, AdapterUser } from "next-auth/adapters";
@@ -15,6 +15,14 @@ import { verifyPassword } from "./app/lib/auth/password";
 import { roleForEmail } from "./app/lib/auth/config";
 import { consumeVerificationToken } from "./app/lib/auth/tokens";
 import { claimVerifiedGuestEnquiries } from "./app/lib/enquiry-ownership";
+import { allowPublicAction } from "./app/lib/rate-limit";
+
+/** The `code` a sign-in refused by the rate limit reports, so the login form
+    can say "too many attempts" rather than "wrong password". */
+export const SIGN_IN_RATE_LIMITED = "rate_limited";
+class TooManySignIns extends CredentialsSignin {
+  code = SIGN_IN_RATE_LIMITED;
+}
 
 /* Node-runtime half of the Auth.js configuration: the database adapter and the
  * email + password provider. Never import this from `proxy.ts` — see the note
@@ -286,6 +294,25 @@ export const {
           .toLowerCase();
         const password = String(credentials?.password ?? "");
         if (!email || !password) return null;
+
+        /* The brute-force cap. It lives HERE, not in the login action: Auth.js
+           also serves this provider at POST /api/auth/callback/credentials,
+           which never runs the action, so a cap there could be walked around
+           with curl. bcrypt at cost 12 makes each guess expensive but not
+           prohibitive.
+
+           Counts every attempt, not only failures. The per-address cap is the
+           looser one so a stranger cannot cheaply lock someone out of their own
+           account; the window is short for the same reason. Fails CLOSED: this
+           counter is the only thing capping password guesses. */
+        const allowed = await allowPublicAction({
+          action: "login",
+          identity: email,
+          ip: { max: 50, windowSeconds: 15 * 60 },
+          identityLimit: { max: 10, windowSeconds: 15 * 60 },
+          failClosed: true,
+        });
+        if (!allowed) throw new TooManySignIns();
 
         const users = await usersCollection();
         const user = await users.findOne({ email });

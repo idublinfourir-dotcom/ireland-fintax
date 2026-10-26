@@ -75,6 +75,94 @@ test("disposal at a loss → isLoss, no tax", () => {
   assert.deepEqual(r.bands, []);
 });
 
+/* s.556(4) TCA 1997: indexation can't turn a gain into a loss or make a loss
+   bigger. €100k bought in 1995/96 (×1.277) is €127,700 indexed. */
+const indexed = { ...base, acquisitionCost: 100_000, acquisitionMultiplier: 1.277 };
+
+test("s.556(4): a gain above the indexed cost is indexed as normal", () => {
+  const r = computeCgt({ ...indexed, proceeds: 200_000 }, cfg);
+  assert.equal(r.allowableCost, 127_700);
+  assert.equal(r.rawGain, 72_300);
+});
+
+test("s.556(4): a real gain that indexation would turn into a loss is nil", () => {
+  const r = computeCgt({ ...indexed, proceeds: 120_000 }, cfg);
+  assert.equal(r.allowableCost, 120_000);
+  assert.equal(r.rawGain, 0);
+  assert.equal(r.isLoss, false);
+  assert.equal(r.disposalLoss, 0);
+  assert.equal(r.totalTax, 0);
+  // The breakdown still adds up: proceeds − allowable cost = gain.
+  assert.equal(r.proceeds - r.allowableCost, r.rawGain);
+});
+
+test("s.556(4): the boundaries, at the indexed cost and at the real cost", () => {
+  const atIndexed = computeCgt({ ...indexed, proceeds: 127_700 }, cfg);
+  assert.equal(atIndexed.rawGain, 0);
+  assert.equal(atIndexed.isLoss, false);
+  const atCost = computeCgt({ ...indexed, proceeds: 100_000 }, cfg);
+  assert.equal(atCost.allowableCost, 100_000);
+  assert.equal(atCost.rawGain, 0);
+  assert.equal(atCost.isLoss, false);
+});
+
+test("s.556(4): a real loss stays its real size, not the indexed one", () => {
+  const r = computeCgt({ ...indexed, proceeds: 80_000 }, cfg);
+  assert.equal(r.allowableCost, 100_000);
+  assert.equal(r.isLoss, true);
+  assert.equal(r.disposalLoss, 20_000); // not 47,700
+});
+
+test("s.556(4): enhancement is restricted the same way", () => {
+  // Indexed 50k×1.5 + 30k×1.2 = €111,000; actually paid €80,000.
+  const improved = { ...base, acquisitionCost: 50_000, acquisitionMultiplier: 1.5, enhancementCost: 30_000, enhancementMultiplier: 1.2 };
+  assert.equal(computeCgt({ ...improved, proceeds: 100_000 }, cfg).rawGain, 0);
+  assert.equal(computeCgt({ ...improved, proceeds: 70_000 }, cfg).disposalLoss, 10_000);
+  assert.equal(computeCgt({ ...improved, proceeds: 150_000 }, cfg).rawGain, 39_000);
+});
+
+test("s.556(4): selling costs count in the real cost but are never indexed", () => {
+  const withFees = { ...indexed, disposalCosts: 5_000 };
+  // Real cost €105,000, indexed €132,700.
+  assert.equal(computeCgt({ ...withFees, proceeds: 110_000 }, cfg).rawGain, 0);
+  assert.equal(computeCgt({ ...withFees, proceeds: 90_000 }, cfg).disposalLoss, 15_000);
+  assert.equal(computeCgt({ ...withFees, proceeds: 150_000 }, cfg).rawGain, 17_300);
+});
+
+test("s.556(4): a nil result uses no losses, no exemption and no PPR relief", () => {
+  const r = computeCgt(
+    { ...indexed, proceeds: 120_000, broughtForwardLosses: 5_000, ppr: { monthsOwned: 120, monthsOccupied: 60 } },
+    cfg,
+  );
+  assert.equal(r.pprRelief, 0);
+  assert.equal(r.lossesApplied, 0);
+  assert.equal(r.lossCarried, 5_000);
+  assert.equal(r.exemptionApplied, 0);
+  assert.equal(r.taxableGain, 0);
+});
+
+/* Revenue's own worked examples, Tax and Duty Manual Part 19-02-13 (s.556),
+   checked 26 Oct 2026. Examples 2 and 3 need the 6 April 1974 market value,
+   which this calculator does not ask for, so they are not here. */
+test("Revenue TDM 19-02-13 Examples 1, 4 and 5 (s.556 indexation)", () => {
+  const mult = (key: string) => CGT_MULTIPLIERS_DEFAULT.find((m) => m.yearKey === key)!.multiplier;
+  assert.equal(mult("1986-87"), 1.637);
+  assert.equal(mult("2000-01"), 1.144);
+
+  // Example 1: €10,000 in 1986/87, sold for €100,000 → chargeable gain €83,630.
+  const ex1 = computeCgt({ ...base, proceeds: 100_000, acquisitionCost: 10_000, acquisitionMultiplier: mult("1986-87") }, cfg);
+  assert.equal(ex1.rawGain, 83_630);
+
+  // Example 4: €4,200 in 2000/01, sold for €4,000 → allowable loss €200, not €805.
+  const ex4 = computeCgt({ ...base, proceeds: 4_000, acquisitionCost: 4_200, acquisitionMultiplier: mult("2000-01") }, cfg);
+  assert.equal(ex4.disposalLoss, 200);
+
+  // Example 5: €2,800 in 1986/87, sold for €4,000 → no gain, no loss.
+  const ex5 = computeCgt({ ...base, proceeds: 4_000, acquisitionCost: 2_800, acquisitionMultiplier: mult("1986-87") }, cfg);
+  assert.equal(ex5.rawGain, 0);
+  assert.equal(ex5.isLoss, false);
+});
+
 test("PPR full occupation exempts the whole gain", () => {
   const r = computeCgt(
     { ...base, proceeds: 400_000, acquisitionCost: 100_000, ppr: { monthsOwned: 120, monthsOccupied: 120 } },

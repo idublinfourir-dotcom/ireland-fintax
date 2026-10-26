@@ -270,7 +270,7 @@ export function IrelandCgtCalculator({
     <div className="grid gap-10 lg:grid-cols-2">
       {/* inputs */}
       <div className="flex flex-col gap-5">
-        <div className="border-l-[3px] border-primary-500 bg-surface-muted px-4 py-3 text-xs leading-5 text-ink-body">
+        <div className="border-s-[3px] border-primary-500 bg-surface-muted px-4 py-3 text-xs leading-5 text-ink-body">
           <span className="font-semibold text-ink">{t.introTitle}</span> {t.introBody}
         </div>
 
@@ -329,7 +329,7 @@ export function IrelandCgtCalculator({
         <div className="flex flex-col gap-3 border-t border-line pt-5">
           <SectionToggle label={t.enhancementToggle} checked={showEnhancement} onChange={setShowEnhancement} />
           {showEnhancement && (
-            <div className="flex flex-col gap-4 border-l-[3px] border-line pl-4">
+            <div className="flex flex-col gap-4 border-s-[3px] border-line ps-4">
               <CurrencyField
                 label={t.enhancement}
                 value={enhancementCost}
@@ -344,7 +344,7 @@ export function IrelandCgtCalculator({
 
           <SectionToggle label={t.lossesToggle} checked={showLosses} onChange={setShowLosses} />
           {showLosses && (
-            <div className="flex flex-col gap-4 border-l-[3px] border-line pl-4">
+            <div className="flex flex-col gap-4 border-s-[3px] border-line ps-4">
               <CurrencyField
                 label={t.lossesThisYear}
                 value={currentYearLosses}
@@ -362,7 +362,7 @@ export function IrelandCgtCalculator({
 
           <SectionToggle label={t.reliefToggle} checked={showRelief} onChange={setShowRelief} />
           {showRelief && (
-            <div className="flex flex-col gap-4 border-l-[3px] border-line pl-4">
+            <div className="flex flex-col gap-4 border-s-[3px] border-line ps-4">
               <SegmentedField<RateMode> label={t.rate} value={rateMode} onChange={setRateMode} options={rateOptions} />
               {rateMode === "entrepreneur" && (
                 <CurrencyField
@@ -380,7 +380,7 @@ export function IrelandCgtCalculator({
 
           <SectionToggle label={t.pprToggle} checked={showPpr} onChange={setShowPpr} />
           {showPpr && (
-            <div className="flex flex-col gap-4 border-l-[3px] border-line pl-4">
+            <div className="flex flex-col gap-4 border-s-[3px] border-line ps-4">
               <NumericField
                 label={t.monthsOwned}
                 value={monthsOwned}

@@ -141,7 +141,7 @@ export default function InvestmentAccountPage() {
             used an account averaging €52,000: that is €2,000 over the threshold, so the tax is {eur(accountTax(52_000))}. A few
             more cases:
           </p>
-          <ul className={`mt-3 list-disc space-y-1.5 pl-5 ${prose}`}>
+          <ul className={`mt-3 list-disc space-y-1.5 ps-5 ${prose}`}>
             <li>
               Paying in the full {eur(annualLimit)} for four years gives {eur(4 * annualLimit)} before growth, still under the
               threshold, so no tax yet.
@@ -179,7 +179,7 @@ export default function InvestmentAccountPage() {
             ].map((col) => (
               <div key={col.title}>
                 <h3 className="font-semibold text-ink">{col.title}</h3>
-                <ul className="mt-2 list-disc space-y-1.5 pl-5 text-sm leading-6">
+                <ul className="mt-2 list-disc space-y-1.5 ps-5 text-sm leading-6">
                   {col.items.map((it) => <li key={it}>{it}</li>)}
                 </ul>
               </div>
@@ -200,7 +200,7 @@ export default function InvestmentAccountPage() {
 
         <div className={section}>
           <h2 className={h2}>When it may not suit you</h2>
-          <ul className={`mt-4 list-disc space-y-3 pl-5 ${prose}`}>
+          <ul className={`mt-4 list-disc space-y-3 ps-5 ${prose}`}>
             {notFit.map((n) => <li key={n}>{n}</li>)}
           </ul>
         </div>
@@ -275,7 +275,7 @@ export default function InvestmentAccountPage() {
           </ul>
 
           <h2 className="mt-10 font-display text-xl font-semibold text-ink">Sources</h2>
-          <ul className="mt-4 list-disc space-y-2 pl-5 text-sm leading-6">
+          <ul className="mt-4 list-disc space-y-2 ps-5 text-sm leading-6">
             {sources.map((s) => (
               <li key={s.href}>
                 <a href={s.href} target="_blank" rel="noopener noreferrer" className={a}>{s.label}</a>

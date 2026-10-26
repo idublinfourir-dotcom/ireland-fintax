@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { LocaleLink, useT } from "./locale-link";
+import { LanguageMenu } from "./language-menu";
 import { calcMessages } from "../lib/messages/calc";
 import { usePathname } from "next/navigation";
 import { CALCULATOR_TOOLS } from "./calculator-tabs";
@@ -237,14 +238,14 @@ export function SiteHeader({
                 {t.taxHub}
                 <Chevron className="text-muted transition-transform duration-200 group-hover:rotate-180 group-focus-within:rotate-180" />
                 <span
-                  className={`pointer-events-none absolute -bottom-1.5 left-0 h-0.5 w-full origin-left bg-primary-500 transition-transform duration-200 ease-snappy ${
+                  className={`pointer-events-none absolute -bottom-1.5 inset-s-0 h-0.5 w-full origin-left rtl:origin-right bg-primary-500 transition-transform duration-200 ease-snappy ${
                     toolsActive ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100"
                   }`}
                 />
               </LocaleLink>
 
               <div
-                className={`invisible absolute left-0 top-full z-50 w-[min(52rem,calc(100vw-2rem))] pt-4 opacity-0 transition-all duration-200 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100 ${
+                className={`invisible absolute inset-s-0 top-full z-50 w-[min(52rem,calc(100vw-2rem))] pt-4 opacity-0 transition-all duration-200 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100 ${
                   toolsClosed ? "!invisible !opacity-0" : ""
                 }`}
               >
@@ -278,7 +279,7 @@ export function SiteHeader({
                       onClick={closeTools}
                       className="text-sm font-semibold text-primary-500 transition-colors duration-200 hover:text-primary-600"
                     >
-                      {t.openCalculators} <span aria-hidden="true">→</span>
+                      {t.openCalculators} <span aria-hidden="true" className="inline-block rtl:-scale-x-100">→</span>
                     </LocaleLink>
                   </div>
                 </div>
@@ -303,14 +304,14 @@ export function SiteHeader({
                 {t.accounts}
                 <Chevron className="text-muted transition-transform duration-200 group-hover:rotate-180 group-focus-within:rotate-180" />
                 <span
-                  className={`pointer-events-none absolute -bottom-1.5 left-0 h-0.5 w-full origin-left bg-primary-500 transition-transform duration-200 ease-snappy ${
+                  className={`pointer-events-none absolute -bottom-1.5 inset-s-0 h-0.5 w-full origin-left rtl:origin-right bg-primary-500 transition-transform duration-200 ease-snappy ${
                     foundersActive ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100"
                   }`}
                 />
               </LocaleLink>
 
               <div
-                className={`invisible absolute left-0 top-full z-50 w-[min(44rem,calc(100vw-2rem))] pt-4 opacity-0 transition-all duration-200 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100 ${
+                className={`invisible absolute inset-s-0 top-full z-50 w-[min(44rem,calc(100vw-2rem))] pt-4 opacity-0 transition-all duration-200 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100 ${
                   foundersClosed ? "!invisible !opacity-0" : ""
                 }`}
               >
@@ -343,7 +344,7 @@ export function SiteHeader({
                       onClick={closeFounders}
                       className="text-sm font-semibold text-primary-500 transition-colors duration-200 hover:text-primary-600"
                     >
-                      {t.browseAccounts} <span aria-hidden="true">→</span>
+                      {t.browseAccounts} <span aria-hidden="true" className="inline-block rtl:-scale-x-100">→</span>
                     </LocaleLink>
                   </div>
                 </div>
@@ -372,7 +373,7 @@ export function SiteHeader({
                 {t.personal}
                 <Chevron className="text-muted transition-transform duration-200 group-hover:rotate-180 group-focus-within:rotate-180" />
                 <span
-                  className={`pointer-events-none absolute -bottom-1.5 left-0 h-0.5 w-full origin-left bg-primary-500 transition-transform duration-200 ease-snappy ${
+                  className={`pointer-events-none absolute -bottom-1.5 inset-s-0 h-0.5 w-full origin-left rtl:origin-right bg-primary-500 transition-transform duration-200 ease-snappy ${
                     personalActive
                       ? "scale-x-100"
                       : "scale-x-0 group-hover:scale-x-100"
@@ -416,7 +417,7 @@ export function SiteHeader({
                       onClick={closePersonal}
                       className="text-sm font-semibold text-primary-500 transition-colors duration-200 hover:text-primary-600"
                     >
-                      {t.openPersonal} <span aria-hidden="true">→</span>
+                      {t.openPersonal} <span aria-hidden="true" className="inline-block rtl:-scale-x-100">→</span>
                     </LocaleLink>
                   </div>
                 </div>
@@ -442,7 +443,7 @@ export function SiteHeader({
                 {t.budget}
                 <Chevron className="text-muted transition-transform duration-200 group-hover:rotate-180 group-focus-within:rotate-180" />
                 <span
-                  className={`pointer-events-none absolute -bottom-1.5 left-0 h-0.5 w-full origin-left bg-primary-500 transition-transform duration-200 ease-snappy ${
+                  className={`pointer-events-none absolute -bottom-1.5 inset-s-0 h-0.5 w-full origin-left rtl:origin-right bg-primary-500 transition-transform duration-200 ease-snappy ${
                     budgetActive ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100"
                   }`}
                 />
@@ -490,7 +491,7 @@ export function SiteHeader({
                 >
                   {link.label}
                   <span
-                    className={`pointer-events-none absolute -bottom-1.5 left-0 h-0.5 w-full origin-left bg-primary-500 transition-transform duration-200 ease-snappy ${
+                    className={`pointer-events-none absolute -bottom-1.5 inset-s-0 h-0.5 w-full origin-left rtl:origin-right bg-primary-500 transition-transform duration-200 ease-snappy ${
                       active ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100"
                     }`}
                   />
@@ -500,6 +501,7 @@ export function SiteHeader({
           </div>
 
           <div className="flex items-center gap-2.5 sm:gap-3 lg:gap-4">
+            <LanguageMenu label={t.language} />
             {user ? (
               <LocaleLink
                 locale={locale}
@@ -508,7 +510,7 @@ export function SiteHeader({
                   user.role === "admin" ? t.adminDashboard : t.myDashboard
                 }
                 title={`${firstName}: ${user.role === "admin" ? t.adminDashboard : t.myDashboard}`}
-                className="group flex items-center gap-2.5 rounded-full border border-line bg-surface py-1 pl-1 pr-1.5 shadow-sm transition-all duration-200 hover:border-primary-300 hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500 sm:pr-4 xl:pr-1.5"
+                className="group flex items-center gap-2.5 rounded-full border border-line bg-surface py-1 ps-1 pe-1.5 shadow-sm transition-all duration-200 hover:border-primary-300 hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500 sm:pe-4 xl:pe-1.5"
               >
                 <span className="rounded-full ring-2 ring-primary-300/60 ring-offset-2 ring-offset-surface">
                   <Avatar user={user} size={34} />
@@ -516,7 +518,7 @@ export function SiteHeader({
                 {/* The name is hidden at xl, where the full nav row is shown: with
                     the longer hub names (Oct 2026) the row has no room for it
                     when signed in. It stays in the title and aria-label. */}
-                <span className="hidden flex-col pr-1 leading-tight sm:flex xl:hidden">
+                <span className="hidden flex-col pe-1 leading-tight sm:flex xl:hidden">
                   <span className="text-sm font-semibold text-ink">
                     {firstName}
                   </span>
@@ -595,7 +597,7 @@ export function SiteHeader({
                 />
               </button>
               {mobileToolsOpen && (
-                <div className="mb-1 ml-3 flex flex-col gap-0.5 border-l border-line pl-3">
+                <div className="mb-1 ms-3 flex flex-col gap-0.5 border-s border-line ps-3">
                   {CALCULATOR_TOOLS.map((tool) => (
                     <LocaleLink
                       locale={locale}
@@ -630,7 +632,7 @@ export function SiteHeader({
                 />
               </button>
               {mobileFoundersOpen && (
-                <div className="mb-1 ml-3 flex flex-col gap-0.5 border-l border-line pl-3">
+                <div className="mb-1 ms-3 flex flex-col gap-0.5 border-s border-line ps-3">
                   {FOUNDER_RESOURCES.map((res) => (
                     <LocaleLink
                       locale={locale}
@@ -664,7 +666,7 @@ export function SiteHeader({
                 />
               </button>
               {mobilePersonalOpen && (
-                <div className="mb-1 ml-3 flex flex-col gap-0.5 border-l border-line pl-3">
+                <div className="mb-1 ms-3 flex flex-col gap-0.5 border-s border-line ps-3">
                   {PERSONAL_TOOLS.map((tool) => (
                     <LocaleLink
                       locale={locale}
@@ -699,7 +701,7 @@ export function SiteHeader({
                 />
               </button>
               {mobileBudgetOpen && (
-                <div className="mb-1 ml-3 flex flex-col gap-0.5 border-l border-line pl-3">
+                <div className="mb-1 ms-3 flex flex-col gap-0.5 border-s border-line ps-3">
                   {BUDGETS.map((b) => (
                     <LocaleLink
                       locale={locale}

@@ -15,6 +15,7 @@ import {
   cgtSettingsCollection,
 } from "../../lib/collections";
 import { requireAdmin } from "../../lib/auth/guards";
+import { formNumber } from "../../lib/form-number";
 import {
   slugifyYearKey,
   CGT_CONFIG_DEFAULT,
@@ -46,7 +47,7 @@ function revalidate() {
   revalidatePath("/admin");
 }
 
-const num = (v: FormDataEntryValue | null) => Number(String(v ?? "").trim());
+const num = formNumber;
 const pctFmt = (v: unknown) => `${v}%`;
 const euroFmt = (v: unknown) =>
   typeof v === "number"
