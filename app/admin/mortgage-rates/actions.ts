@@ -10,6 +10,7 @@ import {
   type RateType,
 } from "../../lib/collections";
 import { requireAdmin } from "../../lib/auth/guards";
+import { formNumber } from "../../lib/form-number";
 
 export interface ActionState {
   status: "idle" | "saved" | "error";
@@ -35,7 +36,7 @@ function revalidate() {
   revalidatePath("/admin/mortgage-rates");
 }
 
-const num = (v: FormDataEntryValue | null) => Number(String(v ?? "").trim());
+const num = formNumber;
 
 /** Optional numeric field: empty input → null, otherwise the parsed number. */
 const optNum = (v: FormDataEntryValue | null): number | null => {

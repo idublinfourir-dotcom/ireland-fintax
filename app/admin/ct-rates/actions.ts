@@ -9,6 +9,7 @@
 
 import { revalidatePath } from "next/cache";
 import { requireAdmin } from "../../lib/auth/guards";
+import { formNumber } from "../../lib/form-number";
 import { saveCalculatorConfig } from "../../lib/calculator-settings";
 import { CT_SETTINGS_KEY, getCorporationTaxData } from "../../lib/corporation-tax-data";
 import { validateCtConfig } from "../../lib/ct-guardrails";
@@ -22,7 +23,7 @@ export type TwoPhaseState =
   | { status: "saved"; message: string }
   | { status: "error"; message: string };
 
-const num = (v: FormDataEntryValue | null) => Number(String(v ?? "").trim());
+const num = formNumber;
 const pctFmt = (v: unknown) => `${v}%`;
 
 function revalidate() {
