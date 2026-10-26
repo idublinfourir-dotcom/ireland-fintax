@@ -121,13 +121,14 @@ export async function signup(
   formData: FormData,
 ): Promise<SignupState> {
   const t = (await getT(accountMessages)).errors;
-  const fullName = String(formData.get("full_name") ?? "").trim();
+  // Capped: the name rides in the session cookie and the admin inbox.
+  const fullName = String(formData.get("full_name") ?? "").trim().slice(0, 120);
   const email = String(formData.get("email") ?? "").trim();
   const password = String(formData.get("password") ?? "");
   const values = { email, fullName };
 
   if (fullName.length < 2) return { error: t.tellName, values };
-  if (!EMAIL_RE.test(email))
+  if (!EMAIL_RE.test(email) || email.length > 254)
     return { error: t.emailInvalid, values };
   if (password.length < 8)
     return { error: t.passwordShort, values };

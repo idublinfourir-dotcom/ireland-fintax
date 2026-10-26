@@ -35,7 +35,8 @@ export async function updateNameAction(
 ): Promise<SettingsState> {
   const t = (await getT(accountMessages)).errors;
   const user = await requireUser();
-  const fullName = String(formData.get("full_name") ?? "").trim();
+  // Capped: the name rides in the session cookie.
+  const fullName = String(formData.get("full_name") ?? "").trim().slice(0, 120);
 
   const invalid = validateDisplayName(fullName, t);
   if (invalid) return { error: invalid };
