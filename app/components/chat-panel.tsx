@@ -11,20 +11,22 @@
    `import type` keeps the server-only enquiry-messages module — and the
    MongoDB driver behind it — out of this client bundle. */
 
-import { useOptimistic, useRef } from "react";
+import { useOptimistic, useRef, useSyncExternalStore } from "react";
 import { useFormStatus } from "react-dom";
 import { Icon } from "./dashboard-icons";
 import type { EnquiryMessage, MessageSender } from "../lib/enquiry-messages";
 import { ENQUIRY_MESSAGE_MAX_LENGTH } from "../lib/enquiry-message-validation";
-import { useT } from "./locale-link";
+import { useLocale, useT } from "./locale-link";
 import { portalMessages } from "../lib/messages/portal";
+import { shortDateTime } from "../lib/i18n";
 
-const time = new Intl.DateTimeFormat("en-GB", {
-  day: "2-digit",
-  month: "short",
-  hour: "2-digit",
-  minute: "2-digit",
-});
+/* Message times are shown in the reader's own time zone, which the server
+   cannot know. Rendered there they would use the server's clock (UTC on
+   Vercel), disagree with the browser's, and React would throw the server's
+   HTML away ("Hydration failed"). So the server and the first browser render
+   leave the time out, and it fills in as soon as the page has hydrated. */
+const noSubscription = () => () => {};
+const useHydrated = () => useSyncExternalStore(noSubscription, () => true, () => false);
 
 interface ThreadItem {
   id: string;
@@ -51,6 +53,8 @@ function Bubble({
 }) {
   const mine = item.sender === viewer;
   const t = useT(portalMessages).chat;
+  const locale = useLocale();
+  const hydrated = useHydrated();
   // Short mark, not the full legal name: this caption repeats under every
   // admin message and the full name wraps the bubble column.
   const label = item.sender === "admin" ? "Irish Fintax" : clientName;
@@ -79,7 +83,14 @@ function Bubble({
           {item.body}
         </div>
         <span className="mt-1 px-0.5 text-[11px] text-muted">
-          {label} · {item.pending ? t.sending : time.format(new Date(item.createdAt))}
+          {label}
+          {item.pending ? (
+            ` · ${t.sending}`
+          ) : (
+            <time dateTime={new Date(item.createdAt).toISOString()}>
+              {hydrated ? ` · ${shortDateTime(locale, new Date(item.createdAt))}` : ""}
+            </time>
+          )}
         </span>
       </div>
     </div>
