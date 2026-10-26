@@ -19,7 +19,7 @@ export const DEFAULT_LOCALE: Locale = "en";
    the tests, and dev serves them all so they can be reviewed; in production
    their URLs redirect to the English page and they drop out of the switcher,
    hreflang and sitemap. Add a language here to launch it. */
-const PRODUCTION_LOCALES: readonly Locale[] = ["en", "ga", "es", "pt"];
+const PRODUCTION_LOCALES: readonly Locale[] = ["en", "ga", "es", "pt", "ar"];
 export const LIVE_LOCALES: readonly Locale[] =
   process.env.NODE_ENV === "production" ? PRODUCTION_LOCALES : LOCALES;
 
