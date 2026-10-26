@@ -12,7 +12,7 @@ export const ga: Messages = {
   },
 
   header: {
-    taxHub: "Áireamháin chánach",
+    taxHub: "Áireamháin",
     calculatorsHeading: "Áireamháin d’Éirinn",
     openCalculators: "Oscail na háireamháin",
     accounts: "Mol Cuntasaíochta",
@@ -28,7 +28,7 @@ export const ga: Messages = {
     personal: "Airgeadas pearsanta",
     personalHeading: "Airgeadas pearsanta",
     openPersonal: "Oscail Airgeadas pearsanta",
-    budget: "Míniú ar an mBuiséad",
+    budget: "Buiséad",
     blog: "Léargais",
     about: "Fúinn",
     investmentAccount: "Cuntas Infheistíochta IE",

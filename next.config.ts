@@ -1,5 +1,6 @@
 import type { NextConfig } from "next";
 import { LATEST_BUDGET } from "./app/lib/budgets";
+import { DEFAULT_LOCALE, LOCALES } from "./app/lib/i18n";
 
 const isDev = process.env.NODE_ENV !== "production";
 
@@ -50,9 +51,10 @@ const nextConfig: NextConfig = {
       // so /budget can point at the next one each October without browsers
       // holding on to this year's.
       { source: "/budget", destination: LATEST_BUDGET.href, permanent: false },
-      // The same for each language (app/lib/i18n.ts LOCALES other than en).
+      // The same for each language. Built from LOCALES: a hand-kept list
+      // missed ar, bn and hi, which then fell through to the English page.
       {
-        source: "/:lang(ga|es|pt)/budget",
+        source: `/:lang(${LOCALES.filter((l) => l !== DEFAULT_LOCALE).join("|")})/budget`,
         destination: `/:lang${LATEST_BUDGET.href}`,
         permanent: false,
       },

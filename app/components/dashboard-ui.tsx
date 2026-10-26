@@ -108,7 +108,7 @@ export function DashboardShell({
           </span>
         </Link>
 
-        <DashNav items={navItems} ariaLabel={areaLabel} dueHrefs={dueHrefs} />
+        <DashNav items={navItems} ariaLabel={areaLabel} heading={t.menu} dueHrefs={dueHrefs} />
 
         <div className="mt-auto border-t border-white/10 p-3">
           <div className="mb-2 flex items-center gap-3 px-3 py-2">

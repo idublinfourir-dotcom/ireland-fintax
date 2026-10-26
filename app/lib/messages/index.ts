@@ -11,12 +11,14 @@ import {
   type Translations,
 } from "../i18n";
 import { ar } from "./ar";
+import { bn } from "./bn";
 import { en, type Messages } from "./en";
 import { es } from "./es";
 import { ga } from "./ga";
+import { hi } from "./hi";
 import { pt } from "./pt";
 
-const MESSAGES: Record<Locale, Messages> = { en, ga, es, pt, ar };
+const MESSAGES: Record<Locale, Messages> = { en, ga, es, pt, ar, bn, hi };
 
 /** The request's locale, as proxy.ts set it. Server only. */
 export async function getLocale(): Promise<Locale> {

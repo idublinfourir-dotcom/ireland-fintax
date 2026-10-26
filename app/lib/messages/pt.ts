@@ -11,10 +11,10 @@ export const pt: Messages = {
   },
 
   header: {
-    taxHub: "Calculadoras de impostos",
+    taxHub: "Calculadoras",
     calculatorsHeading: "Calculadoras para a Irlanda",
     openCalculators: "Abrir as calculadoras",
-    accounts: "Central de contabilidade",
+    accounts: "Contabilidade",
     founderHeading: "Recursos para empreendedores",
     browseAccounts: "Ver a Central de contabilidade",
     founderResources: [
@@ -27,7 +27,7 @@ export const pt: Messages = {
     personal: "Finanças pessoais",
     personalHeading: "Finanças pessoais",
     openPersonal: "Abrir Finanças pessoais",
-    budget: "O Orçamento explicado",
+    budget: "Orçamento",
     blog: "Análises",
     about: "Sobre nós",
     investmentAccount: "Conta de investimento IE",

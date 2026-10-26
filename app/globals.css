@@ -14,8 +14,8 @@
 }
 
 @theme inline {
-  --font-sans: var(--font-geist-sans), var(--font-arabic), ui-sans-serif, system-ui, sans-serif;
-  --font-display: "AmpUpright", var(--font-archivo), var(--font-arabic), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-geist-sans), var(--font-arabic), var(--font-bengali), var(--font-devanagari), ui-sans-serif, system-ui, sans-serif;
+  --font-display: "AmpUpright", var(--font-archivo), var(--font-arabic), var(--font-bengali), var(--font-devanagari), ui-sans-serif, system-ui, sans-serif;
 }
 
 /* Archivo's word space is narrow, and the tight tracking every heading uses
@@ -27,8 +27,12 @@
 
 /* Arabic letters join, and any letter-spacing (the tracking-* utilities on
    eyebrows and headings) pulls them apart. :lang, not [dir], so an English
-   blog post wrapped in lang="en" keeps its tracking. */
-:lang(ar) {
+   blog post wrapped in lang="en" keeps its tracking. Bengali and Devanagari
+   letters sit on a shared headline and stack into conjuncts, which tracking
+   breaks the same way. */
+:lang(ar),
+:lang(bn),
+:lang(hi) {
   letter-spacing: normal !important;
 }
 

@@ -21,10 +21,13 @@ export interface DashNavItem {
 export function DashNav({
   items,
   ariaLabel,
+  heading = "Menu",
   dueHrefs = [],
 }: {
   items: DashNavItem[];
   ariaLabel: string;
+  /** The small caption over the links, in the page's language. */
+  heading?: string;
   /** Hrefs that should show a "review due" dot (e.g. stale calculator rates). */
   dueHrefs?: string[];
 }) {
@@ -33,7 +36,7 @@ export function DashNav({
   return (
     <nav className="flex flex-col gap-1 p-3" aria-label={ariaLabel}>
       <p className="px-3 pb-2 pt-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-white/35">
-        Menu
+        {heading}
       </p>
       {items.map((item) => {
         const active = item.prefix
