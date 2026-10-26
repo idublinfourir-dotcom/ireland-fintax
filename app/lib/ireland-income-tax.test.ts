@@ -386,3 +386,46 @@ test("Deloitte 2027: MyFutureFund boundaries", () => {
   assert.equal(computeIrishTax({ ...base, age: 60 }, 2027).autoEnrolment, 0, "age 60");
   assert.equal(computeIrishTax({ ...base, employmentIncome: 20_000 }, 2027).autoEnrolment, 0, "exactly €20,000");
 });
+
+/* Captured from the live Deloitte Ireland calculator (services.deloitte.ie) on
+   26 Oct 2026, every line, both years. Rent cases tick Deloitte's "eligible for
+   the Rent Tax Credit", which assumes the full credit, so rent is set high. */
+test("Deloitte 2027 vs 2026: twelve households, every line", () => {
+  const base: IncomeTaxInput = {
+    maritalStatus: "single",
+    hasChildOnChildBenefit: false,
+    isPrincipalCarerOfDependentChild: false,
+    age: 35,
+    employmentIncome: 0,
+    selfEmploymentOrOtherIncome: 0,
+    pensionContribution: 0,
+  };
+  // [case, input, [net tax, USC, PRSI, MyFutureFund, annual net] for 2027, then 2026]
+  const cases: [string, Partial<IncomeTaxInput>, number[], number[]][] = [
+    ["single €38k", { employmentIncome: 38_000 }, [3_350, 657, 1_667, 570, 31_756], [3_600, 673, 1_610, 570, 31_547]],
+    ["single €85k, €5k pension", { age: 45, employmentIncome: 85_000, pensionContribution: 5_000 }, [18_450, 2_815, 3_729, 0, 55_006], [19_200, 2_831, 3_602, 0, 54_368]],
+    ["married, one income €70k", { maritalStatus: "married", age: 40, employmentIncome: 70_000 }, [10_525, 1_617, 3_071, 1_050, 53_737], [11_400, 1_633, 2_966, 1_050, 52_951]],
+    ["married €60k + €30k", { maritalStatus: "married", age: 40, employmentIncome: 60_000, spouseEmploymentIncome: 30_000 }, [10_400, 1_737, 3_949, 1_350, 72_565], [11_400, 1_766, 3_814, 1_350, 71_671]],
+    ["self-employed €55k", { age: 30, selfEmploymentOrOtherIncome: 55_000 }, [8_450, 1_167, 2_413, 0, 42_970], [9_200, 1_183, 2_331, 0, 42_287]],
+    ["age 68, €40k", { age: 68, employmentIncome: 40_000 }, [3_505, 717, 0, 0, 35_778], [3_755, 733, 0, 0, 35_512]],
+    ["single parent €45k", { hasChildOnChildBenefit: true, isPrincipalCarerOfDependentChild: true, employmentIncome: 45_000 }, [2_850, 867, 1_974, 675, 38_634], [3_100, 883, 1_907, 675, 38_435]],
+    ["€120k PAYE + €10k other", { employmentIncome: 120_000, selfEmploymentOrOtherIncome: 10_000 }, [38_450, 6_415, 5_704, 1_200, 78_232], [39_200, 6_431, 5_509, 1_200, 77_661]],
+    ["renter €32k", { age: 28, employmentIncome: 32_000, rentPaid: 50_000 }, [1_000, 477, 1_404, 480, 28_639], [1_400, 493, 1_356, 480, 28_271]],
+    ["widowed €40k", { maritalStatus: "widowed", age: 50, employmentIncome: 40_000 }, [3_210, 717, 1_755, 600, 33_718], [3_460, 733, 1_695, 600, 33_512]],
+    ["age 72, €20k + €30k other", { age: 72, employmentIncome: 20_000, selfEmploymentOrOtherIncome: 30_000 }, [6_205, 820, 0, 0, 42_975], [6_955, 820, 0, 0, 42_225]],
+    ["married €150k + €20k other, renting", { maritalStatus: "married", age: 50, employmentIncome: 150_000, spouseSelfEmploymentOrOtherIncome: 20_000, rentPaid: 50_000 }, [42_100, 8_234, 7_459, 1_200, 111_007], [43_400, 8_250, 7_204, 1_200, 109_946]],
+  ];
+  for (const [name, input, want2027, want2026] of cases) {
+    for (const [year, want] of [[2027, want2027], [2026, want2026]] as const) {
+      const r = computeIrishTax({ ...base, ...input }, year);
+      const got = [
+        r.incomeTax.netTax,
+        r.usc.total + r.spouseUsc.total,
+        r.prsi.total + r.spousePrsi.total,
+        r.autoEnrolment,
+        r.netIncome,
+      ].map(round);
+      assert.deepEqual(got, want, `${name}, ${year}: [net tax, USC, PRSI, MyFutureFund, net]`);
+    }
+  }
+});
