@@ -171,3 +171,11 @@ test("Budget 2027 English templates match the module's own sentences", async () 
     assert.equal(en.groups[m.group], m.group, m.id);
   }
 });
+
+/* The site is a free learning platform, not a firm: no offer to do the work
+   for the reader. The R&D page said "let us build the claim" until 26 Oct 2026. */
+test("R&D copy makes no firm offer, in any language", async () => {
+  const { rdMessages } = await import("./messages/rd.ts");
+  const firm = /let us build|build the claim|con nosotros|com a gente|lig dúinn|دعنا/i;
+  for (const locale of LOCALES) assert.doesNotMatch(JSON.stringify(rdMessages[locale]), firm, locale);
+});
