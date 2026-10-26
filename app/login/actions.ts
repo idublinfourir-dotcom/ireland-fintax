@@ -2,11 +2,10 @@
 
 import { redirect } from "next/navigation";
 import { localePath } from "../lib/messages";
-import { AuthError } from "next-auth";
-import { signIn } from "../../auth";
+import { AuthError, CredentialsSignin } from "next-auth";
+import { SIGN_IN_RATE_LIMITED, signIn } from "../../auth";
 import { usersCollection } from "../lib/collections";
 import { isAuthConfigured } from "../lib/auth/config";
-import { allowPublicAction } from "../lib/rate-limit";
 import { safeRedirectPath } from "../lib/safe-redirect";
 import { getT } from "../lib/messages";
 import { accountMessages } from "../lib/messages/account";
@@ -44,47 +43,31 @@ export async function login(
     return { error: t.notConfigured, values: { email } };
   }
 
-  /* The brute-force cap on the front door. bcrypt at cost 12 makes each guess
-     expensive but not prohibitive, and nothing else limited this: signup, the
-     contact form and both halves of the password reset were throttled while
-     the login form itself was not.
-
-     Counts every attempt, not only failures, which is how the rest of the app
-     uses this helper. The per-identity cap is deliberately the looser of the
-     two so a stranger cannot cheaply lock a real client out of their own
-     account by burning it; the window is short for the same reason. */
-  const allowed = await allowPublicAction({
-    action: "login",
-    identity: email,
-    ip: { max: 50, windowSeconds: 15 * 60 },
-    identityLimit: { max: 10, windowSeconds: 15 * 60 },
-    // This counter is the only thing capping password guesses, so a limiter
-    // that cannot be read must refuse rather than wave everything through.
-    failClosed: true,
-  });
-  if (!allowed) {
-    return {
-      error: t.tooManySignIns,
-      values: { email },
-    };
-  }
-
   /* `authorize` returns null for a wrong password, an unknown address and an
      unconfirmed one alike, so it cannot be used to probe which accounts exist.
      Auth.js reports that as a thrown AuthError; some builds instead hand back
      the error URL, so both signals are treated as a failure. */
   let failed = false;
+  let limited = false;
   try {
     const result = await signIn("credentials", {
       email,
       password,
       redirect: false,
     });
-    if (typeof result === "string" && result.includes("error=")) failed = true;
+    if (typeof result === "string" && result.includes("error=")) {
+      failed = true;
+      limited = result.includes(`code=${SIGN_IN_RATE_LIMITED}`);
+    }
   } catch (err) {
     if (!(err instanceof AuthError)) throw err;
     failed = true;
+    limited = err instanceof CredentialsSignin && err.code === SIGN_IN_RATE_LIMITED;
   }
+
+  // The brute-force cap is in `authorize` (auth.ts), so it also covers Auth.js's
+  // own credentials endpoint; it reports itself with this code.
+  if (limited) return { error: t.tooManySignIns, values: { email } };
 
   /* Answer before looking anything up. The old code read the account first so
      it could say which failure it was, which is exactly the leak described on
