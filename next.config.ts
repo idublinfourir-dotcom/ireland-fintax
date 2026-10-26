@@ -23,6 +23,8 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  // Says nothing an attacker needs to know about the stack.
+  poweredByHeader: false,
   /* A stray package-lock.json in the home directory above this one makes Next
      infer THAT as the workspace root, which is where it then traces server
      files from and where Turbopack roots the dev server. Pin both to this
