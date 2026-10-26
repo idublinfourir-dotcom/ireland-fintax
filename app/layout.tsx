@@ -1,5 +1,11 @@
 import type { Metadata, Viewport } from "next";
-import { Archivo, Geist, IBM_Plex_Sans_Arabic } from "next/font/google";
+import {
+  Archivo,
+  Geist,
+  IBM_Plex_Sans_Arabic,
+  Noto_Sans_Bengali,
+  Noto_Sans_Devanagari,
+} from "next/font/google";
 import { SiteHeader } from "./components/site-header";
 import { SiteFooter } from "./components/site-footer";
 import { BackToTop } from "./components/back-to-top";
@@ -33,6 +39,20 @@ const plexArabic = IBM_Plex_Sans_Arabic({
   preload: false,
 });
 
+/* Bangla and Hindi scripts, the same way: fallbacks by unicode-range, not
+   preloaded, so only a page with Bengali or Devanagari text fetches them. */
+const notoBengali = Noto_Sans_Bengali({
+  variable: "--font-bengali",
+  subsets: ["bengali"],
+  preload: false,
+});
+
+const notoDevanagari = Noto_Sans_Devanagari({
+  variable: "--font-devanagari",
+  subsets: ["devanagari"],
+  preload: false,
+});
+
 export async function generateMetadata(): Promise<Metadata> {
   const { locale, t } = await getMessages();
   return {
@@ -46,7 +66,7 @@ export async function generateMetadata(): Promise<Metadata> {
     openGraph: {
       siteName: "Irish Fintax",
       type: "website",
-      locale: { en: "en_GB", ga: "ga_IE", es: "es_ES", pt: "pt_BR", ar: "ar_AR" }[locale],
+      locale: { en: "en_GB", ga: "ga_IE", es: "es_ES", pt: "pt_BR", ar: "ar_AR", bn: "bn_BD", hi: "hi_IN" }[locale],
     },
   };
 }
@@ -69,7 +89,7 @@ export default async function RootLayout({
       lang={locale}
       dir={RTL_LOCALES.includes(locale) ? "rtl" : "ltr"}
       data-scroll-behavior="smooth"
-      className={`${archivo.variable} ${geistSans.variable} ${plexArabic.variable} h-full antialiased`}
+      className={`${archivo.variable} ${geistSans.variable} ${plexArabic.variable} ${notoBengali.variable} ${notoDevanagari.variable} h-full antialiased`}
     >
       <body
         className="min-h-full flex flex-col bg-canvas font-sans text-ink-body"

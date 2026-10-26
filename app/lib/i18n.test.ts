@@ -4,11 +4,13 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readdirSync } from "node:fs";
-import { LOCALES, localDate, localeHref, numberFormat, plural, splitLocale, switchHref } from "./i18n.ts";
+import { INTL_LOCALE, LOCALES, localDate, localeHref, numberFormat, plural, shortDateTime, splitLocale, switchHref } from "./i18n.ts";
 import { ar } from "./messages/ar.ts";
+import { bn } from "./messages/bn.ts";
 import { en } from "./messages/en.ts";
 import { es } from "./messages/es.ts";
 import { ga } from "./messages/ga.ts";
+import { hi } from "./messages/hi.ts";
 import { pt } from "./messages/pt.ts";
 
 test("splitLocale reads the prefix", () => {
@@ -18,6 +20,8 @@ test("splitLocale reads the prefix", () => {
   assert.deepEqual(splitLocale("/es/"), { locale: "es", path: "/" });
   assert.deepEqual(splitLocale("/pt/about"), { locale: "pt", path: "/about" });
   assert.deepEqual(splitLocale("/ar/contact"), { locale: "ar", path: "/contact" });
+  assert.deepEqual(splitLocale("/bn/about"), { locale: "bn", path: "/about" });
+  assert.deepEqual(splitLocale("/hi"), { locale: "hi", path: "/" });
   assert.deepEqual(splitLocale("/en/blog"), { locale: "en", path: "/blog" });
   // A segment that merely starts like a locale is a path, not a prefix.
   assert.deepEqual(splitLocale("/gallery"), { locale: "en", path: "/gallery" });
@@ -59,6 +63,10 @@ test("plural picks the language's own category", () => {
   // Arabic has six: 0 zero, 1 one, 2 two, 3-10 few, 11-99 many, 100 other.
   const arForms = { zero: "z{n}", one: "o{n}", two: "t{n}", few: "f{n}", many: "m{n}", other: "x{n}" };
   assert.deepEqual([0, 1, 2, 3, 11, 100].map((n) => plural("ar", n, arForms)), ["z0", "o1", "t2", "f3", "m11", "x100"]);
+  // Bangla and Hindi have two, and Bangla's "one" takes 0 as well as 1.
+  const bnForms = { one: "o{n}", other: "x{n}" };
+  assert.deepEqual([0, 1, 2].map((n) => plural("bn", n, bnForms)), ["o0", "o1", "x2"]);
+  assert.deepEqual([0, 1, 2].map((n) => plural("hi", n, bnForms)), ["o0", "o1", "x2"]);
   assert.equal(plural("es", 1000000, { one: "{n} año", other: "{n} años" }), "1.000.000 años");
 });
 
@@ -70,6 +78,9 @@ test("numberFormat follows each language's conventions", () => {
   assert.equal(numberFormat("pt", eur).format(85000.5), "€\u00a085.000,50");
   // Arabic keeps Western digits, as euro amounts are written in Ireland.
   assert.match(numberFormat("ar", eur).format(85000.5), /85,000\.50/);
+  // Bangla and Hindi: Irish grouping, not lakhs (85,00,000), and Western digits.
+  assert.equal(numberFormat("bn", eur).format(8500000.5), "€8,500,000.50");
+  assert.equal(numberFormat("hi", eur).format(8500000.5), "€8,500,000.50");
 });
 
 const PLURAL_CATEGORIES = ["zero", "one", "two", "few", "many", "other"];
@@ -84,6 +95,8 @@ test("localDate rewrites only the dates it can read", () => {
   assert.equal(localDate("es", "July 2026"), "julio de 2026");
   assert.equal(localDate("pt", "1 January 2025"), "1 de janeiro de 2025");
   assert.equal(localDate("ga", "October 2026"), "Deireadh Fómhair 2026");
+  assert.equal(localDate("hi", "1 January 2025"), "1 जनवरी 2025");
+  assert.equal(localDate("bn", "1 January 2025"), "1 জানুয়ারি, 2025");
   // Free text an admin typed is left alone rather than guessed at.
   assert.equal(localDate("es", "from Budget day"), "from Budget day");
 });
@@ -104,7 +117,7 @@ function shape(value: unknown, path = ""): string[] {
   return [path];
 }
 
-for (const [name, messages] of Object.entries({ es, ga, pt, ar })) {
+for (const [name, messages] of Object.entries({ es, ga, pt, ar, bn, hi })) {
   test(`${name} has exactly the English keys`, () => {
     assert.deepEqual(shape(messages).sort(), shape(en).sort());
   });
@@ -113,11 +126,14 @@ for (const [name, messages] of Object.entries({ es, ga, pt, ar })) {
 /* Every Translations export in messages/: each language carries exactly the
    English keys, so a string added in English and forgotten elsewhere fails. */
 const dir = new URL("./messages/", import.meta.url);
-for (const file of readdirSync(dir).filter((f) => !/^(index|en|es|ga|pt|ar)\.ts$/.test(f))) {
+/* Every set of copy, by name: the per-area exports plus the common files. */
+const translationSets: [string, Record<string, unknown>][] = [["common", { en, ga, es, pt, ar, bn, hi }]];
+for (const file of readdirSync(dir).filter((f) => !/^(index|en|es|ga|pt|ar|bn|hi)\.ts$/.test(f))) {
   const mod: Record<string, unknown> = await import(new URL(file, dir).href);
   for (const [exportName, value] of Object.entries(mod)) {
     if (!value || typeof value !== "object" || !LOCALES.every((l) => l in value)) continue;
     const all = value as Record<string, unknown>;
+    translationSets.push([`${file} ${exportName}`, all]);
     for (const locale of LOCALES.filter((l) => l !== "en")) {
       test(`${file} ${exportName}.${locale} has exactly the English keys`, () => {
         assert.deepEqual(shape(all[locale]).sort(), shape(all.en).sort());
@@ -125,6 +141,43 @@ for (const file of readdirSync(dir).filter((f) => !/^(index|en|es|ga|pt|ar)\.ts$
     }
   }
 }
+
+/** Every string in `value` with its path. Plural forms are skipped: a
+    language may write "one" as a word (Arabic "سنة واحدة") without {n}. */
+function strings(value: unknown, path = ""): [string, string][] {
+  if (typeof value === "string") return [[path, value]];
+  if (isPluralForms(value)) return [];
+  if (Array.isArray(value)) return value.flatMap((v, i) => strings(v, `${path}[${i}]`));
+  if (value && typeof value === "object") return Object.entries(value).flatMap(([k, v]) => strings(v, `${path}.${k}`));
+  return [];
+}
+const placeholders = (s: string) => [...s.matchAll(/\{(\w+)\}/g)].map((m) => m[1]).sort().join(",");
+
+/* A translation that drops, renames or invents a {placeholder} renders the
+   raw braces, or loses the visitor's figure, at runtime. Emphasis markers
+   (*…*) must survive too, or the heading shows literal asterisks. */
+for (const [name, all] of translationSets) {
+  const english = new Map(strings(all.en));
+  for (const locale of LOCALES.filter((l) => l !== "en")) {
+    test(`${name}.${locale} keeps every placeholder and emphasis marker`, () => {
+      for (const [path, text] of strings(all[locale])) {
+        const source = english.get(path);
+        if (source === undefined) continue;
+        assert.equal(placeholders(text), placeholders(source), `${path}: ${text}`);
+        assert.equal((text.match(/\*/g) ?? []).length, (source.match(/\*/g) ?? []).length, `${path}: ${text}`);
+      }
+    });
+  }
+}
+
+/* Bangla and Hindi write figures in Western digits (€8,500,000, 2027), as
+   numberFormat does for them, not ৮,৫০০ or ८,५००. */
+test("Bangla and Hindi copy uses Western digits only", () => {
+  for (const [name, all] of translationSets) {
+    for (const [path, text] of strings(all.bn)) assert.doesNotMatch(text, /[০-৯]/, `${name}${path}`);
+    for (const [path, text] of strings(all.hi)) assert.doesNotMatch(text, /[०-९]/, `${name}${path}`);
+  }
+});
 
 /* Budget 2027: the English templates in messages/budget.ts, filled by
    budgetWords, must say exactly what lib/budget-2027.ts says, for every
@@ -178,4 +231,59 @@ test("R&D copy makes no firm offer, in any language", async () => {
   const { rdMessages } = await import("./messages/rd.ts");
   const firm = /let us build|build the claim|con nosotros|com a gente|lig dúinn|دعنا/i;
   for (const locale of LOCALES) assert.doesNotMatch(JSON.stringify(rdMessages[locale]), firm, locale);
+});
+
+/* Every language's Budget templates, filled with real figures: no {name}
+   left unreplaced, and no undefined or NaN where a figure should be. The
+   profile ticks every situation, so every measure and variant renders. */
+test("Budget 2027 templates fill completely in every language", async () => {
+  const { personalise, EMPTY_PROFILE } = await import("./budget-2027.ts");
+  const { budgetWords } = await import("./budget-2027-words.ts");
+  const { budgetMessages } = await import("./messages/budget.ts");
+  const all = Object.fromEntries(
+    Object.entries(EMPTY_PROFILE).map(([k, v]) => [k, typeof v === "boolean" ? true : v]),
+  ) as typeof EMPTY_PROFILE;
+  const profiles = [
+    { ...all, employmentIncome: 52_000, spouseIncome: 21_000, minimumWageHours: 30, rentMonthly: 1_400, homePrice: 420_000, taxPaidFourYears: 31_000, childrenUnder12: 2, children12Plus: 1, childcareHours: 25, studentsInCollege: 1, petrolLitresPerWeek: 40, dieselLitresPerWeek: 35, heatingOilLitresPerYear: 1_500, gasKwhPerYear: 11_000, packsPerWeek: 5 },
+    { ...all, married: false, homeCarer: false, employmentIncome: 38_000, homePrice: 610_000, taxPaidFourYears: 0 },
+    { ...EMPTY_PROFILE, employee: true, employmentIncome: 45_000, buyingFirstHome: true, homePrice: 300_000, taxPaidFourYears: 0 },
+  ];
+  for (const locale of LOCALES) {
+    const f = {
+      eur: (n: number) => numberFormat(locale, { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(Math.round(n)),
+      eur2: (n: number) => numberFormat(locale, { style: "currency", currency: "EUR", minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(n),
+      num: (n: number) => numberFormat(locale).format(n),
+      pct: (n: number) => `${n}%`,
+    };
+    let rendered = 0;
+    for (const profile of profiles) {
+      const r = personalise(profile);
+      for (const line of [...r.exact, ...r.perUnit, ...r.info]) {
+        for (const [part, text] of Object.entries(budgetWords(line, budgetMessages[locale], f))) {
+          if (text === undefined) continue;
+          rendered++;
+          assert.doesNotMatch(text, /\{\w+\}|undefined|NaN/, `${locale} ${line.id} ${part}: ${text}`);
+        }
+      }
+    }
+    assert.ok(rendered > 50, `${locale}: only ${rendered} strings rendered`);
+  }
+});
+
+/* localDate writes month names from fixed tables, not the runtime's Intl
+   data, so every browser matches the server. The tables must say exactly
+   what Node's full ICU says, for every month and both shapes. */
+test("localDate's tables match Node's Intl output for every month", () => {
+  const names = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+  for (const locale of LOCALES.filter((l) => l !== "en")) {
+    names.forEach((name, m) => {
+      const d = new Date(Date.UTC(2026, m, 13));
+      const intl = (o: Intl.DateTimeFormatOptions) => new Intl.DateTimeFormat(INTL_LOCALE[locale], { ...o, timeZone: "UTC" }).format(d);
+      assert.equal(localDate(locale, `13 ${name} 2026`), intl({ day: "numeric", month: "long", year: "numeric" }), `${locale} ${name}`);
+      assert.equal(localDate(locale, `${name} 2026`), intl({ month: "long", year: "numeric" }), `${locale} ${name}`);
+    });
+  }
+  assert.equal(shortDateTime("en", new Date(2026, 9, 3, 14, 5)), "03 Oct, 14:05");
+  assert.equal(shortDateTime("ga", new Date(2026, 9, 3, 14, 5)), "03 DFómh, 14:05");
+  assert.equal(shortDateTime("pt", new Date(2026, 9, 3, 9, 30)), "03 de out., 09:30");
 });
