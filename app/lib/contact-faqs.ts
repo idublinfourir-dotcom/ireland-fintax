@@ -45,6 +45,12 @@ export const CONTACT_FAQS: ContactFaq[] = [
   },
 ];
 
+/* Bengali য় and Devanagari ज़, ड़, फ़ … each have two encodings: one code point
+   or the letter plus a nukta. Keyboards differ in which they send, so both
+   sides are brought to NFC before comparing, or "শেয়ার" typed one way misses
+   the keyword written the other. */
+const fold = (s: string) => s.normalize("NFC").toLowerCase();
+
 /**
  * Return the FAQs whose keywords appear in the message (case-insensitive
  * substring), most nothing-fancy first, capped at `limit`. Empty/whitespace
@@ -55,9 +61,9 @@ export function getRelatedFaqs(
   faqs: ContactFaq[] = CONTACT_FAQS,
   limit = 2,
 ): ContactFaq[] {
-  const text = message.trim().toLowerCase();
+  const text = fold(message.trim());
   if (!text) return [];
   return faqs
-    .filter((f) => f.keywords.some((k) => text.includes(k.toLowerCase())))
+    .filter((f) => f.keywords.some((k) => text.includes(fold(k))))
     .slice(0, limit);
 }
