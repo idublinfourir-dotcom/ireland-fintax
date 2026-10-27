@@ -42,6 +42,10 @@
   --color-canvas: #ffffff;
   --color-surface: #ffffff;
   --color-surface-muted: #f0f2f8;
+  /* the home page's light panels, chips and Ask band (figma_landing) */
+  --color-surface-soft: #f5f6fa;
+  --color-surface-tint: #eff2fb;
+  --color-surface-wash: #e9edff;
   --color-ink: #0b0d14;
   --color-ink-body: #272c3a;
   --color-muted: #5f6577;
@@ -49,6 +53,9 @@
 
   /* deep indigo — the one bold accent */
   --color-primary-50: #e4e8f7;
+  --color-primary-100: #dbe1f4;
+  /* links and eyebrows on the midnight band */
+  --color-primary-200: #a1afff;
   --color-primary-300: #6f83d6;
   --color-primary-400: #3f56bd;
   --color-primary-500: #2540a8;
@@ -64,6 +71,8 @@
   --color-navy-700: #262b3a;
   --color-navy-800: #14171f;
   --color-navy-900: #0b0d14;
+  /* bluer than the navy scale: the home page's "simple way to learn" band */
+  --color-midnight: #141c30;
 
   /* Strong custom easing (Emil Kowalski) — built-in curves are too weak */
   --ease-snappy: cubic-bezier(0.23, 1, 0.32, 1);

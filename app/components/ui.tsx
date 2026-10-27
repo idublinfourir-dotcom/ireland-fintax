@@ -19,21 +19,32 @@ export function Container({
   );
 }
 
+const eyebrowTones = {
+  light: "text-primary-500",
+  dark: "text-primary-300",
+  midnight: "text-primary-200",
+};
+
 export function Eyebrow({
   children,
   tone = "light",
   align = "left",
+  rule = false,
 }: {
   children: ReactNode;
-  tone?: "light" | "dark";
+  /** "midnight": the brighter blue that reads on the midnight band. */
+  tone?: "light" | "dark" | "midnight";
   align?: "left" | "center";
+  /** A short line before the text, as the home page sections have. */
+  rule?: boolean;
 }) {
   return (
     <p
       className={`flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.2em] ${
         align === "center" ? "justify-center" : ""
-      } ${tone === "dark" ? "text-primary-300" : "text-primary-500"}`}
+      } ${eyebrowTones[tone]}`}
     >
+      {rule && <span aria-hidden="true" className="h-0.5 w-5 shrink-0 bg-current" />}
       {children}
     </p>
   );
@@ -61,7 +72,7 @@ export function SectionHeading({
   );
 }
 
-type ButtonVariant = "primary" | "outline" | "outlineLight";
+type ButtonVariant = "primary" | "outline" | "outlineLight" | "white";
 
 const buttonBase =
   "inline-flex h-12 cursor-pointer items-center justify-center gap-2 rounded-none px-7 text-sm font-semibold tracking-wide transition-[color,background-color,border-color,transform] duration-200 ease-snappy active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2";
@@ -73,6 +84,8 @@ const buttonVariants: Record<ButtonVariant, string> = {
     "border border-ink/20 text-ink hover:border-ink/40 hover:bg-ink/5 focus-visible:outline-ink/40",
   outlineLight:
     "border border-white/30 bg-white/5 text-white backdrop-blur-sm hover:border-white/60 hover:bg-white/15 focus-visible:outline-white/60",
+  white:
+    "bg-white text-primary-500 hover:bg-primary-500 hover:text-white focus-visible:outline-primary-500",
 };
 
 export function Button({
