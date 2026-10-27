@@ -86,94 +86,71 @@ export const en = {
   ],
 
   who: {
-    eyebrow: "Who we are",
-    title: "What this site is",
-    body: [
-      "Irish Fintax explains Irish tax and personal finance without the jargon, with calculators so you can try your own numbers before you decide anything.",
-      "It is a learning site, and nothing here is for sale.",
-    ],
-    more: "More about us",
+    eyebrow: "A little about us",
+    title: "Understanding first. Decisions second.",
+    body: "Irish Fintax is a free learning site for tax and personal finance. Read a clear explanation, explore the tools and build your understanding at your own pace.",
+    more: "Get to know Irish Fintax",
+    caption: "Make room for a clearer view.",
     principles: [
-      { title: "Free", note: "Calculators, guides, templates and questions all cost nothing, and you don’t need an account to start." },
-      { title: "Plain English", note: "Each rule is explained in ordinary words, with the technical term alongside where you’ll need it." },
-      { title: "Built on public sources", note: "The calculators use Revenue’s published rates and link to where each figure comes from." },
-      { title: "Information, not advice", note: "For a decision that depends on your own situation, see a regulated adviser." },
+      { title: "Free to explore", note: "No payment or account needed to start." },
+      { title: "Plain English", note: "The everyday explanation, with technical terms when useful." },
+      { title: "Sources you can follow", note: "Explore the public sources behind the rules." },
+      { title: "Learning, not advice", note: "For personal decisions, speak with a regulated adviser." },
     ],
   },
 
-  promos: {
-    budget: {
-      /* {budget} is the Budget's label in this language, from header.tools. */
-      title: "What does {budget} change for you?",
-      body: "Tick what applies to you (renting, buying a first home, a pension, a car, a family) and see only the changes that affect you, in euro where the rules give an exact figure. It uses the official Budget figures and runs in your browser.",
-      cta: "See what changes for you",
-    },
-    calculators: {
-      eyebrow: "Calculators",
-      title: "Run your own numbers",
-      body: "Income tax, VAT, CGT, CAT, corporation tax and more, at Irish rates. Change one figure and see what moves with it.",
-      cta: "Try the calculators",
-    },
-    company: {
-      eyebrow: "Accounting Hub",
-      title: "Setting up a company",
-      body: "Memos, templates, tax and VAT forms and step-by-step setup guides for Ireland and the UK. They’re free: tell us which one you need and we’ll email it to you.",
-      cta: "Browse the Accounting Hub",
-    },
+  budget: {
+    /* {budget} is the Budget's label in this language, from header.tools. */
+    eyebrow: "{budget} · Explained",
+    title: "The Budget is big. Start with what *matters to you.*",
+    body: "Renting, buying, saving for a pension or raising a family? Explore the Budget changes that relate to your situation.",
+    cta: "Explore {budget}",
+    cardEyebrow: "Your life. Your questions.",
+    topics: ["Home & renting", "Work & income", "Family", "Saving & pensions"],
+    caption: "A clearer view of what changes.",
+  },
+
+  calculators: {
+    eyebrow: "Free tools for clearer thinking",
+    title: "Put your questions into numbers.",
+    lede: "Choose a calculator. Change the inputs. Understand what moves.",
+    caption: "Your numbers. A clearer picture.",
+    items: [
+      { name: "Income tax", note: "Explore your take-home pay." },
+      { name: "VAT", note: "Understand VAT payable or receivable." },
+      { name: "Corporation tax", note: "Explore tax on company profits." },
+      { name: "Capital gains tax", note: "Understand tax when you sell an asset." },
+      { name: "Gifts & inheritance", note: "Explore Capital Acquisitions Tax." },
+      { name: "Mortgage", note: "Compare repayments before you decide." },
+    ],
+    footnote: "Calculators are learning tools. Check assumptions and sources on each tool page.",
   },
 
   learn: {
-    eyebrow: "How to learn here",
-    title: "How people use the *site*",
-    lede: "Most people read a little, try their own numbers, and ask only when something still doesn’t add up.",
+    eyebrow: "A simple way to learn",
+    title: "From “what does that mean?” to “*now I understand*.”",
     items: [
-      { title: "Learn", note: "Memos and guides on the things people most often get stuck on." },
-      { title: "Try", note: "Put your own figures into the calculators and see what changes." },
-      { title: "Ask", note: "Still unsure? Ask in your own words and get an answer by email." },
-    ],
-  },
-
-  audiences: {
-    eyebrow: "Who it’s for",
-    title: "Who the site covers",
-    lede: "Tax questions usually come with a change in your life. These are the ones the site covers so far.",
-    items: [
-      { name: "Employees", note: "See your take-home pay and what the Budget changes mean for it." },
-      { name: "Sole traders", note: "When to register for VAT, which rate applies, and the returns cycle." },
-      { name: "Company founders", note: "Corporation tax, the R&D credit, capital allowances and setup guides." },
-      { name: "Investors and landlords", note: "Capital gains on shares or property, and investment options compared." },
-      { name: "Families", note: "Gifts and inheritances, and the tax-free thresholds that apply." },
-      { name: "Homebuyers", note: "Work out a mortgage before you talk to a lender." },
-    ],
-  },
-
-  process: {
-    eyebrow: "Ask a question",
-    title: "How asking a question works",
-    lede: "If the calculators and guides don’t answer it, you can ask us. It’s free, and basic questions are welcome.",
-    steps: [
-      { title: "Pick a topic", description: "Income tax, VAT, a mortgage, starting a company, or something else." },
-      { title: "Ask in your own words", description: "You don’t need the technical terms." },
-      { title: "Get an answer by email", description: "A person reads your question and writes back." },
-      { title: "Keep it in one place", description: "Ask while signed in and every answer stays in your free account." },
+      { title: "Learn the basics", note: "Start with guides and memos that explain the rules in everyday language.", link: "Explore the guides" },
+      { title: "Try your numbers", note: "Use the calculators to see how different figures change the result.", link: "Find a calculator" },
+      { title: "Ask what’s unclear", note: "Send your question in your own words. You don’t need the technical terms.", link: "Ask a question" },
     ],
   },
 
   faq: {
-    eyebrow: "FAQ",
-    title: "Frequently asked questions",
+    eyebrow: "Before you start",
+    title: "A few things you might wonder.",
     items: [
-      { question: "Is it really free?", answer: "Yes. Every calculator, guide and template here is free to use, and so is asking a question." },
-      { question: "Is this financial or tax advice?", answer: "No. Everything here is general information to help you understand how things work. Rates and rules change and your own situation matters, so check with Revenue or a qualified, regulated adviser before acting on a big decision." },
-      { question: "Do I need an account?", answer: "No. The calculators and guides are open to everyone. A free account is only useful for questions: ask while signed in and your questions and our answers stay together in one place." },
-      { question: "Is it only about Ireland?", answer: "Mostly. The calculators use Irish rates and rules, and some of the founder resources also cover the UK." },
+      { question: "Is Irish Fintax really free?", answer: "Yes. You can explore calculators, guides and templates without paying, and you can ask a question for free." },
+      { question: "Do I need an account?", answer: "No account is needed to start exploring. Signing in lets you keep questions and answers in one place." },
+      { question: "Is this financial or tax advice?", answer: "No. The site provides general learning information. Speak with a suitably qualified adviser about decisions specific to your circumstances." },
+      { question: "Where should I begin?", answer: "Start with a calculator if you have figures to explore, the Accounting Hub for guides, or ask a question if you need help understanding a topic." },
     ],
   },
 
   cta: {
-    eyebrow: "Ask a question",
-    title: "Stuck on something?",
-    body: "Ask about tax or money in your own words and we’ll reply by email. It’s free.",
+    eyebrow: "There’s no such thing as a basic question",
+    title: "Still making sense of it? *Let’s start with your question.*",
+    body: "Ask about tax or money in your own words.",
     button: "Ask a question",
   },
 };

@@ -1,8 +1,8 @@
-import type { CSSProperties, ReactNode } from "react";
+import type { ReactNode } from "react";
+import Image from "next/image";
 import Link from "./locale-link";
 import { Button, Container, Emphasis, Eyebrow, SectionHeading } from "./ui";
 import { Reveal } from "./reveal";
-import { ClipReveal } from "./clip-reveal";
 import { Accordion } from "./accordion";
 import { HeroVideo } from "./hero-video";
 import { HeroCoverflow } from "./hero-coverflow";
@@ -15,15 +15,16 @@ import { getCaData } from "../lib/ca-data";
 import { getCgtData } from "../lib/cgt-data";
 import { getCatData } from "../lib/cat-data";
 import { getMortgageData } from "../lib/mortgage-data";
-import { images } from "../lib/images";
+import { LATEST_BUDGET } from "../lib/budgets";
 import { serviceCategories } from "../lib/content";
 import { getMessages } from "../lib/messages";
-import type { Locale } from "../lib/i18n";
 import { LocaleLink } from "./locale-link";
-
-function bg(url: string): CSSProperties {
-  return { backgroundImage: `url(${url})` };
-}
+import paperwork from "../assets/home/paperwork.jpg";
+import house from "../assets/home/house.jpg";
+import laptopCharts from "../assets/home/laptop-charts.jpg";
+import notebook from "../assets/home/notebook.jpg";
+import laptopFigures from "../assets/home/laptop-figures.jpg";
+import table from "../assets/home/table.jpg";
 
 /* ---------- hero ---------- */
 
@@ -211,6 +212,41 @@ export async function QuickEntry() {
   );
 }
 
+/* ---------- shared by the home sections below ---------- */
+
+/* The header's box (max-w-7xl px-8), so the sections line up with the logo
+   and the hero copy, as figma_landing has them. Container is narrower. */
+const wide = "mx-auto w-full max-w-7xl px-5 sm:px-8";
+
+const sectionTitle =
+  "mt-5 font-display text-4xl font-semibold leading-[1.1] tracking-[-0.035em] text-balance sm:text-[2.875rem]";
+
+function ArrowUpRight({ className = "" }: { className?: string }) {
+  return (
+    <svg
+      width="12"
+      height="12"
+      viewBox="0 0 12 12"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      className={`shrink-0 rtl:-scale-x-100 ${className}`}
+    >
+      <path d="M3.5 8.5l5-5M4.5 3.5h4v4" />
+    </svg>
+  );
+}
+
+const nudge =
+  "transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 rtl:group-hover:-translate-x-0.5";
+
+function Index({ n }: { n: number }) {
+  return <>{String(n + 1).padStart(2, "0")}</>;
+}
+
 /* ---------- who we are ---------- */
 
 /* Says what the platform is and how it works, never who runs it: no names,
@@ -220,43 +256,55 @@ export async function WhoWeAre() {
   const { locale, t } = await getMessages();
   return (
     <section className="bg-white">
-      <Container className="grid gap-14 py-20 sm:py-28 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
+      <div className={`${wide} grid gap-14 py-20 sm:py-[5.5rem] lg:grid-cols-2 lg:items-center lg:gap-20`}>
         <Reveal>
-          <SectionHeading
-            eyebrow={t.who.eyebrow}
-            title={t.who.title}
-          />
-          <div className="mt-6 flex flex-col gap-5 text-[15px] leading-7 text-ink-body">
-            {t.who.body.map((para) => (
-              <p key={para}>{para}</p>
-            ))}
-          </div>
+          <Eyebrow rule>{t.who.eyebrow}</Eyebrow>
+          <h2 className={`${sectionTitle} max-w-xl text-ink`}>{t.who.title}</h2>
+          <p className="mt-6 max-w-md leading-[1.65] text-muted">{t.who.body}</p>
           <LocaleLink
             locale={locale}
             href="/about"
-            className="mt-6 inline-block text-sm font-semibold text-primary-500 transition-colors duration-200 hover:text-primary-600"
+            className="group mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-primary-500 transition-colors duration-200 hover:text-primary-600"
           >
-            {t.who.more} <span aria-hidden="true" className="inline-block rtl:-scale-x-100">→</span>
+            {t.who.more}
+            <ArrowUpRight className={nudge} />
           </LocaleLink>
-          <ClipReveal
-            // Not deskFinance: that photo is IRS forms and a dollar bill.
-            url={images.teamLaptops}
-            className="mt-10 hidden h-56 w-full rounded-none lg:block"
-          />
+          <figure className="relative mt-9 aspect-[47/22] max-w-[470px] overflow-hidden rounded-lg rounded-se-[65px] bg-surface-muted">
+            <Image
+              src={paperwork}
+              alt=""
+              fill
+              sizes="(min-width: 640px) 470px, 100vw"
+              placeholder="blur"
+              className="object-cover"
+            />
+            <div
+              aria-hidden="true"
+              className="absolute inset-x-0 bottom-0 h-[70%] bg-gradient-to-b from-midnight/0 to-midnight/75"
+            />
+            <figcaption className="absolute start-5 bottom-4 text-sm text-white">
+              {t.who.caption}
+            </figcaption>
+          </figure>
         </Reveal>
         <Reveal delay={120}>
-          <ul className="grid gap-px overflow-hidden border border-line bg-line sm:grid-cols-2">
-            {t.who.principles.map((p) => (
-              <li key={p.title} className="bg-surface p-6">
-                <h3 className="font-display text-lg font-medium tracking-tight text-ink">
-                  {p.title}
-                </h3>
-                <p className="mt-2 text-sm leading-6 text-muted">{p.note}</p>
+          <ol className="rounded-[10px] bg-surface-soft p-6 sm:p-[30px]">
+            {t.who.principles.map((p, i) => (
+              <li key={p.title} className="flex gap-6 border-b border-line py-6 first:pt-0">
+                <span className="grid size-7 shrink-0 place-items-center rounded-full border border-primary-100 bg-white text-[11px] text-primary-500">
+                  <Index n={i} />
+                </span>
+                <div>
+                  <h3 className="font-display text-[17px] font-semibold tracking-[-0.01em] text-ink">
+                    {p.title}
+                  </h3>
+                  <p className="mt-1.5 text-sm leading-6 text-muted">{p.note}</p>
+                </div>
               </li>
             ))}
-          </ul>
+          </ol>
         </Reveal>
-      </Container>
+      </div>
     </section>
   );
 }
@@ -331,160 +379,75 @@ export function Services() {
   );
 }
 
-/* ---------- promo banner (kpmg-style full-width split) ---------- */
+/* ---------- budget ---------- */
 
-export function PromoBanner({
-  eyebrow,
-  title,
-  body,
-  ctaHref,
-  ctaLabel,
-  image,
-  reverse = false,
-  locale,
-}: {
-  locale?: Locale;
-  eyebrow: string;
-  title: ReactNode;
-  body: string;
-  ctaHref: string;
-  ctaLabel: string;
-  image: keyof typeof images;
-  reverse?: boolean;
-}) {
+export async function BudgetFeature() {
+  const { locale, t } = await getMessages();
+  const budget = t.header.tools[LATEST_BUDGET.href]?.label ?? LATEST_BUDGET.label;
   return (
-    <section className="border-y border-line bg-surface">
-      <div className="grid lg:grid-cols-2">
-        <div
-          className={`flex flex-col justify-center px-5 py-16 sm:px-8 sm:py-20 lg:py-28 ${
-            reverse
-              ? "lg:order-2 lg:ms-0 lg:me-auto lg:max-w-xl lg:ps-16"
-              : "lg:ms-auto lg:me-0 lg:max-w-xl lg:pe-16"
-          }`}
-        >
-          <Reveal>
-            <Eyebrow>{eyebrow}</Eyebrow>
-            <h2 className="mt-5 font-display text-4xl font-bold leading-[1.03] tracking-[-0.02em] text-balance text-ink sm:text-5xl">
-              {title}
-            </h2>
-            <p className="mt-5 text-lg leading-8 text-ink-body">{body}</p>
-            <div className="mt-9">
-              <Button locale={locale} href={ctaHref}>
-                {ctaLabel}
-              </Button>
-            </div>
-          </Reveal>
-        </div>
-        <div
-          aria-hidden="true"
-          className={`min-h-[320px] bg-cover bg-center lg:min-h-[520px] ${
-            reverse ? "lg:order-1" : ""
-          }`}
-          style={bg(images[image])}
-        />
+    <section className="relative isolate overflow-hidden bg-surface-muted">
+      {/* a faint circle running off the start edge, as in the design */}
+      <div
+        aria-hidden="true"
+        className="absolute -start-[248px] top-[74%] -z-10 hidden size-[453px] rounded-full border border-primary-100 lg:block"
+      />
+      <div className={`${wide} grid gap-14 py-20 sm:py-[5.5rem] lg:grid-cols-2 lg:items-center lg:gap-[90px]`}>
+        <Reveal>
+          <Eyebrow rule>{t.budget.eyebrow.replace("{budget}", budget)}</Eyebrow>
+          <h2 className={`${sectionTitle} max-w-md text-ink`}>
+            <Emphasis text={t.budget.title} className="text-primary-400 not-italic" />
+          </h2>
+          <p className="mt-6 max-w-md leading-[1.65] text-muted">{t.budget.body}</p>
+          <div className="mt-8">
+            <Button
+              locale={locale}
+              href={LATEST_BUDGET.href}
+              className="group rounded-[5px]! shadow-[0_4px_12px_rgb(30_49_158/0.07)]"
+            >
+              {t.budget.cta.replace("{budget}", budget)}
+              <ArrowUpRight className={nudge} />
+            </Button>
+          </div>
+        </Reveal>
+        <Reveal delay={120} className="relative">
+          <div className="relative ms-auto aspect-[469/455] max-h-[455px] w-full overflow-hidden rounded-[10px] rounded-ss-[80px] lg:w-[86%]">
+            <Image
+              src={house}
+              alt=""
+              fill
+              sizes="(min-width: 1024px) 470px, 100vw"
+              placeholder="blur"
+              className="object-cover"
+            />
+          </div>
+          <div className="relative mx-4 -mt-24 rounded-[9px] border border-white bg-white/90 px-6 py-6 shadow-[0_18px_45px_rgb(17_33_60/0.13)] backdrop-blur-xl sm:mx-8 sm:px-7 lg:absolute lg:-start-[15px] lg:top-[39%] lg:m-0 lg:w-[78%]">
+            <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-primary-600/80">
+              {t.budget.cardEyebrow}
+            </p>
+            <p className="mt-2.5 font-display text-7xl leading-[1.15] font-bold tracking-[-0.06em] text-primary-600 sm:text-[88px]">
+              {/* two-tone, as the design has it */}
+              {String(LATEST_BUDGET.year).slice(0, 2)}
+              <span className="text-primary-400">{String(LATEST_BUDGET.year).slice(2)}</span>
+            </p>
+            <ul className="mt-3 flex flex-wrap gap-1.5">
+              {t.budget.topics.map((topic) => (
+                <li key={topic} className="rounded-full bg-surface-tint px-2.5 py-2 text-[11px] leading-none text-ink">
+                  {topic}
+                </li>
+              ))}
+            </ul>
+            <p className="mt-3 text-xs text-muted">{t.budget.caption}</p>
+          </div>
+        </Reveal>
       </div>
     </section>
   );
 }
 
-/* ---------- AI band (signature pillar) ---------- */
+/* ---------- calculators ---------- */
 
-type AiIcon = "forecast" | "automate" | "tax";
-
-function AiGlyph({ name }: { name: AiIcon }) {
-  const common = {
-    width: 24,
-    height: 24,
-    viewBox: "0 0 24 24",
-    fill: "none",
-    stroke: "currentColor",
-    strokeWidth: 1.6,
-    strokeLinecap: "round" as const,
-    strokeLinejoin: "round" as const,
-    "aria-hidden": true,
-  };
-  switch (name) {
-    case "forecast":
-      return (
-        <svg {...common}>
-          <path d="M4 19V5M4 19h16" />
-          <path d="M7 15l4-4 3 2 5-6" />
-          <path d="M19 7v3.5M19 7h-3.5" />
-        </svg>
-      );
-    case "automate":
-      return (
-        <svg {...common}>
-          <path d="M13 3L5 13h5l-1 8 8-10h-5l1-8z" />
-        </svg>
-      );
-    case "tax":
-      return (
-        <svg {...common}>
-          <path d="M7 3h7l4 4v9a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z" />
-          <path d="M13 3v5h5" />
-          <path d="M9 13l2 2 3-4" />
-        </svg>
-      );
-  }
-}
-
-/* Paired by index with t.learn.items (title, note). */
-const aiIcons: AiIcon[] = ["tax", "forecast", "automate"];
-
-export async function AiBand() {
-  const { t } = await getMessages();
-  return (
-    <section className="relative isolate overflow-hidden bg-navy-900 text-white">
-      <div
-        aria-hidden="true"
-        className="absolute inset-0 -z-10 opacity-[0.06] [background-image:linear-gradient(var(--color-primary-300)_1px,transparent_1px),linear-gradient(90deg,var(--color-primary-300)_1px,transparent_1px)] [background-size:44px_44px]"
-      />
-      <div
-        aria-hidden="true"
-        className="absolute -inset-e-32 -top-32 -z-10 h-96 w-96 rounded-full bg-primary-500/20 blur-3xl"
-      />
-      <Container className="py-24 sm:py-32">
-        <Reveal>
-          <div className="max-w-2xl border-s-2 border-primary-400 ps-6 sm:ps-8">
-            <Eyebrow tone="dark">{t.learn.eyebrow}</Eyebrow>
-            <h2 className="mt-6 font-display text-4xl font-bold leading-[1.03] tracking-[-0.02em] text-balance sm:text-5xl">
-              <Emphasis text={t.learn.title} className="text-primary-300 not-italic" />
-            </h2>
-            <p className="mt-6 text-lg leading-8 text-white/80">
-              {t.learn.lede}
-            </p>
-          </div>
-          <div className="mt-14 grid grid-cols-1 gap-px overflow-hidden border border-white/12 bg-white/12 sm:grid-cols-3">
-            {t.learn.items.map((cap, i) => (
-              <div
-                key={aiIcons[i]}
-                className="flex flex-col bg-navy-900 px-7 py-9"
-              >
-                <span className="text-primary-300">
-                  <AiGlyph name={aiIcons[i]} />
-                </span>
-                <h3 className="mt-5 font-display text-lg font-medium tracking-tight text-white">
-                  {cap.title}
-                </h3>
-                <p className="mt-2.5 text-[15px] leading-7 text-white/65">
-                  {cap.note}
-                </p>
-              </div>
-            ))}
-          </div>
-        </Reveal>
-      </Container>
-    </section>
-  );
-}
-
-/* ---------- who it's for (was: industries) ---------- */
-
-/* Life situations the site actually covers, each pointing at its tool. Was the
-   firm's sector list (`industries` in content.ts, now unused).
-   Paired by index with t.audiences.items (name, note). */
-const audienceHrefs = [
+/* Paired by index with t.calculators.items (name, note). */
+const calculatorHrefs = [
   "/tools/ireland-income-tax",
   "/tools/ireland-vat",
   "/tools/ireland-corporation-tax",
@@ -493,82 +456,134 @@ const audienceHrefs = [
   "/personal/mortgage",
 ];
 
-export async function Industries() {
+export async function CalculatorGrid() {
   const { locale, t } = await getMessages();
+  const c = t.calculators;
   return (
-    <section className="border-t border-line bg-white">
-      <Container className="grid gap-14 py-20 sm:py-28 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
-        <Reveal>
-          <SectionHeading
-            eyebrow={t.audiences.eyebrow}
-            title={t.audiences.title}
-            lede={t.audiences.lede}
-          />
-          <ClipReveal
-            url={images.meeting}
-            className="mt-10 hidden h-64 w-full rounded-none lg:block"
-          />
+    <section className="bg-white">
+      <div className={`${wide} py-20 sm:py-[5.5rem]`}>
+        <Reveal className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,388px)] lg:items-center lg:gap-16">
+          <div>
+            <Eyebrow rule>{c.eyebrow}</Eyebrow>
+            <h2 className={`${sectionTitle} text-ink`}>{c.title}</h2>
+            <p className="mt-5 text-[17px] leading-[1.65] text-muted">{c.lede}</p>
+          </div>
+          <figure className="relative aspect-[388/220] overflow-hidden rounded-lg rounded-ee-[55px] bg-surface-muted">
+            <Image
+              src={laptopCharts}
+              alt=""
+              fill
+              sizes="(min-width: 1024px) 388px, 100vw"
+              placeholder="blur"
+              className="object-cover"
+            />
+            <figcaption className="absolute start-4 bottom-4 flex items-center gap-2.5 rounded-[5px] border border-white bg-white/90 px-3.5 py-2 text-[11px] text-ink-body shadow-[0_5px_20px_rgb(23_33_57/0.09)] backdrop-blur-lg">
+              <span aria-hidden="true" className="size-1.5 shrink-0 rounded-full bg-emerald-500" />
+              {c.caption}
+            </figcaption>
+          </figure>
         </Reveal>
         <Reveal delay={120}>
-        <ul className="grid gap-px overflow-hidden border border-line bg-line sm:grid-cols-2">
-          {t.audiences.items.map((a, i) => (
-            <li key={audienceHrefs[i]}>
-              <LocaleLink
-                locale={locale}
-                href={audienceHrefs[i]}
-                className="group block h-full bg-surface p-6 transition-colors duration-200 hover:bg-secondary-50/50"
-              >
-                <h3 className="font-display text-lg font-medium tracking-tight text-ink transition-colors duration-200 group-hover:text-primary-500">
-                  {a.name} <span aria-hidden="true" className="inline-block rtl:-scale-x-100">→</span>
-                </h3>
-                <p className="mt-2 text-sm leading-6 text-muted">{a.note}</p>
-              </LocaleLink>
-            </li>
-          ))}
-        </ul>
+          <ul className="mt-11 grid gap-3.5 sm:grid-cols-2 lg:grid-cols-3">
+            {c.items.map((item, i) => (
+              <li key={calculatorHrefs[i]}>
+                <LocaleLink
+                  locale={locale}
+                  href={calculatorHrefs[i]}
+                  className="group relative flex h-full flex-col rounded-lg border border-line bg-white p-[30px] transition-colors duration-200 hover:border-primary-300 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-primary-500"
+                >
+                  <span className="text-[11px] text-primary-300">
+                    <Index n={i} />
+                  </span>
+                  <h3 className="mt-4 pe-10 font-display text-[21px] font-semibold tracking-[-0.02em] text-ink">
+                    {item.name}
+                  </h3>
+                  <p className="mt-3 max-w-[15rem] text-[13px] leading-[1.65] text-muted">
+                    {item.note}
+                  </p>
+                  <span
+                    aria-hidden="true"
+                    className="absolute end-[27px] top-[27px] grid size-[30px] place-items-center rounded-full bg-surface-tint text-primary-500 transition-colors duration-200 group-hover:bg-primary-500 group-hover:text-white"
+                  >
+                    <ArrowUpRight className="size-3.5" />
+                  </span>
+                </LocaleLink>
+              </li>
+            ))}
+          </ul>
+          <p className="mt-5 text-xs leading-[1.65] text-muted">{c.footnote}</p>
         </Reveal>
-      </Container>
+      </div>
     </section>
   );
 }
 
-/* ---------- process ---------- */
+/* ---------- a simple way to learn (midnight band) ---------- */
 
-export async function Process() {
-  const { t } = await getMessages();
+/* Paired by index with t.learn.items (title, note, link). */
+const learnSteps = [
+  { href: "/toolkits", image: notebook },
+  { href: "/tools/ireland-income-tax", image: laptopFigures },
+  { href: "/contact", image: table },
+];
+
+export async function LearnBand() {
+  const { locale, t } = await getMessages();
   return (
-    <section
-      id="process"
-      className="scroll-mt-24 border-y border-line bg-surface-muted/50"
-    >
-      <Container className="py-20 sm:py-28">
+    <section className="relative isolate overflow-hidden bg-midnight text-white">
+      <div
+        aria-hidden="true"
+        className="absolute -end-56 -top-64 -z-10 size-[40rem] bg-radial from-primary-500/35 to-transparent to-70%"
+      />
+      <div className={`${wide} py-20 sm:py-[5.5rem]`}>
         <Reveal>
-        <SectionHeading
-          eyebrow={t.process.eyebrow}
-          title={t.process.title}
-          lede={t.process.lede}
-        />
-        <ol className="mt-14 grid gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-4">
-          {t.process.steps.map((step, index) => (
-            <li key={step.title} className="relative border-t-2 border-ink/10 pt-6">
-              <span
-                aria-hidden="true"
-                className="absolute -top-0.5 inset-s-0 h-0.5 w-14 bg-primary-400"
-              />
-              <span className="font-display text-3xl font-medium text-primary-500">
-                {String(index + 1).padStart(2, "0")}
-              </span>
-              <h3 className="mt-3 font-display text-lg font-medium text-ink">
-                {step.title}
-              </h3>
-              <p className="mt-2 text-[15px] leading-7 text-muted">
-                {step.description}
-              </p>
+          <Eyebrow tone="midnight" rule>
+            {t.learn.eyebrow}
+          </Eyebrow>
+          <h2 className={`${sectionTitle} max-w-[40rem]`}>
+            <Emphasis text={t.learn.title} className="text-primary-200 not-italic" />
+          </h2>
+        </Reveal>
+        <ul className="mt-11 grid gap-x-7 gap-y-14 md:grid-cols-3">
+          {t.learn.items.map((item, i) => (
+            <li key={learnSteps[i].href}>
+              <Reveal delay={i * 80} className="flex h-full flex-col">
+                <div className="relative aspect-[375/190] overflow-hidden rounded-[7px] bg-navy-800">
+                  <Image
+                    src={learnSteps[i].image}
+                    alt=""
+                    fill
+                    sizes="(min-width: 768px) 33vw, 100vw"
+                    placeholder="blur"
+                    className="object-cover"
+                  />
+                  <div
+                    aria-hidden="true"
+                    className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-b from-midnight/0 to-midnight/40"
+                  />
+                  <span className="absolute start-3.5 bottom-3 rounded-[4px] border border-white bg-white/90 px-2.5 py-0.5 text-[11px] text-primary-500">
+                    <Index n={i} />
+                  </span>
+                </div>
+                <h3 className="mt-6 font-display text-[23px] font-semibold tracking-[-0.025em]">
+                  {item.title}
+                </h3>
+                <p className="mt-4 max-w-[330px] text-sm leading-[1.65] text-white/70">
+                  {item.note}
+                </p>
+                <LocaleLink
+                  locale={locale}
+                  href={learnSteps[i].href}
+                  className="group mt-6 inline-flex items-center gap-1.5 self-start text-xs font-bold text-primary-200 transition-colors duration-200 hover:text-white"
+                >
+                  {item.link}
+                  <ArrowUpRight className={nudge} />
+                </LocaleLink>
+              </Reveal>
             </li>
           ))}
-        </ol>
-        </Reveal>
-      </Container>
+        </ul>
+      </div>
     </section>
   );
 }
@@ -578,15 +593,16 @@ export async function Process() {
 export async function Faq() {
   const { t } = await getMessages();
   return (
-    <section id="faq" className="scroll-mt-24 border-t border-line bg-white">
-      <Container className="py-20 sm:py-28">
-        <Reveal className="mx-auto max-w-3xl">
-          <SectionHeading eyebrow={t.faq.eyebrow} title={t.faq.title} />
-          <div className="mt-10">
-            <Accordion items={t.faq.items} />
-          </div>
+    <section id="faq" className="scroll-mt-24 bg-white">
+      <div className={`${wide} grid gap-10 py-20 sm:py-[6.25rem] lg:grid-cols-[minmax(0,495px)_minmax(0,605px)] lg:justify-between`}>
+        <Reveal>
+          <Eyebrow>{t.faq.eyebrow}</Eyebrow>
+          <h2 className={`${sectionTitle} max-w-sm text-ink`}>{t.faq.title}</h2>
         </Reveal>
-      </Container>
+        <Reveal delay={120} className="border-t border-line">
+          <Accordion items={t.faq.items} />
+        </Reveal>
+      </div>
     </section>
   );
 }
@@ -649,39 +665,39 @@ export function RelatedServices({
 
 /* ---------- contact cta ---------- */
 
-export async function ContactCta({ children }: { children?: ReactNode }) {
+/* `wide` lines it up with the home sections; other pages keep Container's
+   width, which is what their content above it uses. */
+export async function ContactCta({
+  children,
+  wide: isWide = false,
+}: {
+  children?: ReactNode;
+  wide?: boolean;
+}) {
   const { locale, t } = await getMessages();
+  const box = isWide ? wide : "mx-auto w-full max-w-6xl px-5 sm:px-8";
   return (
-    <section id="contact" className="scroll-mt-24 bg-canvas">
-      <Container className="py-20 sm:py-24">
-        <div className="relative isolate overflow-hidden rounded-none bg-navy-900 text-white">
-          <div
-            aria-hidden="true"
-            className="absolute inset-0 -z-20 bg-cover bg-center opacity-40"
-            style={bg(images.teamMeeting)}
-          />
-          <div
-            aria-hidden="true"
-            className="absolute inset-0 -z-10 bg-gradient-to-r from-navy-900 via-navy-900/95 to-navy-900/70"
-          />
-          <div className="px-6 py-16 text-center sm:px-16 sm:py-20">
-            <Eyebrow tone="dark" align="center">
-              {t.cta.eyebrow}
-            </Eyebrow>
-            <h2 className="mx-auto mt-5 max-w-2xl font-display text-3xl font-medium leading-[1.12] tracking-tight text-balance sm:text-4xl">
-              {children ?? t.cta.title}
-            </h2>
-            <p className="mx-auto mt-4 max-w-xl leading-7 text-white/75">
-              {t.cta.body}
-            </p>
-            <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
-              <Button locale={locale} href="/contact">
-                {t.cta.button}
-              </Button>
-            </div>
-          </div>
+    <section id="contact" className="scroll-mt-24 bg-surface-wash">
+      <div className={`${box} flex flex-col gap-8 py-16 sm:flex-row sm:items-center sm:justify-between sm:gap-12`}>
+        <div className="max-w-xl">
+          <Eyebrow>{t.cta.eyebrow}</Eyebrow>
+          <h2 className="mt-5 font-display text-3xl leading-[1.12] font-semibold tracking-[-0.035em] text-balance text-ink sm:text-[2.375rem]">
+            {children ?? (
+              <Emphasis text={t.cta.title} className="text-primary-400 not-italic sm:block" />
+            )}
+          </h2>
+          <p className="mt-5 text-sm leading-[1.65] text-muted">{t.cta.body}</p>
         </div>
-      </Container>
+        <Button
+          locale={locale}
+          href="/contact"
+          variant="white"
+          className="group shrink-0 self-start sm:self-auto"
+        >
+          {t.cta.button}
+          <ArrowUpRight className={nudge} />
+        </Button>
+      </div>
     </section>
   );
 }
