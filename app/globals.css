@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "./hero-flow.css";
 
 /* Archivo's default ampersand is a calligraphic glyph that clashes with the
    geometric display caps in headings. Serve a plain upright ampersand — subset

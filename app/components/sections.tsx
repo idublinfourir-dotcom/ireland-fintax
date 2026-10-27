@@ -5,6 +5,16 @@ import { Reveal } from "./reveal";
 import { ClipReveal } from "./clip-reveal";
 import { Accordion } from "./accordion";
 import { HeroVideo } from "./hero-video";
+import { HeroCoverflow } from "./hero-coverflow";
+import { getTaxRates } from "../lib/tax-data";
+import { comparisonYears } from "../lib/ireland-income-tax";
+import { getVatData } from "../lib/vat-data";
+import { getCorporationTaxData } from "../lib/corporation-tax-data";
+import { getRdData } from "../lib/rd-data";
+import { getCaData } from "../lib/ca-data";
+import { getCgtData } from "../lib/cgt-data";
+import { getCatData } from "../lib/cat-data";
+import { getMortgageData } from "../lib/mortgage-data";
 import { images } from "../lib/images";
 import { serviceCategories } from "../lib/content";
 import { getMessages } from "../lib/messages";
@@ -19,6 +29,20 @@ function bg(url: string): CSSProperties {
 
 export async function Hero() {
   const { locale, t } = await getMessages();
+  // The cards run on the same admin-editable rates as the calculator pages.
+  const [rates, vat, ct, rd, ca, cgt, cat, mortgage] = await Promise.all([
+    getTaxRates(),
+    getVatData(),
+    getCorporationTaxData(),
+    getRdData(),
+    getCaData(),
+    getCgtData(),
+    getCatData(),
+    getMortgageData(),
+  ]);
+  const { current } = comparisonYears(new Date(), rates);
+  const owner = mortgage.products.filter((p) => p.audience.includes("first-time")).map((p) => p.ratePercent).sort((a, b) => a - b);
+  const median = owner[Math.floor(owner.length / 2)] ?? 4;
   return (
     <section className="relative isolate flex min-h-[88vh] items-center overflow-hidden bg-navy-900 text-white">
       <HeroVideo
@@ -57,18 +81,18 @@ export async function Hero() {
         aria-hidden="true"
         className="absolute inset-0 -z-10 bg-gradient-to-t from-navy-900/70 via-transparent to-navy-900/20"
       />
-      <Container className="py-28 sm:py-36 lg:py-44">
+      <div className="hf-layout">
         <div className="max-w-4xl">
           <span className="animate-fade-up block">
             <Eyebrow tone="dark">{t.hero.eyebrow}</Eyebrow>
           </span>
-          <h1 className="animate-fade-up mt-7 font-display text-5xl font-bold leading-[0.95] tracking-[-0.03em] text-balance [animation-delay:80ms] sm:text-6xl lg:text-7xl">
+          <h1 className="animate-fade-up mt-7 font-display text-5xl font-bold leading-[0.95] tracking-[-0.03em] text-balance [animation-delay:80ms] sm:text-6xl xl:text-7xl">
             <Emphasis text={t.hero.title} className="text-primary-300 not-italic" />
           </h1>
           <p className="animate-fade-up mt-7 max-w-xl text-lg leading-8 text-white/80 [animation-delay:150ms] sm:text-xl">
             {t.hero.lede}
           </p>
-          <div className="animate-fade-up mt-10 flex flex-col items-start gap-3 [animation-delay:220ms] sm:flex-row sm:items-center sm:gap-4">
+          <div className="animate-fade-up mt-10 flex flex-col items-stretch gap-3 [animation-delay:220ms] sm:flex-row sm:items-center sm:gap-4">
             <Button locale={locale} href="/tools/ireland-income-tax">
               {t.hero.cta}
             </Button>
@@ -77,7 +101,20 @@ export async function Hero() {
             </Button>
           </div>
         </div>
-      </Container>
+        <HeroCoverflow
+          data={{
+            year: current,
+            rates: rates[current],
+            vat: vat.config,
+            ct: ct.config,
+            rd: rd.config,
+            ca: ca.config,
+            cgt: cgt.config,
+            cat: cat.config,
+            mortgageRate: Math.round(median * 20) / 20,
+          }}
+        />
+      </div>
     </section>
   );
 }
