@@ -75,9 +75,9 @@ export async function getThreadsFor(
 /* Is an enquiry unread for the ADMIN? True when the client has posted (the
    original message counts) more recently than the admin last opened the thread.
 
-   `lastClientMessageAt` holds the newest client message on the enquiry itself
-   — seeded to createdAt so the opening message counts, and advanced by
-   addThreadMessage — so the test is a field comparison the list query and the
+   `lastClientMessageAt` holds the newest client message on the enquiry
+   itself (seeded to createdAt so the opening message counts, and advanced by
+   addThreadMessage), so the test is a field comparison the list query and the
    unread count can share, rather than a scan of the thread per row. `$expr` is
    what allows one field to be compared against another. */
 export const ADMIN_UNREAD_FILTER: Filter<EnquiryDoc> = {
@@ -86,7 +86,7 @@ export const ADMIN_UNREAD_FILTER: Filter<EnquiryDoc> = {
   },
 };
 
-/** The same test as ADMIN_UNREAD_FILTER, for documents already in hand — the
+/** The same test as ADMIN_UNREAD_FILTER, for documents already in hand: the
     inbox and dashboard lists flag rows they have just fetched rather than
     running a second query. Keep the two in step. */
 export function isUnreadForAdmin(
@@ -98,8 +98,12 @@ export function isUnreadForAdmin(
 
 /**
  * Append a reply to a thread and advance the denormalised "last message from
- * this side" stamp in the same call, so the unread test can never drift from
- * the messages it describes.
+ * this side" stamp in the same call, so the unread test follows the messages
+ * it describes.
+ *
+ * The message is written before the stamp. A failure between the two then
+ * leaves a reply with no unread badge (the next reply or a read sets it
+ * right), never a badge pointing at a message that does not exist.
  *
  * Returns false when the enquiry does not exist.
  */
@@ -121,20 +125,32 @@ export async function addThreadMessage(input: {
         { lastAdminMessageAt: createdAt, adminLastReadAt: createdAt }
       : { lastClientMessageAt: createdAt };
 
-  const { matchedCount } = await enquiries.updateOne(
+  const exists = await enquiries.findOne(
     { ref: input.enquiryRef },
-    { $set: stamp },
+    { projection: { _id: 1 } },
   );
-  if (matchedCount === 0) return false;
+  if (!exists) return false;
 
+  const _id = new ObjectId();
   await messages.insertOne({
-    _id: new ObjectId(),
+    _id,
     enquiryRef: input.enquiryRef,
     sender: input.sender,
     senderUserId: input.senderUserId ? toObjectId(input.senderUserId) : null,
     body: input.body,
     createdAt,
   });
+
+  const { matchedCount } = await enquiries.updateOne(
+    { ref: input.enquiryRef },
+    { $set: stamp },
+  );
+  if (matchedCount === 0) {
+    // The enquiry went in between (deleted by its owner or the retention
+    // job): take the reply back out rather than leave it with no thread.
+    await messages.deleteOne({ _id });
+    return false;
+  }
 
   return true;
 }

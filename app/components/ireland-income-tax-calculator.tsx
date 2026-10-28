@@ -3,11 +3,13 @@
 /* Deloitte-Ireland-style Income Tax Calculator (Income Tax + USC + PRSI).
    Form → "Calculate Tax" → results screen (current year vs prior year, 2026 vs
    2025 unless the page says otherwise), in the site theme.
-   All maths lives in ../lib/ireland-income-tax. Tax only — no mortgage here. */
+   All maths lives in ../lib/ireland-income-tax. Tax only: no mortgage here. */
 
 import { useEffect, useId, useRef, useState } from "react";
 import {
   compareYears,
+  INCOME_TAX_LAST_REVIEWED,
+  INCOME_TAX_SOURCE_URL,
   RATES_BY_YEAR,
   type IncomeTaxInput,
   type IncomeTaxResult,
@@ -16,7 +18,7 @@ import {
 } from "../lib/ireland-income-tax";
 import { useT } from "./locale-link";
 import { incomeTaxMessages, type IncomeTaxMessages } from "../lib/messages/income-tax";
-import { useFormat } from "./calculator-fields";
+import { RateStamp, ResultDisclaimer, useFormat } from "./calculator-fields";
 
 /* Money in the results table: whole euros (rounded like Deloitte) shown as .00.
    Negatives come out as "-€4,987.00"; deduction rows wrap in parentheses. */
@@ -107,7 +109,7 @@ function YesNoField({
 /* Numeric field with a local text buffer. Echoing String(parsedNumber) straight
    back into a controlled <input type="number"> destroys decimal entry: "5." is
    sanitised to "" mid-keystroke, "5.50" snaps back to "5.5" and moves the
-   cursor, and a leading 0 renders as empty — so a user typing 5.5 could end up
+   cursor, and a leading 0 renders as empty: so a user typing 5.5 could end up
    with 55. The buffer holds exactly what was typed; the parent only receives
    the parsed number, and the buffer re-syncs only when the parent value is
    changed externally (e.g. Clear Form). */
@@ -313,9 +315,9 @@ function ResultsTable({
 
       {/* difference block */}
       <div className="mt-8">
-        <h3 className="text-center font-display text-base font-medium text-ink">
+        <h2 className="text-center font-display text-base font-medium text-ink">
           {t.difference.replace("{current}", String(currentYear)).replace("{prior}", String(priorYear))}
-        </h3>
+        </h2>
         <dl className="mx-auto mt-4 max-w-xl">
           {[
             { label: t.rows.annual, v: delta.annual },
@@ -424,6 +426,7 @@ export function IrelandIncomeTaxCalculator({
             .replace("{priorRate}", rateLabel(ratesByYear[priorYear].prsi.rate))
             .replace("{prior}", String(priorYear))}
         </p>
+        <ResultDisclaimer asOf={INCOME_TAX_LAST_REVIEWED} sourceUrl={INCOME_TAX_SOURCE_URL} />
       </div>
     );
   }
@@ -437,7 +440,7 @@ export function IrelandIncomeTaxCalculator({
       }}
     >
       <div className="flex flex-col gap-5">
-        <h3 className="font-display text-lg font-medium text-ink">{t.status}</h3>
+        <h2 className="font-display text-lg font-medium text-ink">{t.status}</h2>
         <SegmentedField
           label={t.marital}
           value={form.maritalStatus}
@@ -464,9 +467,9 @@ export function IrelandIncomeTaxCalculator({
           onChange={(v) => set("age", v)}
         />
 
-        <h3 className="mt-4 font-display text-lg font-medium text-ink">
+        <h2 className="mt-4 font-display text-lg font-medium text-ink">
           {t.income}
-        </h3>
+        </h2>
         <CurrencyField
           label={t.employment}
           value={form.employmentIncome}
@@ -480,9 +483,9 @@ export function IrelandIncomeTaxCalculator({
 
         {form.maritalStatus === "married" && (
           <>
-            <h3 className="mt-4 font-display text-lg font-medium text-ink">
+            <h2 className="mt-4 font-display text-lg font-medium text-ink">
               {t.spouseHeading}
-            </h3>
+            </h2>
             <CurrencyField
               label={t.spouseEmployment}
               value={form.spouseEmploymentIncome ?? 0}
@@ -524,6 +527,9 @@ export function IrelandIncomeTaxCalculator({
         <button type="button" className={btnOutline} onClick={newCalculation}>
           {t.clear}
         </button>
+      </div>
+      <div className="mt-6 text-center">
+        <RateStamp asOf={INCOME_TAX_LAST_REVIEWED} sourceUrl={INCOME_TAX_SOURCE_URL} />
       </div>
     </form>
   );

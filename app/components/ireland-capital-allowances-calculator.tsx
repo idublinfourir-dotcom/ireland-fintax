@@ -1,6 +1,6 @@
 "use client";
 
-/* Ireland Capital Allowances calculator — wear & tear / writing-down allowances
+/* Ireland Capital Allowances calculator: wear & tear / writing-down allowances
    on plant & machinery (12.5%/8yr), cars (12.5%/8yr, €24k cap + CO2 restriction),
    industrial buildings (4%/25yr) and energy-efficient equipment (100% ACA).
    The user picks the asset class; this component never guesses. The editable
@@ -51,7 +51,7 @@ function Row({
         strong ? "bg-surface-muted" : ""
       }`}
     >
-      <div className="flex items-baseline gap-2.5">
+      <dt className="flex items-baseline gap-2.5">
         {dotClass && <LegendDot className={dotClass} />}
         <div>
           <span className={`text-sm ${strong ? "font-semibold text-ink" : "text-ink-body"}`}>
@@ -59,8 +59,8 @@ function Row({
           </span>
           {sub && <span className="mt-0.5 block text-xs text-muted tabular-nums">{sub}</span>}
         </div>
-      </div>
-      <span
+      </dt>
+      <dd
         className={`tabular-nums ${
           strong
             ? "font-display text-sm font-semibold text-ink"
@@ -68,7 +68,7 @@ function Row({
         }`}
       >
         {value}
-      </span>
+      </dd>
     </div>
   );
 }
@@ -98,7 +98,7 @@ export function IrelandCapitalAllowancesCalculator({ config }: { config: CaConfi
     : t.perYear.replace("{rate}", rate(r.ratePercent)).replace("{years}", years(r.years));
 
   return (
-    <div className="grid gap-10 lg:grid-cols-2">
+    <div className="grid grid-cols-1 gap-10 lg:grid-cols-2">
       {/* inputs */}
       <div className="flex flex-col gap-5">
         <div className="border-s-[3px] border-primary-500 bg-surface-muted px-4 py-3 text-xs leading-5 text-ink-body">

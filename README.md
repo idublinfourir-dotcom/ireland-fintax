@@ -14,7 +14,7 @@ shapes and the reasoning behind them live in [`db/schema.md`](./db/schema.md).
 
 ```bash
 npm install
-cp .env.example .env.local     # then fill it in — see below
+cp .env.example .env.local     # then fill it in: see below
 node scripts/db-indexes.mjs    # create the indexes (the migration step)
 node scripts/db-seed.mjs       # seed the mortgage products + policy
 npm run dev                    # http://localhost:3000
@@ -27,21 +27,21 @@ that must be set before anything works:
 
 | Key | What it is |
 | --- | --- |
-| `MONGODB_URI` **or** `DB_USER`+`DB_PASSWORD`+`DB_CLUSTER` | Connection. `DB_CLUSTER` is the host only — `cluster0.abcde.mongodb.net`, no scheme. |
+| `MONGODB_URI` **or** `DB_USER`+`DB_PASSWORD`+`DB_CLUSTER` | Connection. `DB_CLUSTER` is the host only: `cluster0.abcde.mongodb.net`, no scheme. |
 | `MONGODB_DB` | Database name inside the cluster. Defaults to `irelandfintax`. |
 | `AUTH_SECRET` | Signs the session JWT. `openssl rand -base64 32`. Changing it signs everyone out. |
 | `ADMIN_EMAILS` | Comma-separated allow-list. Signing up with one of these gets the admin role. |
-| `AUTH_URL` | Canonical origin. **Production only** — pins the OAuth callback and the emailed confirmation links so they don't depend on a forwarded host header. |
+| `AUTH_URL` | Canonical origin. **Production only**: pins the OAuth callback and the emailed confirmation links so they don't depend on a forwarded host header. |
 
 Optional, but each gates a feature:
 
-- `AUTH_GOOGLE_ID` / `AUTH_GOOGLE_SECRET` — with these unset, "Continue with
+- `AUTH_GOOGLE_ID` / `AUTH_GOOGLE_SECRET`: with these unset, "Continue with
   Google" is not rendered at all. The authorized redirect URI in the Google
   Cloud console is **this app's own** callback, one entry per host:
   `http://localhost:3000/api/auth/callback/google` and the production
   equivalent.
 - `SMTP_HOST` / `SMTP_PORT` / `SMTP_USER` / `SMTP_PASS`, plus optional
-  `MAIL_FROM` and `MAIL_REPLY_TO` (both default to `SMTP_USER`) — outbound
+  `MAIL_FROM` and `MAIL_REPLY_TO` (both default to `SMTP_USER`): outbound
   mail. Three messages go out, all composed in this repo (`app/lib/*-email.ts`)
   rather than in a provider dashboard: an acknowledgement to whoever submitted
   the contact form, an admin's reply to a client, and the signup confirmation
@@ -53,7 +53,7 @@ Optional, but each gates a feature:
 **An empty database is fine.** Every calculator falls back to a versioned code
 default, so the marketing site and all eight tax tools render correct numbers
 before anything is seeded. With no connection string at all the site still
-serves — it just renders signed-out. Only the mortgage comparison is seeded,
+serves: it just renders signed-out. Only the mortgage comparison is seeded,
 because its admin editor can only edit rows that exist.
 
 ### Commands
@@ -91,8 +91,8 @@ sign-in, not immediately.
 app/
   page.tsx, about/, contact/, toolkits/           # public
   _services/, _pricing/         # parked, not routed (/services redirects home)
-  tools/                        # Accountants Hub — Ireland tax calculators
-  personal/                     # Personal Hub — mortgage, investment
+  tools/                        # Accountants Hub: Ireland tax calculators
+  personal/                     # Personal Hub: mortgage, investment
   login/, signup/, auth/{confirm,callback}/                  # auth entry points
   portal/                                                    # client area
   admin/                                                     # admin console
@@ -111,7 +111,7 @@ edge-safe and is all the middleware imports; `auth.ts` adds the MongoDB adapter
 and the password providers and only ever loads in the Node runtime. Importing
 `auth.ts` from `proxy.ts` pulls the driver onto the edge and breaks the build.
 
-**Sessions are JWTs, not database rows.** That is not a preference — the
+**Sessions are JWTs, not database rows.** That is not a preference: the
 Credentials provider only works with the JWT strategy. It also means the
 header's session read costs no network call, which is why the root layout can
 do it on every route.
@@ -133,7 +133,7 @@ footer, and points its canonical at the English page. The full rules are under
 
 Things that are built but not finished, so they are not lost.
 
-### 1. Founders Hub "Request a copy" — how it works
+### 1. Founders Hub "Request a copy": how it works
 
 Requesting a resource is a **manual fulfilment** flow. Nothing is emailed
 automatically, and there is no email provider wired into the app.
@@ -153,16 +153,16 @@ twenty-per-hour limit per IP.
 **There is no upload path, deliberately.** The site never hosts a Founders Hub
 file: no upload form, no storage bucket, no public download link. The catalogue
 on `/toolkits` is `app/lib/toolkit-content.ts` and every copy goes out by hand.
-Two earlier versions were removed — automated email (Resend, signed links) and
-admin file upload (object storage) — so do not add either back without agreeing
+Two earlier versions were removed: automated email (Resend, signed links) and
+admin file upload (object storage): so do not add either back without agreeing
 it first. The `toolkit_resources` table was already read and written by nothing
 and was not carried over to MongoDB.
 
-### 2. Founders Hub documents — 4 of 27 drafted, not in the repo
+### 2. Founders Hub documents: 4 of 27 drafted, not in the repo
 
 Four Irish tax memos were drafted from Revenue, gov.ie, DSP and CRO sources and
 fact-checked figure by figure (three critical errors were found and corrected).
-The generated PDFs are **not kept in this repo** — they live wherever the team
+The generated PDFs are **not kept in this repo**: they live wherever the team
 keeps them and get attached to an email by hand.
 
 Still to produce: 11 templates, 4 tax forms, 3 VAT forms and 5 setup guides.

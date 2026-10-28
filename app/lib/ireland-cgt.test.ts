@@ -5,7 +5,8 @@
    own year, disposal at a loss, PPR proportional relief (incl. the deemed
    last-12-months guard), losses before exemption, the exemption clamp, the
    40%/15% special rates, the Entrepreneur Relief 10%/31% split at the €1.5m
-   lifetime cap, payment-date branch, edge inputs, and the multiplier table. */
+   lifetime cap, payment-date branch, the 33% rate for sales before
+   7 October 2026, edge inputs, and the multiplier table. */
 
 import { test } from "node:test";
 import assert from "node:assert/strict";
@@ -14,6 +15,7 @@ import {
   parseCgtConfig,
   slugifyYearKey,
   isReviewDue,
+  standardRateFor,
   CGT_CONFIG_DEFAULT,
   CGT_MULTIPLIERS_DEFAULT,
 } from "./ireland-cgt.ts";
@@ -235,10 +237,62 @@ test("entrepreneur cap reduced by prior lifetime use", () => {
 });
 
 test("payment date branch: Nov vs Dec", () => {
-  const nov = computeCgt({ ...base, proceeds: 200_000, acquisitionCost: 100_000, disposalMonth: 11 }, cfg);
-  const dec = computeCgt({ ...base, proceeds: 200_000, acquisitionCost: 100_000, disposalMonth: 12 }, cfg);
+  const nov = computeCgt({ ...base, proceeds: 200_000, acquisitionCost: 100_000, saleDate: { year: 2026, month: 11 } }, cfg);
+  const dec = computeCgt({ ...base, proceeds: 200_000, acquisitionCost: 100_000, saleDate: { year: 2026, month: 12 } }, cfg);
   assert.match(nov.paymentDue ?? "", /15 December/);
   assert.match(dec.paymentDue ?? "", /31 January/);
+  assert.equal(computeCgt({ ...base, proceeds: 200_000 }, cfg).paymentDue, null);
+});
+
+/* ---------- Budget 2027 rate cut: 33% before 7 Oct 2026, 31% from then ---------- */
+
+// €101,270 gain less the €1,270 exemption leaves €100,000 taxable.
+const cutBase = { ...base, proceeds: 101_270 };
+
+test("sale on 6 October 2026 is taxed at 33%", () => {
+  const r = computeCgt({ ...cutBase, saleDate: { year: 2026, month: 10, day: 6 } }, cfg);
+  assert.equal(r.bands[0].ratePercent, 33);
+  assert.equal(r.totalTax, 33_000);
+});
+
+test("sale on 7 October 2026 is taxed at 31%", () => {
+  const r = computeCgt({ ...cutBase, saleDate: { year: 2026, month: 10, day: 7 } }, cfg);
+  assert.equal(r.bands[0].ratePercent, 31);
+  assert.equal(r.totalTax, 31_000);
+});
+
+test("earlier 2026 months get 33%, later months and 2027 get 31%", () => {
+  assert.equal(standardRateFor(cfg, { year: 2026, month: 3 }), 33);
+  assert.equal(standardRateFor(cfg, { year: 2026, month: 9 }), 33);
+  assert.equal(standardRateFor(cfg, { year: 2026, month: 11 }), 31);
+  assert.equal(standardRateFor(cfg, { year: 2027, month: 1 }), 31);
+});
+
+test("October 2026 without a day counts as on or after the cut", () => {
+  assert.equal(standardRateFor(cfg, { year: 2026, month: 10 }), 31);
+});
+
+test("no sale date, or an invalid one, uses the configured rate", () => {
+  assert.equal(standardRateFor(cfg), 31);
+  assert.equal(standardRateFor(cfg, { year: 2026, month: 13 }), 31);
+  assert.equal(computeCgt(cutBase, cfg).totalTax, 31_000);
+});
+
+test("the 33% applies to the Entrepreneur Relief overflow too", () => {
+  const r = computeCgt(
+    { ...base, proceeds: 1_001_270, rateMode: "entrepreneur", entrepreneurReliefUsedEur: 1_400_000, saleDate: { year: 2026, month: 5 } },
+    cfg,
+  );
+  assert.equal(r.bands[0].ratePercent, 10); // relief rate unchanged
+  assert.equal(r.bands[1].ratePercent, 33);
+  assert.equal(r.bands[1].tax, 297_000);
+});
+
+test("the 40% and 15% special rates ignore the sale date", () => {
+  const r40 = computeCgt({ ...cutBase, rateMode: "rate40", saleDate: { year: 2026, month: 3 } }, cfg);
+  const r15 = computeCgt({ ...cutBase, rateMode: "rate15", saleDate: { year: 2026, month: 3 } }, cfg);
+  assert.equal(r40.bands[0].ratePercent, 40);
+  assert.equal(r15.bands[0].ratePercent, 15);
 });
 
 test("negative inputs clamp to zero", () => {

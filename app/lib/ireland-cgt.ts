@@ -1,7 +1,7 @@
 /* ──────────────────────────────────────────────────────────────────────────
    Ireland Capital Gains Tax (CGT) calculator.
 
-   PURE FUNCTIONS ONLY — no React, no I/O — so every figure is unit-testable.
+   PURE FUNCTIONS ONLY (no React, no I/O) so every figure is unit-testable.
    The rates/thresholds and the indexation multiplier table here are the CODE
    FALLBACK: the live values are stored in MongoDB (cgt_settings +
    cgt_multipliers) and edited from /admin/cgt-rates. cgt-data.ts reads the DB
@@ -20,19 +20,19 @@
 
    INDEXATION RELIEF ("the government fixed rate")
      The cost of a pre-2003 asset is uplifted by Revenue's multiplier for the
-     year the cost was incurred. Indexation is FROZEN — it only applies to
+     year the cost was incurred. Indexation is FROZEN: it only applies to
      expenditure up to 31 Dec 2002; the multiplier for 2003 onward is 1.000
      (no uplift). Pre-6 April 1974 uses the 1974/75 factor (7.528).
 
    Sources (verified July 2026; standard rate October 2026):
    - Standard rate 31% for disposals on or after 7 October 2026, cut from 33%
-     by Budget 2027 (Revenue eBrief No. 142/26, TDM Part 02-03-01A). The
-     calculator has no disposal date, so it applies 31% throughout; a
-     disposal before 7 October 2026 was taxed at 33%. Development land stays
-     at 33%, which this calculator does not model (see below).
+     by Budget 2027 (Revenue eBrief No. 142/26, TDM Part 02-03-01A). A sale
+     date before then gets 33% (standardRateFor); with no date the configured
+     rate applies. Development land stays at 33%, which this calculator does
+     not model (see below).
        revenue.ie/en/tax-professionals/ebrief/2026/no-1422026.aspx
    - €1,270 annual exemption, allowable deductions:
-       revenue.ie/en/gains-gifts-and-inheritance/what-do-you-pay-cgt-on/how-to-calculate-cgt
+       revenue.ie/en/gains-gifts-and-inheritance/transfering-an-asset/how-to-calculate-cgt
    - Indexation multiplier table (frozen "31 Dec 2004 et seq" column):
        revenue.ie/en/gains-gifts-and-inheritance/documents/cgtmult.pdf
    - Revised Entrepreneur Relief 10%, €1,500,000 lifetime cap (disposals on/after
@@ -41,9 +41,9 @@
    - PPR proportional relief (last 12 months deemed occupation):
        revenue.ie/en/gains-gifts-and-inheritance/cgt-reliefs/principal-private-residence-relief
 
-   Figures are ESTIMATES for guidance only — not tax advice.
+   Figures are ESTIMATES for guidance only: not tax advice.
 
-   ── NOT MODELLED (deliberate — do NOT silently fold in) ──
+   ── NOT MODELLED (deliberate: do NOT silently fold in) ──
    - Retirement relief (age 55+, €750k/€500k thresholds, family transfers).
    - Development-land current-use-value indexation restriction.
    - Share disposals: FIFO / "bed & breakfast" 4-week matching rules.
@@ -57,11 +57,46 @@
 /** When the rates/multipliers below were last checked against Revenue. */
 export const CGT_LAST_REVIEWED = "October 2026";
 export const CGT_SOURCE_URL =
-  "https://www.revenue.ie/en/gains-gifts-and-inheritance/what-do-you-pay-cgt-on/how-to-calculate-cgt.aspx";
+  "https://www.revenue.ie/en/gains-gifts-and-inheritance/transfering-an-asset/how-to-calculate-cgt.aspx";
 
 /** Fixed special rates (statute; not part of the editable config). */
 export const RATE_FOREIGN_LIFE = 40;
 export const RATE_VC = 15;
+
+/* The standard rate before Budget 2027's cut. History, so a constant rather
+   than editable config: disposals before 7 October 2026 stay at 33%. */
+export const PREVIOUS_STANDARD_RATE = 33;
+export const RATE_CUT_DATE = { year: 2026, month: 10, day: 7 };
+
+/** Years the sale-date picker offers. Earlier years had other rules (the
+    Entrepreneur Relief cap was €1m before 2026), which are not modelled. Add
+    a year when it starts. */
+export const CGT_SALE_YEARS = [2026, 2027];
+
+export interface SaleDate {
+  year: number;
+  /** 1 to 12. */
+  month: number;
+  /** Only needed to place a sale in October 2026 either side of the cut;
+      without it the sale counts as on or after the cut. */
+  day?: number;
+}
+
+function validSaleDate(d: SaleDate | undefined): SaleDate | undefined {
+  if (!d || !Number.isInteger(d.year) || !Number.isInteger(d.month)) return undefined;
+  if (d.month < 1 || d.month > 12) return undefined;
+  return d;
+}
+
+/** The standard rate for a sale on this date: 33% before 7 October 2026,
+    otherwise the configured rate. No date gives the configured rate. */
+export function standardRateFor(config: CgtConfig, sale?: SaleDate): number {
+  const d = validSaleDate(sale);
+  if (!d) return config.standardRatePercent;
+  const key = (y: number, m: number, day: number) => y * 10_000 + m * 100 + day;
+  const cut = key(RATE_CUT_DATE.year, RATE_CUT_DATE.month, RATE_CUT_DATE.day);
+  return key(d.year, d.month, d.day ?? 31) < cut ? PREVIOUS_STANDARD_RATE : config.standardRatePercent;
+}
 
 /** Round to 2 decimal places, absorbing binary-float error. */
 export function round2(n: number): number {
@@ -124,7 +159,7 @@ export interface CgtMultiplier {
   multiplier: number;
 }
 
-/* Revenue CGT Multiplier Table — the frozen "31 Dec 2004 et seq" column, used
+/* Revenue CGT Multiplier Table: the frozen "31 Dec 2004 et seq" column, used
    for every disposal on or after 1 January 2004 (i.e. all current disposals). */
 export const CGT_MULTIPLIERS_DEFAULT: CgtMultiplier[] = [
   { yearKey: "1974-75", yearLabel: "1974/75 or earlier", sortOrder: 0, multiplier: 7.528 },
@@ -154,7 +189,7 @@ export const CGT_MULTIPLIERS_DEFAULT: CgtMultiplier[] = [
   { yearKey: "1998-99", yearLabel: "1998/99", sortOrder: 24, multiplier: 1.212 },
   { yearKey: "1999-00", yearLabel: "1999/00", sortOrder: 25, multiplier: 1.193 },
   { yearKey: "2000-01", yearLabel: "2000/01", sortOrder: 26, multiplier: 1.144 },
-  { yearKey: "2001", yearLabel: "2001 (6 Apr–31 Dec)", sortOrder: 27, multiplier: 1.087 },
+  { yearKey: "2001", yearLabel: "2001 (6 Apr to 31 Dec)", sortOrder: 27, multiplier: 1.087 },
   { yearKey: "2002", yearLabel: "2002", sortOrder: 28, multiplier: 1.049 },
 ];
 
@@ -168,7 +203,7 @@ export function slugifyYearKey(label: string): string {
     .replace(/^-+|-+$/g, "");
 }
 
-/** True when the rates were last reviewed more than `months` ago — drives the
+/** True when the rates were last reviewed more than `months` ago: drives the
     admin "review due" reminder. null (unknown) → not due, so a DB blip doesn't nag. */
 export function isReviewDue(reviewedAt: string | null, now: number = Date.now(), months = 12): boolean {
   if (!reviewedAt) return false;
@@ -192,7 +227,7 @@ export interface CgtTaxBand {
 
 export interface CgtInput {
   proceeds: number;
-  /** Incidental costs of disposal (selling fees) — never indexed. */
+  /** Incidental costs of disposal (selling fees): never indexed. */
   disposalCosts: number;
   /** Acquisition cost incl. incidental buying costs. */
   acquisitionCost: number;
@@ -211,8 +246,9 @@ export interface CgtInput {
   rateMode: RateMode;
   /** Entrepreneur Relief already claimed in the lifetime (reduces the cap). */
   entrepreneurReliefUsedEur?: number;
-  /** Disposal month 1–12, for the payment-due date. */
-  disposalMonth?: number;
+  /** Date of the sale: sets the standard rate (33% before 7 October 2026)
+      and, by its month, the payment date. */
+  saleDate?: SaleDate;
 }
 
 export interface CgtResult {
@@ -226,7 +262,7 @@ export interface CgtResult {
   /** Chargeable gain before reliefs (negative ⇒ allowable loss). */
   rawGain: number;
   pprRelief: number;
-  /** PPR exempt proportion as a percentage (0–100). */
+  /** PPR exempt proportion as a percentage (0 to 100). */
   exemptFractionPercent: number;
   gainAfterPpr: number;
   lossesApplied: number;
@@ -271,7 +307,7 @@ export function computeCgt(input: CgtInput, config: CgtConfig): CgtResult {
   );
   const rawGain = round2(proceeds - allowableCost);
 
-  // PPR relief — proportional, positive gains only. The final 12 months count
+  // PPR relief: proportional, positive gains only. The final 12 months count
   // as occupation ONLY if the property was a PPR at some point.
   let pprRelief = 0;
   let exemptFraction = 0;
@@ -300,7 +336,7 @@ export function computeCgt(input: CgtInput, config: CgtConfig): CgtResult {
     lossCarried = round2(losses - lossesApplied);
   }
 
-  // Personal exemption — can't create or augment a loss.
+  // Personal exemption: can't create or augment a loss.
   const exemption = input.applyExemption ? config.annualExemptionEur : 0;
   const exemptionApplied =
     gainAfterLosses > 0 ? round2(Math.min(exemption, gainAfterLosses)) : 0;
@@ -308,7 +344,7 @@ export function computeCgt(input: CgtInput, config: CgtConfig): CgtResult {
 
   // Tax by rate band.
   const bands: CgtTaxBand[] = [];
-  const std = config.standardRatePercent;
+  const std = standardRateFor(config, input.saleDate);
   if (taxableGain > 0) {
     if (input.rateMode === "entrepreneur") {
       const used = Math.max(0, input.entrepreneurReliefUsedEur ?? 0);
@@ -344,11 +380,8 @@ export function computeCgt(input: CgtInput, config: CgtConfig): CgtResult {
   const totalTax = round2(bands.reduce((sum, b) => sum + b.tax, 0));
   const effectiveRatePercent = taxableGain > 0 ? round2((totalTax / taxableGain) * 100) : 0;
 
-  // Pay-and-file date: disposals Jan–Nov → 15 Dec same year; December → 31 Jan next.
-  const month =
-    input.disposalMonth && input.disposalMonth >= 1 && input.disposalMonth <= 12
-      ? input.disposalMonth
-      : undefined;
+  // Pay-and-file date: disposals Jan to Nov → 15 Dec same year; December → 31 Jan next.
+  const month = validSaleDate(input.saleDate)?.month;
   const paymentDue = month
     ? month === 12
       ? "31 January (following year)"

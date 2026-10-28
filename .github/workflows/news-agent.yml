@@ -53,7 +53,16 @@ jobs:
           node-version: 24
           cache: npm
 
-      - run: npm ci --no-audit --no-fund
+      # Retried: the news agent's 23 Oct 2026 run died on a one-off network
+      # error at this step.
+      - name: Install
+        run: |
+          for attempt in 1 2 3; do
+            npm ci --no-audit --no-fund && exit 0
+            echo "npm ci failed (attempt $attempt of 3), retrying in 30s"
+            sleep 30
+          done
+          exit 1
 
       - name: Run the news agent
         run: node scripts/news-agent.ts

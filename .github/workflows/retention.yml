@@ -1,0 +1,54 @@
+# Deletes personal data past its retention period, as /privacy promises
+# (app/lib/retention.ts: questions and their replies 2 years after the last
+# message, resource requests 2 years after the request).
+#
+# Secrets: MONGODB_URI (or DB_USER, DB_PASSWORD, DB_CLUSTER) and MONGODB_DB,
+# the same ones the news agent uses.
+name: Retention cleanup
+
+on:
+  schedule:
+    # 03:41 UTC on the 1st of each month: off the hour, like the news agent.
+    - cron: "41 3 1 * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: retention-cleanup
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+
+      # Retried: the news agent's 23 Oct 2026 run died on a one-off network
+      # error at this step.
+      - name: Install
+        run: |
+          for attempt in 1 2 3; do
+            npm ci --no-audit --no-fund && exit 0
+            echo "npm ci failed (attempt $attempt of 3), retrying in 30s"
+            sleep 30
+          done
+          exit 1
+
+      - name: Delete data past its retention period
+        run: node scripts/retention-cleanup.ts
+        env:
+          MONGODB_URI: ${{ secrets.MONGODB_URI }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_CLUSTER: ${{ secrets.DB_CLUSTER }}
+          MONGODB_DB: ${{ secrets.MONGODB_DB }}

@@ -3,6 +3,7 @@ import { cache } from "react";
 import { notFound } from "next/navigation";
 import { Container, SectionHeading } from "../../components/ui";
 import { ContactCta } from "../../components/sections";
+import { JsonLd } from "../../components/json-ld";
 import { PostBlocks } from "../../components/post-body";
 import {
   PageNav,
@@ -132,8 +133,24 @@ export default async function BlogPostPage({
 
   /* lang="en" dir="ltr": the post is English even under /ga, /es, /pt or /ar, where the
      header, footer and call to action are not (CHROME_ONLY_PATHS). */
+  // The article for search engines; the author is the site, which names no firm.
+  const coverUrl = imageUrl(post.cover, 1200);
+  const article = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: post.title,
+    description: post.excerpt,
+    datePublished: post.publishedAt.toISOString(),
+    dateModified: post.updatedAt.toISOString(),
+    image: coverUrl.startsWith("/") ? `${site.url}${coverUrl}` : coverUrl,
+    inLanguage: "en",
+    mainEntityOfPage: url,
+    author: { "@type": "Organization", name: site.name, url: site.url },
+    publisher: { "@type": "Organization", name: site.name, url: site.url, logo: `${site.url}/icon.svg` },
+  };
   return (
     <>
+      <JsonLd data={article} />
       <div lang="en" dir="ltr">
         <article>
           <PostHeader post={post} url={url} page={page} pages={pages.length} />

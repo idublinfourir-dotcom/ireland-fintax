@@ -1,4 +1,4 @@
-/* Server-side guardrails for CGT admin edits. PURE — reject clearly-wrong
+/* Server-side guardrails for CGT admin edits. PURE: reject clearly-wrong
    values with a message; the two-step preview is the guard against subtle
    mistakes. */
 
@@ -25,9 +25,9 @@ export function validateCgtConfig(
 
   if (![s, e, er, ec].every((v) => Number.isFinite(v)))
     return { ok: false, message: "All values must be numbers." };
-  if (s < 0 || s > 100) return { ok: false, message: "Standard rate must be 0–100%." };
+  if (s < 0 || s > 100) return { ok: false, message: "Standard rate must be 0 to 100%." };
   if (er < 0 || er > 100)
-    return { ok: false, message: "Entrepreneur Relief rate must be 0–100%." };
+    return { ok: false, message: "Entrepreneur Relief rate must be 0 to 100%." };
   if (e < 0) return { ok: false, message: "Annual exemption can't be negative." };
   if (ec < 0) return { ok: false, message: "Entrepreneur Relief cap can't be negative." };
 

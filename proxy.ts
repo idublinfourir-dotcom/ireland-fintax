@@ -6,7 +6,7 @@ import {
   DEFAULT_LOCALE,
   LOCALE_HEADER,
   PATH_HEADER,
-  hasLocaleRoute,
+  isEnglishOnly,
   isLive,
   localeHref,
   splitLocale,
@@ -15,12 +15,12 @@ import {
 /* Next 16 middleware. Two jobs: gate the authenticated areas, and stamp a
  * per-request Content-Security-Policy nonce on every document.
  *
- * Built from ./auth.config only — never from ./auth, which pulls in the
+ * Built from ./auth.config only: never from ./auth, which pulls in the
  * MongoDB driver and bcrypt and cannot run on the edge. That is enough to
  * VERIFY the session JWT, which is all the gate needs; role checks happen in
  * the /admin and /portal layouts, which run in the Node runtime.
  *
- * There is no session to refresh here — the JWT is self-contained, so the
+ * There is no session to refresh here: the JWT is self-contained, so the
  * middleware only ever reads it. */
 
 const { auth } = NextAuth(authConfig);
@@ -77,13 +77,15 @@ export const proxy = auth((request) => {
   const csp = policyFor(nonce);
 
   /* Language prefix (see app/lib/i18n.ts). /en/x, /ga/<English only> and a
-     language not live in this build go to the English URL; a translated or chrome-only page is rewritten to its
-     route, with the locale passed on in a request header. */
+     language not live in this build go to the English URL. Anything else is
+     rewritten to its route with the locale passed on in a request header: a
+     translated or chrome-only page, or a page that does not exist, so its 404
+     stays in the reader's language. */
   const { pathname } = request.nextUrl;
   const { locale, path } = splitLocale(pathname);
   if (
     path !== pathname &&
-    (locale === DEFAULT_LOCALE || !isLive(locale) || !hasLocaleRoute(path))
+    (locale === DEFAULT_LOCALE || !isLive(locale) || isEnglishOnly(path))
   ) {
     const url = request.nextUrl.clone();
     url.pathname = path;
@@ -135,7 +137,7 @@ export const proxy = auth((request) => {
 export const config = {
   /* Everything that returns a document, which is wider than the gate needs:
      the policy has to reach pages the auth check does not care about. Static
-     assets and image optimiser output are skipped — a CSP on a .js file or a
+     assets and image optimiser output are skipped: a CSP on a .js file or a
      .png means nothing, and running middleware for them is pure latency. */
   matcher: [
     "/((?!_next/static|_next/image|favicon.ico|icon.svg|robots.txt|sitemap.xml).*)",

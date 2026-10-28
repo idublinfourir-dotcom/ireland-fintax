@@ -7,7 +7,7 @@ import { DashNav, type DashNavItem } from "./dashboard-nav";
 import { portalMessages, type PortalMessages } from "../lib/messages/portal";
 import { INTL_LOCALE, type Locale } from "../lib/i18n";
 
-/** First letters of up to two words — "Jane Doe" → "JD", "jane@x.com" → "J". */
+/** First letters of up to two words: "Jane Doe" → "JD", "jane@x.com" → "J". */
 export function initialsOf(name: string | null | undefined, email: string) {
   const source = name?.trim() || email;
   const words = source.split(/[\s@._-]+/).filter(Boolean);
@@ -58,7 +58,7 @@ const badgeTones = {
 /**
  * Shared chrome for /admin and /portal: dark sidebar with icon nav, white
  * topbar with the signed-in user, muted content canvas. Mirrors the marketing
- * site's language — sharp corners, navy-900 dark surface, signal-green accent.
+ * site's language: sharp corners, navy-900 dark surface, signal-green accent.
  */
 export function DashboardShell({
   title,
@@ -254,7 +254,7 @@ export function StatTile({
                     : "bg-surface-muted text-muted"
               }`}
             >
-              {delta.value > 0 ? "▲" : delta.value < 0 ? "▼" : "–"}
+              {delta.value > 0 ? "▲" : delta.value < 0 ? "▼" : "±"}
               <span className="tabular-nums">
                 {delta.value > 0 ? `+${delta.value}` : delta.value}
               </span>
@@ -309,11 +309,11 @@ export function SparkBars({
 }
 
 const chipTones = {
-  /** Fresh / positive — brand green tint. */
+  /** Fresh / positive: brand green tint. */
   green: { chip: "bg-secondary-50 text-secondary-500", dot: "bg-secondary-400" },
-  /** Active / needs attention — solid dark. */
+  /** Active / needs attention: solid dark. */
   dark: { chip: "bg-navy-900 text-white", dot: "bg-primary-400" },
-  /** Settled / archived — quiet grey. */
+  /** Settled / archived: quiet grey. */
   muted: { chip: "bg-surface-muted text-muted", dot: "bg-muted/60" },
 } as const;
 

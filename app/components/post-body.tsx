@@ -232,11 +232,17 @@ function BlockView({ block, anchor }: { block: Block; anchor?: string }): ReactN
           <table className="w-full border-collapse text-[15px] leading-6">
             <thead className="bg-surface-muted">
               <tr>
-                {head.map((cell, c) => (
-                  <th key={c} scope="col" className="px-4 py-3 text-start font-semibold text-ink">
-                    <RichText text={cell} />
-                  </th>
-                ))}
+                {/* An empty corner cell is not a header: a <th> with no text
+                    trips screen readers (axe empty-table-header). */}
+                {head.map((cell, c) =>
+                  cell.trim() ? (
+                    <th key={c} scope="col" className="px-4 py-3 text-start font-semibold text-ink">
+                      <RichText text={cell} />
+                    </th>
+                  ) : (
+                    <td key={c} className="px-4 py-3" />
+                  ),
+                )}
               </tr>
             </thead>
             <tbody>

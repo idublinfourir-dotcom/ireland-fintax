@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 export default async function CgtRatesPage() {
   await requireAdmin();
 
-  // DB row when present and valid, otherwise the versioned fallback — exactly
+  // DB row when present and valid, otherwise the versioned fallback: exactly
   // what the public calculator uses. Audit trail covers all cgt-* areas.
   const [{ config, multipliers }, audit] = await Promise.all([
     getCgtData(),
@@ -31,7 +31,7 @@ export default async function CgtRatesPage() {
           >
             Ireland capital gains tax calculator
           </a>
-          . Update these after a Budget — changes go live immediately, no deploy
+          . Update these after a Budget: changes go live immediately, no deploy
           needed.
         </p>
       </header>

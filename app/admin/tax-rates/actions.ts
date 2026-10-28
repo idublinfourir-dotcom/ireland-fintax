@@ -1,20 +1,31 @@
 "use server";
 
+/* Admin save action for the income tax calculator. TWO-PHASE, like the other
+   rate editors: the first submit validates, runs the guardrails and previews
+   the fields that changed, writing nothing; the Confirm submit carries the
+   normalized `payload` and only THAT is written, then audited. Re-checks
+   requireAdmin on both phases. */
+
 import { revalidatePath } from "next/cache";
 import { taxRatesCollection } from "../../lib/collections";
 import { requireAdmin } from "../../lib/auth/guards";
 import { formNumber } from "../../lib/form-number";
-import { TAX_YEARS, yearRatesToJson } from "../../lib/tax-data";
+import { TAX_YEARS, getTaxRates, parseYearRates, yearRatesToJson } from "../../lib/tax-data";
 import { RATES_BY_YEAR, type YearRates } from "../../lib/ireland-income-tax";
+import { changedFields, checkYearRates } from "../../lib/tax-rates-guardrails";
+import { recordAudit } from "../../lib/rate-audit";
+import type { DiffEntry } from "../../lib/rate-diff";
 
-export interface ActionState {
-  status: "idle" | "saved" | "error";
-  message?: string;
-}
+export type TwoPhaseState =
+  | { status: "idle" }
+  | { status: "preview"; payload: string; diff: DiffEntry[] }
+  | { status: "saved"; message: string }
+  | { status: "error"; message: string };
 
 function revalidate() {
   revalidatePath("/tools/ireland-income-tax");
   revalidatePath("/admin/tax-rates");
+  revalidatePath("/admin");
 }
 
 const num = formNumber;
@@ -41,10 +52,10 @@ function pctFrac(formData: FormData, name: string, label: string): number {
    them stable for decades); only the relief % per band is editable. */
 const PENSION_BAND_FIELDS = [
   { name: "pension_rate_u30", label: "Pension relief % (under 30)", maxAge: 29 },
-  { name: "pension_rate_30_39", label: "Pension relief % (30–39)", maxAge: 39 },
-  { name: "pension_rate_40_49", label: "Pension relief % (40–49)", maxAge: 49 },
-  { name: "pension_rate_50_54", label: "Pension relief % (50–54)", maxAge: 54 },
-  { name: "pension_rate_55_59", label: "Pension relief % (55–59)", maxAge: 59 },
+  { name: "pension_rate_30_39", label: "Pension relief % (30 to 39)", maxAge: 39 },
+  { name: "pension_rate_40_49", label: "Pension relief % (40 to 49)", maxAge: 49 },
+  { name: "pension_rate_50_54", label: "Pension relief % (50 to 54)", maxAge: 54 },
+  { name: "pension_rate_55_59", label: "Pension relief % (55 to 59)", maxAge: 59 },
   { name: "pension_rate_60_plus", label: "Pension relief % (60+)", maxAge: Infinity },
 ] as const;
 
@@ -156,20 +167,54 @@ function parseYearForm(formData: FormData): { year: number; rates: YearRates } {
   return { year, rates };
 }
 
-/** Save one tax year's full rate config (upsert into tax_rates). */
+/** Preview, then save, one tax year's full rate config (upsert into
+    tax_rates). */
 export async function saveTaxYear(
-  _prev: ActionState,
+  _prev: TwoPhaseState,
   formData: FormData,
-): Promise<ActionState> {
-  await requireAdmin();
+): Promise<TwoPhaseState> {
+  const user = await requireAdmin();
 
+  if (formData.get("cancel")) return { status: "idle" };
+
+  const payloadRaw = formData.get("payload");
+  if (typeof payloadRaw !== "string" || !payloadRaw) {
+    // Phase 1, preview: parse the form, run the guardrails, show the change.
+    let parsed: { year: number; rates: YearRates };
+    try {
+      parsed = parseYearForm(formData);
+    } catch (err) {
+      if (err instanceof Invalid) return { status: "error", message: err.message };
+      throw err;
+    }
+    const problem = checkYearRates(parsed.rates);
+    if (problem) return { status: "error", message: problem };
+
+    const current = (await getTaxRates())[parsed.year];
+    const diff = changedFields(current, parsed.rates);
+    if (diff.length === 0) return { status: "error", message: "Nothing has changed." };
+    return {
+      status: "preview",
+      payload: JSON.stringify({ year: parsed.year, rates: yearRatesToJson(parsed.rates) }),
+      diff,
+    };
+  }
+
+  // Phase 2, confirm: write the previewed payload only. Re-parse strictly and
+  // re-run the guardrails: never trust the round-tripped JSON.
   let parsed: { year: number; rates: YearRates };
   try {
-    parsed = parseYearForm(formData);
-  } catch (err) {
-    if (err instanceof Invalid) return { status: "error", message: err.message };
-    throw err;
+    const raw = JSON.parse(payloadRaw) as { year?: unknown; rates?: unknown };
+    const year = Number(raw.year);
+    const rates = TAX_YEARS.includes(year) ? parseYearRates(year, raw.rates) : null;
+    if (!rates || checkYearRates(rates)) {
+      return { status: "error", message: "The change didn't validate. Try again." };
+    }
+    parsed = { year, rates };
+  } catch {
+    return { status: "error", message: "Could not read the change. Try again." };
   }
+  const before = (await getTaxRates())[parsed.year];
 
   try {
     const taxRates = await taxRatesCollection();
@@ -188,9 +233,23 @@ export async function saveTaxYear(
     );
   } catch (err) {
     console.error("[tax-rates] save failed:", err);
-    return { status: "error", message: "Could not save — check the values." };
+    return { status: "error", message: "Could not save: check the values." };
   }
 
+  await recordAudit({
+    area: "tax-rates",
+    action: "update",
+    summary: `Updated ${parsed.year} income tax rates`,
+    details: {
+      year: parsed.year,
+      changes: changedFields(before, parsed.rates).map((d) => ({
+        field: d.label,
+        from: d.from,
+        to: d.to,
+      })),
+    },
+    changedBy: user.email ?? "admin",
+  });
   revalidate();
   return { status: "saved", message: `${parsed.year} rates saved.` };
 }

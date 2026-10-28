@@ -3,13 +3,13 @@
 /* Chat thread + composer, shared by the admin inbox and the client portal.
 
    - Optimistic send: the message appears instantly (dimmed, "Sending…") the
-     moment you hit Send, then firms up when the server confirms — so there's
+     moment you hit Send, then firms up when the server confirms: so there's
      never a dead pause wondering if it worked.
    - Pending state: the button shows a spinner + "Sending…" and both the box
      and button disable while the request is in flight.
 
-   `import type` keeps the server-only enquiry-messages module — and the
-   MongoDB driver behind it — out of this client bundle. */
+   `import type` keeps the server-only enquiry-messages module: and the
+   MongoDB driver behind it: out of this client bundle. */
 
 import { useOptimistic, useRef, useSyncExternalStore } from "react";
 import { useFormStatus } from "react-dom";

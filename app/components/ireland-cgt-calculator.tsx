@@ -3,21 +3,26 @@
 /* Ireland Capital Gains Tax calculator. Proceeds less the indexed allowable
    cost gives the gain; PPR relief, losses and the €1,270 exemption reduce it;
    the rate (31% from 7 Oct 2026, or 10% Entrepreneur Relief / 40% / 15%)
-   gives the CGT due.
+   gives the CGT due. A sale date before 7 Oct 2026 gets the old 33%.
 
-   The rates and the indexation multiplier table are passed in as props — the
+   The rates and the indexation multiplier table are passed in as props: the
    server page reads them from MongoDB (editable at /admin/cgt-rates) and falls
    back to the code defaults. All maths live in ../lib/ireland-cgt. */
 
 import { useMemo, useState } from "react";
 import {
   computeCgt,
+  standardRateFor,
+  CGT_SALE_YEARS,
+  PREVIOUS_STANDARD_RATE,
+  RATE_CUT_DATE,
   CGT_LAST_REVIEWED,
   CGT_SOURCE_URL,
   type CgtConfig,
   type CgtMultiplier,
   type CgtResult,
   type RateMode,
+  type SaleDate,
 } from "../lib/ireland-cgt";
 import {
   CurrencyField,
@@ -41,7 +46,7 @@ function useMultiplier() {
   return (m: number) => f.format(m);
 }
 
-/* Checkbox that reveals an optional section — keeps the common case simple. */
+/* Checkbox that reveals an optional section: keeps the common case simple. */
 function SectionToggle({
   label,
   checked,
@@ -71,12 +76,15 @@ function Row({
   value,
   strong,
   muted,
+  wrap,
 }: {
   label: string;
   sub?: string;
   value: string;
   strong?: boolean;
   muted?: boolean;
+  /** Let a value in words (the payment date, long in Irish) wrap. */
+  wrap?: boolean;
 }) {
   return (
     <div
@@ -84,19 +92,19 @@ function Row({
         muted ? "bg-surface-muted" : ""
       }`}
     >
-      <div>
+      <dt className="min-w-0">
         <span className={`text-sm ${strong ? "font-semibold text-ink" : "text-ink-body"}`}>
           {label}
         </span>
         {sub && <span className="mt-0.5 block text-xs text-muted tabular-nums">{sub}</span>}
-      </div>
-      <span
-        className={`shrink-0 tabular-nums ${
+      </dt>
+      <dd
+        className={`${wrap ? "min-w-0 text-end" : "shrink-0"} tabular-nums ${
           strong ? "font-display text-sm font-semibold text-ink" : "text-sm font-medium text-ink"
         }`}
       >
         {value}
-      </span>
+      </dd>
     </div>
   );
 }
@@ -176,7 +184,7 @@ function ResultCard({ r }: { r: CgtResult }) {
         {r.lossCarried > 0 && (
           <Row label={t.carried} value={money(r.lossCarried)} />
         )}
-        {r.paymentDue && <Row label={t.paymentDue} value={computed(r.paymentDue)} />}
+        {r.paymentDue && <Row label={t.paymentDue} value={computed(r.paymentDue)} wrap />}
       </dl>
     </div>
   );
@@ -196,7 +204,9 @@ export function IrelandCgtCalculator({
   const [disposalCosts, setDisposalCosts] = useState(0);
   const [acquisitionCost, setAcquisitionCost] = useState(0);
   const [acqYearKey, setAcqYearKey] = useState("none");
-  const [disposalMonth, setDisposalMonth] = useState("");
+  const [saleMonth, setSaleMonth] = useState("");
+  const [saleYear, setSaleYear] = useState(String(CGT_SALE_YEARS[0]));
+  const [octoberPart, setOctoberPart] = useState<"early" | "late">("late");
 
   const [showEnhancement, setShowEnhancement] = useState(false);
   const [enhancementCost, setEnhancementCost] = useState(0);
@@ -219,6 +229,24 @@ export function IrelandCgtCalculator({
     [multipliers],
   );
   const acqMult = acqYearKey === "none" ? 1 : multMap.get(acqYearKey) ?? 1;
+
+  /* Only October 2026 needs a day: the rate changed on the 7th. */
+  const inCutMonth =
+    saleMonth !== "" &&
+    Number(saleYear) === RATE_CUT_DATE.year &&
+    Number(saleMonth) === RATE_CUT_DATE.month;
+  const saleDate: SaleDate | undefined = useMemo(
+    () =>
+      saleMonth === ""
+        ? undefined
+        : {
+            year: Number(saleYear),
+            month: Number(saleMonth),
+            day: inCutMonth ? (octoberPart === "early" ? 1 : RATE_CUT_DATE.day) : undefined,
+          },
+    [saleMonth, saleYear, inCutMonth, octoberPart],
+  );
+  const standardRate = standardRateFor(config, saleDate);
   const enhMult = enhYearKey === "none" ? 1 : multMap.get(enhYearKey) ?? 1;
 
   const r = useMemo(
@@ -237,19 +265,19 @@ export function IrelandCgtCalculator({
           ppr: showPpr ? { monthsOwned, monthsOccupied } : undefined,
           rateMode: showRelief ? rateMode : "standard",
           entrepreneurReliefUsedEur: entrepreneurUsed,
-          disposalMonth: disposalMonth ? Number(disposalMonth) : undefined,
+          saleDate,
         },
         config,
       ),
     [
       proceeds, disposalCosts, acquisitionCost, acqMult, showEnhancement, enhancementCost,
       enhMult, showLosses, currentYearLosses, broughtForwardLosses, showPpr, monthsOwned,
-      monthsOccupied, showRelief, rateMode, entrepreneurUsed, disposalMonth, config,
+      monthsOccupied, showRelief, rateMode, entrepreneurUsed, saleDate, config,
     ],
   );
 
   const rateOptions: { value: RateMode; label: string }[] = [
-    { value: "standard", label: t.rates.standard.replace("{rate}", rate(config.standardRatePercent)) },
+    { value: "standard", label: t.rates.standard.replace("{rate}", rate(standardRate)) },
     { value: "entrepreneur", label: t.rates.entrepreneur.replace("{rate}", rate(config.entrepreneurRatePercent)) },
     { value: "rate40", label: t.rates.rate40.replace("{rate}", rate(40)) },
     { value: "rate15", label: t.rates.rate15.replace("{rate}", rate(15)) },
@@ -260,14 +288,14 @@ export function IrelandCgtCalculator({
       <option value="none">{t.noIndexation}</option>
       {multipliers.map((m) => (
         <option key={m.yearKey} value={m.yearKey}>
-          {t.computed[m.yearLabel] ?? m.yearLabel} (×{mult(m.multiplier)})
+          {t.computed[m.yearKey] ?? t.computed[m.yearLabel] ?? m.yearLabel} (×{mult(m.multiplier)})
         </option>
       ))}
     </>
   );
 
   return (
-    <div className="grid gap-10 lg:grid-cols-2">
+    <div className="grid grid-cols-1 gap-10 lg:grid-cols-2">
       {/* inputs */}
       <div className="flex flex-col gap-5">
         <div className="border-s-[3px] border-primary-500 bg-surface-muted px-4 py-3 text-xs leading-5 text-ink-body">
@@ -311,19 +339,38 @@ export function IrelandCgtCalculator({
           </div>
         )}
 
-        <SelectField
-          label={t.saleMonth}
-          value={disposalMonth}
-          onChange={setDisposalMonth}
-          hint={t.saleMonthHint}
-        >
-          <option value="">{t.selectMonth}</option>
-          {t.months.map((m, i) => (
-            <option key={m} value={String(i + 1)}>
-              {m}
-            </option>
-          ))}
-        </SelectField>
+        <div>
+          <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_minmax(0,8rem)] sm:items-end">
+            <SelectField label={t.saleMonth} value={saleMonth} onChange={setSaleMonth}>
+              <option value="">{t.selectMonth}</option>
+              {t.months.map((m, i) => (
+                <option key={m} value={String(i + 1)}>
+                  {m}
+                </option>
+              ))}
+            </SelectField>
+            <SelectField label={t.saleYear} value={saleYear} onChange={setSaleYear}>
+              {CGT_SALE_YEARS.map((y) => (
+                <option key={y} value={String(y)}>
+                  {y}
+                </option>
+              ))}
+            </SelectField>
+          </div>
+          <p className="mt-1 text-xs leading-5 text-muted">{t.saleMonthHint}</p>
+        </div>
+
+        {inCutMonth && (
+          <SegmentedField<"early" | "late">
+            label={t.saleDay}
+            value={octoberPart}
+            onChange={setOctoberPart}
+            options={[
+              { value: "early", label: `${t.octEarly} · ${rate(PREVIOUS_STANDARD_RATE)}` },
+              { value: "late", label: `${t.octLate} · ${rate(config.standardRatePercent)}` },
+            ]}
+          />
+        )}
 
         {/* optional sections */}
         <div className="flex flex-col gap-3 border-t border-line pt-5">
@@ -372,7 +419,7 @@ export function IrelandCgtCalculator({
                   hint={t.entrepreneurUsedHint
                     .replace("{relief}", rate(config.entrepreneurRatePercent))
                     .replace("{cap}", money(config.entrepreneurLifetimeCapEur))
-                    .replace("{standard}", rate(config.standardRatePercent))}
+                    .replace("{standard}", rate(standardRate))}
                 />
               )}
             </div>

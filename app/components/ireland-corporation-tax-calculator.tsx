@@ -1,6 +1,6 @@
 "use client";
 
-/* Ireland Corporation Tax calculator — trading (12.5%) and passive (25%). The
+/* Ireland Corporation Tax calculator: trading (12.5%) and passive (25%). The
    user classifies which income is which; this component never guesses. The
    editable rates arrive as `config` (admin-editable, DB-backed with a code
    fallback); the maths + statute notes live in ../lib/ireland-corporation-tax
@@ -39,14 +39,14 @@ function BreakdownRow({
 }) {
   return (
     <div className="flex items-baseline justify-between gap-4 px-5 py-3.5 sm:px-6">
-      <div className="flex items-baseline gap-2.5">
+      <dt className="flex items-baseline gap-2.5">
         <LegendDot className={dotClass} />
         <div>
           <span className="text-sm text-ink-body">{label}</span>
           <span className="mt-0.5 block text-xs text-muted tabular-nums">{sub}</span>
         </div>
-      </div>
-      <span className="text-sm font-medium text-ink tabular-nums">{value}</span>
+      </dt>
+      <dd className="text-sm font-medium text-ink tabular-nums">{value}</dd>
     </div>
   );
 }
@@ -63,7 +63,7 @@ export function IrelandCorporationTaxCalculator({ config }: { config: CtConfig }
   );
 
   return (
-    <div className="grid gap-10 lg:grid-cols-2">
+    <div className="grid grid-cols-1 gap-10 lg:grid-cols-2">
       {/* inputs */}
       <div className="flex flex-col gap-5">
         <div className="border-s-[3px] border-primary-500 bg-surface-muted px-4 py-3 text-xs leading-5 text-ink-body">
@@ -161,21 +161,21 @@ export function IrelandCorporationTaxCalculator({ config }: { config: CtConfig }
               value={money(result.passiveTax)}
             />
             <div className="flex items-baseline justify-between gap-4 bg-surface-muted px-5 py-3.5 sm:px-6">
-              <span className="text-sm font-semibold text-ink">
+              <dt className="text-sm font-semibold text-ink">
                 {t.total}
-              </span>
-              <span className="font-display text-sm font-semibold text-ink tabular-nums">
+              </dt>
+              <dd className="font-display text-sm font-semibold text-ink tabular-nums">
                 {money(result.totalTax)}
-              </span>
+              </dd>
             </div>
           </dl>
         </div>
 
-        {/* Pillar Two — info note, never a live input (read from config) */}
+        {/* Pillar Two: info note, never a live input (read from config) */}
         <div className="mt-5 border border-line bg-surface p-5">
-          <h3 className="text-xs font-semibold uppercase tracking-[0.16em] text-muted">
+          <h2 className="text-xs font-semibold uppercase tracking-[0.16em] text-muted">
             {t.pillarTitle}
-          </h3>
+          </h2>
           <p className="mt-2 text-xs leading-5 text-muted">{t.pillarNote}</p>
         </div>
 

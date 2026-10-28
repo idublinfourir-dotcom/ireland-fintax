@@ -1,6 +1,6 @@
 "use client";
 
-/* Ireland R&D Corporation Tax Credit calculator — 35% of qualifying R&D spend,
+/* Ireland R&D Corporation Tax Credit calculator: 35% of qualifying R&D spend,
    paid over three annual instalments (greater of 50% / €87,500 in year one,
    then 3/5 and the balance). The user enters only spend they judge eligible;
    this component never decides what qualifies. The editable rates/thresholds
@@ -11,7 +11,8 @@
 import { useMemo, useState } from "react";
 import {
   computeRdCredit,
-  RD_CREDIT,
+  rdConfigForPeriod,
+  RD_EARLIER_PERIOD,
   RD_LAST_REVIEWED,
   RD_SOURCE_URL,
   type RdConfig,
@@ -21,6 +22,7 @@ import {
   LegendDot,
   ProportionBar,
   ResultDisclaimer,
+  SegmentedField,
   useFormat,
 } from "./calculator-fields";
 import { useT } from "./locale-link";
@@ -42,24 +44,28 @@ function InstalmentRow({
 }) {
   return (
     <div className="flex items-baseline justify-between gap-4 px-5 py-3.5 sm:px-6">
-      <div className="flex items-baseline gap-2.5">
+      <dt className="flex items-baseline gap-2.5">
         <LegendDot className={dotClass} />
         <div>
           <span className="text-sm text-ink-body">{year}</span>
           <span className="mt-0.5 block text-xs text-muted">{when}</span>
         </div>
-      </div>
-      <span className="text-sm font-medium text-ink tabular-nums">{value}</span>
+      </dt>
+      <dd className="text-sm font-medium text-ink tabular-nums">{value}</dd>
     </div>
   );
 }
 
-export function IrelandRdTaxCreditCalculator({ config }: { config: RdConfig }) {
+export function IrelandRdTaxCreditCalculator({ config: current }: { config: RdConfig }) {
   const t = useT(rdMessages);
   const { money, eur0, rate } = useFormat();
-  const threshold = eur0(config.firstYearThresholdEur);
   const [spend, setSpend] = useState(0);
   const [grant, setGrant] = useState(0);
+  /* Periods with a return due before 23 Sep 2027 keep 30% and €75,000. */
+  const [period, setPeriod] = useState<"current" | "earlier">("current");
+  const config = useMemo(() => rdConfigForPeriod(current, period === "earlier"), [current, period]);
+  const threshold = eur0(config.firstYearThresholdEur);
+  const combined = config.ratePercent + config.tradingDeductionPercent;
 
   const r = useMemo(() => computeRdCredit(spend, grant, config), [spend, grant, config]);
   const { year1, year2, year3 } = r.instalments;
@@ -74,7 +80,7 @@ export function IrelandRdTaxCreditCalculator({ config }: { config: RdConfig }) {
   ).replace("{threshold}", threshold);
 
   return (
-    <div className="grid gap-10 lg:grid-cols-2">
+    <div className="grid grid-cols-1 gap-10 lg:grid-cols-2">
       {/* input */}
       <div className="flex flex-col gap-5">
         <div className="border-s-[3px] border-primary-500 bg-surface-muted px-4 py-3 text-xs leading-5 text-ink-body">
@@ -82,7 +88,26 @@ export function IrelandRdTaxCreditCalculator({ config }: { config: RdConfig }) {
           {t.introBody
             .replace("{rate}", rate(config.ratePercent))
             .replace("{deduction}", rate(config.tradingDeductionPercent))
-            .replace("{combined}", rate(RD_CREDIT.effectiveBenefitPercent))}
+            .replace("{combined}", rate(combined))}
+        </div>
+
+        <div>
+          <SegmentedField<"current" | "earlier">
+            label={t.period}
+            value={period}
+            onChange={setPeriod}
+            options={[
+              { value: "current", label: `${t.periodCurrent} · ${rate(current.ratePercent)}` },
+              { value: "earlier", label: `${t.periodEarlier} · ${rate(RD_EARLIER_PERIOD.ratePercent)}` },
+            ]}
+          />
+          <p className="mt-1 text-xs leading-5 text-muted">
+            {t.periodHint
+              .replace("{rate}", rate(current.ratePercent))
+              .replace("{threshold}", eur0(current.firstYearThresholdEur))
+              .replace("{oldRate}", rate(RD_EARLIER_PERIOD.ratePercent))
+              .replace("{oldThreshold}", eur0(RD_EARLIER_PERIOD.firstYearThresholdEur))}
+          </p>
         </div>
 
         <CurrencyField
@@ -149,7 +174,7 @@ export function IrelandRdTaxCreditCalculator({ config }: { config: RdConfig }) {
                     {money(r.combinedBenefit)}
                   </span>
                 ),
-                percent: rate(RD_CREDIT.effectiveBenefitPercent),
+                percent: rate(combined),
               })}
             </p>
             <div className="mt-4">
@@ -184,10 +209,10 @@ export function IrelandRdTaxCreditCalculator({ config }: { config: RdConfig }) {
               value={money(year3)}
             />
             <div className="flex items-baseline justify-between gap-4 bg-surface-muted px-5 py-3.5 sm:px-6">
-              <span className="text-sm font-semibold text-ink">{t.total}</span>
-              <span className="font-display text-sm font-semibold text-ink tabular-nums">
+              <dt className="text-sm font-semibold text-ink">{t.total}</dt>
+              <dd className="font-display text-sm font-semibold text-ink tabular-nums">
                 {money(r.credit)}
-              </span>
+              </dd>
             </div>
           </dl>
 
@@ -196,11 +221,11 @@ export function IrelandRdTaxCreditCalculator({ config }: { config: RdConfig }) {
           </p>
         </div>
 
-        {/* how it's paid — info note */}
+        {/* how it's paid: info note */}
         <div className="mt-5 border border-line bg-surface p-5">
-          <h3 className="text-xs font-semibold uppercase tracking-[0.16em] text-muted">
+          <h2 className="text-xs font-semibold uppercase tracking-[0.16em] text-muted">
             {t.threeTitle}
-          </h3>
+          </h2>
           <p className="mt-2 text-xs leading-5 text-muted">
             {t.threeBody.replace("{threshold}", threshold)}
           </p>

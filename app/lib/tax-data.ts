@@ -2,7 +2,7 @@
    Reads the per-year rate config from `tax_rates` (one document per tax year,
    keyed by the year, editable in /admin/tax-rates); falls back to the versioned
    RATES_<year> configs in ireland-income-tax.ts when the DB is unreachable,
-   the document is missing, or the stored value fails validation — so the
+   the document is missing, or the stored value fails validation: so the
    calculator never renders with broken numbers. The stored shape is in
    tax-rates-parse.ts. */
 
@@ -29,7 +29,7 @@ export const getTaxRates = cache(async (): Promise<Record<number, YearRates>> =>
     for (const doc of docs) {
       const parsed = parseYearRates(doc._id, doc.rates);
       if (parsed) out[doc._id] = parsed;
-      else console.error(`[tax] stored rates for ${doc._id} failed validation — using fallback`);
+      else console.error(`[tax] stored rates for ${doc._id} failed validation, using fallback`);
     }
     return out;
   } catch (err) {

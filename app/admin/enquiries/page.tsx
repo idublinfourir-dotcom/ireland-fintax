@@ -50,7 +50,7 @@ const fmtLong = new Intl.DateTimeFormat("en-GB", {
 });
 
 /** The search box is free text, so every metacharacter in it has to be a
-    literal — otherwise a stray `(` throws and a `.*` scans the collection. */
+    literal: otherwise a stray `(` throws and a `.*` scans the collection. */
 function escapeRegExp(value: string) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
@@ -77,7 +77,7 @@ export default async function EnquiriesPage({
   const selectedRef = toEnquiryRef(params.id);
   const idParam = selectedRef === null ? null : String(selectedRef);
 
-  // Opening a thread marks it read for the admin — do this first so the list
+  // Opening a thread marks it read for the admin: do this first so the list
   // and counts below reflect it immediately (no one-render lag on the badge).
   if (idParam) await markAdminRead(idParam);
 
@@ -382,7 +382,7 @@ export default async function EnquiriesPage({
                   </dl>
                 </div>
 
-                {/* Conversation — optimistic send + pending state built in */}
+                {/* Conversation: optimistic send + pending state built in */}
                 <ChatPanel
                   fill
                   viewer="admin"

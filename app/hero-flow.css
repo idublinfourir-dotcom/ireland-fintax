@@ -657,16 +657,23 @@
   }
   .hf-dots {
     display: flex;
-    gap: 6px;
   }
+  /* Each button is a 24px tap target (WCAG 2.5.8); the dot is its ::before. */
   .hf-dots button {
+    display: grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+  }
+  .hf-dots button::before {
+    content: "";
     width: 7px;
     height: 7px;
     border-radius: 999px;
     background: rgb(255 255 255 / 0.35);
     transition: width 250ms ease, background-color 250ms ease;
   }
-  .hf-dots button[aria-current="true"] {
+  .hf-dots button[aria-current="true"]::before {
     width: 20px;
     background: #fff;
   }

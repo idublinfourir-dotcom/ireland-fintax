@@ -16,10 +16,11 @@
 import nodemailer, { type Transporter } from "nodemailer";
 import { readMailerConfig, type MailerConfig } from "./mail-config.ts";
 
-// One transporter per process: nodemailer pools connections, so rebuilding it
-// per send would re-handshake TLS every time. Hung off globalThis because the
-// dev server re-evaluates modules on every edit, which would otherwise leak a
-// pool per save.
+// One transporter per process, built once from the config. It is not pooled
+// (`pool` is off), so each send opens its own SMTP connection: fine at this
+// volume, and nothing stays open between sends on a serverless function. Hung
+// off globalThis because the dev server re-evaluates modules on every edit,
+// which would otherwise build a new transporter per save.
 const globalForMail = globalThis as unknown as { mailer?: Transporter };
 
 function getTransport(config: MailerConfig): Transporter {

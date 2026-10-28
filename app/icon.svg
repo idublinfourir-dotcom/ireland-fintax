@@ -2,7 +2,7 @@
   <!-- Sharp corners on purpose: the site is rounded-none throughout. Ground is
        navy-900, the accent bar is primary-300 (the on-dark accent the Eyebrow
        uses), which clears 5.4:1 against it. Drawn as rects, not text, so the
-       mark is identical everywhere — favicon text renders inconsistently. -->
+       mark is identical everywhere: favicon text renders inconsistently. -->
   <rect width="64" height="64" fill="#0b0d14"/>
   <g fill="#ffffff">
     <rect x="14" y="16" width="7" height="32"/>

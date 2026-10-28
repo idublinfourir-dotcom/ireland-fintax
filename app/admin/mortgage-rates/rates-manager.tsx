@@ -2,10 +2,13 @@
 
 /* Admin editor for the Ireland mortgage comparison: Central Bank policy
    numbers + the lender rate table. Saving revalidates /personal/mortgage, so
-   changes go live immediately — no deploy. */
+   changes go live immediately: no deploy. Every save and delete is recorded
+   in the change log shown at the bottom. */
 
-import { useActionState } from "react";
+import { useActionState, useEffect, useRef } from "react";
 import { RATE_TYPE_LABELS, type RateType } from "../../lib/ireland-mortgage";
+import type { RateAuditRow } from "../../lib/rate-audit";
+import { submitKeepingValues } from "../submit-keeping-values";
 import {
   deleteProduct,
   saveProduct,
@@ -96,15 +99,15 @@ function SettingsForm({ settings }: { settings: AdminSettings }) {
 
   return (
     <form
-      action={action}
+      onSubmit={submitKeepingValues(action)}
       className="rounded-none border border-line bg-white p-5"
     >
       <h3 className="font-display text-base font-semibold text-ink">
         Central Bank policy & labels
       </h3>
       <p className="mt-1 text-xs text-muted">
-        When the Central Bank changes the lending rules, update the numbers here
-        — the calculator applies them immediately.
+        When the Central Bank changes the lending rules, update the numbers
+        here: the calculator applies them immediately.
       </p>
 
       <div className="mt-4 grid gap-4 sm:grid-cols-3">
@@ -157,10 +160,17 @@ function ProductForm({ product }: { product?: AdminProduct }) {
     IDLE,
   );
   const isNew = !product;
+  const formRef = useRef<HTMLFormElement>(null);
+
+  // The add form empties once the product is in, so it cannot be added twice;
+  // a refused save keeps what was typed (see submitKeepingValues).
+  useEffect(() => {
+    if (isNew && state.status === "saved") formRef.current?.reset();
+  }, [isNew, state]);
 
   return (
     <div className="rounded-none border border-line bg-white p-4">
-      <form action={action}>
+      <form ref={formRef} onSubmit={submitKeepingValues(action)}>
         {product && <input type="hidden" name="id" value={product.id} />}
 
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
@@ -192,7 +202,7 @@ function ProductForm({ product }: { product?: AdminProduct }) {
             <input name="max_ltv_percent" type="number" step="1" min="1" max="100" defaultValue={product?.maxLtvPercent ?? 90} className={inputClass} required />
           </Field>
           <Field label="Revert rate after fixed (%)">
-            <input name="revert_rate_percent" type="number" step="0.01" min="0.01" max="99" defaultValue={product?.revertRatePercent ?? ""} placeholder="none — rate runs whole term" className={inputClass} />
+            <input name="revert_rate_percent" type="number" step="0.01" min="0.01" max="99" defaultValue={product?.revertRatePercent ?? ""} placeholder="none: rate runs whole term" className={inputClass} />
           </Field>
           <Field label="Cashback (% of loan)">
             <input name="cashback_percent" type="number" step="0.01" min="0.01" max="99" defaultValue={product?.cashbackPercent ?? ""} placeholder="none" className={inputClass} />
@@ -254,7 +264,7 @@ function ProductForm({ product }: { product?: AdminProduct }) {
           action={deleteAction}
           className="mt-2"
           onSubmit={(e) => {
-            if (!confirm(`Delete ${product.lender} — ${product.name}?`)) {
+            if (!confirm(`Delete ${product.lender}: ${product.name}?`)) {
               e.preventDefault();
             }
           }}
@@ -273,14 +283,50 @@ function ProductForm({ product }: { product?: AdminProduct }) {
   );
 }
 
+/* ---------- change log ---------- */
+
+const auditTime = (iso: string) =>
+  new Intl.DateTimeFormat("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(new Date(iso));
+
+function AuditPanel({ entries }: { entries: RateAuditRow[] }) {
+  return (
+    <div className="rounded-none border border-line bg-white p-5">
+      <h3 className="font-display text-base font-semibold text-ink">Recent changes</h3>
+      {entries.length === 0 ? (
+        <p className="mt-2 text-xs text-muted">No changes recorded yet.</p>
+      ) : (
+        <ul className="mt-3 divide-y divide-line">
+          {entries.map((e) => (
+            <li key={e.id} className="flex items-baseline justify-between gap-4 py-2">
+              <div>
+                <span className="text-sm text-ink-body">{e.summary}</span>
+                <span className="mt-0.5 block text-xs text-muted">{e.changedBy ?? "(unknown)"}</span>
+              </div>
+              <span className="shrink-0 text-xs text-muted tabular-nums">{auditTime(e.changedAt)}</span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
 /* ---------- page body ---------- */
 
 export function RatesManager({
   products,
   settings,
+  audit,
 }: {
   products: AdminProduct[];
   settings: AdminSettings;
+  audit: RateAuditRow[];
 }) {
   return (
     <div className="flex flex-col gap-8">
@@ -303,6 +349,8 @@ export function RatesManager({
         </h3>
         <ProductForm />
       </section>
+
+      <AuditPanel entries={audit} />
     </div>
   );
 }

@@ -4,7 +4,7 @@
    calculator slug and editable in /admin/<calc>-rates. Every calculator's
    `*-data.ts` is a thin typed wrapper around getCalculatorConfig: it passes its
    own `parse` + code-default `fallback`, so a missing document / invalid stored
-   value / database error all resolve to today's versioned numbers — the tool
+   value / database error all resolve to today's versioned numbers: the tool
    never renders broken data.
 
    Mirrors cgt-data.ts, but generic: CGT keeps its own two-collection loader
@@ -25,7 +25,7 @@ export interface CalculatorConfigResult<T> {
 /**
  * Load a calculator's config: the stored document when present and valid,
  * otherwise the code fallback. `parse` returns a valid typed config or null
- * (reject partial / malformed values). Never throws — any failure falls back
+ * (reject partial / malformed values). Never throws: any failure falls back
  * to `fallback`.
  */
 export async function getCalculatorConfig<T>(
@@ -74,8 +74,8 @@ export async function saveCalculatorConfig(
  * Stamp reviewedAt = now without touching config. If the calculator has no
  * document yet (serving code defaults), inserts a CONFIG-LESS one (config stays
  * null → the code fallback remains authoritative, so no rate drift) purely to
- * record the review date — this lets the admin dismiss the reminder for an
- * un-customised calculator. Never throws — a review stamp must not block the
+ * record the review date: this lets the admin dismiss the reminder for an
+ * un-customised calculator. Never throws: a review stamp must not block the
  * admin.
  */
 export async function markCalculatorReviewed(key: string): Promise<void> {

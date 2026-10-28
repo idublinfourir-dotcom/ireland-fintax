@@ -48,19 +48,21 @@ export async function Hero() {
     <section className="relative isolate flex min-h-[88vh] items-center overflow-hidden bg-navy-900 text-white">
       <HeroVideo
         clips={[
-          // All three are Dublin's financial quarter — the Docklands and the
-          // IFSC — rather than city landmarks. The brief is "Irish Fintax",
+          // All three are Dublin's financial quarter: the Docklands and the
+          // IFSC: rather than city landmarks. The brief is "Irish Fintax",
           // so the footage has to read as a business district, not a tourist
           // skyline, and no clip may carry another country's tax paperwork.
           //
           // Pexels License: free for commercial use, no attribution required.
-          // Re-encoded to 1920x1080 h264, audio stripped, +faststart.
+          // Re-encoded to 1280x720 h264 (CRF 28), audio stripped, +faststart:
+          // 7.5 MB to 4.4 MB for the three (28 Oct 2026). The posters stay
+          // 1920px; next/image serves them resized.
           //
           // Down the Liffey through the office quarter, quays on both banks.
           // The concrete tower fills the left third, which is where the scrim
-          // and the headline sit — white text measures 12.4:1 over that region.
+          // and the headline sit: white text measures 12.4:1 over that region.
           { src: "/hero-1.mp4", poster: "/hero-1.jpg" },
-          // Dublin Docklands / IFSC — River Liffey and the Samuel Beckett Bridge
+          // Dublin Docklands / IFSC: River Liffey and the Samuel Beckett Bridge
           { src: "/hero-2.mp4", poster: "/hero-2.jpg" },
           // Low over the water toward the Beckett Bridge and the Convention
           // Centre. Opens dark as the drone lifts off the water; that lands

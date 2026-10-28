@@ -1,4 +1,4 @@
-/* Server-side guardrails for CAT admin edits. PURE — reject clearly-wrong
+/* Server-side guardrails for CAT admin edits. PURE: reject clearly-wrong
    values with a message; the two-step preview is the guard against subtle
    mistakes. Mirrors cgt-guardrails.ts / vat-guardrails.ts. */
 
@@ -26,13 +26,13 @@ export function validateCatConfig(
   const { groupA, groupB, groupC } = raw.thresholds;
   const { agriculturalPercent, businessPercent, dwellingHousePercent } = raw.reliefs;
 
-  if (!isPct(ratePercent)) return { ok: false, message: "CAT rate must be 0–100%." };
+  if (!isPct(ratePercent)) return { ok: false, message: "CAT rate must be 0 to 100%." };
   if (![groupA, groupB, groupC].every(isEuro))
     return { ok: false, message: "Group thresholds must be zero or more." };
   if (!isEuro(smallGiftExemptionEur))
     return { ok: false, message: "Small gift exemption must be zero or more." };
   if (![agriculturalPercent, businessPercent, dwellingHousePercent].every(isPct))
-    return { ok: false, message: "Each relief must be 0–100%." };
+    return { ok: false, message: "Each relief must be 0 to 100%." };
 
   return {
     ok: true,

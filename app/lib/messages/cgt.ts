@@ -2,14 +2,15 @@ import type { Translations } from "../i18n";
 
 /* The CGT page and calculator. `computed` translates the English strings
    lib/ireland-cgt.ts returns (band names, payment dates) and the two
-   multiplier-year labels that are words, not years; anything else shows as
-   returned. {placeholders} are filled at runtime. */
+   multiplier-year labels that are words, not years: "1974/75 or earlier" by
+   its label, the 2001 row by its yearKey "2001" (its stored label may still
+   carry a dash); anything else shows as returned. {placeholders} are filled at runtime. */
 
 const en = {
   meta: {
     title: "Ireland Capital Gains Tax Calculator: 31% CGT with Indexation Relief",
     description:
-      "Estimate Irish Capital Gains Tax: proceeds less the indexed acquisition cost, PPR and Entrepreneur reliefs, allowable losses and the €1,270 exemption at 31%. Includes Revenue's indexation multipliers 1974–2002 for older assets. Republic of Ireland.",
+      "Estimate Irish Capital Gains Tax: proceeds less the indexed acquisition cost, PPR and Entrepreneur reliefs, allowable losses and the €1,270 exemption at 31%. Includes Revenue's indexation multipliers 1974 to 2002 for older assets. Republic of Ireland.",
   },
   crumb: "Ireland capital gains tax",
   title: "Ireland capital gains tax calculator",
@@ -17,7 +18,7 @@ const en = {
   budgetNote: "Budget 2027 cut the standard rate to 31% for disposals from 7 October 2026.",
   notes: [
     { title: "Indexation for older assets", body: "The cost of an asset acquired before 2003 is uplifted by Revenue's official multiplier for the year of purchase, so inflation isn't taxed as gain. Indexation is frozen, costs from 2003 onward get no uplift." },
-    { title: "Reliefs and rates", body: "Standard CGT is 31% on disposals from 7 October 2026 (it was 33% before). Entrepreneur Relief gives 10% on qualifying business gains up to a €1.5m lifetime cap; Principal Private Residence relief exempts the main-home proportion. Each disposal also gets a €1,270 annual exemption." },
+    { title: "Reliefs and rates", body: "Standard CGT is 31% on disposals from 7 October 2026 (it was 33% before). Entrepreneur Relief gives 10% on qualifying business gains up to a €1.5m lifetime cap; Principal Private Residence relief exempts the main-home proportion. Each person also has a €1,270 exemption a year, shared across all their disposals that year, and it can't be passed to a spouse or civil partner. This calculator applies it in full to the one sale you enter." },
     { title: "Editable, verified rates", body: "The rates and the full multiplier table are sourced from revenue.ie and stored so they can be updated after each Budget without a redeploy. Estimates only, reliefs like retirement relief and share-matching rules aren't modelled." },
   ],
   months: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
@@ -55,8 +56,12 @@ const en = {
   acqYearHint: "Picks the indexation multiplier. Only pre-2003 years uplift the cost.",
   indexedCost: "Indexed cost: {cost} × {multiplier} = {indexed}",
   saleMonth: "Month of sale (optional)",
-  saleMonthHint: "Sets the CGT payment date: a sale from January to November is due 15 December, and a December sale is due 31 January.",
+  saleMonthHint: "Sets the rate and the payment date. The standard rate was 33% for sales before 7 October 2026 and is 31% from then on. A sale from January to November is paid by 15 December, a December sale by 31 January. Sales before 2026 had other rules and are not covered.",
   selectMonth: "Select a month…",
+  saleYear: "Year of sale",
+  saleDay: "Date in October 2026",
+  octEarly: "1 to 6",
+  octLate: "7 to 31",
   enhancementToggle: "Improvement / enhancement costs",
   enhancement: "Enhancement expenditure",
   enhancementHint: "Money spent adding value (extensions, improvements): not repairs.",
@@ -83,7 +88,7 @@ const en = {
     "31 January (following year)": "31 January (following year)",
     "15 December (same year)": "15 December (same year)",
     "1974/75 or earlier": "1974/75 or earlier",
-    "2001 (6 Apr–31 Dec)": "2001 (6 Apr to 31 Dec)",
+    "2001": "2001 (6 Apr to 31 Dec)",
   } as Record<string, string>,
 };
 
@@ -103,7 +108,7 @@ export const cgtMessages: Translations<CgtMessages> = {
     budgetNote: "El Presupuesto 2027 bajó el tipo general al 31 % para las ventas desde el 7 de octubre de 2026.",
     notes: [
       { title: "Ajuste por inflación para activos antiguos", body: "El coste de un activo adquirido antes de 2003 se actualiza con el coeficiente oficial de Revenue del año de compra, para que la inflación no tribute como ganancia. La actualización está congelada: los costes desde 2003 no se actualizan." },
-      { title: "Deducciones y tipos", body: "El CGT general es del 31 % en las ventas desde el 7 de octubre de 2026 (antes era del 33 %). La deducción para emprendedores (Entrepreneur Relief) aplica un 10 % a las ganancias empresariales que cumplen los requisitos, con un límite vitalicio de 1,5 millones de euros; la deducción por vivienda habitual (PPR) exime la parte correspondiente a la vivienda principal. Cada venta tiene además una exención anual de 1.270 €." },
+      { title: "Deducciones y tipos", body: "El CGT general es del 31 % en las ventas desde el 7 de octubre de 2026 (antes era del 33 %). La deducción para emprendedores (Entrepreneur Relief) aplica un 10 % a las ganancias empresariales que cumplen los requisitos, con un límite vitalicio de 1,5 millones de euros; la deducción por vivienda habitual (PPR) exime la parte correspondiente a la vivienda principal. Además, cada persona tiene una exención de 1.270 € al año, compartida entre todas sus ventas de ese año, que no se puede pasar al cónyuge ni a la pareja de hecho. Esta calculadora la aplica entera a la venta que introduces." },
       { title: "Tipos editables y verificados", body: "Los tipos y la tabla completa de coeficientes provienen de revenue.ie y se guardan para poder actualizarlos después de cada Presupuesto sin volver a publicar la web. Son solo estimaciones: no se modelan deducciones como la de jubilación ni las reglas de identificación de acciones." },
     ],
     months: ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"],
@@ -141,8 +146,12 @@ export const cgtMessages: Translations<CgtMessages> = {
     acqYearHint: "Elige el coeficiente de actualización. Solo los años anteriores a 2003 actualizan el coste.",
     indexedCost: "Coste actualizado: {cost} × {multiplier} = {indexed}",
     saleMonth: "Mes de la venta (opcional)",
-    saleMonthHint: "Fija la fecha de pago del CGT: de enero a noviembre vence el 15 de diciembre; diciembre vence el 31 de enero.",
+    saleMonthHint: "Fija el tipo y la fecha de pago. El tipo general era del 33 % para las ventas anteriores al 7 de octubre de 2026 y es del 31 % desde entonces. De enero a noviembre se paga antes del 15 de diciembre; diciembre, antes del 31 de enero. Las ventas anteriores a 2026 tenían otras normas y no se cubren.",
     selectMonth: "Elige un mes…",
+    saleYear: "Año de la venta",
+    saleDay: "Fecha en octubre de 2026",
+    octEarly: "Del 1 al 6",
+    octLate: "Del 7 al 31",
     enhancementToggle: "Costes de mejora",
     enhancement: "Gasto en mejoras",
     enhancementHint: "Dinero gastado en añadir valor (ampliaciones, mejoras): no reparaciones.",
@@ -169,7 +178,7 @@ export const cgtMessages: Translations<CgtMessages> = {
       "31 January (following year)": "31 de enero (año siguiente)",
       "15 December (same year)": "15 de diciembre (mismo año)",
       "1974/75 or earlier": "1974/75 o antes",
-      "2001 (6 Apr–31 Dec)": "2001 (6 abr–31 dic)",
+      "2001": "2001 (6 abr a 31 dic)",
     },
   },
   pt: {
@@ -184,7 +193,7 @@ export const cgtMessages: Translations<CgtMessages> = {
     budgetNote: "O Orçamento 2027 reduziu a alíquota padrão para 31% nas vendas a partir de 7 de outubro de 2026.",
     notes: [
       { title: "Correção para bens antigos", body: "O custo de um bem adquirido antes de 2003 é corrigido pelo multiplicador oficial da Revenue do ano da compra, para que a inflação não seja tributada como ganho. A correção está congelada: custos a partir de 2003 não são corrigidos." },
-      { title: "Alívios e alíquotas", body: "O CGT padrão é de 31% nas vendas a partir de 7 de outubro de 2026 (antes era 33%). O alívio para empreendedores (Entrepreneur Relief) dá 10% sobre ganhos empresariais qualificados até um limite vitalício de € 1,5 milhão; o alívio de residência principal (PPR) isenta a parte da moradia principal. Cada venda também tem uma isenção anual de € 1.270." },
+      { title: "Alívios e alíquotas", body: "O CGT padrão é de 31% nas vendas a partir de 7 de outubro de 2026 (antes era 33%). O alívio para empreendedores (Entrepreneur Relief) dá 10% sobre ganhos empresariais qualificados até um limite vitalício de € 1,5 milhão; o alívio de residência principal (PPR) isenta a parte da moradia principal. Além disso, cada pessoa tem uma isenção de € 1.270 por ano, dividida entre todas as suas vendas daquele ano, que não pode ser passada ao cônjuge ou companheiro. Esta calculadora aplica a isenção inteira à venda que você informar." },
       { title: "Alíquotas editáveis e verificadas", body: "As alíquotas e a tabela completa de multiplicadores vêm do revenue.ie e ficam guardadas para serem atualizadas depois de cada Orçamento sem publicar o site de novo. São só estimativas: alívios como o de aposentadoria e as regras de identificação de ações não estão modelados." },
     ],
     months: ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"],
@@ -222,8 +231,12 @@ export const cgtMessages: Translations<CgtMessages> = {
     acqYearHint: "Escolhe o multiplicador de correção. Só anos antes de 2003 corrigem o custo.",
     indexedCost: "Custo corrigido: {cost} × {multiplier} = {indexed}",
     saleMonth: "Mês da venda (opcional)",
-    saleMonthHint: "Define a data de pagamento do CGT: de janeiro a novembro vence em 15 de dezembro; dezembro vence em 31 de janeiro.",
+    saleMonthHint: "Define a alíquota e a data de pagamento. A alíquota padrão era de 33% nas vendas antes de 7 de outubro de 2026 e é de 31% a partir daí. De janeiro a novembro, paga-se até 15 de dezembro; em dezembro, até 31 de janeiro. Vendas antes de 2026 tinham outras regras e não estão incluídas.",
     selectMonth: "Escolha um mês…",
+    saleYear: "Ano da venda",
+    saleDay: "Data em outubro de 2026",
+    octEarly: "De 1 a 6",
+    octLate: "De 7 a 31",
     enhancementToggle: "Custos de melhoria",
     enhancement: "Gastos com melhorias",
     enhancementHint: "Dinheiro gasto para valorizar o bem (ampliações, melhorias): não reparos.",
@@ -250,14 +263,14 @@ export const cgtMessages: Translations<CgtMessages> = {
       "31 January (following year)": "31 de janeiro (ano seguinte)",
       "15 December (same year)": "15 de dezembro (mesmo ano)",
       "1974/75 or earlier": "1974/75 ou antes",
-      "2001 (6 Apr–31 Dec)": "2001 (6 abr.–31 dez.)",
+      "2001": "2001 (6 abr. a 31 dez.)",
     },
   },
   ga: {
     meta: {
       title: "Áireamhán Cánach Gnóchan Caipitiúil na hÉireann: CGC 31% le faoiseamh innéacsaithe",
       description:
-        "Meas Cáin Ghnóchan Caipitiúil na hÉireann: fáltais lúide an costas fála innéacsaithe, faoisimh PPR agus Fiontraithe, caillteanais incheadaithe agus an díolúine €1,270 ag 31%. Áirítear iolraitheoirí innéacsaithe na gCoimisinéirí Ioncaim 1974–2002 do shócmhainní níos sine. Poblacht na hÉireann.",
+        "Meas Cáin Ghnóchan Caipitiúil na hÉireann: fáltais lúide an costas fála innéacsaithe, faoisimh PPR agus Fiontraithe, caillteanais incheadaithe agus an díolúine €1,270 ag 31%. Áirítear iolraitheoirí innéacsaithe na gCoimisinéirí Ioncaim 1974 go 2002 do shócmhainní níos sine. Poblacht na hÉireann.",
     },
     crumb: "Cáin ghnóchan caipitiúil na hÉireann",
     title: "Áireamhán cánach gnóchan caipitiúil na hÉireann",
@@ -265,7 +278,7 @@ export const cgtMessages: Translations<CgtMessages> = {
     budgetNote: "Ghearr Buiséad 2027 an ráta caighdeánach go 31% do dhiúscairtí ó 7 Deireadh Fómhair 2026.",
     notes: [
       { title: "Innéacsú do shócmhainní níos sine", body: "Ardaítear costas sócmhainne a fuarthas roimh 2003 le hiolraitheoir oifigiúil na gCoimisinéirí Ioncaim don bhliain cheannaigh, ionas nach ngearrtar cáin ar bhoilsciú mar ghnóchan. Tá innéacsú reoite: ní ardaítear costais ó 2003 ar aghaidh." },
-      { title: "Faoisimh agus rátaí", body: "Is é 31% an CGC caighdeánach ar dhiúscairtí ó 7 Deireadh Fómhair 2026 (bhí sé 33% roimhe sin). Tugann Faoiseamh Fiontraithe 10% ar ghnóchain ghnó cháilitheacha suas le huasteorainn saoil €1.5m; díolmhaíonn faoiseamh Príomh-Áit Chónaithe (PPR) cion an phríomhthí. Faigheann gach diúscairt díolúine bhliantúil €1,270 freisin." },
+      { title: "Faoisimh agus rátaí", body: "Is é 31% an CGC caighdeánach ar dhiúscairtí ó 7 Deireadh Fómhair 2026 (bhí sé 33% roimhe sin). Tugann Faoiseamh Fiontraithe 10% ar ghnóchain ghnó cháilitheacha suas le huasteorainn saoil €1.5m; díolmhaíonn faoiseamh Príomh-Áit Chónaithe (PPR) cion an phríomhthí. Tá díolúine €1,270 sa bhliain ag gach duine freisin, roinnte ar a ndiúscairtí uile sa bhliain sin, agus ní féidir í a aistriú chuig céile ná páirtí sibhialta. Cuireann an t-áireamhán seo i bhfeidhm ina hiomláine í ar an díolachán a chuireann tú isteach." },
       { title: "Rátaí in-eagarthóireachta, fíoraithe", body: "Faightear na rátaí agus tábla iomlán na n-iolraitheoirí ó revenue.ie agus stóráiltear iad ionas gur féidir iad a nuashonrú tar éis gach Buiséid gan an suíomh a athfhoilsiú. Meastacháin amháin: ní dhéantar samhaltú ar fhaoisimh mar fhaoiseamh scoir ná ar rialacha meaitseála scaireanna." },
     ],
     months: ["Eanáir", "Feabhra", "Márta", "Aibreán", "Bealtaine", "Meitheamh", "Iúil", "Lúnasa", "Meán Fómhair", "Deireadh Fómhair", "Samhain", "Nollaig"],
@@ -303,8 +316,12 @@ export const cgtMessages: Translations<CgtMessages> = {
     acqYearHint: "Roghnaíonn sé an t-iolraitheoir innéacsaithe. Ní ardaíonn ach blianta roimh 2003 an costas.",
     indexedCost: "Costas innéacsaithe: {cost} × {multiplier} = {indexed}",
     saleMonth: "Mí an díolacháin (roghnach)",
-    saleMonthHint: "Socraíonn sé dáta íocaíochta CGC: tá Eanáir–Samhain dlite ar 15 Nollaig, tá Nollaig dlite ar 31 Eanáir.",
+    saleMonthHint: "Socraíonn sé an ráta agus dáta na híocaíochta. Ba é 33% an ráta caighdeánach do dhíolacháin roimh 7 Deireadh Fómhair 2026, agus is é 31% ó shin i leith. Íoctar díolachán ó Eanáir go Samhain faoi 15 Nollaig, agus díolachán i mí na Nollag faoi 31 Eanáir. Bhí rialacha eile ann roimh 2026, agus níl siad clúdaithe.",
     selectMonth: "Roghnaigh mí…",
+    saleYear: "Bliain an díolacháin",
+    saleDay: "Dáta i nDeireadh Fómhair 2026",
+    octEarly: "1 go 6",
+    octLate: "7 go 31",
     enhancementToggle: "Costais feabhsúcháin",
     enhancement: "Caiteachas feabhsúcháin",
     enhancementHint: "Airgead a caitheadh chun luach a chur leis (síntí, feabhsuithe): ní deisiúcháin.",
@@ -331,14 +348,14 @@ export const cgtMessages: Translations<CgtMessages> = {
       "31 January (following year)": "31 Eanáir (an bhliain dár gcionn)",
       "15 December (same year)": "15 Nollaig (an bhliain chéanna)",
       "1974/75 or earlier": "1974/75 nó níos luaithe",
-      "2001 (6 Apr–31 Dec)": "2001 (6 Aib–31 Noll)",
+      "2001": "2001 (6 Aib go 31 Noll)",
     },
   },
   ar: {
     meta: {
       title: "حاسبة ضريبة الأرباح الرأسمالية في أيرلندا: CGT بنسبة 31% مع إعفاء التعديل بالتضخم",
       description:
-        "قدّر ضريبة الأرباح الرأسمالية الأيرلندية: حصيلة البيع ناقص تكلفة الاقتناء المعدّلة، وإعفاءا المسكن الرئيسي وروّاد الأعمال، والخسائر المسموح بها والإعفاء البالغ 1,270 يورو بنسبة 31%. يتضمن معاملات التعديل الصادرة عن Revenue للفترة 1974–2002 للأصول الأقدم. جمهورية أيرلندا.",
+        "قدّر ضريبة الأرباح الرأسمالية الأيرلندية: حصيلة البيع ناقص تكلفة الاقتناء المعدّلة، وإعفاءا المسكن الرئيسي وروّاد الأعمال، والخسائر المسموح بها والإعفاء البالغ 1,270 يورو بنسبة 31%. يتضمن معاملات التعديل الصادرة عن Revenue للفترة 1974 إلى 2002 للأصول الأقدم. جمهورية أيرلندا.",
     },
     crumb: "ضريبة الأرباح الرأسمالية في أيرلندا",
     title: "حاسبة ضريبة الأرباح الرأسمالية في أيرلندا",
@@ -346,7 +363,7 @@ export const cgtMessages: Translations<CgtMessages> = {
     budgetNote: "خفّضت ميزانية 2027 المعدل العادي إلى 31% لعمليات التصرف اعتبارًا من 7 أكتوبر 2026.",
     notes: [
       { title: "التعديل بالتضخم للأصول الأقدم", body: "تُرفع تكلفة الأصل المقتنى قبل 2003 بمعامل Revenue الرسمي لسنة الشراء، فلا يُفرض على التضخم ضريبة كأنه ربح. التعديل مجمّد، والتكاليف من 2003 فصاعدًا لا تُرفع." },
-      { title: "الإعفاءات والمعدلات", body: "المعدل العادي لـCGT هو 31% على عمليات التصرف اعتبارًا من 7 أكتوبر 2026 (كان 33% قبل ذلك). يمنح إعفاء روّاد الأعمال معدل 10% على أرباح الأعمال المؤهلة حتى سقف مدى الحياة قدره 1.5 مليون يورو؛ ويعفي إعفاء المسكن الرئيسي (PPR) الجزء الخاص بالمنزل الرئيسي. وتحصل كل عملية تصرف أيضًا على إعفاء سنوي قدره 1,270 يورو." },
+      { title: "الإعفاءات والمعدلات", body: "المعدل العادي لـCGT هو 31% على عمليات التصرف اعتبارًا من 7 أكتوبر 2026 (كان 33% قبل ذلك). يمنح إعفاء روّاد الأعمال معدل 10% على أرباح الأعمال المؤهلة حتى سقف مدى الحياة قدره 1.5 مليون يورو؛ ويعفي إعفاء المسكن الرئيسي (PPR) الجزء الخاص بالمنزل الرئيسي. ولكل شخص أيضًا إعفاء قدره 1,270 يورو في السنة، يُقسَم على جميع عمليات التصرف في تلك السنة، ولا يمكن نقله إلى الزوج أو الشريك المدني. وتطبّق هذه الحاسبة الإعفاء كاملًا على عملية البيع التي تُدخلها." },
       { title: "معدلات قابلة للتعديل ومُتحقق منها", body: "المعدلات وجدول المعاملات الكامل مأخوذة من revenue.ie ومخزنة بحيث يمكن تحديثها بعد كل ميزانية دون إعادة نشر. تقديرات فقط، والإعفاءات مثل إعفاء التقاعد وقواعد مطابقة الأسهم غير مشمولة." },
     ],
     months: ["يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"],
@@ -384,8 +401,12 @@ export const cgtMessages: Translations<CgtMessages> = {
     acqYearHint: "تحدد معامل التعديل بالتضخم. السنوات السابقة لعام 2003 فقط ترفع التكلفة.",
     indexedCost: "التكلفة المعدّلة: {cost} × {multiplier} = {indexed}",
     saleMonth: "شهر البيع (اختياري)",
-    saleMonthHint: "يحدد موعد دفع CGT: البيع من يناير إلى نوفمبر يُستحق في 15 ديسمبر، والبيع في ديسمبر يُستحق في 31 يناير.",
+    saleMonthHint: "يحدد المعدل وموعد الدفع. كان المعدل العادي 33% للبيع قبل 7 أكتوبر 2026، وأصبح 31% منذ ذلك التاريخ. البيع من يناير إلى نوفمبر يُدفع بحلول 15 ديسمبر، والبيع في ديسمبر بحلول 31 يناير. ولا يشمل البيع قبل 2026، إذ كانت قواعده مختلفة.",
     selectMonth: "اختر شهرًا…",
+    saleYear: "سنة البيع",
+    saleDay: "التاريخ في أكتوبر 2026",
+    octEarly: "من 1 إلى 6",
+    octLate: "من 7 إلى 31",
     enhancementToggle: "تكاليف التحسين / الإضافة",
     enhancement: "نفقات التحسين",
     enhancementHint: "الأموال المنفقة لإضافة قيمة (توسعات، تحسينات): لا الإصلاحات.",
@@ -412,7 +433,7 @@ export const cgtMessages: Translations<CgtMessages> = {
       "31 January (following year)": "31 يناير (السنة التالية)",
       "15 December (same year)": "15 ديسمبر (السنة نفسها)",
       "1974/75 or earlier": "1974/75 أو قبل ذلك",
-      "2001 (6 Apr–31 Dec)": "2001 (من 6 أبريل إلى 31 ديسمبر)",
+      "2001": "2001 (من 6 أبريل إلى 31 ديسمبر)",
     },
   },
   bn: {
@@ -427,7 +448,7 @@ export const cgtMessages: Translations<CgtMessages> = {
     budgetNote: "বাজেট 2027, 7 অক্টোবর 2026 থেকে বিক্রির ক্ষেত্রে সাধারণ হার কমিয়ে 31% করেছে।",
     notes: [
       { title: "পুরোনো সম্পদের ইনডেক্সেশন", body: "2003-এর আগে কেনা সম্পদের খরচ কেনার বছরের জন্য Revenue-এর সরকারি গুণক দিয়ে বাড়ানো হয়, যাতে মূল্যস্ফীতিকে মুনাফা ধরে কর না বসে। ইনডেক্সেশন স্থগিত, 2003 থেকে পরের খরচ বাড়ানো হয় না।" },
-      { title: "ছাড় ও হার", body: "7 অক্টোবর 2026 থেকে বিক্রিতে সাধারণ CGT 31% (আগে ছিল 33%)। Entrepreneur Relief যোগ্য ব্যবসায়িক মুনাফায় জীবনকালে €1.5m সীমা পর্যন্ত 10% হার দেয়; Principal Private Residence ছাড় প্রধান বাসস্থানের অংশটুকুকে অব্যাহতি দেয়। প্রতিটি বিক্রিতে বছরে €1,270 অব্যাহতিও পাওয়া যায়।" },
+      { title: "ছাড় ও হার", body: "7 অক্টোবর 2026 থেকে বিক্রিতে সাধারণ CGT 31% (আগে ছিল 33%)। Entrepreneur Relief যোগ্য ব্যবসায়িক মুনাফায় জীবনকালে €1.5m সীমা পর্যন্ত 10% হার দেয়; Principal Private Residence ছাড় প্রধান বাসস্থানের অংশটুকুকে অব্যাহতি দেয়। এ ছাড়া প্রত্যেক ব্যক্তি বছরে €1,270 অব্যাহতি পান, যা সেই বছরের সব বিক্রির মধ্যে ভাগ হয় এবং স্বামী/স্ত্রী বা সিভিল পার্টনারকে দেওয়া যায় না। এই ক্যালকুলেটর আপনার দেওয়া বিক্রিতে পুরো অব্যাহতিটি প্রয়োগ করে।" },
       { title: "সম্পাদনযোগ্য, যাচাই করা হার", body: "হার আর পুরো গুণক তালিকা revenue.ie থেকে নেওয়া এবং সংরক্ষিত, যাতে প্রতিটি বাজেটের পর নতুন করে ডিপ্লয় ছাড়াই হালনাগাদ করা যায়। শুধু আনুমানিক হিসাব, অবসরকালীন ছাড় বা শেয়ার মেলানোর নিয়মের মতো বিষয় ধরা হয়নি।" },
     ],
     months: ["জানুয়ারি", "ফেব্রুয়ারি", "মার্চ", "এপ্রিল", "মে", "জুন", "জুলাই", "আগস্ট", "সেপ্টেম্বর", "অক্টোবর", "নভেম্বর", "ডিসেম্বর"],
@@ -465,8 +486,12 @@ export const cgtMessages: Translations<CgtMessages> = {
     acqYearHint: "ইনডেক্সেশন গুণক বেছে নেয়। শুধু 2003-এর আগের বছরগুলোতে খরচ বাড়ে।",
     indexedCost: "সমন্বিত খরচ: {cost} × {multiplier} = {indexed}",
     saleMonth: "বিক্রির মাস (ঐচ্ছিক)",
-    saleMonthHint: "CGT পরিশোধের তারিখ ঠিক করে: জানুয়ারি থেকে নভেম্বরের বিক্রি 15 ডিসেম্বরের মধ্যে, আর ডিসেম্বরের বিক্রি 31 জানুয়ারির মধ্যে দিতে হয়।",
+    saleMonthHint: "হার ও পরিশোধের তারিখ ঠিক করে। 7 অক্টোবর 2026-এর আগের বিক্রিতে সাধারণ হার ছিল 33%, তারপর থেকে 31%। জানুয়ারি থেকে নভেম্বরের বিক্রি 15 ডিসেম্বরের মধ্যে, আর ডিসেম্বরের বিক্রি 31 জানুয়ারির মধ্যে দিতে হয়। 2026-এর আগের বিক্রিতে অন্য নিয়ম ছিল, সেগুলো এখানে ধরা হয়নি।",
     selectMonth: "একটি মাস বেছে নিন…",
+    saleYear: "বিক্রির বছর",
+    saleDay: "অক্টোবর 2026-এর তারিখ",
+    octEarly: "1 থেকে 6",
+    octLate: "7 থেকে 31",
     enhancementToggle: "উন্নয়ন / সংস্কারের খরচ",
     enhancement: "সংস্কারে ব্যয়",
     enhancementHint: "মূল্য বাড়াতে খরচ করা টাকা (সম্প্রসারণ, উন্নয়ন): মেরামত নয়।",
@@ -493,7 +518,7 @@ export const cgtMessages: Translations<CgtMessages> = {
       "31 January (following year)": "31 জানুয়ারি (পরের বছর)",
       "15 December (same year)": "15 ডিসেম্বর (একই বছর)",
       "1974/75 or earlier": "1974/75 বা তার আগে",
-      "2001 (6 Apr–31 Dec)": "2001 (6 এপ্রিল থেকে 31 ডিসেম্বর)",
+      "2001": "2001 (6 এপ্রিল থেকে 31 ডিসেম্বর)",
     },
   },
   hi: {
@@ -508,7 +533,7 @@ export const cgtMessages: Translations<CgtMessages> = {
     budgetNote: "बजट 2027 ने 7 अक्टूबर 2026 से बिक्री पर मानक दर घटाकर 31% कर दी।",
     notes: [
       { title: "पुरानी संपत्तियों का इंडेक्सेशन", body: "2003 से पहले ख़रीदी गई संपत्ति की लागत को ख़रीद के साल के लिए Revenue के आधिकारिक गुणक से बढ़ाया जाता है, ताकि महँगाई को लाभ मानकर टैक्स न लगे। इंडेक्सेशन रुका हुआ है, 2003 से आगे की लागतें नहीं बढ़ाई जातीं।" },
-      { title: "राहतें और दरें", body: "7 अक्टूबर 2026 से बिक्री पर मानक CGT 31% है (पहले 33% था)। Entrepreneur Relief योग्य कारोबारी लाभ पर जीवनभर की €1.5m सीमा तक 10% दर देती है; Principal Private Residence राहत मुख्य घर वाले हिस्से को छूट देती है। हर बिक्री पर €1,270 की सालाना छूट भी मिलती है।" },
+      { title: "राहतें और दरें", body: "7 अक्टूबर 2026 से बिक्री पर मानक CGT 31% है (पहले 33% था)। Entrepreneur Relief योग्य कारोबारी लाभ पर जीवनभर की €1.5m सीमा तक 10% दर देती है; Principal Private Residence राहत मुख्य घर वाले हिस्से को छूट देती है। इसके अलावा हर व्यक्ति को साल में €1,270 की छूट मिलती है, जो उस साल की सभी बिक्रियों में बँटती है और पति/पत्नी या सिविल पार्टनर को नहीं दी जा सकती। यह कैलकुलेटर पूरी छूट आपकी दर्ज की गई बिक्री पर लगाता है।" },
       { title: "बदले जा सकने वाली, जाँची हुई दरें", body: "दरें और पूरी गुणक तालिका revenue.ie से ली गई हैं और सहेजी गई हैं, ताकि हर बजट के बाद बिना दोबारा डिप्लॉय किए अपडेट की जा सकें। केवल अनुमान, रिटायरमेंट राहत और शेयर मिलान के नियम जैसी चीज़ें शामिल नहीं।" },
     ],
     months: ["जनवरी", "फ़रवरी", "मार्च", "अप्रैल", "मई", "जून", "जुलाई", "अगस्त", "सितंबर", "अक्टूबर", "नवंबर", "दिसंबर"],
@@ -546,8 +571,12 @@ export const cgtMessages: Translations<CgtMessages> = {
     acqYearHint: "इंडेक्सेशन गुणक चुनता है। केवल 2003 से पहले के सालों में लागत बढ़ती है।",
     indexedCost: "इंडेक्स की गई लागत: {cost} × {multiplier} = {indexed}",
     saleMonth: "बिक्री का महीना (वैकल्पिक)",
-    saleMonthHint: "CGT भुगतान की तारीख़ तय करता है: जनवरी से नवंबर की बिक्री का भुगतान 15 दिसंबर तक, और दिसंबर की बिक्री का 31 जनवरी तक।",
+    saleMonthHint: "दर और भुगतान की तारीख़ तय करता है। 7 अक्टूबर 2026 से पहले की बिक्री पर मानक दर 33% थी, उसके बाद से 31% है। जनवरी से नवंबर की बिक्री का भुगतान 15 दिसंबर तक, और दिसंबर की बिक्री का 31 जनवरी तक। 2026 से पहले की बिक्री पर दूसरे नियम थे, वे यहाँ शामिल नहीं हैं।",
     selectMonth: "महीना चुनें…",
+    saleYear: "बिक्री का साल",
+    saleDay: "अक्टूबर 2026 में तारीख़",
+    octEarly: "1 से 6",
+    octLate: "7 से 31",
     enhancementToggle: "सुधार / उन्नयन की लागत",
     enhancement: "उन्नयन पर ख़र्च",
     enhancementHint: "मूल्य बढ़ाने पर ख़र्च किया गया पैसा (विस्तार, सुधार): मरम्मत नहीं।",
@@ -574,7 +603,7 @@ export const cgtMessages: Translations<CgtMessages> = {
       "31 January (following year)": "31 जनवरी (अगले साल)",
       "15 December (same year)": "15 दिसंबर (उसी साल)",
       "1974/75 or earlier": "1974/75 या उससे पहले",
-      "2001 (6 Apr–31 Dec)": "2001 (6 अप्रैल से 31 दिसंबर)",
+      "2001": "2001 (6 अप्रैल से 31 दिसंबर)",
     },
   },
 };

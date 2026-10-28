@@ -241,7 +241,7 @@ export function TableOfContents({
           >
             {e.text}
             {multiPage && e.page !== page && (
-              <span className="ms-1.5 text-[11px] text-muted/80">p. {e.page}</span>
+              <span className="ms-1.5 text-[11px] text-muted">p. {e.page}</span>
             )}
           </a>
         </li>

@@ -5,7 +5,7 @@ import { verificationTokensCollection } from "../collections";
 /* Signup email-confirmation tokens. SERVER ONLY.
  *
  * The app issues and redeems these itself. The token in the emailed link is
- * the only copy — the database holds its SHA-256, so a leaked dump cannot be
+ * the only copy: the database holds its SHA-256, so a leaked dump cannot be
  * replayed into a confirmed account. */
 
 /** How long a confirmation link stays usable. */

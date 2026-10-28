@@ -41,6 +41,7 @@ export const en = {
     signIn: "Sign in",
     ask: "Ask a question",
     openMenu: "Open menu",
+    submenu: "{label} menu",
     skip: "Skip to content",
     closeMenu: "Close menu",
     language: "Language",
@@ -66,6 +67,7 @@ export const en = {
     getInTouch: "Get in touch",
     language: "Language",
     rights: "All rights reserved.",
+    privacy: "Privacy",
     disclaimer: "General information only, not financial, tax or legal advice.",
   },
 

@@ -9,6 +9,7 @@
    for a picture slot, which becomes an empty Picture block, and the existing
    validator refuses to publish a post until someone fills or removes it. */
 
+import { withoutDashes } from "./dashes.ts";
 import { parseBlocks, plainText, type Block } from "./post-blocks.ts";
 import { COVER_CHOICES, DEFAULT_COVER, isCoverKey, type PostImage } from "./post-types.ts";
 import { POST_LIMITS } from "./post-validation.ts";
@@ -191,7 +192,7 @@ const DRAFT_RULES = `Rules:
 1. Use only facts stated in the SOURCE text. Never add figures, dates, thresholds, rates, eligibility rules or examples the source does not state. If the source does not say it, leave it out.
 2. Never advise. Do not tell the reader what to do with their money and never write "we recommend". Where a reader may need to act, say they can check the official guidance or speak to a qualified, regulated adviser.
 3. Never write as a firm: no "our clients", "our services", "book a consultation" or "contact our team".
-4. Plain English with Irish and UK spelling. Explain a technical term the first time it appears. Keep paragraphs short. A change in a rate is in percentage points ("from 33% to 31%, a cut of 2 percentage points"), never "by 2%".
+4. Plain English with Irish and UK spelling. Explain a technical term the first time it appears. Keep paragraphs short. A change in a rate is in percentage points ("from 33% to 31%, a cut of 2 percentage points"), never "by 2%". Never use em dashes or en dashes: use a comma, a colon or brackets, and write ranges with "to".
 5. Links: only the source URLs given and the site calculator paths listed, written as [text](url). No other links.
 6. A quote must be copied word for word from the source. At most one, and only when it adds something.
 7. Use a table only when the source compares figures, such as old and new rates, bands or dates.
@@ -381,14 +382,17 @@ export function draftToPost(
   const sourceText = sources.map((s) => `${s.title}\n${fmtDate(s.publishedAt)}\n${s.text}`).join("\n\n");
   let removedLinks = 0;
 
-  const clean = (v: unknown) => {
+  // Links scrubbed; quotes stay word for word, everything else loses its
+  // em and en dashes (house style, lib/dashes.ts).
+  const scrub = (v: unknown) => {
     const { text, removed } = scrubLinks(str(v), sourceUrls);
     removedLinks += removed;
     return text;
   };
+  const clean = (v: unknown) => withoutDashes(scrub(v));
 
-  const title = str(d.title).replace(/\s+/g, " ");
-  const excerpt = str(d.excerpt).replace(/\s+/g, " ");
+  const title = withoutDashes(str(d.title).replace(/\s+/g, " "));
+  const excerpt = withoutDashes(str(d.excerpt).replace(/\s+/g, " "));
   if (!title) errors.push("The title is empty.");
   else if (title.length > POST_LIMITS.title) errors.push(`The title is longer than ${POST_LIMITS.title} characters.`);
   if (!excerpt) errors.push("The excerpt is empty.");
@@ -419,7 +423,7 @@ export function draftToPost(
 
   sections.slice(0, maxSections).forEach((rawSection, index) => {
     const section = (rawSection ?? {}) as Record<string, unknown>;
-    const heading = str(section.heading).replace(/\s+/g, " ");
+    const heading = withoutDashes(str(section.heading).replace(/\s+/g, " "));
     if (heading) blocks.push({ id: id(), type: "heading", level: 2, text: heading });
     for (const rawBody of Array.isArray(section.body) ? section.body : []) {
       const b = (rawBody ?? {}) as Record<string, unknown>;
@@ -437,13 +441,13 @@ export function draftToPost(
           .filter((row) => row.length > 0);
         if (rows.length >= 2) blocks.push({ id: id(), type: "table", rows });
       } else if (b.kind === "quote") {
-        const q = clean(b.text);
+        const q = scrub(b.text);
         if (!q) continue;
         if (quoteInSource(q, sourceText)) {
           blocks.push({ id: id(), type: "quote", text: q, cite: str(b.cite) || sources[0]?.publisher || "" });
         } else {
           // Not word for word: keep the point, lose the quotation marks.
-          blocks.push({ id: id(), type: "paragraph", text: q });
+          blocks.push({ id: id(), type: "paragraph", text: withoutDashes(q) });
           flags.push("A quote was not found word for word in the source, so it was turned into a normal paragraph. Check its wording.");
         }
       }
@@ -456,8 +460,8 @@ export function draftToPost(
           id: id(),
           type: "image",
           image: null,
-          alt: str(slot.alt).replace(/\s+/g, " ").slice(0, 300),
-          caption: str(slot.caption).replace(/\s+/g, " ").slice(0, 300),
+          alt: withoutDashes(str(slot.alt).replace(/\s+/g, " ")).slice(0, 300),
+          caption: withoutDashes(str(slot.caption).replace(/\s+/g, " ")).slice(0, 300),
           size: "normal",
         });
         flags.push("There is an empty picture slot. Choose a picture for it or remove it: the post cannot be published until you do.");

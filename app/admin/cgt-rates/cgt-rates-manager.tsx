@@ -1,13 +1,13 @@
 "use client";
 
 /* Admin editor for the CGT calculator.
-   - Rates form: TWO-PHASE — "Review change" previews a diff, "Confirm" writes.
+   - Rates form: TWO-PHASE: "Review change" previews a diff, "Confirm" writes.
      Inputs are disabled during the preview so you commit exactly what you saw.
    - Multiplier table: edit / add / delete rows, each immediate + audited.
    - Recent changes: read-only audit trail.
-   Saving upserts the DB and revalidates the public calculator — no deploy. */
+   Saving upserts the DB and revalidates the public calculator: no deploy. */
 
-import { useActionState } from "react";
+import { useActionState, useEffect, useRef } from "react";
 import type { CgtConfig, CgtMultiplier } from "../../lib/ireland-cgt";
 import type { RateAuditRow } from "../../lib/rate-audit";
 import type { DiffEntry } from "../../lib/rate-diff";
@@ -21,6 +21,7 @@ import {
   type ActionState,
   type TwoPhaseState,
 } from "./actions";
+import { submitKeepingValues } from "../submit-keeping-values";
 
 const IDLE: ActionState = { status: "idle" };
 const IDLE_TWO: TwoPhaseState = { status: "idle" };
@@ -77,7 +78,7 @@ function DiffList({ diff }: { diff: DiffEntry[] }) {
             ? `${d.from} → ${d.to}`
             : d.kind === "unchanged" && d.from
               ? `${d.from} (unchanged)`
-              : d.to || d.from || "—";
+              : d.to || d.from || "(none)";
         return (
           <li key={d.label} className={`text-sm tabular-nums ${d.kind !== "unchanged" ? "text-ink" : "text-muted"}`}>
             {d.label}: {text}
@@ -95,7 +96,7 @@ function SettingsForm({ config }: { config: CgtConfig }) {
   const previewing = state.status === "preview";
 
   return (
-    <form action={action} className="rounded-none border border-line bg-white p-5">
+    <form onSubmit={submitKeepingValues(action)} className="rounded-none border border-line bg-white p-5">
       <h3 className="font-display text-base font-semibold text-ink">Rates &amp; exemption</h3>
       <p className="mt-1 text-xs text-muted">
         The standard rate, annual exemption and Entrepreneur Relief. Foreign-life (40%)
@@ -179,8 +180,13 @@ function MultiplierRow({ m }: { m: CgtMultiplier }) {
 
 function AddYearForm() {
   const [state, action, pending] = useActionState(addCgtMultiplier, IDLE);
+  const formRef = useRef<HTMLFormElement>(null);
+  // Empties once the year is added; a refused add keeps what was typed.
+  useEffect(() => {
+    if (state.status === "saved") formRef.current?.reset();
+  }, [state]);
   return (
-    <form action={action} className="mt-4 flex flex-wrap items-end gap-3 border-t border-line pt-4">
+    <form ref={formRef} onSubmit={submitKeepingValues(action)} className="mt-4 flex flex-wrap items-end gap-3 border-t border-line pt-4">
       <Field label="New year label">
         <input name="year_label" placeholder="e.g. 2003" className={`${inputClass} max-w-[10rem]`} required />
       </Field>
@@ -203,7 +209,7 @@ function ImportForm() {
       <p className="text-xs font-semibold uppercase tracking-wide text-muted">Bulk update (CSV)</p>
       <p className="mt-1 text-xs text-muted">
         Download the current table, edit in Excel, and re-upload. Import merges by
-        year — it updates and adds rows, never deletes.
+        year: it updates and adds rows, never deletes.
       </p>
       <div className="mt-3 flex flex-wrap items-center gap-3">
         <a href="/admin/cgt-rates/export" className={outlineBtn}>
@@ -250,7 +256,7 @@ function MultipliersForm({ multipliers }: { multipliers: CgtMultiplier[] }) {
     <div className="rounded-none border border-line bg-white p-5">
       <h3 className="font-display text-base font-semibold text-ink">Indexation multipliers</h3>
       <p className="mt-1 text-xs text-muted">
-        Revenue&rsquo;s multiplier for each acquisition year — edit a value, delete a
+        Revenue&rsquo;s multiplier for each acquisition year: edit a value, delete a
         year, or add a new one. Frozen since 2003, but if indexation is ever extended
         you can add 2003 onward here, no redeploy.
       </p>
@@ -288,7 +294,7 @@ function AuditPanel({ entries }: { entries: RateAuditRow[] }) {
             <li key={e.id} className="flex items-baseline justify-between gap-4 py-2">
               <div>
                 <span className="text-sm text-ink-body">{e.summary}</span>
-                <span className="mt-0.5 block text-xs text-muted">{e.changedBy ?? "—"}</span>
+                <span className="mt-0.5 block text-xs text-muted">{e.changedBy ?? "(unknown)"}</span>
               </div>
               <span className="shrink-0 text-xs text-muted tabular-nums">{auditTime(e.changedAt)}</span>
             </li>
@@ -306,8 +312,8 @@ function ResetForm() {
     <form action={action} className="rounded-none border border-line bg-white p-5">
       <h3 className="font-display text-base font-semibold text-ink">Reset to Revenue defaults</h3>
       <p className="mt-1 text-xs text-muted">
-        Restore the standard rates and the official 1974–2002 multiplier table. This
-        replaces the whole table — any years you added are removed.
+        Restore the standard rates and the official 1974 to 2002 multiplier table. This
+        replaces the whole table: any years you added are removed.
       </p>
       {state.status === "preview" && (
         <div className="mt-3 border border-line bg-surface-muted p-3">

@@ -12,7 +12,7 @@ import { PERSONAL_TOOLS } from "./personal-tabs";
 import { toolNames } from "../lib/messages/tool-names";
 import { calcMessages } from "../lib/messages/calc";
 
-/* Tab body: uppercase label + two animated layers — a top/bottom rule that
+/* Tab body: uppercase label + two animated layers: a top/bottom rule that
    draws in and a green fill that grows down from it, turning the text white.
    Active = both layers locked on; inactive = they reveal on hover/focus. */
 function TabInner({ label, active }: { label: string; active: boolean }) {

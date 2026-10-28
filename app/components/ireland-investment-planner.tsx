@@ -1,7 +1,7 @@
 "use client";
 
 /* Personal investment options planner, in the site theme.
-   Three questions — timeframe, risk, then the refinements — with the matching
+   Three questions (timeframe, risk, then the refinements) with the matching
    options ranked underneath as the answers change. All data and maths live in
    ../lib/ireland-investment so the figures stay in one auditable place.
 
@@ -86,9 +86,9 @@ function StepHeading({ step, title, hint }: { step: string; title: string; hint?
       <span className="font-display text-xs font-semibold tracking-[0.16em] text-primary-500">
         {step}
       </span>
-      <h3 className="mt-1 font-display text-xl font-bold tracking-[-0.01em] text-ink">
+      <h2 className="mt-1 font-display text-xl font-bold tracking-[-0.01em] text-ink">
         {title}
-      </h3>
+      </h2>
       {hint && <p className="mt-1 text-sm leading-6 text-muted">{hint}</p>}
     </div>
   );
@@ -215,9 +215,9 @@ function ResultRow({ result, rank, years }: { result: OptionResult; rank: number
             <span className="font-display text-sm font-semibold text-primary-500">
               {String(rank).padStart(2, "0")}
             </span>
-            <h4 className="font-display text-base font-medium tracking-tight text-ink">
+            <h3 className="font-display text-base font-medium tracking-tight text-ink">
               {text.name}
-            </h4>
+            </h3>
           </div>
           <div className="mt-2 flex flex-wrap items-center gap-2 text-[11px] text-muted">
             <span className="border border-line bg-surface-muted px-2 py-0.5 font-semibold">
@@ -381,9 +381,9 @@ export function IrelandInvestmentPlanner() {
           title={t.step1Title}
           hint={t.step1Hint}
         />
-        <h3 id="step-timeframe" className="sr-only">
+        <h2 id="step-timeframe" className="sr-only">
           {t.timeframe}
-        </h3>
+        </h2>
         <AmountField value={amount} onChange={setAmount} />
         <div role="radiogroup" aria-label={t.horizonLabel} className="mt-5 grid gap-3 sm:grid-cols-3">
           {HORIZONS.map((h) => {
@@ -414,9 +414,9 @@ export function IrelandInvestmentPlanner() {
           title={t.step2Title}
           hint={t.step2Hint}
         />
-        <h3 id="step-risk" className="sr-only">
+        <h2 id="step-risk" className="sr-only">
           {t.riskHeading}
-        </h3>
+        </h2>
         <div role="radiogroup" aria-label={t.riskLevel} className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
           {RISK_LEVELS.map((level) => {
             const active = level.value === risk;
@@ -456,9 +456,9 @@ export function IrelandInvestmentPlanner() {
           title={t.step3Title}
           hint={t.step3Hint}
         />
-        <h3 id="step-refine" className="sr-only">
+        <h2 id="step-refine" className="sr-only">
           {t.refinements}
-        </h3>
+        </h2>
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           <Segmented
             label={t.marginal}
@@ -506,9 +506,9 @@ export function IrelandInvestmentPlanner() {
       {/* ---- results ---- */}
       <section aria-labelledby="step-results" className="mt-12 border-t border-line pt-10">
         <StepHeading step="04" title={t.step4Title} />
-        <h3 id="step-results" className="sr-only">
+        <h2 id="step-results" className="sr-only">
           {t.results}
-        </h3>
+        </h2>
 
         <p className="text-sm leading-6 text-muted">
           {t.summary

@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@auth/mongodb-adapter": "^3.11.3",
+    "@vercel/analytics": "^2.0.1",
     "bcryptjs": "^3.0.3",
     "mongodb": "^6.21.0",
     "motion": "^12.40.0",

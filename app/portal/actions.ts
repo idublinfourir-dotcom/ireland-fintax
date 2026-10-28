@@ -13,6 +13,7 @@ import {
 import { requireClient } from "../lib/auth/guards";
 import { addThreadMessage } from "../lib/enquiry-messages";
 import { validateEnquiryReply } from "../lib/enquiry-message-validation";
+import { allowPublicAction } from "../lib/rate-limit";
 
 export async function sendClientMessageAction(formData: FormData): Promise<void> {
   const user = await requireClient();
@@ -23,6 +24,20 @@ export async function sendClientMessageAction(formData: FormData): Promise<void>
 
   const owner = toObjectId(user.id);
   if (!owner) return;
+
+  /* A cap well above any real conversation, so a stolen session or a stuck
+     script cannot fill the admin inbox. Fails open like the other public
+     caps: a confirmed member's reply matters more than the cap. */
+  const allowed = await allowPublicAction({
+    action: "portal-reply",
+    identity: user.id,
+    ip: { max: 60, windowSeconds: 60 * 60 },
+    identityLimit: { max: 30, windowSeconds: 60 * 60 },
+  });
+  if (!allowed) {
+    console.error("[portal] client reply refused by the rate limit");
+    return;
+  }
 
   try {
     // The enquiry must belong to this client.

@@ -1,3 +1,7 @@
+/** When every calculator's figures were last checked against their official
+    sources together (shown on About). Move it after each full re-check. */
+export const FIGURES_LAST_CHECKED = "October 2026";
+
 export const site = {
   name: "Irish Fintax",
   // Canonical host. `www` is canonical: the apex 308-redirects to it in Vercel,
@@ -11,11 +15,11 @@ export const site = {
   // host, or mail to it bounces.
   email: "hello@irishfintax.ie",
   phone: "+353 89 951 9986",
-  // Digits only, no spaces or parentheses — a tel: href with either is not
+  // Digits only, no spaces or parentheses, a tel: href with either is not
   // dialable from some mobile browsers.
   phoneHref: "tel:+353899519986",
   address: ["River Walk", "Citywest Business Campus"],
-  hours: "Mon–Fri, 9:00–17:30",
+  hours: "Mon to Fri, 9:00 to 17:30",
 };
 
 export const industries = [
@@ -141,7 +145,7 @@ export interface SubService {
   overview: string;
   included: string[];
   bestFor: string[];
-  /** Long-form detail — 2+ paragraphs (split on blank line). Rendered below the scope list. */
+  /** Long-form detail: 2+ paragraphs (split on blank line). Rendered below the scope list. */
   context?: string;
 }
 
@@ -284,7 +288,7 @@ const allServiceCategories: ServiceCategory[] = [
           "Directors balancing salary and dividends",
         ],
         context:
-          "Payroll in Ireland runs on PAYE Modernisation: every pay run is reported to Revenue in real time, before your employees are paid, through ROS. A late or wrong submission shows up immediately, which is what makes payroll unforgiving in a way annual filings aren’t. We run the full cycle: payslips, PRSI, USC, PAYE and the year-end returns, so nothing slips through.\n\nTwo cost changes are live right now. Employee PRSI sits at 4.2% and rises again to 4.35% from 1 October 2026, part of a run of scheduled increases. And pension auto-enrolment (My Future Fund) started on 1 January 2026: employees aged 23 to 60 earning over €20,000, who aren’t already in a scheme, are enrolled automatically, with employer and employee each contributing 1.5% of gross pay to begin with. We handle the enrolment and the contributions as part of the regular payroll run, not as a separate project.",
+          "Payroll in Ireland runs on PAYE Modernisation: every pay run is reported to Revenue in real time, before your employees are paid, through ROS. A late or wrong submission shows up immediately, which is what makes payroll unforgiving in a way annual filings aren’t. We run the full cycle: payslips, PRSI, USC, PAYE and the year-end returns, so nothing slips through.\n\nTwo cost changes are live right now. Employee PRSI rose to 4.35% on 1 October 2026 and rises again to 4.5% on 1 October 2027, part of a run of scheduled increases. And pension auto-enrolment (My Future Fund) started on 1 January 2026: employees aged 23 to 60 earning over €20,000, who aren’t already in a scheme, are enrolled automatically, with employer and employee each contributing 1.5% of gross pay to begin with. We handle the enrolment and the contributions as part of the regular payroll run, not as a separate project.",
       },
       {
         slug: "audit-assurance",
@@ -1018,10 +1022,10 @@ const allServiceCategories: ServiceCategory[] = [
    getCategory/getServiceParams stop resolving its detail routes.
 
    Only "Crypto and Digital Assets" is retired. Digital Transformation is a
-   separate service and stays — do not read the "Digital" in that category's
+   separate service and stays: do not read the "Digital" in that category's
    title as referring to it.
 
-   The category data itself is left in `allServiceCategories` above — deleting
+   The category data itself is left in `allServiceCategories` above: deleting
    it would throw away real written copy, and this is one line to reverse. The
    old URLs are redirected to /services in next.config.ts so nothing 404s.
 

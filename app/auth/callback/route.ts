@@ -6,7 +6,7 @@ import { DEFAULT_LOCALE, isLocale, localeHref } from "../../lib/i18n";
 
 /**
  * Post-Google landing route: routes by role, admins to /admin and everyone
- * else to /portal — unless an explicit safe `next` was carried through.
+ * else to /portal: unless an explicit safe `next` was carried through.
  *
  * The PKCE exchange itself is no longer done here. Google now redirects to
  * Auth.js' own handler at /api/auth/callback/google, which mints the session

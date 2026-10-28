@@ -37,6 +37,7 @@ export const pt: Messages = {
     signIn: "Entrar",
     ask: "Faça uma pergunta",
     openMenu: "Abrir menu",
+    submenu: "Menu de {label}",
     skip: "Pular para o conteúdo",
     closeMenu: "Fechar menu",
     language: "Idioma",
@@ -60,6 +61,7 @@ export const pt: Messages = {
     getInTouch: "Contato",
     language: "Idioma",
     rights: "Todos os direitos reservados.",
+    privacy: "Privacidade",
     disclaimer: "Apenas informação geral, não é aconselhamento financeiro, fiscal ou jurídico.",
   },
 

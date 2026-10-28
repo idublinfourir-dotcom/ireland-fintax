@@ -25,7 +25,7 @@ class TooManySignIns extends CredentialsSignin {
 }
 
 /* Node-runtime half of the Auth.js configuration: the database adapter and the
- * email + password provider. Never import this from `proxy.ts` — see the note
+ * email + password provider. Never import this from `proxy.ts`: see the note
  * at the top of ./auth.config.ts.
  *
  * The adapter's default collection names are already the ones this app uses
@@ -41,7 +41,7 @@ function mongoAdapter(): Adapter {
     ...base,
     /**
      * The adapter creates the account on a first Google sign-in and knows
-     * nothing about our extra fields, so they are stamped here — at creation,
+     * nothing about our extra fields, so they are stamped here: at creation,
      * once. `role` in particular must never be assignable later: nothing else
      * in the app writes it, so a client cannot promote themselves.
      *
@@ -106,7 +106,8 @@ function epochMs(value: number | Date | undefined): number {
 }
 
 /**
- * Should this session be ended? Two reasons, one query.
+ * The account's role as it stands now, or null when this session should end.
+ * One query answers three things.
  *
  * 1. **The account no longer exists.** Sessions here are JWTs with no
  *    server-side row, and nothing else in the session path reads the database,
@@ -120,26 +121,31 @@ function epochMs(value: number | Date | undefined): number {
  *    which moves forward on every re-stamp and would leave a narrow race where
  *    a reset landing between a clean check and the re-stamp is never noticed.
  *    `pwdAt` never moves.
+ * 3. **The role changed.** The role rides in the token, so an admin demoted in
+ *    the database kept admin rights until the token expired. The caller
+ *    re-stamps the token with the role returned here, so a change in either
+ *    direction lands within one check interval.
  */
-async function sessionRevoked(
+async function currentRole(
   userId: string,
   mintedWith: number,
-): Promise<boolean> {
+): Promise<"admin" | "client" | null> {
   // A subject that is not an account id cannot belong to a live session: both
   // sign-in paths set it from the account's own ObjectId.
   const id = toObjectId(userId);
-  if (!id) return true;
+  if (!id) return null;
 
   const users = await usersCollection();
   const account = await users.findOne(
     { _id: id },
-    { projection: { passwordChangedAt: 1 } },
+    { projection: { passwordChangedAt: 1, role: 1 } },
   );
 
-  if (!account) return true;
+  if (!account) return null;
 
   const changed = account.passwordChangedAt;
-  return changed instanceof Date && changed.getTime() > mintedWith;
+  if (changed instanceof Date && changed.getTime() > mintedWith) return null;
+  return account.role === "admin" ? "admin" : "client";
 }
 
 export const {
@@ -158,9 +164,10 @@ export const {
     ...authConfig.callbacks,
 
     /**
-     * The edge-safe callback from auth.config.ts, plus the two things it
-     * cannot do: notice that the password was reset in another browser, and
-     * notice that the account behind the token is gone.
+     * The edge-safe callback from auth.config.ts, plus the three things it
+     * cannot do: notice that the password was reset in another browser,
+     * notice that the account behind the token is gone, and pick up a role
+     * changed in the database.
      *
      * Sessions here are JWTs, so there is no session row to delete and either
      * event would otherwise leave every existing session signed in. A reset
@@ -187,9 +194,9 @@ export const {
       if (Date.now() - since < PASSWORD_CHECK_INTERVAL_MS) return token;
 
       try {
-        if (!token.sub || (await sessionRevoked(token.sub, token.pwdAt ?? 0))) {
-          return null;
-        }
+        const role = token.sub ? await currentRole(token.sub, token.pwdAt ?? 0) : null;
+        if (!role) return null;
+        token.role = role;
       } catch (err) {
         /* Fail open, matching the rest of this file: the database being
            briefly unreachable must not sign the whole site out. The window it
@@ -208,7 +215,7 @@ export const {
      * Link guest enquiries to the account that has just proved the address.
      *
      * Restricted to the two paths where ownership of the address was actually
-     * demonstrated in this request — clicking the emailed confirmation link, or
+     * demonstrated in this request: clicking the emailed confirmation link, or
      * signing in through Google. A plain password sign-in is deliberately not
      * one of them: its enquiries were already claimed when the account was
      * confirmed, and widening this to every sign-in would make an unproved
@@ -220,7 +227,7 @@ export const {
       }
       if (!user.id || !user.email) return;
 
-      /* Auth.js creates — and links — OAuth accounts with `emailVerified:
+      /* Auth.js creates (and links) OAuth accounts with `emailVerified:
          null`; it only stamps that field for its own Email provider. Google
          does verify addresses (the signIn callback in auth.config.ts refuses
          a profile that says otherwise), which is the whole justification for
@@ -278,7 +285,7 @@ export const {
       },
 
       /**
-       * Returns the user on success and null on every failure — a wrong
+       * Returns the user on success and null on every failure: a wrong
        * password, an unknown address and an unconfirmed address are all
        * indistinguishable from here, so the response cannot be used to probe
        * which addresses exist. The login action re-reads the account after a

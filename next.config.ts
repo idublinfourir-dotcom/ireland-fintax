@@ -58,6 +58,20 @@ const nextConfig: NextConfig = {
         destination: `/:lang${LATEST_BUDGET.href}`,
         permanent: false,
       },
+      // Section roots have no page of their own: send them where the menu
+      // label does. Temporary, so a hub page can take the URL later.
+      { source: "/tools", destination: "/tools/ireland-income-tax", permanent: false },
+      { source: "/personal", destination: "/personal/mortgage", permanent: false },
+      {
+        source: `/:lang(${LOCALES.filter((l) => l !== DEFAULT_LOCALE).join("|")})/tools`,
+        destination: "/:lang/tools/ireland-income-tax",
+        permanent: false,
+      },
+      {
+        source: `/:lang(${LOCALES.filter((l) => l !== DEFAULT_LOCALE).join("|")})/personal`,
+        destination: "/:lang/personal/mortgage",
+        permanent: false,
+      },
       /* The whole Services section is hidden site-wide: its pages are parked
          in app/_services (unrouted, like app/_pricing) and every /services URL
          goes home. Temporary on purpose, so browsers don't cache it and the

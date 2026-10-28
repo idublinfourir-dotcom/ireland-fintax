@@ -1,8 +1,8 @@
 "use client";
 
 /* Two-in-one tool on the Capital Allowances page:
-   • Capital allowances (tax)  — wear & tear / writing-down allowances.
-   • Working capital (finance) — assets − liabilities + liquidity ratios.
+   • Capital allowances (tax) : wear & tear / writing-down allowances.
+   • Working capital (finance): assets − liabilities + liquidity ratios.
    A sub-tab switches between them; the explainer cards below follow the mode. */
 
 import { useState } from "react";

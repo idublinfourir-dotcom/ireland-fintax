@@ -11,16 +11,12 @@ import { isMailerConfigured } from "../mail-config";
  *
  * Needs both a database to hold the accounts and a secret to sign the session
  * JWT with. Without either, every auth entry point degrades to a signed-out
- * site rather than throwing — the root layout reads the session on every
+ * site rather than throwing: the root layout reads the session on every
  * route, so a throw there would take the marketing pages down too.
  */
 export function isAuthConfigured(): boolean {
   return isDbConfigured() && Boolean(process.env.AUTH_SECRET?.trim());
 }
-
-/** Shown to the user when an auth action is attempted with no backend. */
-export const AUTH_NOT_CONFIGURED =
-  "Accounts are unavailable right now — this site has no authentication backend configured yet.";
 
 /**
  * Is "Continue with Google" available? Auth.js talks to Google directly, so
@@ -40,7 +36,7 @@ export function isGoogleEnabled(): boolean {
  *
  * Signing up by email is a two-part transaction: create the account, then mail
  * a link that proves the address. Mail is best-effort everywhere else in this
- * app — a failed enquiry acknowledgement still leaves the enquiry stored — but
+ * app (a failed enquiry acknowledgement still leaves the enquiry stored) but
  * here the link IS the second half of the flow. Without it the account can
  * never be confirmed, and `authorize` refuses to sign in an unconfirmed
  * account, so the person is left holding an address they cannot use.
@@ -57,7 +53,7 @@ export function isSignupEmailConfigured(): boolean {
  * THE ADMIN ALLOW-LIST. `ADMIN_EMAILS` is a comma-separated list of addresses;
  * anyone signing up with one of them gets `role: "admin"`, everyone else gets
  * `client`. It is the single source of truth for the role, applied on every
- * sign-in path — password or Google.
+ * sign-in path: password or Google.
  *
  * A role is only ever assigned at account creation, and nothing in the app
  * writes `role` afterwards, so a client cannot self-promote. To change an

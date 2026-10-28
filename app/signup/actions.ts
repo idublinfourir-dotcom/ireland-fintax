@@ -137,7 +137,7 @@ export async function signup(
 
   /* Refuse before writing anything. The confirmation link is the second half
      of this flow, not a nicety: without it the account is created, cannot be
-     confirmed, and therefore can never sign in — while the form cheerfully
+     confirmed, and therefore can never sign in: while the form cheerfully
      says "check your email". Better to say so than to leave a dead account
      behind and blame the user's inbox. */
   if (!isSignupEmailConfigured()) {
@@ -163,7 +163,7 @@ export async function signup(
     };
   }
 
-  // Emails are stored lowercased — the unique index on them is the account
+  // Emails are stored lowercased: the unique index on them is the account
   // boundary, and Auth.js' adapter looks accounts up by exact match.
   const normalisedEmail = email.toLowerCase();
 

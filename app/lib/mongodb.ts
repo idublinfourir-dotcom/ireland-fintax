@@ -1,9 +1,9 @@
 import { MongoClient, type Db } from "mongodb";
 import { MONGODB_DB, mongoUri } from "./db-config";
 
-/* MongoDB connection. SERVER ONLY (Node runtime — never the edge).
+/* MongoDB connection. SERVER ONLY (Node runtime: never the edge).
  *
- * Importing this module must never throw or open a connection — `next build`
+ * Importing this module must never throw or open a connection: `next build`
  * collects page data for static routes (e.g. /_not-found) that touch no
  * database, and a throw at import time crashes that pass. So the client is
  * built lazily on first use.
@@ -42,7 +42,7 @@ export function getMongoClient(): Promise<MongoClient> {
     .connect()
     .catch((err) => {
       // A failed handshake must not poison every later call with the same
-      // rejected promise — drop it so the next request retries.
+      // rejected promise: drop it so the next request retries.
       globalForMongo.mongoClientPromise = undefined;
       throw err;
     });

@@ -338,12 +338,12 @@ function Shell(props: {
           <p className="hf-eyebrow">
             <b>{String(props.n).padStart(2, "0")}</b> {props.eyebrow}
           </p>
-          <h3 className="hf-title">
+          <h2 className="hf-title">
             <svg viewBox="0 0 256 256" aria-hidden="true">
               <path fill="currentColor" d={ICONS[props.href]} />
             </svg>
             {name}
-          </h3>
+          </h2>
         </div>
         <LocaleLink href={props.href} className="hf-open" aria-label={t.openLabel.replace("{name}", name)}>
           {t.open} <span aria-hidden="true" className="inline-block rtl:-scale-x-100">↗</span>

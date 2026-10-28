@@ -1,4 +1,4 @@
-/* Related-FAQ data + matcher for the contact wizard. PURE — no React/IO — so
+/* Related-FAQ data + matcher for the contact wizard. PURE (no React/IO) so
    getRelatedFaqs is unit-testable and can be imported by both the client
    component and node --test.
 

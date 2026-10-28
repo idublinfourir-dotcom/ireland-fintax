@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { LocaleLink, useT } from "./locale-link";
 import { LanguageMenu } from "./language-menu";
 import { calcMessages } from "../lib/messages/calc";
@@ -95,6 +95,108 @@ function Logo({ locale, onClick }: { locale: Locale; onClick?: () => void }) {
   );
 }
 
+/* One desktop dropdown, in the disclosure pattern: the label is a link to
+   the section and the chevron is a button that opens the panel, so keyboard
+   and screen-reader users choose to open it instead of tabbing through every
+   link in it. Hover still opens it for the mouse. Closed, the panel is
+   visibility:hidden, which also takes its links out of the Tab order. Escape
+   or moving focus out of the menu closes it. */
+function NavMenu({
+  locale,
+  href,
+  label,
+  active,
+  toggleLabel,
+  panelClass,
+  children,
+}: {
+  locale: Locale;
+  href: string;
+  label: string;
+  active: boolean;
+  toggleLabel: string;
+  /** Position and width of the panel. */
+  panelClass: string;
+  children: (close: (e: React.MouseEvent<HTMLElement>) => void) => React.ReactNode;
+}) {
+  const [open, setOpen] = useState(false);
+  // Shut after a link is clicked, until the mouse comes back: otherwise the
+  // hover keeps the panel open over the new page.
+  const [suppressed, setSuppressed] = useState(false);
+  const panelId = useId();
+  const button = useRef<HTMLButtonElement>(null);
+  function close(e: React.MouseEvent<HTMLElement>) {
+    setOpen(false);
+    setSuppressed(true);
+    e.currentTarget.blur();
+  }
+  // Opened from the button it shows at once: during a fade, visibility is still
+  // hidden on the first frame, and a quick Tab would skip the panel's links.
+  const panelState = open
+    ? "visible opacity-100 transition-none"
+    : suppressed
+      ? "invisible opacity-0"
+      : "invisible opacity-0 group-hover:visible group-hover:opacity-100";
+  return (
+    <div
+      className="group relative"
+      onMouseEnter={() => setSuppressed(false)}
+      onKeyDown={(e) => {
+        if (e.key === "Escape" && open) {
+          setOpen(false);
+          button.current?.focus();
+        }
+      }}
+      onBlur={(e) => {
+        if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setOpen(false);
+      }}
+    >
+      <div className="flex items-center">
+        <LocaleLink
+          locale={locale}
+          href={href}
+          aria-current={active ? "page" : undefined}
+          onClick={close}
+          className={`relative whitespace-nowrap text-sm font-medium transition-colors duration-200 ${
+            active ? "text-primary-600" : "text-ink-body hover:text-ink"
+          }`}
+        >
+          {label}
+          <span
+            className={`pointer-events-none absolute -bottom-1.5 inset-s-0 h-0.5 w-full origin-left rtl:origin-right bg-primary-500 transition-transform duration-200 ease-snappy ${
+              active ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100"
+            }`}
+          />
+        </LocaleLink>
+        {/* 24px tap target (WCAG 2.5.8) that takes 16px of the row: -me-2
+            borrows the rest from the gap after it. */}
+        <button
+          ref={button}
+          type="button"
+          aria-expanded={open}
+          aria-controls={panelId}
+          aria-label={toggleLabel}
+          onClick={() => {
+            setOpen((o) => !o);
+            setSuppressed(false);
+          }}
+          className="-me-2 grid h-6 w-6 cursor-pointer place-items-center text-muted transition-colors duration-200 hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500"
+        >
+          <Chevron
+            className={`transition-transform duration-200 group-hover:rotate-180 ${open ? "rotate-180" : ""}`}
+          />
+        </button>
+      </div>
+      <div
+        id={panelId}
+        className={`absolute top-full z-50 pt-4 transition-all duration-200 ${panelClass} ${panelState}`}
+      >
+        {children(close)}
+      </div>
+    </div>
+  );
+}
+
 export function SiteHeader({
   user,
   locale,
@@ -118,10 +220,6 @@ export function SiteHeader({
   const [mobilePersonalOpen, setMobilePersonalOpen] = useState(false);
   const [mobileFoundersOpen, setMobileFoundersOpen] = useState(false);
   const [mobileBudgetOpen, setMobileBudgetOpen] = useState(false);
-  const [toolsClosed, setToolsClosed] = useState(false);
-  const [personalClosed, setPersonalClosed] = useState(false);
-  const [foundersClosed, setFoundersClosed] = useState(false);
-  const [budgetClosed, setBudgetClosed] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [hidden, setHidden] = useState(false);
   const lastY = useRef(0);
@@ -130,25 +228,6 @@ export function SiteHeader({
   const personalActive = isActive(pathname, "/personal");
   const foundersActive = isActive(pathname, "/toolkits");
   const budgetActive = isActive(pathname, "/budget");
-
-  // Force an open dropdown shut after a link is clicked (otherwise the clicked
-  // link keeps focus / hover and the panel stays open on the new page).
-  function closeTools(e: React.MouseEvent<HTMLElement>) {
-    setToolsClosed(true);
-    e.currentTarget.blur();
-  }
-  function closePersonal(e: React.MouseEvent<HTMLElement>) {
-    setPersonalClosed(true);
-    e.currentTarget.blur();
-  }
-  function closeFounders(e: React.MouseEvent<HTMLElement>) {
-    setFoundersClosed(true);
-    e.currentTarget.blur();
-  }
-  function closeBudget(e: React.MouseEvent<HTMLElement>) {
-    setBudgetClosed(true);
-    e.currentTarget.blur();
-  }
 
   const firstName =
     user?.name?.trim().split(" ")[0] ??
@@ -197,7 +276,7 @@ export function SiteHeader({
         }`}
       >
         {/* max-w-7xl: the nav row (logo + 6 links + sign-in + CTA) needs
-            ~1235px — it stopped fitting the 6xl container when the
+            ~1235px: it stopped fitting the 6xl container when the
             Entrepreneur Toolkits link was added, and Personal Hub took most of
             what was left. Blog is the sixth link now, in the slot Services
             left; Budget 2027 replaced Contact, which duplicated the "Ask a
@@ -213,42 +292,23 @@ export function SiteHeader({
           <Logo locale={locale} onClick={closeMobile} />
 
           {/* xl breakpoint: with "Entrepreneur Toolkits" the full nav no longer
-              fits at 1024px — below xl the hamburger menu takes over.
+              fits at 1024px: below xl the hamburger menu takes over.
               gap tightened from 6 when "Personal Hub" was added: signed in, the
               avatar pill is ~120px wider than the Sign in button and the row
               was down to its last few pixels at xl. */}
           <div className="hidden items-center gap-5 xl:flex">
-            {/* Tools dropdown (CSS hover + focus-within). Left-aligned to the
-                trigger, not centred: this item sits near the left edge, and a
-                centred 52rem panel ran off-screen below ~1700px wide. */}
-            <div
-              className="group relative"
-              onMouseEnter={() => setToolsClosed(false)}
-              onFocus={() => setToolsClosed(false)}
+            {/* Tools dropdown. Left-aligned to the trigger, not centred: this
+                item sits near the left edge, and a centred 52rem panel ran
+                off-screen below ~1700px wide. */}
+            <NavMenu
+              locale={locale}
+              href="/tools/ireland-income-tax"
+              label={t.taxHub}
+              active={toolsActive}
+              toggleLabel={t.submenu.replace("{label}", t.taxHub)}
+              panelClass="inset-s-0 w-[min(52rem,calc(100vw-2rem))]"
             >
-              <LocaleLink
-                locale={locale}
-                href="/tools/ireland-income-tax"
-                aria-current={toolsActive ? "page" : undefined}
-                onClick={closeTools}
-                className={`relative flex items-center gap-1 whitespace-nowrap text-sm font-medium transition-colors duration-200 ${
-                  toolsActive ? "text-primary-600" : "text-ink-body hover:text-ink"
-                }`}
-              >
-                {t.taxHub}
-                <Chevron className="text-muted transition-transform duration-200 group-hover:rotate-180 group-focus-within:rotate-180" />
-                <span
-                  className={`pointer-events-none absolute -bottom-1.5 inset-s-0 h-0.5 w-full origin-left rtl:origin-right bg-primary-500 transition-transform duration-200 ease-snappy ${
-                    toolsActive ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100"
-                  }`}
-                />
-              </LocaleLink>
-
-              <div
-                className={`invisible absolute inset-s-0 top-full z-50 w-[min(52rem,calc(100vw-2rem))] pt-4 opacity-0 transition-all duration-200 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100 ${
-                  toolsClosed ? "!invisible !opacity-0" : ""
-                }`}
-              >
+              {(close) => (
                 <div className="rounded-none border border-line bg-white p-6 shadow-2xl shadow-navy-900/15">
                   <p className="mb-4 text-[11px] font-semibold uppercase tracking-[0.16em] text-muted">
                     {t.calculatorsHeading}
@@ -259,7 +319,7 @@ export function SiteHeader({
                         locale={locale}
                         key={tool.href}
                         href={tool.href}
-                        onClick={closeTools}
+                        onClick={close}
                         aria-current={pathname === tool.href ? "page" : undefined}
                         className="group/item block"
                       >
@@ -276,45 +336,26 @@ export function SiteHeader({
                     <LocaleLink
                       locale={locale}
                       href="/tools/ireland-income-tax"
-                      onClick={closeTools}
+                      onClick={close}
                       className="text-sm font-semibold text-primary-500 transition-colors duration-200 hover:text-primary-600"
                     >
                       {t.openCalculators} <span aria-hidden="true" className="inline-block rtl:-scale-x-100">→</span>
                     </LocaleLink>
                   </div>
                 </div>
-              </div>
-            </div>
+              )}
+            </NavMenu>
 
             {/* Founders Hub mega-menu */}
-            <div
-              className="group relative"
-              onMouseEnter={() => setFoundersClosed(false)}
-              onFocus={() => setFoundersClosed(false)}
+            <NavMenu
+              locale={locale}
+              href="/toolkits"
+              label={t.accounts}
+              active={foundersActive}
+              toggleLabel={t.submenu.replace("{label}", t.accounts)}
+              panelClass="inset-s-0 w-[min(44rem,calc(100vw-2rem))]"
             >
-              <LocaleLink
-                locale={locale}
-                href="/toolkits"
-                aria-current={foundersActive ? "page" : undefined}
-                onClick={closeFounders}
-                className={`relative flex items-center gap-1 whitespace-nowrap text-sm font-medium transition-colors duration-200 ${
-                  foundersActive ? "text-primary-600" : "text-ink-body hover:text-ink"
-                }`}
-              >
-                {t.accounts}
-                <Chevron className="text-muted transition-transform duration-200 group-hover:rotate-180 group-focus-within:rotate-180" />
-                <span
-                  className={`pointer-events-none absolute -bottom-1.5 inset-s-0 h-0.5 w-full origin-left rtl:origin-right bg-primary-500 transition-transform duration-200 ease-snappy ${
-                    foundersActive ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100"
-                  }`}
-                />
-              </LocaleLink>
-
-              <div
-                className={`invisible absolute inset-s-0 top-full z-50 w-[min(44rem,calc(100vw-2rem))] pt-4 opacity-0 transition-all duration-200 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100 ${
-                  foundersClosed ? "!invisible !opacity-0" : ""
-                }`}
-              >
+              {(close) => (
                 <div className="rounded-none border border-line bg-white p-6 shadow-2xl shadow-navy-900/15">
                   <p className="mb-4 text-[11px] font-semibold uppercase tracking-[0.16em] text-muted">
                     {t.founderHeading}
@@ -325,7 +366,7 @@ export function SiteHeader({
                         locale={locale}
                         key={res.label}
                         href="/toolkits"
-                        onClick={closeFounders}
+                        onClick={close}
                         className="group/item block"
                       >
                         <span className="font-display text-sm font-semibold text-ink transition-colors duration-200 group-hover/item:text-primary-500">
@@ -341,52 +382,28 @@ export function SiteHeader({
                     <LocaleLink
                       locale={locale}
                       href="/toolkits"
-                      onClick={closeFounders}
+                      onClick={close}
                       className="text-sm font-semibold text-primary-500 transition-colors duration-200 hover:text-primary-600"
                     >
                       {t.browseAccounts} <span aria-hidden="true" className="inline-block rtl:-scale-x-100">→</span>
                     </LocaleLink>
                   </div>
                 </div>
-              </div>
-            </div>
+              )}
+            </NavMenu>
 
             {/* Personal Hub dropdown (matches Accountants Hub).
                 Sits after the Founders Hub: the two business-facing hubs read
                 first, personal finance last, before the plain links. */}
-            <div
-              className="group relative"
-              onMouseEnter={() => setPersonalClosed(false)}
-              onFocus={() => setPersonalClosed(false)}
+            <NavMenu
+              locale={locale}
+              href="/personal/mortgage"
+              label={t.personal}
+              active={personalActive}
+              toggleLabel={t.submenu.replace("{label}", t.personal)}
+              panelClass="left-1/2 w-[min(30rem,calc(100vw-2rem))] -translate-x-1/2"
             >
-              <LocaleLink
-                locale={locale}
-                href="/personal/mortgage"
-                aria-current={personalActive ? "page" : undefined}
-                onClick={closePersonal}
-                className={`relative flex items-center gap-1 whitespace-nowrap text-sm font-medium transition-colors duration-200 ${
-                  personalActive
-                    ? "text-primary-600"
-                    : "text-ink-body hover:text-ink"
-                }`}
-              >
-                {t.personal}
-                <Chevron className="text-muted transition-transform duration-200 group-hover:rotate-180 group-focus-within:rotate-180" />
-                <span
-                  className={`pointer-events-none absolute -bottom-1.5 inset-s-0 h-0.5 w-full origin-left rtl:origin-right bg-primary-500 transition-transform duration-200 ease-snappy ${
-                    personalActive
-                      ? "scale-x-100"
-                      : "scale-x-0 group-hover:scale-x-100"
-                  }`}
-                />
-              </LocaleLink>
-
-              {/* Narrower panel than the Accountants Hub: two entries, not seven. */}
-              <div
-                className={`invisible absolute left-1/2 top-full z-50 w-[min(30rem,calc(100vw-2rem))] -translate-x-1/2 pt-4 opacity-0 transition-all duration-200 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100 ${
-                  personalClosed ? "!invisible !opacity-0" : ""
-                }`}
-              >
+              {(close) => (
                 <div className="rounded-none border border-line bg-white p-6 shadow-2xl shadow-navy-900/15">
                   <p className="mb-4 text-[11px] font-semibold uppercase tracking-[0.16em] text-muted">
                     {t.personalHeading}
@@ -397,7 +414,7 @@ export function SiteHeader({
                         locale={locale}
                         key={tool.href}
                         href={tool.href}
-                        onClick={closePersonal}
+                        onClick={close}
                         aria-current={pathname === tool.href ? "page" : undefined}
                         className="group/item block"
                       >
@@ -414,45 +431,27 @@ export function SiteHeader({
                     <LocaleLink
                       locale={locale}
                       href="/personal/mortgage"
-                      onClick={closePersonal}
+                      onClick={close}
                       className="text-sm font-semibold text-primary-500 transition-colors duration-200 hover:text-primary-600"
                     >
                       {t.openPersonal} <span aria-hidden="true" className="inline-block rtl:-scale-x-100">→</span>
                     </LocaleLink>
                   </div>
                 </div>
-              </div>
-            </div>
+              )}
+            </NavMenu>
 
             {/* Budget dropdown: one entry per year, newest first. The label
                 stays "Budget" so the row never grows with the years. */}
-            <div
-              className="group relative"
-              onMouseEnter={() => setBudgetClosed(false)}
-              onFocus={() => setBudgetClosed(false)}
+            <NavMenu
+              locale={locale}
+              href={LATEST_BUDGET.href}
+              label={t.budget}
+              active={budgetActive}
+              toggleLabel={t.submenu.replace("{label}", t.budget)}
+              panelClass="left-1/2 w-[min(20rem,calc(100vw-2rem))] -translate-x-1/2"
             >
-              <LocaleLink
-                locale={locale}
-                href={LATEST_BUDGET.href}
-                aria-current={budgetActive ? "page" : undefined}
-                onClick={closeBudget}
-                className={`relative flex items-center gap-1 whitespace-nowrap text-sm font-medium transition-colors duration-200 ${
-                  budgetActive ? "text-primary-600" : "text-ink-body hover:text-ink"
-                }`}
-              >
-                {t.budget}
-                <Chevron className="text-muted transition-transform duration-200 group-hover:rotate-180 group-focus-within:rotate-180" />
-                <span
-                  className={`pointer-events-none absolute -bottom-1.5 inset-s-0 h-0.5 w-full origin-left rtl:origin-right bg-primary-500 transition-transform duration-200 ease-snappy ${
-                    budgetActive ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100"
-                  }`}
-                />
-              </LocaleLink>
-              <div
-                className={`invisible absolute left-1/2 top-full z-50 w-[min(20rem,calc(100vw-2rem))] -translate-x-1/2 pt-4 opacity-0 transition-all duration-200 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100 ${
-                  budgetClosed ? "!invisible !opacity-0" : ""
-                }`}
-              >
+              {(close) => (
                 <div className="rounded-none border border-line bg-white p-5 shadow-2xl shadow-navy-900/15">
                   <div className="flex flex-col gap-4">
                     {BUDGETS.map((b) => (
@@ -460,7 +459,7 @@ export function SiteHeader({
                         locale={locale}
                         key={b.href}
                         href={b.href}
-                        onClick={closeBudget}
+                        onClick={close}
                         aria-current={pathname === b.href ? "page" : undefined}
                         className="group/item block"
                       >
@@ -474,8 +473,8 @@ export function SiteHeader({
                     ))}
                   </div>
                 </div>
-              </div>
-            </div>
+              )}
+            </NavMenu>
 
             {secondaryLinks.map((link) => {
               const active = isActive(pathname, link.href);
@@ -500,7 +499,7 @@ export function SiteHeader({
             })}
           </div>
 
-          <div className="flex items-center gap-2.5 sm:gap-3 lg:gap-4">
+          <div className="flex items-center gap-2 sm:gap-3 lg:gap-4">
             <LanguageMenu label={t.language} />
             {user ? (
               <LocaleLink
@@ -531,7 +530,7 @@ export function SiteHeader({
               <LocaleLink
                 locale={locale}
                 href="/login"
-                className="inline-flex h-10 cursor-pointer items-center whitespace-nowrap rounded-none border border-line px-4 text-sm font-semibold text-ink transition-colors duration-200 hover:bg-secondary-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500"
+                className="inline-flex h-10 cursor-pointer items-center whitespace-nowrap rounded-none border border-line px-3 text-sm font-semibold sm:px-4 text-ink transition-colors duration-200 hover:bg-secondary-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500"
               >
                 {t.signIn}
               </LocaleLink>
@@ -647,7 +646,7 @@ export function SiteHeader({
                 </div>
               )}
 
-              {/* Personal Hub accordion — same order as the desktop row. */}
+              {/* Personal Hub accordion: same order as the desktop row. */}
               <button
                 type="button"
                 aria-expanded={mobilePersonalOpen}

@@ -24,7 +24,7 @@ AGENTS.original.md
 # testing
 /coverage
 
-# playwright (local QA only — never committed)
+# playwright (local QA only: never committed)
 /e2e/
 /test-results/
 /playwright-report/

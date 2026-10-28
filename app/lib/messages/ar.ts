@@ -39,6 +39,7 @@ export const ar: Messages = {
     signIn: "تسجيل الدخول",
     ask: "اطرح سؤالًا",
     openMenu: "افتح القائمة",
+    submenu: "قائمة {label}",
     skip: "انتقل إلى المحتوى",
     closeMenu: "أغلق القائمة",
     language: "اللغة",
@@ -62,6 +63,7 @@ export const ar: Messages = {
     getInTouch: "تواصل معنا",
     language: "اللغة",
     rights: "جميع الحقوق محفوظة.",
+    privacy: "الخصوصية",
     disclaimer: "معلومات عامة فقط، وليست نصيحة مالية أو ضريبية أو قانونية.",
   },
 

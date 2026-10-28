@@ -6,7 +6,7 @@ import { useLocale, useT } from "./locale-link";
 import { accountMessages } from "../lib/messages/account";
 
 /**
- * "Continue with Google" — starts the Auth.js OAuth flow.
+ * "Continue with Google": starts the Auth.js OAuth flow.
  *
  * `enabled` is decided on the server (isGoogleEnabled in app/lib/auth/config.ts)
  * and threaded down, because the OAuth client credentials are server-only: the
@@ -26,7 +26,7 @@ export function GoogleButton({ enabled }: { enabled: boolean }) {
       // Land on /auth/callback rather than a fixed page: only the server knows
       // whether this account belongs in /admin or /portal, and that route
       // decides. Google's own redirect URI is Auth.js' handler at
-      // /api/auth/callback/google — not this one. `lang` brings the user
+      // /api/auth/callback/google: not this one. `lang` brings the user
       // back to the language they signed in from.
       await signIn("google", { redirectTo: `/auth/callback?lang=${locale}` });
     } catch {

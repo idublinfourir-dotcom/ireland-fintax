@@ -21,7 +21,7 @@ export default async function AdminSettingsPage() {
   const owner = toObjectId(user.id);
   const users = await usersCollection();
   const account = owner
-    ? await users.findOne({ _id: owner }, { projection: { name: 1 } })
+    ? await users.findOne({ _id: owner }, { projection: { name: 1, passwordHash: 1 } })
     : null;
 
   return (
@@ -31,7 +31,12 @@ export default async function AdminSettingsPage() {
         title="Settings"
         lede="Update your name and password."
       />
-      <SettingsForm fullName={account?.name ?? ""} email={user.email} />
+      <SettingsForm
+        fullName={account?.name ?? ""}
+        email={user.email}
+        hasPassword={Boolean(account?.passwordHash)}
+        canDelete={false}
+      />
     </div>
   );
 }

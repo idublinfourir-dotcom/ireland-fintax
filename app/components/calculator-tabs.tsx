@@ -2,7 +2,7 @@
    tool-tabs.tsx) and the Accountants Hub dropdown in the site header. Plain
    data, so server and client code can both import it.
 
-   Mortgage used to live here; it moved to the Personal Hub — see
+   Mortgage used to live here; it moved to the Personal Hub: see
    app/components/personal-tabs.tsx. */
 export const CALCULATOR_TOOLS = [
   {
