@@ -44,6 +44,9 @@ jobs:
           done
           exit 1
 
+      # next-env.d.ts (image imports, route types) is generated and gitignored,
+      # so a fresh checkout has to make it before tsc can see .jpg imports.
+      - run: npx next typegen
       - run: npm run typecheck
       - run: npm run lint
       - run: npm test
