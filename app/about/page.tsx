@@ -65,7 +65,7 @@ export default async function AboutPage() {
 
       {/* How the figures are kept right: the site's trust story, since it
           names no firm or author. Sources and dates are on every calculator. */}
-      <section className="border-y border-line bg-surface-muted">
+      <section id="how-we-check" className="scroll-mt-24 border-y border-line bg-surface-muted">
         <Container className="py-16 sm:py-20">
           <Reveal>
             <SectionHeading eyebrow={t.checkEyebrow} title={t.checkTitle} lede={t.checkIntro} />

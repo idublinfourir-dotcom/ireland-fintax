@@ -246,6 +246,11 @@ export function localDate(locale: Locale, text: string): string {
     : fillDate(w.my, "", w.long[month], m[3]);
 }
 
+/** A month's short name in `locale`'s words ("Oct", "DFómh", "oct"), 0 = January. */
+export function shortMonth(locale: Locale, month: number): string {
+  return locale === "en" ? SHORT_EN[month] : DATE_WORDS[locale].short[month];
+}
+
 /**
  * A message timestamp, "24 Oct, 14:23", in `locale`'s words: the same text
  * on the server and in every browser. The clock is 24-hour in every
