@@ -92,7 +92,7 @@ async function notifyClientByEmail(ref: number, body: string) {
 }
 
 /** Admin posts a reply into an enquiry thread. Sending also marks the thread
-    read for the admin (they've clearly seen it) — see addThreadMessage. */
+    read for the admin (they've clearly seen it): see addThreadMessage. */
 export async function sendAdminMessageAction(formData: FormData): Promise<void> {
   const admin = await requireAdmin();
 

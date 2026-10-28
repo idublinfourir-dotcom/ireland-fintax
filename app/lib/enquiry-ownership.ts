@@ -1,6 +1,6 @@
 /* Server-only ownership helpers for guest enquiries.
 
-   Email matching is allowed only at a trusted verification boundary — the
+   Email matching is allowed only at a trusted verification boundary: the
    signup confirmation link, or a Google sign-in, both of which prove the
    address. Portal reads and writes use userId exclusively, so merely signing
    in with an address can never expose or claim another person's guest

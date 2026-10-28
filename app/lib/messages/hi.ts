@@ -38,6 +38,7 @@ export const hi: Messages = {
     signIn: "साइन इन",
     ask: "सवाल पूछें",
     openMenu: "मेनू खोलें",
+    submenu: "{label} मेनू",
     skip: "मुख्य सामग्री पर जाएँ",
     closeMenu: "मेनू बंद करें",
     language: "भाषा",
@@ -61,6 +62,7 @@ export const hi: Messages = {
     getInTouch: "संपर्क करें",
     language: "भाषा",
     rights: "सर्वाधिकार सुरक्षित।",
+    privacy: "गोपनीयता",
     disclaimer: "केवल सामान्य जानकारी, वित्तीय, टैक्स या कानूनी सलाह नहीं।",
   },
 

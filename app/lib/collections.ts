@@ -9,14 +9,14 @@ import type { PostCategory, PostImage, PostStatus } from "./post-types";
  *
  * One place that names every collection and spells out what a document holds,
  * so a field rename is a compile error rather than a silent `undefined`. This
- * file is the authoritative schema — see db/schema.md for the narrative
+ * file is the authoritative schema: see db/schema.md for the narrative
  * version, and scripts/db-indexes.mjs for the indexes.
  *
  * Conventions:
  *  - Fields are camelCase; the mapping to the shapes the UI consumes happens
  *    in each feature module, never in a page.
  *  - Timestamps are real BSON Dates, never strings.
- *  - Money and rate values are BSON doubles — numbers in, numbers out. No
+ *  - Money and rate values are BSON doubles: numbers in, numbers out. No
  *    caller should ever need to wrap a stored value in `Number(...)`.
  */
 
@@ -33,7 +33,7 @@ export interface UserDoc {
   _id: ObjectId;
   /** Display name, as the user entered it at signup or as Google reports it. */
   name: string | null;
-  /** Always stored lowercased — the unique index is the account boundary. */
+  /** Always stored lowercased: the unique index is the account boundary. */
   email: string;
   /** Set when ownership of the address has been proved. Null = unverified. */
   emailVerified: Date | null;
@@ -114,7 +114,7 @@ export interface PasswordResetTokenDoc {
 /**
  * A contact-form submission and the head of its conversation thread.
  *
- * `ref` — not `_id` — is the public identifier. The portal and the admin inbox
+ * `ref` (not `_id`) is the public identifier. The portal and the admin inbox
  * render it as "Ref #0042", so it has to stay a short incrementing number; an
  * ObjectId would surface as 24 characters of hex. See `nextSequence`.
  *
@@ -136,7 +136,7 @@ export interface EnquiryDoc {
   userId: ObjectId | null;
   adminLastReadAt: Date | null;
   clientLastReadAt: Date | null;
-  /** Newest client message. Seeded to createdAt — the opening message counts. */
+  /** Newest client message. Seeded to createdAt: the opening message counts. */
   lastClientMessageAt: Date;
   /** Newest admin reply, or null when the team has not replied yet. */
   lastAdminMessageAt: Date | null;
@@ -167,7 +167,7 @@ export interface TaxRatesDoc {
 /**
  * One document per editable calculator; `_id` is the calculator slug.
  * `config` is null when an admin reviewed the code defaults without overriding
- * them — the loader then keeps using the code fallback, so no rate drifts.
+ * them: the loader then keeps using the code fallback, so no rate drifts.
  */
 export interface CalculatorSettingsDoc {
   _id: string;
@@ -441,7 +441,7 @@ export interface RateAuditDoc {
  * Fixed-window throttle counters for public actions.
  *
  * `_id` is the whole (action, keyHash, windowStart) triple, so an upsert is
- * atomic without a second unique index. Identifiers are SHA-256 hashes — raw
+ * atomic without a second unique index. Identifiers are SHA-256 hashes: raw
  * IPs and email addresses are never stored. A TTL index on `windowStart` keeps
  * the collection bounded without a scheduler.
  */
@@ -478,7 +478,7 @@ export interface CounterDoc {
  * Collation for the email lookups that must ignore case.
  *
  * Strength 2 compares case-insensitively. It has to be passed on the QUERY as
- * well as the index — a query without it will not use a collated index and
+ * well as the index: a query without it will not use a collated index and
  * will match case-sensitively instead, which is a silent wrong answer rather
  * than an error. Every such lookup goes through a helper in this codebase for
  * exactly that reason; see scripts/db-indexes.mjs for the matching indexes.
@@ -582,7 +582,7 @@ export const newsRunsCollection = () =>
  * Allocate the next number in a named sequence.
  *
  * `findOneAndUpdate` with `$inc` is atomic server-side, so two enquiries
- * submitted in the same millisecond cannot receive the same ref — which a
+ * submitted in the same millisecond cannot receive the same ref: which a
  * read-then-write "max + 1" would not guarantee.
  */
 export async function nextSequence(name: string): Promise<number> {

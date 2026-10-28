@@ -92,7 +92,8 @@ const sources = [
 const h2 = "font-display text-2xl font-bold tracking-[-0.01em] text-ink sm:text-3xl";
 const section = "mt-16 border-t border-line pt-10";
 const prose = "max-w-3xl text-base leading-7 text-ink-body";
-const a = "text-primary-500 hover:underline";
+/* Underlined, not colour alone: these links sit inside running text (WCAG 1.4.1). */
+const a = "text-primary-500 underline underline-offset-2 hover:text-primary-600";
 
 export default function InvestmentAccountPage() {
   return (

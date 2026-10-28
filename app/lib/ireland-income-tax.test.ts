@@ -3,7 +3,7 @@
 
    Two known-good cases:
    (a) simple PAYE employee sanity check,
-   (b) the VERIFIED REFERENCE CASE captured from the live Deloitte calculator —
+   (b) the VERIFIED REFERENCE CASE captured from the live Deloitte calculator:
        every line must reproduce exactly. It was chosen to exercise the pension
        cap, the combined employment-credit cap, and the self-employed USC
        surcharge all at once. If any line is off, there is a bug. */
@@ -17,7 +17,7 @@ import {
   type IncomeTaxInput,
 } from "./ireland-income-tax.ts";
 
-/** Displayed figures are whole euros — compare rounded, like the UI shows them. */
+/** Displayed figures are whole euros: compare rounded, like the UI shows them. */
 const round = (n: number) => Math.round(n);
 
 test("(a) simple: single PAYE employee, €50,000, age 30, no children", () => {
@@ -38,7 +38,7 @@ test("(a) simple: single PAYE employee, €50,000, age 30, no children", () => {
   assert.equal(round(r.usc.total), 1_033);
 });
 
-test("(b) VERIFIED REFERENCE CASE — €4M employment + €1M self-emp + €2M pension, age 30", () => {
+test("(b) VERIFIED REFERENCE CASE: €4M employment + €1M self-emp + €2M pension, age 30", () => {
   const input: IncomeTaxInput = {
     maritalStatus: "single",
     hasChildOnChildBenefit: false,
@@ -63,7 +63,7 @@ test("(b) VERIFIED REFERENCE CASE — €4M employment + €1M self-emp + €2M 
   assert.equal(round(r.prsi.total), 211_875, "PRSI");
   assert.equal(round(r.netIncome), 2_364_094, "Annual Net Income");
 
-  // Combined employment credit must NOT stack (2,000, not 4,000) — both income types.
+  // Combined employment credit must NOT stack (2,000, not 4,000): both income types.
   const employmentCredit = r.incomeTax.credits.find((c) =>
     c.name.includes("Earned Income") || c.name.includes("PAYE"),
   );
@@ -73,7 +73,7 @@ test("(b) VERIFIED REFERENCE CASE — €4M employment + €1M self-emp + €2M 
   assert.equal(round(r.usc.selfEmployedSurcharge), 27_000, "Self-employed USC surcharge");
 });
 
-test("(c) married, two incomes — €80,000 + €30,000 spouse, age 40, 2026", () => {
+test("(c) married, two incomes: €80,000 + €30,000 spouse, age 40, 2026", () => {
   const input: IncomeTaxInput = {
     maritalStatus: "married",
     hasChildOnChildBenefit: false,
@@ -115,7 +115,7 @@ test("(c) married, two incomes — €80,000 + €30,000 spouse, age 40, 2026", 
   assert.equal(round(r.netIncome), 81_425, "Household net income");
 });
 
-test("(d) married, one income — spouse fields empty keep the €53,000 band", () => {
+test("(d) married, one income: spouse fields empty keep the €53,000 band", () => {
   const input: IncomeTaxInput = {
     maritalStatus: "married",
     hasChildOnChildBenefit: false,

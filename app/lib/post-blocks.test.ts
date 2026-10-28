@@ -7,6 +7,7 @@ import {
   headingAnchors,
   newBlock,
   parseBlocks,
+  postUploadIds,
   readingMinutes,
   splitPages,
   tableOfContents,
@@ -170,6 +171,21 @@ test("upload ids are collected, and their sizes replaced from storage", () => {
   const fixed = withUploadSizes(blocks, new Map([[UPLOAD_ID, { width: 2000, height: 1125 }]]));
   assert.deepEqual(fixed[0].type === "image" && fixed[0].image, { kind: "upload", id: UPLOAD_ID, width: 2000, height: 1125 });
   assert.deepEqual(fixed[1].type === "gallery" && fixed[1].items[0].image, { kind: "upload", id: UPLOAD_ID, width: 2000, height: 1125 });
+});
+
+test("a post keeps its cover, block pictures and any /media address in its text", () => {
+  const COVER = "6ac8bec794b4d24f0671f0b2";
+  const LINKED = "6ac8bec794b4d24f0671f0c3";
+  const blocks: Block[] = [
+    { id: "a", type: "image", image: { kind: "upload", id: UPLOAD_ID, width: 1, height: 1 }, alt: "", caption: "", size: "normal" },
+    { id: "b", type: "paragraph", text: `See [the chart](/media/${LINKED.toUpperCase()}?size=small).` },
+  ];
+  assert.deepEqual(
+    postUploadIds({ kind: "upload", id: COVER, width: 1, height: 1 }, blocks).sort(),
+    [COVER, LINKED, UPLOAD_ID].sort(),
+  );
+  assert.deepEqual(postUploadIds({ kind: "curated", key: "tower" }, []), []);
+  assert.deepEqual(postUploadIds(null, []), []);
 });
 
 test("new blocks start empty and valid as a draft", () => {

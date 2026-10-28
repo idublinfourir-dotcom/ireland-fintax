@@ -4,6 +4,7 @@ import {
   mortgageSettingsCollection,
 } from "../../lib/collections";
 import { requireAdmin } from "../../lib/auth/guards";
+import { getRecentAudit } from "../../lib/rate-audit";
 import { DEFAULT_POLICY, RATES_AS_OF } from "../../lib/ireland-mortgage";
 import { RatesManager, type AdminProduct, type AdminSettings } from "./rates-manager";
 
@@ -20,10 +21,11 @@ export default async function MortgageRatesPage() {
     mortgageSettingsCollection(),
   ]);
 
-  // Every product, active or not — this is the editor, not the public list.
-  const [productDocs, settingsDoc] = await Promise.all([
+  // Every product, active or not: this is the editor, not the public list.
+  const [productDocs, settingsDoc, audit] = await Promise.all([
     productsCollection.find().sort({ lender: 1, ratePercent: 1 }).toArray(),
     settingsCollection.findOne({ _id: 1 }),
+    getRecentAudit("mortgage-%", 20),
   ]);
 
   const products: AdminProduct[] = productDocs.map((r) => ({
@@ -82,11 +84,11 @@ export default async function MortgageRatesPage() {
           >
             Ireland mortgage calculator
           </a>
-          . Changes go live immediately — no deploy needed.
+          . Changes go live immediately: no deploy needed.
           {products.length === 0 && (
             <>
               {" "}
-              No products in the database yet — run{" "}
+              No products in the database yet: run{" "}
               <code className="rounded-none bg-surface-muted px-1.5 py-0.5 text-xs">
                 node scripts/db-seed.mjs
               </code>{" "}
@@ -96,7 +98,7 @@ export default async function MortgageRatesPage() {
         </p>
       </header>
 
-      <RatesManager products={products} settings={settings} />
+      <RatesManager products={products} settings={settings} audit={audit} />
     </div>
   );
 }

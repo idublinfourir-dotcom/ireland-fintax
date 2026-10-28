@@ -1,4 +1,4 @@
-## Irish Fintax — Agent Instructions
+## Irish Fintax: Agent Instructions
 
 Persistent rules for repo. Apply **every Agent session** automatically.
 Git push/merge workflow: see `CLAUDE.md`.
@@ -18,9 +18,9 @@ English, no jargon. Public pages are in English and Irish: see "Languages" below
 - **Next.js 16** (App Router)
 - **React 19**, **TypeScript**
 - **Tailwind CSS v4** (`app/globals.css` with `@theme` tokens)
-- **Framer Motion** (`motion` package, import from `motion/react`) — scroll reveals, count-up, accordion
+- **Framer Motion** (`motion` package, import from `motion/react`): scroll reveals, count-up, accordion
 - **MongoDB** (official `mongodb` driver) + **Auth.js v5** (`next-auth@beta`, `@auth/mongodb-adapter`, JWT sessions)
-- **Fonts:** Fraunces (display), Geist (body) — loaded in `app/layout.tsx`
+- **Fonts:** Fraunces (display), Geist (body): loaded in `app/layout.tsx`
 
 Commands: `npm run dev` · `npm run build` · `npm run lint`
 
@@ -32,10 +32,10 @@ Commands: `npm run dev` · `npm run build` · `npm run lint`
 app/
   page.tsx, about/, contact/   # marketing routes
   _services/, _pricing/  # parked: unrouted, every /services URL redirects home
-  tools/             # Accountants Hub — the 7 Ireland tax calculators
-  personal/          # Personal Hub — mortgage/, investment/
+  tools/             # Accountants Hub: the 7 Ireland tax calculators
+  personal/          # Personal Hub: mortgage/, investment/
   blog/              # public blog: /blog index + /blog/[slug] posts
-  _pricing/          # hidden route — see "Hidden for now" below
+  _pricing/          # hidden route: see "Hidden for now" below
   login/, signup/, portal/, admin/, auth/{confirm,callback}/  # auth routes
   components/      # UI, layout, sections + motion primitives
   api/auth/[...nextauth]/  # Auth.js handler (sign-in, OAuth callback, sign-out)
@@ -68,7 +68,7 @@ scripts/news-agent.ts  # the news agent (GitHub Actions); app/lib/news-*.ts
   (image clip), `accordion.tsx` (FAQ), `back-to-top.tsx`.
 
 - **Pages** compose section components; keep pages thin.
-- **Copy + structured data** live in `app/lib/content.ts` — edit there, don't hardcode in components.
+- **Copy + structured data** live in `app/lib/content.ts`: edit there, don't hardcode in components.
   Copy on a translated page lives in `app/lib/messages/` instead, in every language (see "Languages").
 - **Reusable UI** (`Button`, `Card`, etc.) → `app/components/ui.tsx`.
 - **Page sections** (Hero, Faq, etc.) → `app/components/sections.tsx`.
@@ -78,14 +78,14 @@ scripts/news-agent.ts  # the news agent (GitHub Actions); app/lib/news-*.ts
 ## Hidden for now (since 2026-08-20)
 
 Pricing is hidden site-wide until the fee model is decided. Nothing was
-deleted — every item is a comment-out or a reversible rename, so unhiding
+deleted: every item is a comment-out or a reversible rename, so unhiding
 means undoing exactly this list. Don't re-add pricing links or fee claims
 elsewhere while this stands.
 
 | What | Where | How it was hidden |
 | --- | --- | --- |
 | `/pricing` route | `app/pricing/` → `app/_pricing/` | Underscore-prefixed folders are private in the App Router, so the route no longer resolves. The page, `PricingTable` and `pricingTiers`/`pricingAddons` in `app/lib/content.ts` are untouched. |
-| Header nav link | `app/components/site-header.tsx` (`secondaryLinks`) | Entry removed; restore `{ href: "/pricing", label: "Pricing" }`. Covers desktop nav and mobile menu — both render the same array. |
+| Header nav link | `app/components/site-header.tsx` (`secondaryLinks`) | Entry removed; restore `{ href: "/pricing", label: "Pricing" }`. Covers desktop nav and mobile menu: both render the same array. |
 | Footer link | `app/components/site-footer.tsx` (`firmLinks`) | Entry removed; restore `{ label: "Pricing", href: "/pricing" }`. |
 | Sitemap URL | `app/sitemap.ts` | `"/pricing"` removed from `staticPages`. |
 | Portal quick-link card | `app/portal/page.tsx` | "Plans & pricing" card removed. |
@@ -99,11 +99,11 @@ Whenever anything else gets hidden rather than deleted, add a row here.
 ## Conventions
 
 - Functional React components; default exports for pages/layouts.
-- Tailwind utility classes only — use brand tokens (`canvas`, `surface`, `ink`, `ink-body`, `muted`, `primary-*`, `secondary-*`, `navy-*`), not arbitrary hex in components.
+- Tailwind utility classes only: use brand tokens (`canvas`, `surface`, `ink`, `ink-body`, `muted`, `primary-*`, `secondary-*`, `navy-*`), not arbitrary hex in components.
 - Display headings: `font-display`; body: default `font-sans`.
 - Preserve accessibility: skip link, semantic HTML, focus states.
 - SEO: use `metadata` exports on pages; site URL + defaults in `app/layout.tsx`.
-- Minimize scope — match existing patterns; no refactor of unrelated files.
+- Minimize scope: match existing patterns; no refactor of unrelated files.
 - No new dependencies unless task clearly needs them.
 
 ### Hubs & navigation
@@ -122,7 +122,7 @@ Whenever anything else gets hidden rather than deleted, add a row here.
   `next.config.ts`, so don't delete it and don't re-add mortgage to
   `CALCULATOR_TOOLS`.
 - Each hub's entries live in **one array** that drives both its header dropdown
-  and its on-page switcher — `CALCULATOR_TOOLS` in `calculator-tabs.tsx`,
+  and its on-page switcher: `CALCULATOR_TOOLS` in `calculator-tabs.tsx`,
   `PERSONAL_TOOLS` in `personal-tabs.tsx`. Adding a tool = adding an entry
   there, plus a `sitemap.ts` line. Both switchers render through the shared
   `ToolTabs`; keep them visually identical.
@@ -132,16 +132,16 @@ Whenever anything else gets hidden rather than deleted, add a row here.
 
 ### Motion & imagery
 
-- Animate with **Framer Motion** (`motion/react`) — never hand-rolled
+- Animate with **Framer Motion** (`motion/react`): never hand-rolled
   IntersectionObserver. Reuse primitives in `app/components/` before adding new.
 - Animate `transform` / `opacity` only; custom ease-out is `ease-snappy`
-  token (`cubic-bezier(0.23,1,0.32,1)`); UI ≤300ms, reveals ~600–900ms.
+  token (`cubic-bezier(0.23,1,0.32,1)`); UI ≤300ms, reveals ~600 to 900ms.
 - Every motion respects `prefers-reduced-motion` (drop movement, keep content);
   SSR renders final/visible state for SEO + JS-off.
-- **`transform` on ancestor breaks `position: sticky` on descendants** — never
+- **`transform` on ancestor breaks `position: sticky` on descendants**: never
   wrap sticky-aside grid in `Reveal` (or any transformed element).
 - Header is **`sticky top-0` on `<header>` element itself** (not inner
-  div — inner sticky child fills short parent, can't stick).
+  div: inner sticky child fills short parent, can't stick).
 - Photos = CSS `background-image` from `lib/images.ts` over gradient scrim
   (no `next/image` remote config); verify any new Unsplash URL returns 200.
 
@@ -152,22 +152,25 @@ Whenever anything else gets hidden rather than deleted, add a row here.
   callbacks, Google) and is all `proxy.ts` imports; `auth.ts` adds the adapter,
   the Credentials providers and the events, and must only ever load in the Node
   runtime. Importing `auth.ts` from the middleware pulls the MongoDB driver onto
-  the edge and breaks the build — don't.
+  the edge and breaks the build: don't.
 - **Sessions are JWTs, not database rows.** Not optional: the Credentials
   provider only works with the JWT strategy. `getSessionUser()` therefore reads
   the session with no network call, which is what lets the root layout call it
   on every route. Guards live in `lib/auth/guards.ts` (`requireUser`,
   `requireAdmin`, `requireClient`, `getSessionUser`).
 - **Roles.** `ADMIN_EMAILS` (comma-separated, case-insensitive) is the
-  allow-list. Applied **once, at account creation**, on every sign-in path — password or Google — by
+  allow-list. Applied **once, at account creation**, on every sign-in path (password or Google) by
   `roleForEmail` in `lib/auth/config.ts`. Nothing else writes `role`, so a
-  client cannot self-promote. The role rides in the JWT, so a role edited
-  directly in the database takes effect on that user's next sign-in. Change an
+  client cannot self-promote. The role rides in the JWT and the jwt callback in
+  `auth.ts` re-reads it at most once a minute, so a role edited directly in the
+  database takes effect within about a minute. Change an
   existing account with a `db.users.updateOne` (see `db/schema.md`).
 - **Signup requires verified email ownership.** `app/signup/actions.ts` creates
   the account with `emailVerified: null` and emails a single-use token
-  (`lib/auth/tokens.ts` — only its SHA-256 is stored). `/auth/confirm` redeems
-  it through the `verify-email` Credentials provider, which marks the address
+  (`lib/auth/tokens.ts`: only its SHA-256 is stored). `/auth/confirm` shows a
+  "Confirm my email" button and only its POST (`app/auth/confirm/actions.ts`)
+  redeems the token, so mail scanners that open links in advance cannot spend
+  it. It goes through the `verify-email` Credentials provider, which marks the address
   proved and signs the user in. `authorize` refuses to sign in an account whose
   `emailVerified` is still null. Never relax that: confirmation is the boundary
   that lets guest enquiries be claimed by address. The action refuses up front
@@ -209,7 +212,7 @@ Whenever anything else gets hidden rather than deleted, add a row here.
     logged instead. A reset form that answers differently is an
     account-enumeration oracle, and what it leaks here is "this person is a
     client of this firm". The **signup and sign-in forms were both closed the
-    same way** (Sep 2026) — see below; all three now answer identically.
+    same way** (Sep 2026): see below; all three now answer identically.
   - The send is **best-effort**, unlike signup's. There is no half-made
     account to roll back, and surfacing a send failure would confirm the
     address exists.
@@ -276,8 +279,8 @@ Whenever anything else gets hidden rather than deleted, add a row here.
   `allowDangerousEmailAccountLinking` is on deliberately: Google verifies
   addresses, so signing in with Google reaches the account you already
   registered instead of dead-ending on a duplicate. Auth.js itself creates and links OAuth
-  accounts with `emailVerified: null` — it only stamps that field for its own
-  Email provider — so the `signIn` event in `auth.ts` sets it for the `google`
+  accounts with `emailVerified: null`: it only stamps that field for its own
+  Email provider: so the `signIn` event in `auth.ts` sets it for the `google`
   provider. Don't remove that: without it a password set later on the settings
   page can never sign in. **That same one-time stamp also clears
   `passwordHash` and the account's pending confirmation links** (Oct 2026). An
@@ -290,13 +293,13 @@ Whenever anything else gets hidden rather than deleted, add a row here.
   profile with `email_verified` not true, since the linking rests on it, and it
   runs before Auth.js links anything. `/auth/callback` is now only a
   role-router (admins → /admin, else /portal); it does no code exchange.
-  The button hides itself when `AUTH_GOOGLE_ID`/`AUTH_GOOGLE_SECRET` are unset —
+  The button hides itself when `AUTH_GOOGLE_ID`/`AUTH_GOOGLE_SECRET` are unset:
   the flag is read server-side and threaded down as a prop, because the browser
   cannot see server-only env.
 - **Enquiry ownership uses `enquiries.userId` exclusively in the portal.**
   Matching guest enquiries by email is allowed only in
   `claimVerifiedGuestEnquiries`, called from the `signIn` **event** in `auth.ts`
-  and only for the `verify-email` and `google` providers — the two paths that
+  and only for the `verify-email` and `google` providers: the two paths that
   just proved the address. Never add an email fallback to portal reads/actions:
   an unproved address is not an ownership boundary.
 - **`enquiries.ref`, not `_id`, is the public enquiry id.** The portal and admin
@@ -304,7 +307,7 @@ Whenever anything else gets hidden rather than deleted, add a row here.
   the `counters` collection (`nextSequence`, atomic `$inc`). Server actions
   still validate it with the `/^\d+$/` shape via `toEnquiryRef`.
 - **Unread state is denormalised.** `lastClientMessageAt` / `lastAdminMessageAt`
-  live on the enquiry and are written by `addThreadMessage` — always insert
+  live on the enquiry and are written by `addThreadMessage`: always insert
   replies through it, never straight into `enquiry_messages`, or the unread
   badge drifts from the thread. `ADMIN_UNREAD_FILTER` and `isUnreadForAdmin` are
   the query and in-memory forms of the same test; keep them in step.
@@ -323,9 +326,9 @@ Whenever anything else gets hidden rather than deleted, add a row here.
   guest enquiries, and the Founders Hub per-address throttle.
 - **Schema** lives in **`db/schema.md`** (narrative) and `lib/collections.ts`
   (authoritative types). MongoDB needs no DDL, so `scripts/db-indexes.mjs` is
-  the migration equivalent — run it, then `scripts/db-seed.mjs`, on a new
+  the migration equivalent: run it, then `scripts/db-seed.mjs`, on a new
   cluster.
-- **Secrets** live in `.env.local` locally — the full key list is in the
+- **Secrets** live in `.env.local` locally: the full key list is in the
   committed **`.env.example`** template (values never committed):
   `MONGODB_URI` **or** `DB_USER`/`DB_PASSWORD`/`DB_CLUSTER`, `MONGODB_DB`,
   **`AUTH_SECRET`**, `AUTH_URL` (prod), `ADMIN_EMAILS`, `AUTH_GOOGLE_ID`/
@@ -354,11 +357,11 @@ Whenever anything else gets hidden rather than deleted, add a row here.
   Budget with no redeploy:
   - Each calculator's maths + rates live in a pure `app/lib/ireland-<x>.ts`
     (`*_CONFIG_DEFAULT` is the code fallback, `parse<X>Config` validates a
-    stored blob) — no React/IO, unit-tested.
+    stored blob): no React/IO, unit-tested.
   - `app/lib/<x>-data.ts` wraps the shared `getCalculatorConfig` (from
     `app/lib/calculator-settings.ts`) to read one document per calculator from
     `calculator_settings` (`_id` = calculator slug); falls back to the code
-    default on a missing document, invalid value, or DB error — never throws,
+    default on a missing document, invalid value, or DB error: never throws,
     never renders broken numbers.
   - `app/admin/<x>-rates/{page,actions,‑manager}.tsx` is a **two-phase**
     preview→confirm editor: phase 1 validates (`app/lib/<x>-guardrails.ts`) and
@@ -379,7 +382,7 @@ Whenever anything else gets hidden rather than deleted, add a row here.
     not an oversight, leave it.
   - Adding a **new** editable calculator = clone this file set (cheapest
     reference: `ireland-cat.ts` + `cat-data.ts` + `admin/cat-rates/*`, added
-    2026-07) — do not invent a new storage shape.
+    2026-07): do not invent a new storage shape.
 
 ### Outbound email (SMTP)
 
@@ -395,9 +398,8 @@ Whenever anything else gets hidden rather than deleted, add a row here.
   `lib/auth/config.ts` reads `isMailerConfigured` for the signup gate and is
   pulled into the edge middleware bundle, exactly like `db-config.ts` is kept
   free of the MongoDB driver. Do not collapse the two mail modules into one.
-- Currently pointed at the **AIBN Chartered Accountants Zoho mailbox**
-  (`smtp.zoho.com:465`), the account already proven from the CA Farm project,
-  with `MAIL_FROM` carrying the Irish Fintax display name in front of it.
+- Currently pointed at a **Zoho mailbox** (`smtp.zoho.com:465`), with
+  `MAIL_FROM` carrying the Irish Fintax display name in front of its address.
   Zoho wants a 12-character **app password**, not the login password, and
   `smtppro.zoho.com` answers `554 5.7.8 Access Restricted` for this account on
   both 465 and 587: do not "fix" the host to it. `node scripts/mail-check.mjs
@@ -446,7 +448,7 @@ Whenever anything else gets hidden rather than deleted, add a row here.
   throttle keys or replace this with per-process memory on serverless.
 - `app/components/contact-form.tsx` is a 3-step wizard (topic → enquiry →
   details) but posts as **one native form**: every step's `<fieldset>` stays
-  mounted and toggles via the `hidden` attribute, never conditional render —
+  mounted and toggles via the `hidden` attribute, never conditional render:
   FormData only serialises mounted inputs, so unmounting a step would silently
   drop its fields from the submit. If you add a step, keep this mount-all/
   hide-inactive shape.
@@ -454,7 +456,7 @@ Whenever anything else gets hidden rather than deleted, add a row here.
 ### Founders Hub (`/toolkits`)
 
 - **The Founders Hub never hosts a file.** No upload form, no storage bucket, no public
-  download link — for memos, templates, tax/VAT forms, setup guides or anything
+  download link: for memos, templates, tax/VAT forms, setup guides or anything
   else. This is a product decision, not a missing feature: do not add an upload
   path, an object store or a direct download link back.
   (Blog pictures are the one exception, approved Oct 2026: they are uploaded
@@ -709,13 +711,13 @@ Whenever anything else gets hidden rather than deleted, add a row here.
 
 ### Testing
 
-- E2E via **Playwright** lives in `/e2e` (gitignored, installed `--no-save` — not a
+- E2E via **Playwright** lives in `/e2e` (gitignored, installed `--no-save`: not a
   project dependency). Run: `npx playwright test --config e2e/playwright.config.ts`
   (spins up prod server on `:3100`). Specs: `site.spec.ts` (marketing pages,
   auth gating, login/signup/logout, role routing), `calculators.spec.ts` +
   `cgt.spec.ts` (public calculators + admin rate editors), `contact-wizard.spec.ts`
   (wizard steps, FAQ hints, validation). Creates `pw-*@example.com`
-  users/enquiries — clean these up in the MongoDB database after a run.
+  users/enquiries: clean these up in the MongoDB database after a run.
 
 ---
 
@@ -724,24 +726,24 @@ Whenever anything else gets hidden rather than deleted, add a row here.
 Two contributors work in parallel on personal branches (`niaz`, `nidan`) that
 both merge into `main`. Two rules keep them from colliding:
 
-**Area ownership** — route work to the owner instead of both editing one file:
+**Area ownership**, route work to the owner instead of both editing one file:
 
 | Area | Owner (branch) |
 |------|----------------|
 | `/admin/**` (dashboard, enquiries inbox, rate editors) | Niaz (`niaz`) |
 | `/portal/**` (client dashboard, settings) | Nidan (`nidan`) |
-| Shared components (`app/components/dashboard-*.tsx`), `app/lib/collections.ts`, `db/schema.md`, marketing pages | Either — pull `main` immediately before touching, keep the change additive |
+| Shared components (`app/components/dashboard-*.tsx`), `app/lib/collections.ts`, `db/schema.md`, marketing pages | Either: pull `main` immediately before touching, keep the change additive |
 
 If a task needs a change in the other person's area, prefer a small PR against
 their branch (or a chat ping) over editing it on your own branch.
 
-**Resolving conflicts — compose, don't pick a side.** Past incident (PRs #13/#14):
+**Resolving conflicts: compose, don't pick a side.** Past incident (PRs #13/#14):
 a portal conflict was resolved by taking one branch's whole file, which silently
 reverted the other side's redesign to `main` and a second, duplicate fix-PR
 followed. The rule since:
 
 - A conflict between a data-layer change and a presentation change is almost
-  never either/or — produce the file both authors would have written together
+  never either/or: produce the file both authors would have written together
   (e.g. new query **under** new UI).
 - Never resolve with `--ours`/`--theirs` on a file the other side rewrote for a
   different reason; diff both sides against the merge-base first and list what
@@ -773,14 +775,14 @@ followed. The rule since:
 
 ## Skills (optional)
 
-Repo has design skills under `.claude/skills/` (UI, banners, design system). Use when task involves visual design or new marketing assets — not required for routine code changes.
+Repo has design skills under `.claude/skills/` (UI, banners, design system). Use when task involves visual design or new marketing assets: not required for routine code changes.
 
 <!-- BEGIN:nextjs-agent-rules -->
 
 ## This is NOT the Next.js you know
 
-This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+This version has breaking changes: APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
 
-This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+This block is written and re-added by `next dev`: verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
 
 <!-- END:nextjs-agent-rules -->

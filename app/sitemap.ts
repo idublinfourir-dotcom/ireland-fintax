@@ -30,8 +30,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/toolkits",
     "/about",
     "/contact",
+    "/privacy",
   ].flatMap((path) => {
-    const base = { lastModified: new Date(), changeFrequency: "monthly" as const, priority: path === "/" ? 1 : 0.8 };
+    /* No lastModified: these pages have no stored edit date, and stamping
+       "now" on every request taught search engines to ignore the field.
+       Posts below carry their real updatedAt. */
+    const base = { changeFrequency: "monthly" as const, priority: path === "/" ? 1 : 0.8 };
     if (!isTranslated(path)) return [{ ...base, url: `${site.url}${path}` }];
     const languages = Object.fromEntries(LIVE_LOCALES.map((l) => [l, `${site.url}${localeHref(l, path)}`]));
     return LIVE_LOCALES.map((l) => ({ ...base, url: languages[l], alternates: { languages } }));

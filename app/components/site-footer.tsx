@@ -23,7 +23,7 @@ export async function SiteFooter() {
   const t = all.footer;
   return (
     <footer className="relative isolate overflow-hidden bg-navy-900 text-white">
-      {/* photographic backdrop — Irish countryside at dusk */}
+      {/* photographic backdrop: Irish countryside at dusk */}
       <div
         aria-hidden="true"
         className="absolute inset-0 -z-20 bg-cover bg-center bg-no-repeat opacity-55"
@@ -43,7 +43,7 @@ export async function SiteFooter() {
         <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1.2fr]">
           <div>
             <LocaleLink locale={locale} href="/" className="flex items-center gap-2.5">
-              <span className="grid h-9 w-9 shrink-0 place-items-center rounded-none bg-white/10 font-display text-[13px] font-semibold tracking-tight text-primary-300">
+              <span className="grid h-9 w-9 shrink-0 place-items-center rounded-none bg-white/10 font-display text-[13px] font-semibold tracking-tight text-primary-200">
                 IF
               </span>
               <span className="flex flex-col leading-none">
@@ -61,9 +61,9 @@ export async function SiteFooter() {
           </div>
 
           <nav aria-label={t.explore}>
-            <h3 className="text-xs font-semibold uppercase tracking-[0.18em] text-primary-300">
+            <h2 className="text-xs font-semibold uppercase tracking-[0.18em] text-primary-300">
               {t.explore}
-            </h3>
+            </h2>
             <ul className="mt-4 flex flex-col gap-2.5 text-sm text-white/70">
               {(Object.keys(exploreHrefs) as (keyof typeof exploreHrefs)[]).map((key) => (
                 <li key={key}>
@@ -80,9 +80,9 @@ export async function SiteFooter() {
           </nav>
 
           <div>
-            <h3 className="text-xs font-semibold uppercase tracking-[0.18em] text-primary-300">
+            <h2 className="text-xs font-semibold uppercase tracking-[0.18em] text-primary-300">
               {t.getInTouch}
-            </h3>
+            </h2>
             <a
               href={`mailto:${site.email}`}
               className="mt-4 block text-sm text-white/70 transition-colors duration-200 hover:text-white"
@@ -91,15 +91,24 @@ export async function SiteFooter() {
             </a>
 
             {/* The same page in each language: see language-menu.tsx. */}
-            <h3 className="mt-8 text-xs font-semibold uppercase tracking-[0.18em] text-primary-300">
+            <h2 className="mt-8 text-xs font-semibold uppercase tracking-[0.18em] text-primary-300">
               {t.language}
-            </h3>
+            </h2>
             <LanguageList />
           </div>
         </div>
 
         <div className="mt-14 flex flex-col gap-2 border-t border-white/10 pt-6 text-xs text-white/45 sm:flex-row sm:items-center sm:justify-between">
-          <p>© {new Date().getFullYear()} Irish Fintax. {t.rights}</p>
+          <p>
+            © {new Date().getFullYear()} Irish Fintax. {t.rights}{" "}
+            <LocaleLink
+              locale={locale}
+              href="/privacy"
+              className="underline underline-offset-2 transition-colors duration-200 hover:text-white"
+            >
+              {t.privacy}
+            </LocaleLink>
+          </p>
           <p>{t.disclaimer}</p>
         </div>
       </div>

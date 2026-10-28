@@ -26,7 +26,7 @@ test("bad rows are reported with a line number and skipped", () => {
 
 test("serialize + parse round-trips, incl. a label containing a comma", () => {
   const rows = [
-    { yearKey: "2001", yearLabel: "2001 (6 Apr–31 Dec)", sortOrder: 27, multiplier: 1.087 },
+    { yearKey: "2001", yearLabel: "2001 (6 Apr to 31 Dec)", sortOrder: 27, multiplier: 1.087 },
     { yearKey: "x", yearLabel: "a, b", sortOrder: 30, multiplier: 1.5 },
   ];
   const { rows: back, errors } = parseMultiplierCsv(serializeMultiplierCsv(rows));

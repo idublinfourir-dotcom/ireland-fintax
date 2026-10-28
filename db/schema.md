@@ -1,4 +1,4 @@
-# Database — MongoDB
+# Database: MongoDB
 
 MongoDB creates a collection on first write, so there is no DDL to apply: the
 only structure to declare is the indexes.
@@ -10,7 +10,7 @@ node scripts/db-seed.mjs      # seed the mortgage products + policy
 ```
 
 The authoritative document shapes are the TypeScript interfaces in
-`app/lib/collections.ts` — that file, not this one, is what the compiler checks.
+`app/lib/collections.ts`: that file, not this one, is what the compiler checks.
 This page is the map and the reasoning.
 
 ---
@@ -20,7 +20,7 @@ This page is the map and the reasoning.
 - Fields are **camelCase**. Mapping to the shapes the UI consumes happens in
   each feature module, never in a page.
 - Timestamps are real BSON `Date`s, never strings.
-- Rates and money are BSON doubles — numbers in, numbers out. No caller should
+- Rates and money are BSON doubles: numbers in, numbers out. No caller should
   ever need to wrap a stored value in `Number(...)`.
 - Where a natural key exists it **is** the `_id` (a calculator slug, a tax year,
   a CGT year key, the singleton `1`). Everything else uses an ObjectId.
@@ -35,7 +35,7 @@ This page is the map and the reasoning.
 | --- | --- | --- |
 | `users` | ObjectId | One document per account |
 | `accounts` | ObjectId | Auth.js adapter: one per linked OAuth provider |
-| `sessions` | ObjectId | Created by the adapter; unused — sessions are JWTs |
+| `sessions` | ObjectId | Created by the adapter; unused: sessions are JWTs |
 | `email_verification_tokens` | ObjectId | Signup confirmation links |
 | `password_reset_tokens` | ObjectId | Password-reset codes, one live per account |
 
@@ -56,7 +56,7 @@ lookup is never a second query:
 ```
 
 **Roles.** `ADMIN_EMAILS` (comma-separated, case-insensitive) is the allow-list.
-It is applied once, at account creation, on every sign-in path — password or Google. Nothing in the app writes
+It is applied once, at account creation, on every sign-in path: password or Google. Nothing in the app writes
 `role` afterwards, so a client cannot self-promote. To change an existing
 account:
 
@@ -64,8 +64,9 @@ account:
 db.users.updateOne({ email: "someone@example.ie" }, { $set: { role: "admin" } })
 ```
 
-The role rides in the session JWT, so it takes effect on that user's **next
-sign-in** — the price of not re-reading the account on every request.
+The role rides in the session JWT and is re-read at most once a minute (the
+jwt callback in `auth.ts`), so it takes effect **within about a minute**: the
+price of not re-reading the account on every request.
 
 Auth.js creates and links OAuth accounts with `emailVerified: null`; the
 `signIn` event in `auth.ts` stamps it for the `google` provider, since Google
@@ -104,7 +105,7 @@ happen either.
 
 ### Enquiries
 
-`enquiries` — a contact-form submission and the head of its thread.
+`enquiries`: a contact-form submission and the head of its thread.
 
 ```js
 {
@@ -125,14 +126,14 @@ Two things to know:
 - **`ref`, not `_id`, is the id the app passes around.** The portal and the
   admin inbox render `Ref #0042`, so it has to stay a short incrementing
   number. It comes from the `counters` collection via `nextSequence`, which uses
-  an atomic `$inc` — two submissions in the same millisecond cannot collide.
+  an atomic `$inc`: two submissions in the same millisecond cannot collide.
 - **`lastClientMessageAt` / `lastAdminMessageAt` are maintained on write**
   (`addThreadMessage`), never recomputed. That makes the unread test a field
-  comparison — shared by the list query, the unread count and the in-memory row
-  flag — rather than a scan of the thread on every list, count and filter. `lastClientMessageAt` is seeded to `createdAt`
+  comparison: shared by the list query, the unread count and the in-memory row
+  flag: rather than a scan of the thread on every list, count and filter. `lastClientMessageAt` is seeded to `createdAt`
   because the opening message is the first thing the client said.
 
-`enquiry_messages` — the replies, keyed by the enquiry's public `ref`:
+`enquiry_messages`, the replies, keyed by the enquiry's public `ref`:
 
 ```js
 { _id: ObjectId, enquiryRef: 42, sender: "admin"|"client",
@@ -140,7 +141,7 @@ Two things to know:
 ```
 
 **Ownership.** Portal reads and writes match on `userId` only. Matching by email
-happens in exactly one place — `claimVerifiedGuestEnquiries`, called from the
+happens in exactly one place: `claimVerifiedGuestEnquiries`, called from the
 `signIn` event for the confirmation-link and Google paths, both of which have
 just proved the address. Never add an email fallback to a portal read: an
 unproved address is not an ownership boundary.
@@ -167,7 +168,7 @@ missing, invalid, or unreadable, so **an empty database renders today's correct
 numbers**. `mortgage_products` is the one exception that is seeded: the admin
 editor can only edit rows that exist.
 
-`calculator_settings.config` may be `null` — that means an admin marked the
+`calculator_settings.config` may be `null`: that means an admin marked the
 calculator reviewed without overriding anything, and the code default stays
 authoritative.
 
@@ -335,7 +336,7 @@ exported as `CASE_INSENSITIVE`).
 
 The collation has to be passed on the **query** as well as on the index. A query
 that omits it will not use the collated index and will match case-sensitively
-instead — a silently wrong answer, not an error. Both lookups are wrapped in a
+instead: a silently wrong answer, not an error. Both lookups are wrapped in a
 helper for that reason; keep them that way.
 
 `users.email` needs none of this: it is stored lowercased, and Auth.js' adapter
@@ -348,7 +349,7 @@ looks accounts up by exact match.
 Every read and write goes through server code in `app/lib/`, behind a session
 check. Nothing in the browser holds a database credential and no database API is
 exposed to the network, so access control lives in the guards
-(`lib/auth/guards.ts`) and in the queries themselves — portal reads match on
+(`lib/auth/guards.ts`) and in the queries themselves: portal reads match on
 `userId`, admin routes go through `requireAdmin`. Keep it that way: the moment
 any client talks to the cluster directly, this stops being true.
 

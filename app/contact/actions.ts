@@ -105,7 +105,7 @@ export async function submitEnquiry(
     await enquiries.insertOne({
       _id: new ObjectId(),
       // Short, human-readable reference: the portal and the admin inbox render
-      // it as "Ref #0042". Allocated atomically — see nextSequence.
+      // it as "Ref #0042". Allocated atomically: see nextSequence.
       ref: await nextSequence("enquiries"),
       name: values.name,
       email: values.email,

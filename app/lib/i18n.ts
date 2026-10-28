@@ -74,6 +74,21 @@ export const TRANSLATED_PATHS = [
    which keeps the English page the only one indexed. */
 export const CHROME_ONLY_PATHS = ["/blog", "/blog/*"];
 
+/* Pages that exist in English only: a language prefix on one of these goes to
+   the English URL. Any other unprefixed path is a page that does not exist, so
+   /ga/<missing> keeps its prefix and shows the 404 in Irish. i18n.test.ts
+   checks every route under app/ is in exactly one of the three lists, so a new
+   page cannot be left out. */
+export const ENGLISH_ONLY_PATHS = [
+  "/admin",
+  "/admin/*",
+  "/api/*",
+  "/auth/*",
+  "/media/*",
+  "/investment-account",
+  "/privacy",
+];
+
 const matches = (list: string[], path: string) =>
   list.some((p) => (p.endsWith("/*") ? path.startsWith(p.slice(0, -1)) : path === p));
 
@@ -85,6 +100,11 @@ export function isTranslated(path: string): boolean {
 /** A page served under a language prefix: translated, or chrome-only. */
 export function hasLocaleRoute(path: string): boolean {
   return isTranslated(path) || matches(CHROME_ONLY_PATHS, path);
+}
+
+/** A page that exists only at its English URL. */
+export function isEnglishOnly(path: string): boolean {
+  return matches(ENGLISH_ONLY_PATHS, path);
 }
 
 /** One piece of copy in every language; `en` is the shape the rest follow. */

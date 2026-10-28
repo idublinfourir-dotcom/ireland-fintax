@@ -1,4 +1,4 @@
-/* Server-side guardrails for capital-allowances admin edits. PURE — reject
+/* Server-side guardrails for capital-allowances admin edits. PURE: reject
    clearly-wrong values with a message; the two-step preview is the guard
    against subtle mistakes. Only the per-class rate + years and the two scalars
    (car cap, trading CT rate) are editable; the label/note/flags are merged from
@@ -31,14 +31,14 @@ export function validateCaConfig(
   if (!Number.isFinite(raw.motorCapEur) || raw.motorCapEur < 0)
     return { ok: false, message: "Car cap can't be negative." };
   if (!Number.isFinite(raw.tradingCtPercent) || raw.tradingCtPercent < 0 || raw.tradingCtPercent > 100)
-    return { ok: false, message: "Trading CT rate must be 0–100%." };
+    return { ok: false, message: "Trading CT rate must be 0 to 100%." };
 
   const classes: AssetClass[] = [];
   for (const code of ASSET_CLASSES) {
     const row = raw.classes.find((c) => c.key === code.key);
     if (!row) return { ok: false, message: `Missing the ${code.label} row.` };
     if (!Number.isFinite(row.ratePercent) || row.ratePercent < 0 || row.ratePercent > 100)
-      return { ok: false, message: `${code.label}: rate must be 0–100%.` };
+      return { ok: false, message: `${code.label}: rate must be 0 to 100%.` };
     if (!Number.isFinite(row.years) || row.years < 1 || !Number.isInteger(row.years))
       return { ok: false, message: `${code.label}: years must be a whole number of 1 or more.` };
     // Merge the editable numbers onto the current code prose/flags.

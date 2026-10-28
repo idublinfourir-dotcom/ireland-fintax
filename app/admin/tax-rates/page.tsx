@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { requireAdmin } from "../../lib/auth/guards";
 import { getTaxRates, TAX_YEARS } from "../../lib/tax-data";
+import { getRecentAudit } from "../../lib/rate-audit";
 import { TaxRatesManager } from "./tax-rates-manager";
 
 export const metadata: Metadata = {
@@ -12,8 +13,11 @@ export default async function TaxRatesPage() {
   await requireAdmin();
 
   // Effective rates: DB row when present and valid, otherwise the versioned
-  // fallback config — exactly what the public calculator uses.
-  const ratesByYear = await getTaxRates();
+  // fallback config: exactly what the public calculator uses.
+  const [ratesByYear, audit] = await Promise.all([
+    getTaxRates(),
+    getRecentAudit("tax-rates%", 20),
+  ]);
   const years = TAX_YEARS.map((y) => ratesByYear[y]);
 
   return (
@@ -28,12 +32,12 @@ export default async function TaxRatesPage() {
           >
             Ireland income tax calculator
           </a>
-          . Update these after a Budget — changes go live immediately, no deploy
+          . Update these after a Budget: changes go live immediately, no deploy
           needed. Percentages are entered as percent (e.g. 20 or 0.5).
         </p>
       </header>
 
-      <TaxRatesManager years={years} />
+      <TaxRatesManager years={years} audit={audit} />
     </div>
   );
 }

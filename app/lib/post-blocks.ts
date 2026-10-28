@@ -281,6 +281,18 @@ export function uploadIds(blocks: Block[]): string[] {
   return [...ids];
 }
 
+/** Every uploaded picture a post or draft uses, to keep: its cover, its
+    picture and gallery blocks, and any /media/<id> address typed into its
+    text. The unused-picture sweep (lib/media.ts) deletes everything else. */
+export function postUploadIds(cover: PostImage | null | undefined, blocks: Block[]): string[] {
+  const ids = new Set(uploadIds(blocks));
+  if (cover?.kind === "upload") ids.add(cover.id);
+  for (const m of JSON.stringify(blocks).matchAll(/\/media\/([0-9a-f]{24})/gi)) {
+    ids.add(m[1].toLowerCase());
+  }
+  return [...ids];
+}
+
 /** The same blocks with each upload's size replaced by the stored one. */
 export function withUploadSizes(
   blocks: Block[],

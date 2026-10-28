@@ -64,7 +64,7 @@ async function consume(
     {
       $inc: { count: 1 },
       // Duplicated out of the _id so the TTL index has a top-level field to
-      // sweep on — that index is what keeps this collection bounded.
+      // sweep on: that index is what keeps this collection bounded.
       $setOnInsert: { windowStart },
     },
     { upsert: true, returnDocument: "after" },

@@ -6,7 +6,7 @@
    The data is the "Options Comparison" tab of the €500,000 research workbook
    (prepared 28 August 2026), reproduced field for field: sector, risk band,
    gross return range, tax treatment, effective tax rate, liquidity, minimum
-   and cap. Every figure is sourced — see SOURCES at the foot of this file.
+   and cap. Every figure is sourced: see SOURCES at the foot of this file.
 
    Two things this deliberately is NOT:
    - It is not advice. It compares the Irish TAX TREATMENT and net return of
@@ -38,7 +38,7 @@ export const TAX = {
   cgt: 0.31,
   /** Annual CGT personal exemption, per person, does not carry forward. */
   cgtExemption: 1270,
-  /** Revised Entrepreneur Relief — lifetime limit raised to €1.5m in 2026. */
+  /** Revised Entrepreneur Relief: lifetime limit raised to €1.5m in 2026. */
   entrepreneurRelief: 0.1,
   /** Angel Investor Relief (18% via a partnership). */
   angelRelief: 0.16,
@@ -205,7 +205,7 @@ export interface InvestmentOption {
       own total marginal rate on income. */
   effectiveTax: number | "marginal";
   liquidity: string;
-  /** Shortest realistic commitment in years — drives the horizon filter.
+  /** Shortest realistic commitment in years: drives the horizon filter.
       Pension wrappers carry 15 rather than 10: they are locked to age 50 to 60+,
       and the planner does not ask for age, so they stay out of the 3 to 10 year
       answers rather than topping a list for money that is needed sooner. */
@@ -219,7 +219,7 @@ export interface InvestmentOption {
   /** False where the product cannot absorb a lump sum. */
   lumpSum: boolean;
   note: string;
-  /** Where an Irish resident actually goes for this — the provider itself
+  /** Where an Irish resident actually goes for this: the provider itself
       where there is one, otherwise the Irish regulator or Revenue. Every URL
       here was checked to resolve; if one starts 404ing, fix or drop it rather
       than shipping a dead button. Categories covering several providers point
@@ -432,7 +432,7 @@ export const INVESTMENT_OPTIONS: InvestmentOption[] = [
     note: "Company contributions get corporation tax relief, are not a benefit-in-kind, and carry no employer PRSA cap when funded on a salary-and-service basis. No exit tax, no deemed disposal and no CGT inside the fund.",
     link: {
       label: "Revenue: pensions",
-      url: "https://www.revenue.ie/en/jobs-and-pensions/pensions/index.aspx",
+      url: "https://www.revenue.ie/en/jobs-and-pensions/pension/index.aspx",
     },
   },
   {
@@ -454,7 +454,7 @@ export const INVESTMENT_OPTIONS: InvestmentOption[] = [
     note: "Since January 2025 employer PRSA contributions are capped at 100% of that year's salary; anything above that is a benefit-in-kind. On a €100,000 salary that moves €100,000 a year into a gross-roll-up wrapper, deductible for the company.",
     link: {
       label: "Revenue: pensions",
-      url: "https://www.revenue.ie/en/jobs-and-pensions/pensions/index.aspx",
+      url: "https://www.revenue.ie/en/jobs-and-pensions/pension/index.aspx",
     },
   },
   {
@@ -476,7 +476,7 @@ export const INVESTMENT_OPTIONS: InvestmentOption[] = [
     note: "Your own contributions get income tax relief at 40% but no USC or PRSI relief. At 42 that is 25% of €115,000, so €28,750 a year, smaller than the company route, but it stacks on top of it.",
     link: {
       label: "Revenue: pensions",
-      url: "https://www.revenue.ie/en/jobs-and-pensions/pensions/index.aspx",
+      url: "https://www.revenue.ie/en/jobs-and-pensions/pension/index.aspx",
     },
   },
   {
@@ -498,7 +498,7 @@ export const INVESTMENT_OPTIONS: InvestmentOption[] = [
     note: "Relevant at retirement rather than now. It grows free of exit tax, DIRT and CGT, and you are taxed only on withdrawals, with a mandatory imputed drawdown from age 61.",
     link: {
       label: "Revenue: pensions",
-      url: "https://www.revenue.ie/en/jobs-and-pensions/pensions/index.aspx",
+      url: "https://www.revenue.ie/en/jobs-and-pensions/pension/index.aspx",
     },
   },
   {
@@ -763,7 +763,7 @@ export const INVESTMENT_OPTIONS: InvestmentOption[] = [
     note: "The same property bought through a self-administered pension pays no income tax on the rent and no CGT on the sale inside the fund. The rules are strict: no personal use, arm's-length tenants only, limited borrowing. But this is where direct property makes far more sense in Ireland.",
     link: {
       label: "Revenue: pensions",
-      url: "https://www.revenue.ie/en/jobs-and-pensions/pensions/index.aspx",
+      url: "https://www.revenue.ie/en/jobs-and-pensions/pension/index.aspx",
     },
   },
   {
@@ -774,7 +774,7 @@ export const INVESTMENT_OPTIONS: InvestmentOption[] = [
     risk: 5,
     grossLow: 0.05,
     grossHigh: 0.15,
-    taxTreatment: "30 to 50% income tax relief; gains CGT 31%",
+    taxTreatment: "20 to 50% income tax relief (30% through a qualifying fund); gains CGT 31%",
     effectiveTax: TAX.cgt,
     liquidity: "4 years minimum",
     lockYears: 4,
@@ -783,10 +783,12 @@ export const INVESTMENT_OPTIONS: InvestmentOption[] = [
     capAmount: 1_000_000,
     guarantee: "none",
     lumpSum: true,
-    note: "Relief of 30% through a fund, up to 50% for pre-market companies, in the year of investment. Minimums run from €5,000 (Davy/BDO) to €25,000 (Cantor, Quintas), with fees around 3% upfront plus exit and performance fees. Funds typically open in October or November and close on 31 December. There is a real risk of total capital loss, and relief can be clawed back if the company fails to qualify.",
+    note: "Relief depends on the route and the company. Through a designated fund it is the same as investing directly: 50% for a company not yet operating in any market, 35% for one that is still young, 20% for expansion money. Through a qualifying investment fund it is 30%. It is claimed for the year of investment. Minimums run from €5,000 (Davy/BDO) to €25,000 (Cantor, Quintas), with fees around 3% upfront plus exit and performance fees. Funds typically open in October or November and close on 31 December. There is a real risk of total capital loss, and relief can be clawed back if the company fails to qualify.",
     link: {
       label: "Revenue: EII scheme",
-      url: "https://www.revenue.ie/en/companies-and-charities/reliefs-and-exemptions/employment-investment-incentive-eii/index.aspx",
+      // The manual, not the EII web page: that page still gives the old rates
+      // and caps. Rates are in section 6.2.
+      url: "https://www.revenue.ie/en/tax-professionals/tdm/income-tax-capital-gains-tax-corporation-tax/part-16/16-00-04.pdf",
     },
   },
   {
@@ -941,7 +943,7 @@ export const INVESTMENT_OPTIONS: InvestmentOption[] = [
     note: "Taxed as an asset at 31% CGT, with every trade a disposal and full record-keeping required. Extreme volatility, no cash flow and no intrinsic yield. If it is included at all, keep it to a percentage you would shrug off losing entirely.",
     link: {
       label: "Revenue: crypto-assets",
-      url: "https://www.revenue.ie/en/companies-and-charities/financial-services/crypto-assets/index.aspx",
+      url: "https://www.revenue.ie/en/companies-and-charities/financial-services/cryptocurrencies/index.aspx",
     },
   },
 ];
@@ -949,7 +951,7 @@ export const INVESTMENT_OPTIONS: InvestmentOption[] = [
 /* ---------- maths ---------- */
 
 /** Midpoint of the gross range. For a range as wide as crypto's this is not a
-    forecast of anything — the workbook is explicit about that. */
+    forecast of anything: the workbook is explicit about that. */
 export function grossMid(option: InvestmentOption): number {
   return (option.grossLow + option.grossHigh) / 2;
 }
@@ -975,7 +977,7 @@ export interface PlannerInputs {
   amount: number;
   horizon: Horizon;
   risk: RiskLevel;
-  /** Total marginal rate on income — income tax plus USC and PRSI. */
+  /** Total marginal rate on income: income tax plus USC and PRSI. */
   marginalRate: number;
   sector: SectorFilter;
   /** Restrict to State-guaranteed or deposit-guaranteed capital. */
@@ -1239,43 +1241,43 @@ export const SOURCES: { topic: string; source: string; url: string }[] = [
   },
   {
     topic: "Exit tax cut to 38%, deemed disposal",
-    source: "etf.ie: ETF Tax Ireland 2026",
-    url: "https://etf.ie/tax/",
+    source: "Revenue: Tax and Duty Manual Part 27-01a-02, Investment Undertakings",
+    url: "https://www.revenue.ie/en/tax-professionals/tdm/income-tax-capital-gains-tax-corporation-tax/part-27/27-01a-02.pdf",
   },
   {
     topic: "DIRT rate 2026",
-    source: "FinanceTool.ie: DIRT guide 2026",
-    url: "https://financetool.ie/guides/deposit-interest-retention-tax-2026",
+    source: "Revenue: What DIRT rate is applicable?",
+    url: "https://www.revenue.ie/en/additional-incomes/dirt/what-dirt-rate-is-applicable.aspx",
   },
   {
-    topic: "Budget 2026: Entrepreneur Relief, exit tax",
-    source: "Saffery Ireland: Budget 2026 at a glance",
-    url: "https://www.saffery.com/ie/insights/articles/budget-2026-at-a-glance/",
+    topic: "Revised Entrepreneur Relief, €1.5m limit from 2026",
+    source: "Revenue: Revised Entrepreneur Relief",
+    url: "https://www.revenue.ie/en/gains-gifts-and-inheritance/cgt-reliefs/revised-entrepreneur-relief.aspx",
   },
   {
     topic: "Standard Fund Threshold, tax-free lump sum",
-    source: "Chartered Capital: Budget 2026 investment & pension changes",
-    url: "https://charteredcapital.ie/budget-2026-investment-pension-changes/",
+    source: "Revenue: Form 787S guidance, the Standard Fund Threshold",
+    url: "https://www.revenue.ie/en/personal-tax-credits-reliefs-and-exemptions/documents/form787s.pdf",
   },
   {
     topic: "Pension age-band limits, €115,000 cap",
-    source: "PensionPlanner.ie: pension tax relief 2026",
-    url: "https://pensionplanner.ie/tax-relief.html",
+    source: "Revenue: Tax relief limits on pension contributions",
+    url: "https://www.revenue.ie/en/jobs-and-pensions/pension/relief/tax-relief-limits.aspx",
   },
   {
-    topic: "Employer PRSA 100% cap; PRSA vs executive pension",
-    source: "Money Maximising: PRSA vs company pension 2026",
-    url: "https://mmadvisors.ie/prsa-vs-company-pension-ireland-directors-2026/",
+    topic: "Employer PRSA contributions capped at 100% of salary",
+    source: "Revenue: Personal Retirement Savings Accounts (PRSAs)",
+    url: "https://www.revenue.ie/en/jobs-and-pensions/pension/products/prsa.aspx",
   },
   {
     topic: "EIIS rates, limits and conditions",
-    source: "Irish Tax Hub: EII Scheme 2026",
-    url: "https://www.irishtaxhub.ie/blog/irelands-employment-and-investment-incentive-eii-scheme",
+    source: "Revenue: Tax and Duty Manual Part 16-00-02A, Reliefs for Investment in Corporate Trades",
+    url: "https://www.revenue.ie/en/tax-professionals/tdm/income-tax-capital-gains-tax-corporation-tax/part-16/16-00-02A.pdf",
   },
   {
     topic: "Angel Investor Relief",
-    source: "Beauchamps: Angel Investor Relief",
-    url: "https://www.beauchamps.ie/publications/17159",
+    source: "Revenue: Tax and Duty Manual Part 19-06A-02, Angel Investor Relief",
+    url: "https://www.revenue.ie/en/tax-professionals/tdm/income-tax-capital-gains-tax-corporation-tax/part-19/19-06A-02.pdf",
   },
   {
     topic: "Rental yields Q2 2026",

@@ -38,6 +38,7 @@ export const bn: Messages = {
     signIn: "সাইন ইন",
     ask: "প্রশ্ন করুন",
     openMenu: "মেনু খুলুন",
+    submenu: "{label} মেনু",
     skip: "মূল অংশে যান",
     closeMenu: "মেনু বন্ধ করুন",
     language: "ভাষা",
@@ -61,6 +62,7 @@ export const bn: Messages = {
     getInTouch: "যোগাযোগ",
     language: "ভাষা",
     rights: "সর্বস্বত্ব সংরক্ষিত।",
+    privacy: "গোপনীয়তা",
     disclaimer: "শুধু সাধারণ তথ্য, আর্থিক, কর বা আইনি পরামর্শ নয়।",
   },
 

@@ -8,7 +8,7 @@ import { nameFromUpdate } from "./app/lib/auth/session-update";
  * `proxy.ts` (Next 16 middleware) runs on the edge runtime, where the MongoDB
  * driver and bcrypt cannot be bundled. So the config is split: everything the
  * middleware needs to VERIFY a session lives here, and everything needed to
- * ISSUE one — the adapter and the Credentials provider — lives in ./auth.ts,
+ * ISSUE one (the adapter and the Credentials provider) lives in ./auth.ts,
  * which only ever loads in the Node runtime.
  *
  * Nothing in this file, or in anything it imports, may reach for the database.
@@ -23,9 +23,9 @@ export default {
   // Auth.js' own /api/auth/signin page is never shown; the app has its own.
   pages: { signIn: "/login" },
 
-  // The app is deployed behind its own host rather than on Vercel, where the
-  // host would be inferred. Set AUTH_URL in production to pin the callback
-  // origin rather than relying on the forwarded host header.
+  // Trust the request's host header. Production also sets AUTH_URL, which
+  // pins the callback origin; locally AUTH_URL is empty, so `next dev` and
+  // `next start` (the e2e server on :3100) take the origin from the request.
   trustHost: true,
 
   providers: isGoogleEnabled()
@@ -35,7 +35,7 @@ export default {
           //
           // Links a Google login to an existing account with the same address
           // instead of failing with OAuthAccountNotLinked. "Dangerous" only
-          // when the provider does not verify addresses — Google does, so
+          // when the provider does not verify addresses: Google does, so
           // signing in with Google reaches the account you already registered
           // rather than dead-ending on a duplicate.
           allowDangerousEmailAccountLinking: true,
@@ -61,9 +61,10 @@ export default {
 
     /**
      * Runs on every request that touches the session, including in middleware.
-     * `user` is present only on the sign-in that mints the token, so the DB is
-     * read exactly once per session and the role rides along in the JWT
-     * afterwards.
+     * `user` is present only on the sign-in that mints the token, so this half
+     * never reads the DB and the role rides along in the JWT afterwards. The
+     * Node half in auth.ts re-reads the role at most once a minute, so a role
+     * changed in the database lands within that.
      */
     jwt({ token, user, trigger, session }) {
       if (user) {

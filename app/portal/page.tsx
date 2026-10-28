@@ -67,7 +67,7 @@ export default async function PortalPage() {
     enquiriesCollection(),
   ]);
 
-  // Account, the client's own enquiries and a total count — fetched in
+  // Account, the client's own enquiries and a total count: fetched in
   // parallel. Guest enquiries are linked to a userId only at the verified
   // email/OAuth boundary.
   const [account, enquiryDocs, totalEnquiries] = await Promise.all([
@@ -113,7 +113,7 @@ export default async function PortalPage() {
   }
   const unreadCount = unreadIds.size;
 
-  // The client is viewing the portal now — mark their threads read so the cues
+  // The client is viewing the portal now: mark their threads read so the cues
   // clear on the next visit.
   await markClientRead(user.id);
 
@@ -134,14 +134,14 @@ export default async function PortalPage() {
     },
     {
       label: t.stats.lastActivity,
-      value: latest ? timeAgo(latest, locale) : "—",
+      value: latest ? timeAgo(latest, locale) : t.stats.never,
       hint: latest ? fmt.format(latest) : t.stats.noActivity,
     },
   ];
 
   return (
     <div className="mx-auto max-w-6xl">
-      {/* Hero — dark brand card with greeting, CTAs and a stats strip */}
+      {/* Hero: dark brand card with greeting, CTAs and a stats strip */}
       <section className="relative overflow-hidden rounded-none bg-navy-900 text-white">
         <div
           aria-hidden="true"
@@ -318,7 +318,7 @@ export default async function PortalPage() {
               <Avatar initials={initials} className="h-11 w-11 text-sm" />
               <div className="min-w-0 leading-tight">
                 <p className="truncate font-medium text-ink">
-                  {profile?.full_name ?? "—"}
+                  {profile?.full_name ?? t.notSet}
                 </p>
                 <p className="truncate text-sm text-muted">{user.email}</p>
               </div>
@@ -329,7 +329,7 @@ export default async function PortalPage() {
                 <dd className="font-medium text-ink">
                   {profile?.created_at
                     ? fmt.format(new Date(profile.created_at))
-                    : "—"}
+                    : t.notSet}
                 </dd>
               </div>
               <div className="flex items-center justify-between gap-3">

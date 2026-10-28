@@ -1,6 +1,6 @@
 "use client";
 
-/* Working Capital calculator (finance) — current assets − current liabilities,
+/* Working Capital calculator (finance): current assets − current liabilities,
    plus the current and quick (acid-test) ratios. Standard financial-analysis
    metrics, not tax. All maths live in ../lib/working-capital (single source of
    truth). */
@@ -15,7 +15,7 @@ import { useT } from "./locale-link";
 import { numberFormat } from "../lib/i18n";
 import { caMessages, type CaMessages } from "../lib/messages/ca";
 
-/* Rule-of-thumb reading of a ratio — deliberately hedged. */
+/* Rule-of-thumb reading of a ratio: deliberately hedged. */
 type Bands = CaMessages["wc"]["bands"];
 function currentRatioBand(r: number | null, b: Bands): string {
   if (r === null) return b.none;
@@ -110,30 +110,30 @@ function ResultCard({ r }: { r: WorkingCapitalResult }) {
       </div>
       <dl className="divide-y divide-line">
         <div className="flex items-baseline justify-between gap-4 px-5 py-3.5 sm:px-6">
-          <div className="flex items-baseline gap-2.5">
+          <dt className="flex items-baseline gap-2.5">
             <LegendDot className="bg-primary-500" />
             <span className="text-sm text-ink-body">{t.assets}</span>
-          </div>
-          <span className="text-sm font-medium text-ink tabular-nums">
+          </dt>
+          <dd className="text-sm font-medium text-ink tabular-nums">
             {money(r.currentAssets)}
-          </span>
+          </dd>
         </div>
         <div className="flex items-baseline justify-between gap-4 px-5 py-3.5 sm:px-6">
-          <div className="flex items-baseline gap-2.5">
+          <dt className="flex items-baseline gap-2.5">
             <LegendDot className="bg-navy-900" />
             <span className="text-sm text-ink-body">{t.liabilities}</span>
-          </div>
-          <span className="text-sm font-medium text-ink tabular-nums">
+          </dt>
+          <dd className="text-sm font-medium text-ink tabular-nums">
             {money(r.currentLiabilities)}
-          </span>
+          </dd>
         </div>
         <div className="flex items-baseline justify-between gap-4 bg-surface-muted px-5 py-3.5 sm:px-6">
-          <span className="text-sm font-semibold text-ink">
+          <dt className="text-sm font-semibold text-ink">
             {t.total}
-          </span>
-          <span className="font-display text-sm font-semibold text-ink tabular-nums">
+          </dt>
+          <dd className="font-display text-sm font-semibold text-ink tabular-nums">
             {money(r.workingCapital)}
-          </span>
+          </dd>
         </div>
       </dl>
     </div>
@@ -156,7 +156,7 @@ export function WorkingCapitalCalculator() {
   );
 
   return (
-    <div className="grid gap-10 lg:grid-cols-2">
+    <div className="grid grid-cols-1 gap-10 lg:grid-cols-2">
       {/* inputs */}
       <div className="flex flex-col gap-5">
         <div className="border-s-[3px] border-primary-500 bg-surface-muted px-4 py-3 text-xs leading-5 text-ink-body">
@@ -198,13 +198,13 @@ export function WorkingCapitalCalculator() {
         <div className="grid gap-5 sm:grid-cols-2">
           <RatioCard
             title={t.currentRatio}
-            value={r.currentRatio === null ? "—" : ratio(r.currentRatio)}
+            value={r.currentRatio === null ? t.notAvailable : ratio(r.currentRatio)}
             formula={t.currentFormula}
             reading={currentRatioBand(r.currentRatio, t.bands)}
           />
           <RatioCard
             title={t.quickRatio}
-            value={r.quickRatio === null ? "—" : ratio(r.quickRatio)}
+            value={r.quickRatio === null ? t.notAvailable : ratio(r.quickRatio)}
             formula={t.quickFormula}
             reading={quickRatioBand(r.quickRatio, t.bands)}
           />

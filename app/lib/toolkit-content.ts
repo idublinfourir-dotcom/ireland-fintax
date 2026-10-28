@@ -1,5 +1,5 @@
 /* The Founders Hub catalogue: every memo, template, tax/VAT form and setup
-   guide the firm offers. This file IS the library — no file is uploaded or
+   guide the firm offers. This file IS the library: no file is uploaded or
    hosted anywhere. A visitor requests a copy, and a team member emails it from
    their own mailbox (see /admin/toolkits). PURE module, no DB imports, so the
    public browser can import it directly. Adding a resource = adding an entry

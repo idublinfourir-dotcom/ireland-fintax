@@ -1,0 +1,52 @@
+# Checks every pull request and every push to main: typecheck, lint and the
+# unit tests (which include the check that the Node scripts in scripts/ still
+# load, the failure that stopped the news agent on 16 Oct 2026).
+#
+# No secrets, on purpose: this repository is public, and pull requests can come
+# from forks. Nothing here touches the database or sends mail.
+
+name: Checks
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: checks-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+
+      # Retried: the news agent's 23 Oct 2026 run died on a one-off network
+      # error at this step.
+      - name: Install
+        run: |
+          for attempt in 1 2 3; do
+            npm ci --no-audit --no-fund && exit 0
+            echo "npm ci failed (attempt $attempt of 3), retrying in 30s"
+            sleep 30
+          done
+          exit 1
+
+      # next-env.d.ts (image imports, route types) is generated and gitignored,
+      # so a fresh checkout has to make it before tsc can see .jpg imports.
+      - run: npx next typegen
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm test

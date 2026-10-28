@@ -38,6 +38,7 @@ export const ga: Messages = {
     signIn: "Sínigh isteach",
     ask: "Cuir ceist",
     openMenu: "Oscail an roghchlár",
+    submenu: "Roghchlár {label}",
     skip: "Léim go dtí an t-ábhar",
     closeMenu: "Dún an roghchlár",
     language: "Teanga",
@@ -61,6 +62,7 @@ export const ga: Messages = {
     getInTouch: "Déan teagmháil linn",
     language: "Teanga",
     rights: "Gach ceart ar cosaint.",
+    privacy: "Príobháideacht",
     disclaimer: "Eolas ginearálta amháin, ní comhairle airgeadais, chánach ná dlí.",
   },
 

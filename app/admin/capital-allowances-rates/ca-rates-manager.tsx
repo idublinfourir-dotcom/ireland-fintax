@@ -1,7 +1,7 @@
 "use client";
 
 /* Admin editor for the capital allowances calculator.
-   Rates form: TWO-PHASE — "Review change" previews a diff, "Confirm" writes.
+   Rates form: TWO-PHASE: "Review change" previews a diff, "Confirm" writes.
    Each asset class exposes its rate + write-off period; the label and note are
    read-only (they stay in code). Plus the car cost cap and the trading CT rate
    used for the cash-value line. The CO2 emission bands are statutory and aren't
@@ -13,6 +13,7 @@ import type { CaConfig } from "../../lib/ireland-capital-allowances";
 import type { RateAuditRow } from "../../lib/rate-audit";
 import type { DiffEntry } from "../../lib/rate-diff";
 import { saveCapitalAllowancesSettings, type TwoPhaseState } from "./actions";
+import { submitKeepingValues } from "../submit-keeping-values";
 
 const IDLE_TWO: TwoPhaseState = { status: "idle" };
 
@@ -56,7 +57,7 @@ function DiffList({ diff }: { diff: DiffEntry[] }) {
             ? `${d.from} → ${d.to}`
             : d.kind === "unchanged" && d.from
               ? `${d.from} (unchanged)`
-              : d.to || d.from || "—";
+              : d.to || d.from || "(none)";
         return (
           <li key={d.label} className={`text-sm tabular-nums ${d.kind !== "unchanged" ? "text-ink" : "text-muted"}`}>
             {d.label}: {text}
@@ -72,7 +73,7 @@ function SettingsForm({ config }: { config: CaConfig }) {
   const previewing = state.status === "preview";
 
   return (
-    <form action={action} className="rounded-none border border-line bg-white p-5">
+    <form onSubmit={submitKeepingValues(action)} className="rounded-none border border-line bg-white p-5">
       <h3 className="font-display text-base font-semibold text-ink">Rates &amp; limits</h3>
       <p className="mt-1 text-xs text-muted">
         The wear-and-tear rate and write-off period for each asset class, plus the
@@ -159,7 +160,7 @@ function AuditPanel({ entries }: { entries: RateAuditRow[] }) {
             <li key={e.id} className="flex items-baseline justify-between gap-4 py-2">
               <div>
                 <span className="text-sm text-ink-body">{e.summary}</span>
-                <span className="mt-0.5 block text-xs text-muted">{e.changedBy ?? "—"}</span>
+                <span className="mt-0.5 block text-xs text-muted">{e.changedBy ?? "(unknown)"}</span>
               </div>
               <span className="shrink-0 text-xs text-muted tabular-nums">{auditTime(e.changedAt)}</span>
             </li>

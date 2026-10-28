@@ -1,9 +1,9 @@
 "use client";
 
-/* Ireland CAT calculator — gift & inheritance tax for one benefit.
+/* Ireland CAT calculator: gift & inheritance tax for one benefit.
    Left: inputs (benefit type, relationship, value, liabilities, relief, small
    gift toggle, prior same-group benefits, valuation month). Right: the computed
-   breakdown — market value → incumbrance-free → relief → small gift → taxable →
+   breakdown: market value → incumbrance-free → relief → small gift → taxable →
    threshold → CAT due. All maths live in ../lib/ireland-cat (single source). */
 
 import { useState } from "react";
@@ -35,12 +35,12 @@ function Line({ label, value, strong = false, muted = false }: {
 }) {
   return (
     <div className={`flex items-baseline justify-between gap-4 px-5 py-3 sm:px-6 ${strong ? "bg-surface-muted" : ""}`}>
-      <span className={`text-sm ${strong ? "font-semibold text-ink" : muted ? "text-muted" : "text-ink-body"}`}>
+      <dt className={`text-sm ${strong ? "font-semibold text-ink" : muted ? "text-muted" : "text-ink-body"}`}>
         {label}
-      </span>
-      <span className={`tabular-nums ${strong ? "font-display text-sm font-semibold text-ink" : "text-sm font-medium text-ink"}`}>
+      </dt>
+      <dd className={`tabular-nums ${strong ? "font-display text-sm font-semibold text-ink" : "text-sm font-medium text-ink"}`}>
         {value}
-      </span>
+      </dd>
     </div>
   );
 }
@@ -76,7 +76,7 @@ export function IrelandCatCalculator({ config }: { config: CatConfig }) {
   const isGift = benefitType === "gift";
 
   return (
-    <div className="grid gap-10 lg:grid-cols-2">
+    <div className="grid grid-cols-1 gap-10 lg:grid-cols-2">
       {/* inputs */}
       <div className="flex flex-col gap-5">
         <div className="border-s-[3px] border-primary-500 bg-surface-muted px-4 py-3 text-xs leading-5 text-ink-body">

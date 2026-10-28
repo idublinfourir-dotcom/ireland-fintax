@@ -1,7 +1,7 @@
 /* ──────────────────────────────────────────────────────────────────────────
-   Ireland Capital Acquisitions Tax (CAT) — gift & inheritance tax.
+   Ireland Capital Acquisitions Tax (CAT): gift & inheritance tax.
 
-   PURE FUNCTIONS ONLY — no React, no I/O — so every figure is unit-testable.
+   PURE FUNCTIONS ONLY (no React, no I/O) so every figure is unit-testable.
    The rates/thresholds/reliefs here are the CODE FALLBACK: the live values are
    stored in MongoDB (calculator_settings, _id 'cat') and edited from
    /admin/cat-rates. cat-data.ts reads the DB and falls back to these constants
@@ -21,7 +21,7 @@
    WHY the simplified thresholdRemaining line is exact: Revenue taxes the
    aggregate (prior+current) above the threshold then credits tax on the prior
    benefits. With a FLAT rate r,  r·[max(0,p+c−T) − max(0,p−T)] == r·max(0,
-   c − max(0,T−p))  for all p,c,T ≥ 0. This equality DEPENDS ON THE FLAT RATE —
+   c − max(0,T−p))  for all p,c,T ≥ 0. This equality DEPENDS ON THE FLAT RATE:
    if CAT ever gets bands, replace this with an aggregate-minus-prior computation.
 
    Sources (verified July 2026):
@@ -37,19 +37,19 @@
    - Business relief 90%: .../cat-reliefs/business-relief
    - Pay & file (31 Oct rule): .../important-dates-for-cat
 
-   Figures are ESTIMATES for guidance only — not tax advice.
+   Figures are ESTIMATES for guidance only: not tax advice.
 
-   ── NOT MODELLED (deliberate — do NOT silently fold in) ──
+   ── NOT MODELLED (deliberate: do NOT silently fold in) ──
    - Favourite nephew/niece relief; agricultural/business relief CLAWBACK on
      early disposal + active-farmer / 80%-farmer-asset / 6-yr-retention tests.
    - "Certain inheritances taken by parents" full exemption (parent inherits from
      a child within 5 yrs of an earlier non-exempt benefit).
    - Disponer-pays-tax grossing-up; gift-splitting 3-year rule.
    - Parent + inheritance is assumed an ABSOLUTE interest (Group A); a limited
-     interest would be Group B — not offered as an input.
+     interest would be Group B: not offered as an input.
    - Dwelling House Exemption shown as a 100% relief toggle; in law it is chiefly
      an inheritance relief (a gift qualifies only for a dependent relative).
-   - €3,000 small gift is per disponer per year across multiple gifts — one
+   - €3,000 small gift is per disponer per year across multiple gifts: one
      benefit modelled at a time (hence the toggle).
    ────────────────────────────────────────────────────────────────────────── */
 
@@ -142,7 +142,7 @@ export type Relationship =
   | "in-law"
   | "other";
 
-/** Dropdown options — the beneficiary IS the disponer's ___. Order = display order. */
+/** Dropdown options: the beneficiary IS the disponer's ___. Order = display order. */
 export const RELATIONSHIPS: { value: Relationship; label: string }[] = [
   { value: "child", label: "Child" },
   { value: "parent", label: "Parent" },
@@ -211,14 +211,14 @@ export interface CatInput {
   relationship: Relationship;
   /** Market value of the benefit. */
   marketValue: number;
-  /** Liabilities / costs / consideration paid — reduce the taxable value. */
+  /** Liabilities / costs / consideration paid: reduce the taxable value. */
   deductibleLiabilities: number;
   relief: ReliefKind;
   /** Apply the €3,000 small gift exemption (gifts only; ignored for inheritances). */
   applySmallGiftExemption: boolean;
   /** Prior taxable benefits in the SAME group since 5 Dec 1991. */
   priorBenefits: number;
-  /** Valuation month 1–12, for the pay-and-file date. */
+  /** Valuation month 1 to 12, for the pay-and-file date. */
   valuationMonth?: number;
 }
 
@@ -263,7 +263,7 @@ export function computeCat(input: CatInput, config: CatConfig): CatResult {
   const reliefAmount = round2(incumbranceFreeValue * (reliefPercent / 100));
   const reducedValue = round2(incumbranceFreeValue - reliefAmount);
 
-  // Small gift exemption — gifts only, when the user leaves the toggle on.
+  // Small gift exemption: gifts only, when the user leaves the toggle on.
   const smallGiftExemptionApplied =
     input.benefitType === "gift" && input.applySmallGiftExemption
       ? round2(Math.min(config.smallGiftExemptionEur, reducedValue))
@@ -280,7 +280,7 @@ export function computeCat(input: CatInput, config: CatConfig): CatResult {
   const effectiveRatePercent =
     currentTaxableValue > 0 ? round2((catDue / currentTaxableValue) * 100) : 0;
 
-  // Pay & file: valuation date Jan–Aug → 31 Oct same year; Sep–Dec → 31 Oct next.
+  // Pay & file: valuation date Jan to Aug → 31 Oct same year; Sep to Dec → 31 Oct next.
   const m =
     input.valuationMonth && input.valuationMonth >= 1 && input.valuationMonth <= 12
       ? input.valuationMonth

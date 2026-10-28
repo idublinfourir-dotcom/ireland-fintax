@@ -1,5 +1,5 @@
 /* Pure account-field validators shared by the settings server actions and the
-   forgot-password flow. No React/IO — unit-tested with node:test. Floors
+   forgot-password flow. No React/IO, unit-tested with node:test. Floors
    mirror signup: name >= 2, password >= 8. */
 
 /* `t` carries the page's language (accountMessages.errors); the defaults

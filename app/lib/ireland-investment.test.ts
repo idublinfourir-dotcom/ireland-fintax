@@ -89,7 +89,7 @@ test("marginal-rate options follow the investor's own rate", () => {
 
 test("reproduces the workbook's 10-year projection on 100,000", () => {
   /* The projection tab quotes its own gross rate per route rather than the
-     option mid-point — it prices the pillar bank at the best of the three
+     option mid-point: it prices the pillar bank at the best of the three
      rates, and the pension row at an equity return inside the wrapper rather
      than at the pension range's mid. So this pins the maths against the tab's
      stated inputs; the test below covers projection from the option mid. */
@@ -331,7 +331,7 @@ test("every option links somewhere an Irish resident can actually go", () => {
   for (const o of INVESTMENT_OPTIONS) {
     assert.ok(o.link.label.length > 0, `${o.id}: no link label`);
     assert.match(o.link.url, /^https:\/\//, `${o.id}: link is not https`);
-    // No placeholder or example hosts — these are live destinations.
+    // No placeholder or example hosts: these are live destinations.
     assert.doesNotMatch(o.link.url, /example\.|localhost|TODO/i, `${o.id}: placeholder link`);
   }
 });

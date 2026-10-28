@@ -8,7 +8,7 @@
 
    Mechanism (see spec 2026-07-09-contact-wizard-design): ONE <form noValidate>.
    Every step's fieldset is always mounted; inactive ones use the `hidden`
-   attribute — NOT conditional render — because FormData serialises only mounted
+   attribute (NOT conditional render) because FormData serialises only mounted
    inputs, so unmounting a step would drop its fields from the final POST. Hidden
    inputs still submit; they are never `disabled`. Only the button row is
    conditionally rendered, so no hidden submit button can post from an earlier
@@ -183,8 +183,12 @@ export function ContactForm() {
   const [error, setError] = useState<string | null>(null);
   const promptRef = useRef<HTMLHeadingElement>(null);
 
-  // Move focus to the step prompt whenever the step changes (a11y).
+  // Move focus to the step prompt when the step changes (a11y), but not on
+  // first load: that would skip the header and the skip link.
+  const shownStep = useRef(step);
   useEffect(() => {
+    if (shownStep.current === step) return;
+    shownStep.current = step;
     promptRef.current?.focus();
   }, [step]);
 
@@ -247,7 +251,7 @@ export function ContactForm() {
         <p className="mt-1.5 text-sm leading-6 text-muted">{t.steps[step - 1].sub}</p>
       </div>
 
-      {/* Step 1 — topic */}
+      {/* Step 1: topic */}
       <fieldset hidden={step !== 1} className="border-0 p-0">
         <legend className="sr-only">{t.chooseTopic}</legend>
         <div className="flex flex-wrap gap-2.5">
@@ -317,7 +321,7 @@ export function ContactForm() {
         )}
       </fieldset>
 
-      {/* Step 3 — contact details */}
+      {/* Step 3: contact details */}
       <fieldset hidden={step !== 3} className="flex flex-col gap-5 border-0 p-0">
         <legend className="sr-only">{t.detailsLegend}</legend>
         <div className="grid gap-5 sm:grid-cols-2">

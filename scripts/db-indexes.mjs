@@ -139,8 +139,9 @@ const INDEXES = {
   toolkit_requests: [
     [{ createdAt: -1 }, { name: "toolkit_requests_created_idx" }],
     [{ status: 1, createdAt: -1 }, { name: "toolkit_requests_status_idx" }],
-    // Per-address hourly throttle; addresses are stored as typed, so this one
-    // needs the collation (and so does every query that uses it).
+    // Account deletion removes an address's requests (app/lib/account-
+    // deletion.ts). Addresses are stored as typed, so this one needs the
+    // collation (and so does every query that uses it).
     [
       { email: 1, createdAt: -1 },
       { name: "toolkit_requests_email_ci_idx", collation: CI },
@@ -166,7 +167,7 @@ try {
         created.push({
           collection,
           index: options.name,
-          status: `FAILED — ${err.message}`,
+          status: `FAILED: ${err.message}`,
         });
         process.exitCode = 1;
       }

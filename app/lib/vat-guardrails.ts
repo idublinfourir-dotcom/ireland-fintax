@@ -1,4 +1,4 @@
-/* Server-side guardrails for VAT admin edits. PURE — reject clearly-wrong
+/* Server-side guardrails for VAT admin edits. PURE: reject clearly-wrong
    values with a message; the two-step preview is the guard against subtle
    mistakes. The five statutory rate keys are fixed (categories map to them):
    percents editable, no add/remove. Mirrors cgt-guardrails.ts. */
@@ -33,7 +33,7 @@ export function validateVatConfig(
     if (!REQUIRED_VAT_KEYS.includes(r.key))
       return { ok: false, message: `Unknown rate "${r.key}".` };
     if (!Number.isFinite(r.percent) || r.percent < 0 || r.percent > 100)
-      return { ok: false, message: `${r.label || r.key}: rate must be 0–100%.` };
+      return { ok: false, message: `${r.label || r.key}: rate must be 0 to 100%.` };
     if (!r.label.trim()) return { ok: false, message: "Every rate needs a label." };
     if (!r.applies.trim()) return { ok: false, message: "Every rate needs an 'applies to'." };
     const rate: VatRate = {

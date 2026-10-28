@@ -4,7 +4,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readdirSync } from "node:fs";
-import { INTL_LOCALE, LOCALES, localDate, localeHref, numberFormat, plural, shortDateTime, splitLocale, switchHref } from "./i18n.ts";
+import { INTL_LOCALE, LOCALES, hasLocaleRoute, isEnglishOnly, isTranslated, localDate, localeHref, numberFormat, plural, shortDateTime, splitLocale, switchHref } from "./i18n.ts";
 import { ar } from "./messages/ar.ts";
 import { bn } from "./messages/bn.ts";
 import { en } from "./messages/en.ts";
@@ -286,4 +286,20 @@ test("localDate's tables match Node's Intl output for every month", () => {
   assert.equal(shortDateTime("en", new Date(2026, 9, 3, 14, 5)), "03 Oct, 14:05");
   assert.equal(shortDateTime("ga", new Date(2026, 9, 3, 14, 5)), "03 DFómh, 14:05");
   assert.equal(shortDateTime("pt", new Date(2026, 9, 3, 9, 30)), "03 de out., 09:30");
+});
+
+test("every route is translated, chrome-only or English-only, exactly one", () => {
+  // The proxy sends /ga/<English-only page> to English and keeps the prefix on
+  // anything else, so a page missing from all three lists would 404 under a
+  // language prefix instead of redirecting.
+  const routes = (readdirSync("app", { recursive: true }) as string[])
+    .map((f) => f.split("\\").join("/"))
+    .filter((f) => /(^|\/)(page\.tsx|route\.ts)$/.test(f) && !/(^|\/)_/.test(f))
+    .map((f) => "/" + f.replace(/\/?(page\.tsx|route\.ts)$/, "").replace(/\[[^\]]+\]/g, "x"));
+  assert.ok(routes.length > 30, `found only ${routes.length} routes`);
+  const wrong = routes.filter((r) => {
+    const kinds = [isTranslated(r), hasLocaleRoute(r) && !isTranslated(r), isEnglishOnly(r)];
+    return kinds.filter(Boolean).length !== 1;
+  });
+  assert.deepEqual(wrong, []);
 });

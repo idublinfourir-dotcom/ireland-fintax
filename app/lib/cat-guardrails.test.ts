@@ -18,7 +18,7 @@ test("accepts the code default, returns typed config", () => {
   if (r.ok) assert.deepEqual(r.value, CAT_CONFIG_DEFAULT);
 });
 
-test("rejects a rate outside 0–100", () => {
+test("rejects a rate outside 0 to 100", () => {
   const r = validateCatConfig({ ...good, ratePercent: 120 });
   assert.equal(r.ok, false);
   if (!r.ok) assert.match(r.message, /rate/i);

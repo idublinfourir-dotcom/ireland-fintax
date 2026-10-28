@@ -1,5 +1,5 @@
 /* The Personal Hub tools, in one place. Drives both the on-page switcher below
-   and the Personal Hub dropdown in the site header — the same shape
+   and the Personal Hub dropdown in the site header: the same shape
    CALCULATOR_TOOLS has for the Accountants Hub.
 
    Mortgage moved here from the Accountants Hub: it is a personal-finance

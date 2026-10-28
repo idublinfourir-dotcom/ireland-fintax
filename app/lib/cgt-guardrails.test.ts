@@ -32,7 +32,7 @@ test("validateCgtConfig rejects out-of-range values with a message", () => {
     entrepreneurLifetimeCapEur: 1_500_000,
   });
   assert.equal(overRate.ok, false);
-  assert.equal(overRate.ok === false && /0–100/.test(overRate.message), true);
+  assert.equal(overRate.ok === false && /0 to 100/.test(overRate.message), true);
 
   const negExemption = validateCgtConfig({
     standardRatePercent: 33,

@@ -6,12 +6,12 @@ import type { UserRole } from "../collections";
 
 /* Route guards and the session read. SERVER ONLY.
  *
- * Every function here reads the signed session JWT locally — no database round
- * trip, no network call — so the root layout can call getSessionUser() on every
+ * Every function here reads the signed session JWT locally: no database round
+ * trip, no network call: so the root layout can call getSessionUser() on every
  * request without cost. The role travels in the token, stamped at sign-in from
- * the account document. One consequence of that trade: a role edited directly
- * in the database takes effect on that user's next sign-in, not
- * immediately. */
+ * the account document. The jwt callback in auth.ts re-reads it at most once a
+ * minute, so a role edited directly in the database takes effect within about
+ * a minute, not immediately. */
 
 /** The authenticated account, as the app uses it. */
 export interface AuthUser {
@@ -72,7 +72,7 @@ export async function requireUser(next = "/portal"): Promise<AuthUser> {
 
 /**
  * Require a non-admin (client) user. Admins are redirected to /admin so the two
- * areas stay segregated — an admin can't browse the client portal and vice
+ * areas stay segregated: an admin can't browse the client portal and vice
  * versa.
  */
 export async function requireClient(): Promise<AuthUser> {

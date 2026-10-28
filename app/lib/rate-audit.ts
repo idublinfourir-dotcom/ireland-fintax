@@ -1,5 +1,5 @@
 /* Change-audit log, shared by every editable calculator (Project B reuses it).
-   recordAudit never throws — an audit failure must not block the actual change. */
+   recordAudit never throws: an audit failure must not block the actual change. */
 
 import { ObjectId } from "mongodb";
 import { rateAuditCollection } from "./collections";
@@ -49,7 +49,7 @@ export async function recordAudit(e: RateAuditEntry): Promise<void> {
  *
  * `areaLike` accepts the trailing-`%` prefix patterns the six rate editors
  * pass ("cgt-%", "vat%", …). Every one is a prefix match, so the `%` becomes
- * an anchored regex and the prefix itself is escaped — an area name is a
+ * an anchored regex and the prefix itself is escaped: an area name is a
  * literal, never a pattern.
  */
 export async function getRecentAudit(

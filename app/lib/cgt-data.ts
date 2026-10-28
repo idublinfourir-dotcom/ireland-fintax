@@ -3,7 +3,7 @@
    indexation multiplier table (cgt_multipliers, 29 documents), both editable in
    /admin/cgt-rates; falls back to the versioned constants in ireland-cgt.ts
    when the database is unreachable, a document is missing, or a stored value
-   fails validation — so the calculator never renders broken numbers. */
+   fails validation: so the calculator never renders broken numbers. */
 
 import { cgtMultipliersCollection, cgtSettingsCollection } from "./collections";
 import { isDbConfigured } from "./db-config";
@@ -51,7 +51,7 @@ export async function getCgtData(): Promise<CgtData> {
     const reviewedAt = settingsDoc?.reviewedAt?.toISOString() ?? null;
 
     // Multipliers are stored as numbers, but a hand-edited document could
-    // hold anything — drop rows that are not a usable multiplier rather than
+    // hold anything: drop rows that are not a usable multiplier rather than
     // rendering NaN.
     let multipliers: CgtMultiplier[] = CGT_MULTIPLIERS_DEFAULT;
     if (multiplierDocs.length > 0) {

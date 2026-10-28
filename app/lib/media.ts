@@ -7,9 +7,10 @@
 
 import { createHash } from "node:crypto";
 import { Binary, ObjectId } from "mongodb";
-import { mediaCollection, toObjectId } from "./collections";
+import { mediaCollection, postsCollection, toObjectId } from "./collections";
 import { imageInfo, type ImageType } from "./image-info";
 import { UPLOAD_LARGE_EDGE, UPLOAD_SMALL_EDGE } from "./post-types";
+import { postUploadIds } from "./post-blocks";
 
 /** Byte caps per copy. Generous for a picture already shrunk in the browser,
     and well under MongoDB's 16MB document limit together. */
@@ -118,4 +119,35 @@ export async function getMediaSizes(
     .find({ _id: { $in: objectIds } }, { projection: { width: 1, height: 1 } })
     .toArray();
   return new Map(docs.map((d) => [d._id.toHexString(), { width: d.width, height: d.height }]));
+}
+
+/** How long an unused upload is kept: a picture uploaded into an editor that
+    has not been saved yet belongs to no post, and must survive the sweep. */
+export const UNUSED_MEDIA_GRACE_DAYS = 7;
+
+/**
+ * Uploaded pictures that no post or draft uses and that are older than the
+ * grace period, with their total size. Drafts count: an AI draft or a post in
+ * progress keeps its pictures.
+ */
+export async function findUnusedMedia(): Promise<{ ids: ObjectId[]; bytes: number }> {
+  const posts = await postsCollection();
+  const used = new Set<string>();
+  const docs = await posts.find({}, { projection: { cover: 1, blocks: 1 } }).toArray();
+  for (const p of docs) for (const id of postUploadIds(p.cover, p.blocks ?? [])) used.add(id);
+
+  const cutoff = new Date(Date.now() - UNUSED_MEDIA_GRACE_DAYS * 24 * 60 * 60 * 1000);
+  const media = await mediaCollection();
+  const uploads = await media
+    .find({ createdAt: { $lt: cutoff } }, { projection: { _id: 1, bytes: 1 } })
+    .toArray();
+  const unused = uploads.filter((m) => !used.has(m._id.toHexString()));
+  return { ids: unused.map((m) => m._id), bytes: unused.reduce((n, m) => n + (m.bytes ?? 0), 0) };
+}
+
+/** Delete these uploads; returns how many went. */
+export async function deleteMedia(ids: ObjectId[]): Promise<number> {
+  if (ids.length === 0) return 0;
+  const media = await mediaCollection();
+  return (await media.deleteMany({ _id: { $in: ids } })).deletedCount;
 }

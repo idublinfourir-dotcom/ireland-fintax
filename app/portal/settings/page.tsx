@@ -17,7 +17,7 @@ export default async function SettingsPage() {
   const owner = toObjectId(user.id);
   const users = await usersCollection();
   const account = owner
-    ? await users.findOne({ _id: owner }, { projection: { name: 1 } })
+    ? await users.findOne({ _id: owner }, { projection: { name: 1, passwordHash: 1 } })
     : null;
   const fullName = account?.name ?? "";
 
@@ -28,7 +28,12 @@ export default async function SettingsPage() {
         title={t.settings.title}
         lede={t.settings.lede}
       />
-      <SettingsForm fullName={fullName} email={user.email} />
+      <SettingsForm
+        fullName={fullName}
+        email={user.email}
+        hasPassword={Boolean(account?.passwordHash)}
+        canDelete
+      />
     </div>
   );
 }

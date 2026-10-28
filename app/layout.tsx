@@ -16,6 +16,7 @@ import { site } from "./lib/content";
 import { RTL_LOCALES } from "./lib/i18n";
 import { getMessages, languageAlternates } from "./lib/messages";
 import { LocaleProvider } from "./components/locale-link";
+import { SiteAnalytics } from "./components/site-analytics";
 import "./globals.css";
 
 const archivo = Archivo({
@@ -68,6 +69,8 @@ export async function generateMetadata(): Promise<Metadata> {
       type: "website",
       locale: { en: "en_GB", ga: "ga_IE", es: "es_ES", pt: "pt_BR", ar: "ar_AR", bn: "bn_BD", hi: "hi_IN" }[locale],
     },
+    // Large card: the share picture is app/opengraph-image.tsx.
+    twitter: { card: "summary_large_image" },
   };
 }
 
@@ -114,6 +117,7 @@ export default async function RootLayout({
             <BackToTop />
           </ChromeGate>
         </LocaleProvider>
+        <SiteAnalytics />
       </body>
     </html>
   );

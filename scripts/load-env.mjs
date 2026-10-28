@@ -21,7 +21,7 @@ if (existsSync(envFile)) {
 
 /**
  * The same connection string the app builds in app/lib/mongodb.ts: a complete
- * MONGODB_URI when given, otherwise the Atlas parts. Kept in step by hand —
+ * MONGODB_URI when given, otherwise the Atlas parts. Kept in step by hand:
  * the app module is TypeScript and these scripts are plain ESM.
  */
 export function mongoUri() {

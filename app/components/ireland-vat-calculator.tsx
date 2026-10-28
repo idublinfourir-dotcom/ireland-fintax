@@ -1,13 +1,13 @@
 "use client";
 
-/* Ireland VAT calculator — a business's net VAT position, as on the VAT3
+/* Ireland VAT calculator: a business's net VAT position, as on the VAT3
    return. Two INPUT tabs, one per side:
-   • VAT received — VAT you charge customers on SALES (output VAT, T1).
-   • VAT paid     — VAT you pay suppliers on PURCHASES (input VAT, T2).
+   • VAT received: VAT you charge customers on SALES (output VAT, T1).
+   • VAT paid    : VAT you pay suppliers on PURCHASES (input VAT, T2).
    The category dropdown mirrors across the tabs ("what you buy" defaults to
    "what you sell") but is independently changeable. Amounts are per side.
 
-   The RESULT (right) is not a tab — it computes the verdict from both sides:
+   The RESULT (right) is not a tab, it computes the verdict from both sides:
    received > paid → PAYABLE; paid > received → RECEIVABLE (e.g. KFC: €2.5M
    paid vs €2M received → €0.5M receivable).
    All maths + rates live in ../lib/ireland-vat (single source of truth). */
@@ -102,7 +102,7 @@ function CategorySelect({
   );
 }
 
-/* ---------- net position verdict (computed — not a tab) ---------- */
+/* ---------- net position verdict (computed: not a tab) ---------- */
 
 function VerdictCard({ pos }: { pos: VatPosition }) {
   const { outputVat: received, inputVat: paid, netVat, direction } = pos;
@@ -157,30 +157,30 @@ function VerdictCard({ pos }: { pos: VatPosition }) {
       </div>
       <dl className="divide-y divide-line">
         <div className="flex items-baseline justify-between gap-4 px-5 py-3.5 sm:px-6">
-          <div className="flex items-baseline gap-2.5">
+          <dt className="flex items-baseline gap-2.5">
             <LegendDot className="bg-navy-900" />
             <span className="text-sm text-ink-body">
               {t.receivedRow}
             </span>
-          </div>
-          <span className="text-sm font-medium text-ink tabular-nums">
+          </dt>
+          <dd className="text-sm font-medium text-ink tabular-nums">
             {money(received)}
-          </span>
+          </dd>
         </div>
         <div className="flex items-baseline justify-between gap-4 px-5 py-3.5 sm:px-6">
-          <div className="flex items-baseline gap-2.5">
+          <dt className="flex items-baseline gap-2.5">
             <LegendDot className="bg-primary-500" />
             <span className="text-sm text-ink-body">
               {t.paidRow}
             </span>
-          </div>
-          <span className="text-sm font-medium text-ink tabular-nums">{money(paid)}</span>
+          </dt>
+          <dd className="text-sm font-medium text-ink tabular-nums">{money(paid)}</dd>
         </div>
         <div className="flex items-baseline justify-between gap-4 bg-surface-muted px-5 py-3.5 sm:px-6">
-          <span className="text-sm font-semibold text-ink">{view.netLabel}</span>
-          <span className="font-display text-sm font-semibold text-ink tabular-nums">
+          <dt className="text-sm font-semibold text-ink">{view.netLabel}</dt>
+          <dd className="font-display text-sm font-semibold text-ink tabular-nums">
             {money(netVat)}
-          </span>
+          </dd>
         </div>
       </dl>
       <p className="border-t border-line px-5 py-3 text-xs leading-5 text-muted sm:px-6">
@@ -198,9 +198,9 @@ function ThresholdsCard({ thresholds }: { thresholds: VatThresholds }) {
   const { eur0 } = useMoney();
   return (
     <div className="mt-5 border border-line bg-surface p-5">
-      <h3 className="text-xs font-semibold uppercase tracking-[0.16em] text-muted">
+      <h2 className="text-xs font-semibold uppercase tracking-[0.16em] text-muted">
         {t.thresholdsTitle}
-      </h3>
+      </h2>
       <div className="mt-3 flex flex-wrap gap-x-8 gap-y-2 text-sm text-ink-body">
         <span>
           {t.goods}{" "}
@@ -252,8 +252,8 @@ export function IrelandVatCalculator({ config }: { config: VatConfig }) {
   const locale = useLocale();
 
   return (
-    <div className="grid gap-10 lg:grid-cols-2">
-      {/* inputs — tabbed by side */}
+    <div className="grid grid-cols-1 gap-10 lg:grid-cols-2">
+      {/* inputs: tabbed by side */}
       <div className="flex flex-col gap-5">
         <div className="border-s-[3px] border-primary-500 bg-surface-muted px-4 py-3 text-xs leading-5 text-ink-body">
           <span className="font-semibold text-ink">{t.introTitle}</span>{" "}
@@ -276,7 +276,7 @@ export function IrelandVatCalculator({ config }: { config: VatConfig }) {
                   role="tab"
                   aria-selected={active}
                   onClick={() => setSide(s)}
-                  className={`flex-1 cursor-pointer rounded-none px-3 py-2 text-xs font-semibold whitespace-nowrap transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500 ${
+                  className={`min-w-0 flex-1 cursor-pointer rounded-none px-3 py-2 text-xs leading-4 font-semibold transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500 ${
                     active ? "bg-primary-500 text-white" : "text-ink hover:bg-surface"
                   }`}
                 >
@@ -294,9 +294,9 @@ export function IrelandVatCalculator({ config }: { config: VatConfig }) {
             <div className="flex items-baseline justify-between gap-3">
               <div className="flex items-baseline gap-2.5">
                 <LegendDot className={received ? "bg-navy-900" : "bg-primary-500"} />
-                <h3 className="text-sm font-semibold text-ink">
+                <h2 className="text-sm font-semibold text-ink">
                   {received ? t.headReceived : t.headPaid}
-                </h3>
+                </h2>
               </div>
               <span
                 className={`rounded-none px-2 py-0.5 font-display text-xs font-semibold tabular-nums text-white ${
@@ -413,7 +413,7 @@ export function IrelandVatCalculator({ config }: { config: VatConfig }) {
         </div>
       </div>
 
-      {/* result — computed verdict */}
+      {/* result: computed verdict */}
       <div className="flex flex-col">
         <VerdictCard pos={pos} />
         <ThresholdsCard thresholds={thresholds} />

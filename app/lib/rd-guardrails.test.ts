@@ -31,7 +31,7 @@ test("rejects a negative threshold", () => {
   assert.equal(validateRdConfig({ ...valid(), firstYearThresholdEur: -1 }).ok, false);
 });
 
-test("second-instalment fraction must be 0–1", () => {
+test("second-instalment fraction must be 0 to 1", () => {
   assert.equal(validateRdConfig({ ...valid(), secondInstalmentFraction: 1.5 }).ok, false);
   assert.equal(validateRdConfig({ ...valid(), secondInstalmentFraction: -0.1 }).ok, false);
   assert.equal(validateRdConfig({ ...valid(), secondInstalmentFraction: 0 }).ok, true);

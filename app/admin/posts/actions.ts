@@ -18,7 +18,7 @@ import {
   markAiReviewed,
   updatePost,
 } from "../../lib/posts";
-import { getMediaSizes } from "../../lib/media";
+import { deleteMedia, findUnusedMedia, getMediaSizes } from "../../lib/media";
 import { readingMinutes, uploadIds, withUploadSizes } from "../../lib/post-blocks";
 import { validatePostInput, type PostErrors } from "../../lib/post-validation";
 import type { PostStatus } from "../../lib/post-types";
@@ -362,4 +362,35 @@ export async function rejectAiDraftAction(
   });
   revalidatePath("/admin/posts");
   redirect("/admin/posts?rejected=1");
+}
+
+/**
+ * Deletes uploaded pictures that no post or draft uses and that are past the
+ * grace period (lib/media.ts). Works the list out again here: nothing from
+ * the form decides what goes. The panel on /admin/posts asks for a second
+ * click before this is submitted.
+ */
+export async function deleteUnusedPicturesAction(): Promise<void> {
+  const user = await requireAdmin();
+
+  let count = 0;
+  try {
+    const { ids, bytes } = await findUnusedMedia();
+    count = await deleteMedia(ids);
+    if (count > 0) {
+      await recordAudit({
+        area: "media",
+        action: "delete",
+        summary: `Deleted ${count} unused picture${count === 1 ? "" : "s"}`,
+        details: { ids: ids.map((id) => id.toHexString()), bytes },
+        changedBy: user.email,
+      });
+    }
+  } catch (err) {
+    console.error("[blog] unused picture clean-up failed:", err);
+    redirect("/admin/posts?cleaned=error");
+  }
+
+  revalidatePath("/admin/posts");
+  redirect(`/admin/posts?cleaned=${count}`);
 }

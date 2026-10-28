@@ -11,11 +11,11 @@ import { investmentData } from "../../lib/messages/investment-options";
 import { calcMessages } from "../../lib/messages/calc";
 import { localDate } from "../../lib/i18n";
 
-/* Personal investment — the options planner plus the tax explainer behind it.
+/* Personal investment: the options planner plus the tax explainer behind it.
  *
  * No rate, threshold or return figure is written into this page: they all live
  * in app/lib/ireland-investment.ts, which is pure, unit-tested and carries the
- * source for every number. Keep it that way — a figure inlined here is one
+ * source for every number. Keep it that way: a figure inlined here is one
  * nobody will find when the Budget moves it.
  *
  * The page explains the TAX of an investment, not the investment itself. It is

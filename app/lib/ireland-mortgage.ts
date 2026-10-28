@@ -1,11 +1,11 @@
 /* ──────────────────────────────────────────────────────────────────────────
-   Ireland mortgage repayments engine — mortgages.ie-style comparison.
+   Ireland mortgage repayments engine: mortgages.ie-style comparison.
    Pure functions + a static lender-rate snapshot: no React, no I/O.
    The UI (ireland-mortgage-calculator.tsx) imports these so the figures
    stay in one auditable place.
 
    Live products and policy come from MongoDB (mortgage_products /
-   mortgage_settings, editable in /admin/mortgage-rates — see
+   mortgage_settings, editable in /admin/mortgage-rates: see
    mortgage-data.ts). LENDER_PRODUCTS and DEFAULT_POLICY below are the
    seed data and the fallback when the DB is unreachable. Monthly
    payments use the standard annuity formula, which reproduces the
@@ -13,7 +13,7 @@
    → €864.93/month).
    ────────────────────────────────────────────────────────────────────────── */
 
-export const RATES_AS_OF = "July 2026";
+export const RATES_AS_OF = "October 2026";
 
 /* ---------- product / applicant types ---------- */
 
@@ -82,7 +82,7 @@ export interface LenderProduct {
   aprcPercent: number;
   /** Maximum loan-to-value this rate is available at (0.9 = 90%). */
   maxLtv: number;
-  /** Green mortgage — requires an energy-efficient home (BER B3 or better). */
+  /** Green mortgage: requires an energy-efficient home (BER B3 or better). */
   green?: boolean;
   /** Lender incentive shown as a badge, e.g. "2% cashback". */
   cashback?: string;
@@ -101,6 +101,10 @@ export interface LenderProduct {
 
 const OWNER_OCCUPIER: ProductType[] = ["first-time", "trading-up", "switch"];
 
+/* The October 2026 snapshot: the live rows as re-checked on the lenders' own
+   pages on 28 Oct 2026. Each row shows the rate every borrower it admits can
+   get: the top LTV band (AIB, Haven, Avant, PTSB, ICS) or the BER G rate (Bank
+   of Ireland). Withdrawn products are hidden in the database, not listed here. */
 export const LENDER_PRODUCTS: LenderProduct[] = [
   // ── Green fixed ──
   {
@@ -112,7 +116,8 @@ export const LENDER_PRODUCTS: LenderProduct[] = [
     aprcPercent: 3.9,
     maxLtv: 0.9,
     green: true,
-    revertRatePercent: 3.95,
+    revertRatePercent: 4.15,
+    details: "Green rate for homes rated BER B3 or better. Rolls to Haven's variable rate (4.15% above 80% loan-to-value).",
     audience: OWNER_OCCUPIER,
   },
   {
@@ -120,24 +125,27 @@ export const LENDER_PRODUCTS: LenderProduct[] = [
     lender: "AIB",
     name: "5 Year Fixed",
     rateType: "fixed-5",
-    ratePercent: 3.25,
-    aprcPercent: 3.86,
+    ratePercent: 3.4,
+    aprcPercent: 3.97,
     maxLtv: 0.9,
     green: true,
-    revertRatePercent: 3.75,
+    revertRatePercent: 4.15,
+    details: "Green rate for homes rated BER A1 to B3. 3.40% above 80% loan-to-value; 3.30% from 50% to 80%, 3.20% at 50% or less. APRC on a 30-year term.",
     audience: OWNER_OCCUPIER,
   },
-  // ── Avant Money ──
+  // ── Avant Money (correct as of 10 Oct 2026) ──
   {
-    id: "avant-full",
+    id: "avant-3f",
     lender: "Avant Money",
-    name: "Full-term Fixed",
-    rateType: "fixed-full",
-    ratePercent: 3.4,
-    aprcPercent: 3.48,
+    name: "3 Year Fixed",
+    rateType: "fixed-3",
+    ratePercent: 3.7,
+    aprcPercent: 3.97,
     maxLtv: 0.9,
-    cashback: "1% cashback",
-    cashbackPercent: 1,
+    cashback: "2% cashback",
+    revertRatePercent: 3.95,
+    cashbackPercent: 2,
+    details: "3.70% above 80% loan-to-value; 3.45% at 80% or less. Rolls to a follow-on variable rate of 3.95% (3.75% at 70% loan-to-value or less). 2% cashback on drawdowns in 2026.",
     audience: OWNER_OCCUPIER,
   },
   {
@@ -145,23 +153,27 @@ export const LENDER_PRODUCTS: LenderProduct[] = [
     lender: "Avant Money",
     name: "4 Year Fixed",
     rateType: "fixed-4",
-    ratePercent: 3.4,
-    aprcPercent: 3.7,
+    ratePercent: 3.7,
+    aprcPercent: 3.94,
     maxLtv: 0.9,
     cashback: "2% cashback",
-    revertRatePercent: 3.85,
+    revertRatePercent: 3.95,
     cashbackPercent: 2,
+    details: "3.70% above 80% loan-to-value; 3.40% at 80% or less. Rolls to a follow-on variable rate of 3.95% (3.75% at 70% loan-to-value or less). 2% cashback on drawdowns in 2026.",
     audience: OWNER_OCCUPIER,
   },
   {
-    id: "avant-3f",
+    id: "avant-5f",
     lender: "Avant Money",
-    name: "3 Year Fixed",
-    rateType: "fixed-3",
-    ratePercent: 3.6,
-    aprcPercent: 3.8,
+    name: "5 Year Fixed",
+    rateType: "fixed-5",
+    ratePercent: 3.7,
+    aprcPercent: 3.92,
     maxLtv: 0.9,
-    revertRatePercent: 3.85,
+    cashback: "2% cashback",
+    revertRatePercent: 3.95,
+    cashbackPercent: 2,
+    details: "3.70% above 80% loan-to-value; 3.45% at 80% or less. Rolls to a follow-on variable rate of 3.95% (3.75% at 70% loan-to-value or less). 2% cashback on drawdowns in 2026.",
     audience: OWNER_OCCUPIER,
   },
   {
@@ -169,10 +181,13 @@ export const LENDER_PRODUCTS: LenderProduct[] = [
     lender: "Avant Money",
     name: "7 Year Fixed",
     rateType: "fixed-7",
-    ratePercent: 3.45,
-    aprcPercent: 3.6,
-    maxLtv: 0.8,
-    revertRatePercent: 3.85,
+    ratePercent: 3.95,
+    aprcPercent: 4.05,
+    maxLtv: 0.9,
+    cashback: "2% cashback",
+    revertRatePercent: 3.95,
+    cashbackPercent: 2,
+    details: "3.95% above 80% loan-to-value; 3.80% at 80% or less. Rolls to a follow-on variable rate of 3.95% (3.75% at 70% loan-to-value or less). 2% cashback on drawdowns in 2026.",
     audience: OWNER_OCCUPIER,
   },
   {
@@ -180,41 +195,102 @@ export const LENDER_PRODUCTS: LenderProduct[] = [
     lender: "Avant Money",
     name: "10 Year Fixed",
     rateType: "fixed-10",
-    ratePercent: 3.5,
-    aprcPercent: 3.6,
-    maxLtv: 0.8,
-    revertRatePercent: 3.85,
+    ratePercent: 3.95,
+    aprcPercent: 4.05,
+    maxLtv: 0.9,
+    cashback: "2% cashback",
+    revertRatePercent: 3.95,
+    cashbackPercent: 2,
+    details: "3.95% above 80% loan-to-value; 3.80% at 80% or less. Rolls to a follow-on variable rate of 3.95% (3.75% at 70% loan-to-value or less). 2% cashback on drawdowns in 2026.",
     audience: OWNER_OCCUPIER,
   },
-  // ── Bank of Ireland ──
+  {
+    id: "avant-full",
+    lender: "Avant Money",
+    name: "Full-term Fixed",
+    rateType: "fixed-full",
+    ratePercent: 3.8,
+    aprcPercent: 3.88,
+    maxLtv: 0.9,
+    cashback: "1% cashback",
+    cashbackPercent: 1,
+    details: "The One Mortgage: fixed for the whole term. 3.80% above 80% loan-to-value; 3.40% at 80% or less (APRC 3.47% over 30 years). 1% cashback on drawdowns in 2026.",
+    audience: OWNER_OCCUPIER,
+  },
+  // ── Bank of Ireland (priced by BER; BER G shown) ──
   {
     id: "boi-2f",
     lender: "Bank of Ireland",
     name: "2 Year Fixed",
     rateType: "fixed-2",
-    ratePercent: 3.65,
-    aprcPercent: 4.0,
+    ratePercent: 4.1,
+    aprcPercent: 4.2,
     maxLtv: 0.9,
     cashback: "2% cashback",
     revertRatePercent: 4.15,
     cashbackPercent: 2,
+    details: "Priced by the home's BER: 4.10% is the BER G rate; BER A is 3.80% and BER-exempt homes pay 4.15%. Cashback Plus pays 2% at drawdown and 1% more after 5 years on qualifying fixed rates.",
     audience: OWNER_OCCUPIER,
   },
   {
-    id: "boi-4f",
+    id: "boi-5f",
     lender: "Bank of Ireland",
-    name: "4 Year Fixed",
-    rateType: "fixed-4",
-    ratePercent: 3.45,
-    aprcPercent: 3.9,
+    name: "5 Year Fixed",
+    rateType: "fixed-5",
+    ratePercent: 4.2,
+    aprcPercent: 4.3,
     maxLtv: 0.9,
     cashback: "2% cashback",
     revertRatePercent: 4.15,
     cashbackPercent: 2,
+    details: "Priced by the home's BER: 4.20% is the BER G rate; BER A is 3.90% and BER-exempt homes pay 4.25%. Cashback Plus pays 2% at drawdown and 1% more after 5 years on qualifying fixed rates.",
+    audience: OWNER_OCCUPIER,
+  },
+  // ── PTSB (effective 22 Oct 2026) ──
+  {
+    id: "ptsb-3f",
+    lender: "PTSB",
+    name: "3 Year Fixed",
+    rateType: "fixed-3",
+    ratePercent: 4.25,
+    aprcPercent: 4.7,
+    maxLtv: 0.9,
+    cashback: "2% cashback",
+    revertRatePercent: 4.7,
+    cashbackPercent: 2,
+    details: "4.25% above 80% loan-to-value; 4.05% from 60% to 80%, 3.90% at 60% or less. Green rate for BER A or B homes: 4.05% above 80%. Rolls to PTSB's managed variable rate for your loan-to-value (4.70% above 80%, 4.50% from 60% to 80%, 4.40% at 60% or less). 2% cashback at drawdown.",
     audience: OWNER_OCCUPIER,
   },
   {
-    id: "boi-var",
+    id: "ptsb-5f",
+    lender: "PTSB",
+    name: "5 Year Fixed",
+    rateType: "fixed-5",
+    ratePercent: 4.1,
+    aprcPercent: 4.55,
+    maxLtv: 0.9,
+    cashback: "2% cashback",
+    revertRatePercent: 4.7,
+    cashbackPercent: 2,
+    details: "4.10% above 80% loan-to-value; 3.90% from 60% to 80%, 3.75% at 60% or less. Green rate for BER A or B homes: 3.95% above 80%. Rolls to PTSB's managed variable rate for your loan-to-value (4.70% above 80%, 4.50% from 60% to 80%, 4.40% at 60% or less). 2% cashback at drawdown.",
+    audience: OWNER_OCCUPIER,
+  },
+  // ── ICS Mortgages (owner-occupier 17 Sep 2026, buy-to-let 1 Aug 2026) ──
+  {
+    id: "ics-3f",
+    lender: "ICS Mortgages",
+    name: "3 Year Fixed",
+    rateType: "fixed-3",
+    ratePercent: 5.95,
+    aprcPercent: 5.49,
+    maxLtv: 0.9,
+    revertRatePercent: 4.85,
+    details: "5.95% above 70% loan-to-value; 5.90% (APRC 5.48%) at 70% or less. Rolls to ICS's variable rate of 4.85%. APRC on a €300,000 loan over 30 years.",
+    audience: OWNER_OCCUPIER,
+  },
+  // ── Variable ──
+  {
+    id: "boi-svr",
     lender: "Bank of Ireland",
     name: "Standard Variable",
     rateType: "variable",
@@ -223,42 +299,15 @@ export const LENDER_PRODUCTS: LenderProduct[] = [
     maxLtv: 0.9,
     audience: OWNER_OCCUPIER,
   },
-  // ── PTSB ──
-  {
-    id: "ptsb-3f",
-    lender: "PTSB",
-    name: "3 Year Fixed",
-    rateType: "fixed-3",
-    ratePercent: 3.7,
-    aprcPercent: 4.1,
-    maxLtv: 0.9,
-    cashback: "2% cashback",
-    revertRatePercent: 4.7,
-    cashbackPercent: 2,
-    audience: OWNER_OCCUPIER,
-  },
-  {
-    id: "ptsb-5f",
-    lender: "PTSB",
-    name: "5 Year Fixed",
-    rateType: "fixed-5",
-    ratePercent: 3.6,
-    aprcPercent: 4.0,
-    maxLtv: 0.9,
-    cashback: "2% cashback",
-    revertRatePercent: 4.7,
-    cashbackPercent: 2,
-    audience: OWNER_OCCUPIER,
-  },
-  // ── AIB / Haven variable ──
   {
     id: "aib-var",
     lender: "AIB",
-    name: "Standard Variable",
+    name: "LTV Variable",
     rateType: "variable",
-    ratePercent: 3.75,
-    aprcPercent: 3.9,
+    ratePercent: 4.15,
+    aprcPercent: 4.24,
     maxLtv: 0.9,
+    details: "4.15% above 80% loan-to-value; 3.95% from 50% to 80%, 3.75% at 50% or less.",
     audience: OWNER_OCCUPIER,
   },
   {
@@ -266,54 +315,45 @@ export const LENDER_PRODUCTS: LenderProduct[] = [
     lender: "Haven (AIB Group)",
     name: "Variable",
     rateType: "variable",
-    ratePercent: 3.95,
-    aprcPercent: 4.1,
+    ratePercent: 4.15,
+    aprcPercent: 4.3,
     maxLtv: 0.9,
+    details: "4.15% above 80% loan-to-value; 3.95% from 50% to 80%, 3.75% at 50% or less.",
     audience: OWNER_OCCUPIER,
   },
-  // ── ICS ──
   {
-    id: "ics-3f",
-    lender: "ICS Mortgages",
-    name: "3 Year Fixed",
-    rateType: "fixed-3",
-    ratePercent: 3.95,
-    aprcPercent: 4.2,
-    maxLtv: 0.9,
-    revertRatePercent: 4.3,
-    audience: OWNER_OCCUPIER,
-  },
-  // ── Buy-to-let / investment ──
-  {
-    id: "ics-btl-5f",
-    lender: "ICS Mortgages",
-    name: "Buy-to-Let 5 Year Fixed",
-    rateType: "fixed-5",
-    ratePercent: 4.55,
-    aprcPercent: 4.8,
-    maxLtv: 0.7,
-    revertRatePercent: 5.0,
-    audience: ["investment"],
-  },
-  {
-    id: "avant-btl-var",
+    id: "avant-flex",
     lender: "Avant Money",
-    name: "Buy-to-Let Variable",
+    name: "Flex Mortgage (variable)",
     rateType: "variable",
-    ratePercent: 4.75,
-    aprcPercent: 4.9,
-    maxLtv: 0.7,
-    audience: ["investment"],
+    ratePercent: 4.34,
+    aprcPercent: 4.45,
+    maxLtv: 0.9,
+    details: "12-month Euribor plus a margin fixed for the life of the loan, reset on the 10th of each month. 4.34% above 80% loan-to-value; 4.14% (APRC 4.24%) at 80% or less. Rate for 10 October to 9 November 2026.",
+    audience: OWNER_OCCUPIER,
   },
+  // ── Buy-to-let ──
   {
     id: "boi-btl-2f",
     lender: "Bank of Ireland",
     name: "Buy-to-Let 2 Year Fixed",
     rateType: "fixed-2",
-    ratePercent: 4.65,
-    aprcPercent: 4.9,
+    ratePercent: 5.95,
+    aprcPercent: 6.3,
     maxLtv: 0.7,
-    revertRatePercent: 4.95,
+    revertRatePercent: 4.85,
+    details: "Priced by the home's BER: 5.95% is the BER G rate; BER A is 5.65% and BER-exempt homes pay 6.00%. Rolls to the buy-to-let variable rate of 4.85%.",
+    audience: ["investment"],
+  },
+  {
+    id: "ics-btl-var",
+    lender: "ICS Mortgages",
+    name: "Buy-to-Let Variable",
+    rateType: "variable",
+    ratePercent: 5.8,
+    aprcPercent: 6.15,
+    maxLtv: 0.7,
+    details: "Capital and interest, individual investors: 5.80% at 70% loan-to-value or less, 5.70% (APRC 6.05%) at 60% or less. Interest-only and company rates differ.",
     audience: ["investment"],
   },
 ];
@@ -397,11 +437,11 @@ export interface ComparisonInput {
   propertyValue: number;
   loanAmount: number;
   termYears: number;
-  /** Age next birthday — oldest applicant when joint. */
+  /** Age next birthday: oldest applicant when joint. */
   age: number;
   /** Combined gross annual income of all applicants. */
   income: number;
-  /** Home has a BER of B3 or better — gates green-mortgage rates. */
+  /** Home has a BER of B3 or better: gates green-mortgage rates. */
   berB3Plus?: boolean;
 }
 
@@ -428,7 +468,7 @@ export interface ProductQuote {
    the remaining balance re-amortises at the lender's variable (revert) rate.
    E.g. €360,000 over 35y, 2y fixed @ 3.8% reverting to 4.15% →
    €1,551.09/month for 2 years, €1,623.28 for 33, total cost €680,045. */
-/* Lender illustrations total the payment rounded to the cent, so we do too —
+/* Lender illustrations total the payment rounded to the cent, so we do too:
    this is what makes the totals match published examples exactly. */
 const toCent = (n: number) => Math.round(n * 100) / 100;
 
@@ -483,7 +523,7 @@ export function quoteProduct(
 export interface ComparisonResult {
   ltv: number;
   quotes: ProductQuote[];
-  /** Rate types with at least one quote — drives the filter tabs. */
+  /** Rate types with at least one quote: drives the filter tabs. */
   availableRateTypes: RateType[];
   /** English sentences, one per notice below. */
   warnings: string[];

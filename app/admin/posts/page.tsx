@@ -5,6 +5,8 @@ import { listAllPosts, type AdminPostRow } from "../../lib/posts";
 import { POST_CATEGORY_LABELS } from "../../lib/post-types";
 import { Icon } from "../../components/dashboard-icons";
 import { PageHeader, Panel, timeAgo } from "../../components/dashboard-ui";
+import { UNUSED_MEDIA_GRACE_DAYS, findUnusedMedia } from "../../lib/media";
+import { UnusedPictures } from "./unused-pictures";
 
 export const metadata: Metadata = {
   title: "Blog posts",
@@ -14,10 +16,19 @@ export const metadata: Metadata = {
 export default async function AdminPostsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ deleted?: string; rejected?: string; filter?: string }>;
+  searchParams: Promise<{ deleted?: string; rejected?: string; filter?: string; cleaned?: string }>;
 }) {
   await requireAdmin();
-  const { deleted, rejected, filter } = await searchParams;
+  const { deleted, rejected, filter, cleaned } = await searchParams;
+
+  // The sweep panel is optional: if this read fails, the page still renders.
+  let unused = { count: 0, bytes: 0 };
+  try {
+    const found = await findUnusedMedia();
+    unused = { count: found.ids.length, bytes: found.bytes };
+  } catch (err) {
+    console.error("[blog] unused picture count failed:", err);
+  }
 
   let all: AdminPostRow[] = [];
   let loadError = false;
@@ -70,6 +81,16 @@ export default async function AdminPostsPage({
           className="mb-6 border-l-2 border-primary-500 bg-white px-4 py-3 text-sm font-medium text-ink"
         >
           Post deleted.
+        </p>
+      )}
+      {cleaned && (cleaned === "error" || /^\d+$/.test(cleaned)) && (
+        <p
+          role="status"
+          className="mb-6 border-l-2 border-primary-500 bg-white px-4 py-3 text-sm font-medium text-ink"
+        >
+          {cleaned === "error"
+            ? "Could not delete the unused pictures. Try again."
+            : `Deleted ${cleaned} unused picture${cleaned === "1" ? "" : "s"}.`}
         </p>
       )}
       {rejected && (
@@ -187,6 +208,9 @@ export default async function AdminPostsPage({
             ))}
           </ul>
         </Panel>
+      )}
+      {unused.count > 0 && (
+        <UnusedPictures count={unused.count} bytes={unused.bytes} graceDays={UNUSED_MEDIA_GRACE_DAYS} />
       )}
     </div>
   );

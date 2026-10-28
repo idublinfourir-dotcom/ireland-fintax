@@ -1,6 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { maskEmail } from "../lib/log-safe";
 import { localePath } from "../lib/messages";
 import { AuthError } from "next-auth";
 import { signIn } from "../../auth";
@@ -65,7 +66,7 @@ async function issueAndSend(email: string): Promise<void> {
   );
 
   if (!account) {
-    console.warn("[reset] no account for the address requested:", email);
+    console.warn("[reset] no account for the address requested:", maskEmail(email));
     return;
   }
 
@@ -78,7 +79,7 @@ async function issueAndSend(email: string): Promise<void> {
      be claimed by email. Reset is a password feature; it does not get to move
      an ownership boundary. */
   if (!account.emailVerified) {
-    console.warn("[reset] address is not confirmed, no code issued:", email);
+    console.warn("[reset] address is not confirmed, no code issued:", maskEmail(email));
     return;
   }
 
@@ -96,12 +97,12 @@ async function issueAndSend(email: string): Promise<void> {
      nothing either way: to them a refused send and a delivered one look the
      same, by design. That makes this log the ONLY way to tell afterwards
      whether a message actually went out, so silence must never be the success
-     case. The address is recorded; the code never is, because it is a live
-     credential for its whole window. */
+     case. The address is recorded masked (lib/log-safe.ts); the code never is,
+     because it is a live credential for its whole window. */
   if (sent) {
-    console.info("[reset] code emailed to:", email);
+    console.info("[reset] code emailed to:", maskEmail(email));
   } else {
-    console.error("[reset] a code was issued but the email was NOT sent:", email);
+    console.error("[reset] a code was issued but the email was NOT sent:", maskEmail(email));
   }
 }
 

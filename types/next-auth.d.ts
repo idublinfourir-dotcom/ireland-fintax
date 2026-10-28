@@ -28,7 +28,7 @@ declare module "next-auth" {
  * interface against it creates a SECOND, unrelated JWT rather than extending
  * the one the callbacks actually receive. That failure is quiet: the real JWT
  * extends Record<string, unknown>, so the property still resolves, just as
- * `unknown` — which reads fine at an `===` but breaks the moment it is used as
+ * `unknown`: which reads fine at an `===` but breaks the moment it is used as
  * a number. Keep these here. */
 declare module "@auth/core/jwt" {
   interface JWT {

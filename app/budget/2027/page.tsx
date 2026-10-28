@@ -54,7 +54,7 @@ export default async function Budget2027Page() {
                 { label: "2027" },
               ]}
             />
-            <h1 className="mt-8 font-display text-6xl font-bold leading-[0.92] tracking-[-0.03em] sm:text-7xl lg:text-8xl">
+            <h1 className="mt-8 font-display text-[clamp(2.5rem,13vw,3.75rem)] font-bold leading-[0.92] tracking-[-0.03em] sm:text-7xl lg:text-8xl">
               {t.title}
             </h1>
             <p className="mt-6 max-w-lg text-lg leading-8 text-white/75">
@@ -64,7 +64,7 @@ export default async function Budget2027Page() {
 
           <dl className="border-t border-white/20">
             {t.keyDates.map((d) => (
-              <div key={d.date} className="grid grid-cols-[9.5rem_1fr] gap-4 border-b border-white/20 py-4">
+              <div key={d.date} className="grid gap-1 border-b border-white/20 py-4 sm:grid-cols-[9.5rem_minmax(0,1fr)] sm:gap-4">
                 <dt className="font-display text-base font-semibold text-white">{d.date}</dt>
                 <dd className="text-sm leading-6 text-white/70">{d.what}</dd>
               </div>
