@@ -1,12 +1,15 @@
 import {
   Hero,
-  QuickEntry,
+  Finder,
   WhoWeAre,
+  TaxCalendar,
+  Topics,
   BudgetFeature,
-  CalculatorGrid,
   LearnBand,
   Faq,
-  ContactCta,
+  Quote,
+  TrustStrip,
+  HomeCta,
 } from "./components/sections";
 import { JsonLd } from "./components/json-ld";
 import { getMessages } from "./lib/messages";
@@ -14,7 +17,8 @@ import { site } from "./lib/content";
 
 const ORG_ID = `${site.url}/#organization`;
 
-/* Below the hero, the sections and order of the figma_landing design. */
+/* The sections and order of the ui-ux-reviews design (28 Oct 2026). The hero's
+   coverflow is the earlier export's, kept as it was. */
 export default async function Home() {
   const { locale } = await getMessages();
   return (
@@ -30,13 +34,16 @@ export default async function Home() {
         }}
       />
       <Hero />
-      <QuickEntry />
+      <Finder />
       <WhoWeAre />
+      <TaxCalendar />
+      <Topics />
       <BudgetFeature />
-      <CalculatorGrid />
       <LearnBand />
       <Faq />
-      <ContactCta wide />
+      <Quote />
+      <TrustStrip />
+      <HomeCta />
     </>
   );
 }

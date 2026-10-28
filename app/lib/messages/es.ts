@@ -47,98 +47,31 @@ export const es: Messages = {
   footer: {
     blurb:
       "Calculadoras, guías y plantillas que explican los impuestos y las finanzas personales en Irlanda con palabras sencillas.",
-    explore: "Explorar",
-    links: {
-      budget: "Presupuesto",
-      calculators: "Calculadoras de impuestos",
-      personal: "Finanzas personales",
-      accounts: "Centro de contabilidad",
-      blog: "Análisis",
-      about: "Quiénes somos",
-      faq: "Preguntas frecuentes",
-      ask: "Haz una pregunta",
-    },
     getInTouch: "Contacto",
     language: "Idioma",
-    rights: "Todos los derechos reservados.",
-    privacy: "Privacidad",
+    suite: "Impuestos",
+    resources: "Recursos",
+    company: "Empresa",
+    links: {
+      incomeTax: "Renta y PAYE",
+      corporationTax: "Impuesto de sociedades (12,5%)",
+      cgt: "Ganancias de capital",
+      cat: "Donaciones y herencias (CAT)",
+      rd: "Créditos de I+D, sección 766",
+      mortgage: "Hipoteca y préstamo",
+      investment: "Inversión y venta presunta",
+      budget: "Centro del {budget}",
+      calendar: "Calendario fiscal",
+      about: "Quiénes somos",
+      news: "Noticias y novedades",
+      contact: "Contacto",
+      method: "Método y estándares",
+      report: "Informar de un error",
+    },
     disclaimer: "Solo información general, no es asesoramiento financiero, fiscal ni legal.",
-  },
-
-  hero: {
-    eyebrow: "Aprende finanzas · Irlanda",
-    title: "Entiende los impuestos y el dinero, *con palabras sencillas.*",
-    lede:
-      "Calculadoras, guías y plantillas sobre impuestos en Irlanda, hipotecas, inversiones y cómo crear una empresa. Aprende cómo funciona y luego haz tus propios números.",
-    cta: "Prueba las calculadoras",
-    ask: "Haz una pregunta",
-  },
-
-  quickEntries: [
-    { title: "Calculadoras de impuestos", note: "Impuesto sobre la renta, IVA, CGT, CAT y más, para Irlanda." },
-    { title: "Finanzas personales", note: "Calcula una hipoteca y compara formas de invertir." },
-    { title: "Crear una empresa", note: "Notas, plantillas y guías para emprendedores." },
-    { title: "Haz una pregunta", note: "¿Te has atascado? Pregunta y te lo explicamos." },
-  ],
-
-  who: {
-    eyebrow: "Un poco sobre nosotros",
-    title: "Primero entender. Después decidir.",
-    body: "Irish Fintax es una web para aprender sobre impuestos y finanzas personales. Lee una explicación clara, explora las herramientas y aprende a tu propio ritmo.",
-    more: "Conoce Irish Fintax",
-    caption: "Haz sitio para ver las cosas más claras.",
-    principles: [
-      { title: "Empieza ya", note: "No hace falta crear una cuenta para empezar." },
-      { title: "Palabras sencillas", note: "La explicación de todos los días, con los términos técnicos cuando ayudan." },
-      { title: "Fuentes que puedes seguir", note: "Consulta las fuentes públicas que hay detrás de las normas." },
-      { title: "Aprender, no asesorar", note: "Para decisiones personales, habla con un asesor regulado." },
-    ],
-  },
-
-  budget: {
-    eyebrow: "{budget} · Explicado",
-    title: "El Presupuesto es enorme. Empieza por *lo que te importa.*",
-    body: "¿Alquilas, compras, ahorras para la jubilación o estás formando una familia? Explora los cambios del Presupuesto que tienen que ver con tu situación.",
-    cta: "Explora el {budget}",
-    cardEyebrow: "Tu vida. Tus preguntas.",
-    topics: ["Vivienda y alquiler", "Trabajo e ingresos", "Familia", "Ahorro y pensiones"],
-    caption: "Una visión más clara de lo que cambia.",
-  },
-
-  calculators: {
-    eyebrow: "Herramientas para pensar con claridad",
-    title: "Convierte tus preguntas en números.",
-    lede: "Elige una calculadora. Cambia los datos. Entiende qué se mueve.",
-    caption: "Tus números. Una imagen más clara.",
-    items: [
-      { name: "Impuesto sobre la renta", note: "Explora tu sueldo neto." },
-      { name: "IVA", note: "Entiende el IVA a pagar o a devolver." },
-      { name: "Impuesto de sociedades", note: "Explora el impuesto sobre los beneficios de una empresa." },
-      { name: "Ganancias de capital", note: "Entiende el impuesto cuando vendes un bien." },
-      { name: "Donaciones y herencias", note: "Explora el Capital Acquisitions Tax (CAT)." },
-      { name: "Hipoteca", note: "Compara cuotas antes de decidir." },
-    ],
-    footnote: "Las calculadoras son herramientas de aprendizaje. Revisa los supuestos y las fuentes en la página de cada herramienta.",
-  },
-
-  learn: {
-    eyebrow: "Una forma sencilla de aprender",
-    title: "De “¿qué significa eso?” a “*ahora lo entiendo*.”",
-    items: [
-      { title: "Aprende lo básico", note: "Empieza con guías y notas que explican las normas con palabras de todos los días.", link: "Explora las guías" },
-      { title: "Prueba tus números", note: "Usa las calculadoras para ver cómo distintas cifras cambian el resultado.", link: "Busca una calculadora" },
-      { title: "Pregunta lo que no esté claro", note: "Envía tu pregunta con tus propias palabras. No necesitas los términos técnicos.", link: "Haz una pregunta" },
-    ],
-  },
-
-  faq: {
-    eyebrow: "Antes de empezar",
-    title: "Algunas cosas que quizá te preguntes.",
-    items: [
-      { question: "¿Necesito una cuenta?", answer: "No hace falta una cuenta para empezar a explorar. Si inicias sesión, puedes guardar tus preguntas y respuestas en un mismo sitio." },
-      { question: "¿Esto es asesoramiento financiero o fiscal?", answer: "No. La web ofrece información general para aprender. Habla con un asesor debidamente cualificado sobre las decisiones que dependen de tu situación." },
-      { question: "¿Por dónde empiezo?", answer: "Empieza por una calculadora si tienes cifras que explorar, por el Centro de contabilidad si buscas guías, o haz una pregunta si necesitas ayuda para entender un tema." },
-    ],
+    sources: "Fuentes: Revenue.ie, la CCPC y el Banco Central de Irlanda.",
+    privacy: "Privacidad de datos",
+    sitemap: "Mapa del sitio XML",
   },
 
   cta: {
