@@ -5,9 +5,9 @@ import { toolNames } from "./tool-names.ts";
    they are the names on Irish payslips and forms. */
 export const es: Messages = {
   meta: {
-    title: "Irish Fintax: aprende gratis sobre impuestos y dinero",
+    title: "Irish Fintax: aprende sobre impuestos y dinero",
     description:
-      "Calculadoras, guías y plantillas gratuitas que explican los impuestos y las finanzas personales en Irlanda con palabras sencillas: impuesto sobre la renta, IVA, CGT, hipotecas, inversiones y cómo crear una empresa.",
+      "Calculadoras, guías y plantillas que explican los impuestos y las finanzas personales en Irlanda con palabras sencillas: impuesto sobre la renta, IVA, CGT, hipotecas, inversiones y cómo crear una empresa.",
   },
 
   header: {
@@ -46,7 +46,7 @@ export const es: Messages = {
 
   footer: {
     blurb:
-      "Calculadoras, guías y plantillas gratuitas que explican los impuestos y las finanzas personales en Irlanda con palabras sencillas.",
+      "Calculadoras, guías y plantillas que explican los impuestos y las finanzas personales en Irlanda con palabras sencillas.",
     explore: "Explorar",
     links: {
       budget: "Presupuesto",
@@ -66,10 +66,10 @@ export const es: Messages = {
   },
 
   hero: {
-    eyebrow: "Aprende finanzas gratis · Irlanda",
+    eyebrow: "Aprende finanzas · Irlanda",
     title: "Entiende los impuestos y el dinero, *con palabras sencillas.*",
     lede:
-      "Calculadoras, guías y plantillas gratuitas sobre impuestos en Irlanda, hipotecas, inversiones y cómo crear una empresa. Aprende cómo funciona y luego haz tus propios números.",
+      "Calculadoras, guías y plantillas sobre impuestos en Irlanda, hipotecas, inversiones y cómo crear una empresa. Aprende cómo funciona y luego haz tus propios números.",
     cta: "Prueba las calculadoras",
     ask: "Haz una pregunta",
   },
@@ -84,11 +84,11 @@ export const es: Messages = {
   who: {
     eyebrow: "Un poco sobre nosotros",
     title: "Primero entender. Después decidir.",
-    body: "Irish Fintax es una web gratuita para aprender sobre impuestos y finanzas personales. Lee una explicación clara, explora las herramientas y aprende a tu propio ritmo.",
+    body: "Irish Fintax es una web para aprender sobre impuestos y finanzas personales. Lee una explicación clara, explora las herramientas y aprende a tu propio ritmo.",
     more: "Conoce Irish Fintax",
     caption: "Haz sitio para ver las cosas más claras.",
     principles: [
-      { title: "Gratis para explorar", note: "No hace falta pagar ni crear una cuenta para empezar." },
+      { title: "Empieza ya", note: "No hace falta crear una cuenta para empezar." },
       { title: "Palabras sencillas", note: "La explicación de todos los días, con los términos técnicos cuando ayudan." },
       { title: "Fuentes que puedes seguir", note: "Consulta las fuentes públicas que hay detrás de las normas." },
       { title: "Aprender, no asesorar", note: "Para decisiones personales, habla con un asesor regulado." },
@@ -106,7 +106,7 @@ export const es: Messages = {
   },
 
   calculators: {
-    eyebrow: "Herramientas gratuitas para pensar con claridad",
+    eyebrow: "Herramientas para pensar con claridad",
     title: "Convierte tus preguntas en números.",
     lede: "Elige una calculadora. Cambia los datos. Entiende qué se mueve.",
     caption: "Tus números. Una imagen más clara.",
@@ -135,7 +135,6 @@ export const es: Messages = {
     eyebrow: "Antes de empezar",
     title: "Algunas cosas que quizá te preguntes.",
     items: [
-      { question: "¿Irish Fintax es gratis de verdad?", answer: "Sí. Puedes explorar calculadoras, guías y plantillas sin pagar, y hacer una pregunta también es gratis." },
       { question: "¿Necesito una cuenta?", answer: "No hace falta una cuenta para empezar a explorar. Si inicias sesión, puedes guardar tus preguntas y respuestas en un mismo sitio." },
       { question: "¿Esto es asesoramiento financiero o fiscal?", answer: "No. La web ofrece información general para aprender. Habla con un asesor debidamente cualificado sobre las decisiones que dependen de tu situación." },
       { question: "¿Por dónde empiezo?", answer: "Empieza por una calculadora si tienes cifras que explorar, por el Centro de contabilidad si buscas guías, o haz una pregunta si necesitas ayuda para entender un tema." },

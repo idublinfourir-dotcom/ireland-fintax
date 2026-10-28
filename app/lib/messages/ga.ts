@@ -6,9 +6,9 @@ import { toolNames } from "./tool-names.ts";
    it is relied on: it was drafted, not written by one. */
 export const ga: Messages = {
   meta: {
-    title: "Irish Fintax: foghlaim faoi cháin agus airgead saor in aisce",
+    title: "Irish Fintax: foghlaim faoi cháin agus airgead",
     description:
-      "Áireamháin, treoracha agus teimpléid saor in aisce a mhíníonn cáin agus airgeadas pearsanta na hÉireann i dteanga shimplí: cáin ioncaim, CBL, CGC, morgáistí, infheistíocht agus comhlacht a bhunú.",
+      "Áireamháin, treoracha agus teimpléid a mhíníonn cáin agus airgeadas pearsanta na hÉireann i dteanga shimplí: cáin ioncaim, CBL, CGC, morgáistí, infheistíocht agus comhlacht a bhunú.",
   },
 
   header: {
@@ -47,7 +47,7 @@ export const ga: Messages = {
 
   footer: {
     blurb:
-      "Áireamháin, treoracha agus teimpléid saor in aisce a mhíníonn cáin agus airgeadas pearsanta na hÉireann i dteanga shimplí.",
+      "Áireamháin, treoracha agus teimpléid a mhíníonn cáin agus airgeadas pearsanta na hÉireann i dteanga shimplí.",
     explore: "Taiscéal",
     links: {
       budget: "Buiséad",
@@ -67,10 +67,10 @@ export const ga: Messages = {
   },
 
   hero: {
-    eyebrow: "Foghlaim airgeadais saor in aisce · Éire",
+    eyebrow: "Foghlaim airgeadais · Éire",
     title: "Tuig cáin agus airgead, *i dteanga shimplí.*",
     lede:
-      "Áireamháin, treoracha agus teimpléid saor in aisce faoi cháin na hÉireann, morgáistí, infheistíocht agus comhlacht a bhunú. Foghlaim conas a oibríonn sé, ansin déan d’áireamh féin.",
+      "Áireamháin, treoracha agus teimpléid faoi cháin na hÉireann, morgáistí, infheistíocht agus comhlacht a bhunú. Foghlaim conas a oibríonn sé, ansin déan d’áireamh féin.",
     cta: "Bain triail as na háireamháin",
     ask: "Cuir ceist",
   },
@@ -85,11 +85,11 @@ export const ga: Messages = {
   who: {
     eyebrow: "Beagán fúinn",
     title: "Tuiscint ar dtús. Cinntí ina dhiaidh sin.",
-    body: "Is suíomh foghlama saor in aisce é Irish Fintax faoi cháin agus airgeadas pearsanta. Léigh míniú soiléir, bain triail as na huirlisí agus tóg do thuiscint ar do luas féin.",
+    body: "Is suíomh foghlama é Irish Fintax faoi cháin agus airgeadas pearsanta. Léigh míniú soiléir, bain triail as na huirlisí agus tóg do thuiscint ar do luas féin.",
     more: "Cuir aithne ar Irish Fintax",
     caption: "Déan spás do léargas níos soiléire.",
     principles: [
-      { title: "Saor in aisce le fiosrú", note: "Ní gá íoc ná cuntas a bheith agat chun tosú." },
+      { title: "Tosaigh láithreach", note: "Ní gá cuntas a bheith agat chun tosú." },
       { title: "Teanga shimplí", note: "An míniú laethúil, leis na téarmaí teicniúla nuair is úsáideach iad." },
       { title: "Foinsí is féidir leat a leanúint", note: "Féach ar na foinsí poiblí atá taobh thiar de na rialacha." },
       { title: "Foghlaim, ní comhairle", note: "Maidir le cinntí pearsanta, labhair le comhairleoir rialáilte." },
@@ -107,7 +107,7 @@ export const ga: Messages = {
   },
 
   calculators: {
-    eyebrow: "Uirlisí saor in aisce le smaoineamh níos soiléire",
+    eyebrow: "Uirlisí le smaoineamh níos soiléire",
     title: "Cuir do cheisteanna i bhfigiúirí.",
     lede: "Roghnaigh áireamhán. Athraigh na hionchuir. Tuig cad a athraíonn.",
     caption: "D’fhigiúirí féin. Pictiúr níos soiléire.",
@@ -136,7 +136,6 @@ export const ga: Messages = {
     eyebrow: "Sula dtosaíonn tú",
     title: "Cúpla rud a d’fhéadfá a bheith ag smaoineamh orthu.",
     items: [
-      { question: "An bhfuil Irish Fintax saor in aisce i ndáiríre?", answer: "Tá. Is féidir leat áireamháin, treoracha agus teimpléid a fhiosrú gan íoc, agus is féidir leat ceist a chur saor in aisce." },
       { question: "An gá dom cuntas a bheith agam?", answer: "Ní gá cuntas chun tosú. Má shíníonn tú isteach, is féidir leat ceisteanna agus freagraí a choinneáil in aon áit amháin." },
       { question: "An comhairle airgeadais nó chánach é seo?", answer: "Ní hea. Is eolas foghlama ginearálta atá ar an suíomh. Labhair le comhairleoir cáilithe faoi chinntí a bhaineann go sonrach le do chúinsí féin." },
       { question: "Cá háit ar cheart dom tosú?", answer: "Tosaigh le háireamhán má tá figiúirí agat le fiosrú, leis an Mol Cuntasaíochta le haghaidh treoracha, nó cuir ceist má theastaíonn cabhair uait chun ábhar a thuiscint." },

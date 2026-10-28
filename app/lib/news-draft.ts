@@ -27,7 +27,7 @@ const dateFmt = new Intl.DateTimeFormat("en-IE", { day: "numeric", month: "long"
 
 const fmtDate = (d: Date | null) => (d ? dateFmt.format(d) : "not stated");
 
-const SITE_RULES = `Irish Fintax is a free website where people in Ireland learn about tax and personal finance. It is a learning site, not a firm: it sells nothing, offers no services and gives no advice.`;
+const SITE_RULES = `Irish Fintax is a website where people in Ireland learn about tax and personal finance. It is a learning site, not a firm: it sells nothing, offers no services and gives no advice.`;
 
 /* ── triage ────────────────────────────────────────────────────────────── */
 

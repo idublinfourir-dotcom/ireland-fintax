@@ -15,7 +15,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 /* What is actually on the site, each pointing at it. No firm story, team or
-   credentials: this is a free learning platform. Copy: aboutMessages.sections,
+   credentials: this is a learning platform. Copy: aboutMessages.sections,
    paired by index. */
 const sectionHrefs = ["/tools/ireland-income-tax", "/personal/mortgage", "/toolkits", "/contact"];
 

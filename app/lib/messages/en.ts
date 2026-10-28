@@ -9,9 +9,9 @@ import { toolNames } from "./tool-names.ts";
 
 export const en = {
   meta: {
-    title: "Irish Fintax: free tax and money learning",
+    title: "Irish Fintax: learn how Irish tax and money work",
     description:
-      "Free calculators, guides and templates that explain Irish tax and personal finance in plain English: income tax, VAT, CGT, mortgages, investing and starting a company.",
+      "Calculators, guides and templates that explain Irish tax and personal finance in plain English: income tax, VAT, CGT, mortgages, investing and starting a company.",
   },
 
   header: {
@@ -52,7 +52,7 @@ export const en = {
 
   footer: {
     blurb:
-      "Free calculators, guides and templates that explain Irish tax and personal finance in plain English.",
+      "Calculators, guides and templates that explain Irish tax and personal finance in plain English.",
     explore: "Explore",
     links: {
       budget: "Budget",
@@ -72,10 +72,10 @@ export const en = {
   },
 
   hero: {
-    eyebrow: "Free finance learning · Ireland",
+    eyebrow: "Finance learning · Ireland",
     title: "Learn how Irish tax and money *work.*",
     lede:
-      "Free calculators, guides and templates for Irish tax, mortgages, investing and starting a company. Read how a tax works, then try it with your own figures.",
+      "Calculators, guides and templates for Irish tax, mortgages, investing and starting a company. Read how a tax works, then try it with your own figures.",
     cta: "Try the calculators",
     ask: "Ask a question",
   },
@@ -90,11 +90,11 @@ export const en = {
   who: {
     eyebrow: "A little about us",
     title: "Understanding first. Decisions second.",
-    body: "Irish Fintax is a free learning site for tax and personal finance. Read a clear explanation, explore the tools and build your understanding at your own pace.",
+    body: "Irish Fintax is a learning site for tax and personal finance. Read a clear explanation, explore the tools and build your understanding at your own pace.",
     more: "Get to know Irish Fintax",
     caption: "Make room for a clearer view.",
     principles: [
-      { title: "Free to explore", note: "No payment or account needed to start." },
+      { title: "Start straight away", note: "No account needed to start." },
       { title: "Plain English", note: "The everyday explanation, with technical terms when useful." },
       { title: "Sources you can follow", note: "Explore the public sources behind the rules." },
       { title: "Learning, not advice", note: "For personal decisions, speak with a regulated adviser." },
@@ -113,7 +113,7 @@ export const en = {
   },
 
   calculators: {
-    eyebrow: "Free tools for clearer thinking",
+    eyebrow: "Tools for clearer thinking",
     title: "Put your questions into numbers.",
     lede: "Choose a calculator. Change the inputs. Understand what moves.",
     caption: "Your numbers. A clearer picture.",
@@ -142,7 +142,6 @@ export const en = {
     eyebrow: "Before you start",
     title: "A few things you might wonder.",
     items: [
-      { question: "Is Irish Fintax really free?", answer: "Yes. You can explore calculators, guides and templates without paying, and you can ask a question for free." },
       { question: "Do I need an account?", answer: "No account is needed to start exploring. Signing in lets you keep questions and answers in one place." },
       { question: "Is this financial or tax advice?", answer: "No. The site provides general learning information. Speak with a suitably qualified adviser about decisions specific to your circumstances." },
       { question: "Where should I begin?", answer: "Start with a calculator if you have figures to explore, the Accounting Hub for guides, or ask a question if you need help understanding a topic." },

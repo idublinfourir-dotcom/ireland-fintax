@@ -14,13 +14,13 @@ const en = {
   meta: {
     title: "Accounting Hub: memos, templates, tax & VAT forms",
     description:
-      "Free resources for founders and business owners: memos, templates, tax forms, VAT forms and business setup guides for Ireland and the UK.",
+      "Resources for founders and business owners: memos, templates, tax forms, VAT forms and business setup guides for Ireland and the UK.",
   },
   home: "Home",
   title: "Accounting Hub",
-  lede: "Memos, templates, tax and VAT forms, and step-by-step business setup guides: free, practical resources for founders in Ireland and the UK.",
+  lede: "Memos, templates, tax and VAT forms, and step-by-step business setup guides: practical resources for founders in Ireland and the UK.",
   notes: [
-    { title: "Free to use", body: "Every memo, template and walkthrough is free. Tell us which one you need and we'll email it over." },
+    { title: "Sent by email", body: "Tell us which memo, template or walkthrough you need and we'll email it over." },
     { title: "Ireland & UK focused", body: "Aligned with Revenue and HMRC practice: the forms, thresholds and deadlines referenced are the ones you will actually deal with." },
     { title: "Growing every month", body: "New memos, templates and guides are added regularly. If you need something that isn't here yet, just ask and we'll send it over." },
   ],
@@ -38,7 +38,7 @@ const en = {
       other: "Everything else worth having to hand.",
     } as Categories,
     nothingToDownload:
-      "Nothing to download here: tell us which one you need and we email it to you, free, so you get the current version and can ask us about it.",
+      "Nothing to download here: tell us which one you need and we email it to you, so you get the current version and can ask us about it.",
     request: "Request a copy",
   },
   resources: Object.fromEntries(
@@ -50,7 +50,7 @@ const en = {
       description: "Request a copy of an Irish Fintax Accounting Hub resource and we will email it to you.",
     },
     title: "Request a copy",
-    lede: "Tell us where to send it and we’ll email the file over. It’s free.",
+    lede: "Tell us where to send it and we’ll email the file over.",
     requesting: "You are requesting",
     privacy: "We use these details only to send you this resource and to answer any follow-up. We do not add you to a marketing list.",
     name: "Your name",
@@ -98,13 +98,13 @@ export const toolkitMessages: Translations<ToolkitMessages> = {
     meta: {
       title: "Centro de contabilidad: notas, plantillas y formularios de impuestos e IVA",
       description:
-        "Recursos gratuitos para emprendedores y empresarios: notas, plantillas, formularios de impuestos y de IVA y guías para crear una empresa en Irlanda y el Reino Unido.",
+        "Recursos para emprendedores y empresarios: notas, plantillas, formularios de impuestos y de IVA y guías para crear una empresa en Irlanda y el Reino Unido.",
     },
     home: "Inicio",
     title: "Centro de contabilidad",
-    lede: "Notas, plantillas, formularios de impuestos y de IVA y guías paso a paso para crear una empresa: recursos prácticos y gratuitos para emprendedores en Irlanda y el Reino Unido.",
+    lede: "Notas, plantillas, formularios de impuestos y de IVA y guías paso a paso para crear una empresa: recursos prácticos para emprendedores en Irlanda y el Reino Unido.",
     notes: [
-      { title: "De uso gratuito", body: "Todas las notas, plantillas y guías son gratuitas. Dinos cuál necesitas y te la enviamos por correo." },
+      { title: "Enviado por correo", body: "Dinos qué nota, plantilla o guía necesitas y te la enviamos por correo." },
       { title: "Centrado en Irlanda y el Reino Unido", body: "Alineado con la práctica de Revenue y HMRC: los formularios, umbrales y plazos que aparecen son los que de verdad vas a tener que manejar." },
       { title: "Crece cada mes", body: "Añadimos notas, plantillas y guías con regularidad. Si necesitas algo que aún no está, pídelo y te lo enviamos." },
     ],
@@ -122,7 +122,7 @@ export const toolkitMessages: Translations<ToolkitMessages> = {
         other: "Todo lo demás que conviene tener a mano.",
       },
       nothingToDownload:
-        "Aquí no hay nada que descargar: dinos cuál necesitas y te lo enviamos por correo, gratis, para que tengas la versión actual y puedas preguntarnos sobre ella.",
+        "Aquí no hay nada que descargar: dinos cuál necesitas y te lo enviamos por correo, para que tengas la versión actual y puedas preguntarnos sobre ella.",
       request: "Pedir una copia",
     },
     resources: {
@@ -160,7 +160,7 @@ export const toolkitMessages: Translations<ToolkitMessages> = {
         description: "Pide una copia de un recurso del Centro de contabilidad de Irish Fintax y te lo enviaremos por correo.",
       },
       title: "Pedir una copia",
-      lede: "Dinos dónde enviarlo y te mandamos el archivo por correo. Es gratis.",
+      lede: "Dinos dónde enviarlo y te mandamos el archivo por correo.",
       requesting: "Estás pidiendo",
       privacy: "Usamos estos datos solo para enviarte este recurso y responder a cualquier consulta. No te añadimos a ninguna lista de marketing.",
       name: "Tu nombre",
@@ -203,13 +203,13 @@ export const toolkitMessages: Translations<ToolkitMessages> = {
     meta: {
       title: "Central de contabilidade: notas, modelos e formulários de impostos e IVA",
       description:
-        "Recursos gratuitos para empreendedores e donos de empresa: notas, modelos, formulários de impostos e de IVA e guias para abrir uma empresa na Irlanda e no Reino Unido.",
+        "Recursos para empreendedores e donos de empresa: notas, modelos, formulários de impostos e de IVA e guias para abrir uma empresa na Irlanda e no Reino Unido.",
     },
     home: "Início",
     title: "Central de contabilidade",
-    lede: "Notas, modelos, formulários de impostos e de IVA e guias passo a passo para abrir uma empresa: recursos práticos e gratuitos para empreendedores na Irlanda e no Reino Unido.",
+    lede: "Notas, modelos, formulários de impostos e de IVA e guias passo a passo para abrir uma empresa: recursos práticos para empreendedores na Irlanda e no Reino Unido.",
     notes: [
-      { title: "Uso gratuito", body: "Todas as notas, modelos e guias são gratuitos. Diga qual você precisa e enviamos por e-mail." },
+      { title: "Enviado por e-mail", body: "Diga qual nota, modelo ou guia você precisa e enviamos por e-mail." },
       { title: "Foco em Irlanda e Reino Unido", body: "Alinhado com a prática da Revenue e do HMRC: os formulários, limites e prazos citados são os que você vai realmente encontrar." },
       { title: "Cresce todo mês", body: "Novas notas, modelos e guias são adicionados com frequência. Se precisar de algo que ainda não está aqui, é só pedir que enviamos." },
     ],
@@ -227,7 +227,7 @@ export const toolkitMessages: Translations<ToolkitMessages> = {
         other: "Tudo o mais que vale a pena ter à mão.",
       },
       nothingToDownload:
-        "Não há nada para baixar aqui: diga qual você precisa e enviamos por e-mail, de graça, para você ter a versão atual e poder nos perguntar sobre ela.",
+        "Não há nada para baixar aqui: diga qual você precisa e enviamos por e-mail, para você ter a versão atual e poder nos perguntar sobre ela.",
       request: "Pedir uma cópia",
     },
     resources: {
@@ -265,7 +265,7 @@ export const toolkitMessages: Translations<ToolkitMessages> = {
         description: "Peça uma cópia de um recurso da Central de contabilidade da Irish Fintax e enviaremos por e-mail.",
       },
       title: "Pedir uma cópia",
-      lede: "Diga para onde enviar e mandamos o arquivo por e-mail. É grátis.",
+      lede: "Diga para onde enviar e mandamos o arquivo por e-mail.",
       requesting: "Você está pedindo",
       privacy: "Usamos esses dados só para enviar este recurso e responder a qualquer dúvida. Não incluímos você em nenhuma lista de marketing.",
       name: "Seu nome",
@@ -308,13 +308,13 @@ export const toolkitMessages: Translations<ToolkitMessages> = {
     meta: {
       title: "Mol Cuntasaíochta: meabhráin, teimpléid, foirmeacha cánach agus CBL",
       description:
-        "Acmhainní saor in aisce do bhunaitheoirí agus d’úinéirí gnó: meabhráin, teimpléid, foirmeacha cánach agus CBL agus treoracha bunaithe gnó d’Éirinn agus don Ríocht Aontaithe.",
+        "Acmhainní do bhunaitheoirí agus d’úinéirí gnó: meabhráin, teimpléid, foirmeacha cánach agus CBL agus treoracha bunaithe gnó d’Éirinn agus don Ríocht Aontaithe.",
     },
     home: "Baile",
     title: "Mol Cuntasaíochta",
-    lede: "Meabhráin, teimpléid, foirmeacha cánach agus CBL, agus treoracha céim ar chéim chun gnó a bhunú: acmhainní praiticiúla saor in aisce do bhunaitheoirí in Éirinn agus sa Ríocht Aontaithe.",
+    lede: "Meabhráin, teimpléid, foirmeacha cánach agus CBL, agus treoracha céim ar chéim chun gnó a bhunú: acmhainní praiticiúla do bhunaitheoirí in Éirinn agus sa Ríocht Aontaithe.",
     notes: [
-      { title: "Saor in aisce", body: "Tá gach meabhrán, teimpléad agus treoir saor in aisce. Inis dúinn cé acu atá uait agus seolfaimid chugat é ar ríomhphost." },
+      { title: "Seolta ar ríomhphost", body: "Inis dúinn cén meabhrán, teimpléad nó treoir atá uait agus seolfaimid chugat é ar ríomhphost." },
       { title: "Dírithe ar Éirinn agus an RA", body: "Ag teacht le cleachtas na gCoimisinéirí Ioncaim agus HMRC: is iad na foirmeacha, na tairseacha agus na spriocdhátaí a luaitear na cinn a mbeidh tú ag plé leo i ndáiríre." },
       { title: "Ag fás gach mí", body: "Cuirtear meabhráin, teimpléid agus treoracha nua leis go rialta. Má tá rud uait nach bhfuil anseo fós, iarr é agus seolfaimid chugat é." },
     ],
@@ -332,7 +332,7 @@ export const toolkitMessages: Translations<ToolkitMessages> = {
         other: "Gach rud eile is fiú a bheith ar láimh.",
       },
       nothingToDownload:
-        "Níl aon rud le híoslódáil anseo: inis dúinn cé acu atá uait agus seolfaimid chugat é ar ríomhphost, saor in aisce, ionas go mbeidh an leagan reatha agat agus gur féidir leat ceist a chur orainn faoi.",
+        "Níl aon rud le híoslódáil anseo: inis dúinn cé acu atá uait agus seolfaimid chugat é ar ríomhphost, ionas go mbeidh an leagan reatha agat agus gur féidir leat ceist a chur orainn faoi.",
       request: "Iarr cóip",
     },
     resources: {
@@ -370,7 +370,7 @@ export const toolkitMessages: Translations<ToolkitMessages> = {
         description: "Iarr cóip d’acmhainn Chuntais agus Airgeadas Irish Fintax agus seolfaimid chugat é ar ríomhphost.",
       },
       title: "Iarr cóip",
-      lede: "Inis dúinn cá seolfaimid é agus seolfaimid an comhad chugat ar ríomhphost. Tá sé saor in aisce.",
+      lede: "Inis dúinn cá seolfaimid é agus seolfaimid an comhad chugat ar ríomhphost.",
       requesting: "Tá tú ag iarraidh",
       privacy: "Ní úsáidimid na sonraí seo ach chun an acmhainn seo a sheoladh chugat agus chun aon cheist leantach a fhreagairt. Ní chuirimid ar liosta margaíochta thú.",
       name: "D’ainm",
@@ -413,13 +413,13 @@ export const toolkitMessages: Translations<ToolkitMessages> = {
     meta: {
       title: "مركز المحاسبة: مذكرات ونماذج ونماذج ضريبية ونماذج ضريبة القيمة المضافة",
       description:
-        "موارد مجانية لروّاد الأعمال وأصحاب الأعمال: مذكرات ونماذج ونماذج ضريبية ونماذج ضريبة القيمة المضافة وأدلة تأسيس الأعمال لأيرلندا والمملكة المتحدة.",
+        "موارد لروّاد الأعمال وأصحاب الأعمال: مذكرات ونماذج ونماذج ضريبية ونماذج ضريبة القيمة المضافة وأدلة تأسيس الأعمال لأيرلندا والمملكة المتحدة.",
     },
     home: "الرئيسية",
     title: "مركز المحاسبة",
-    lede: "مذكرات ونماذج ونماذج ضريبية ونماذج ضريبة القيمة المضافة وأدلة تأسيس الأعمال خطوة بخطوة: موارد عملية مجانية لروّاد الأعمال في أيرلندا والمملكة المتحدة.",
+    lede: "مذكرات ونماذج ونماذج ضريبية ونماذج ضريبة القيمة المضافة وأدلة تأسيس الأعمال خطوة بخطوة: موارد عملية لروّاد الأعمال في أيرلندا والمملكة المتحدة.",
     notes: [
-      { title: "مجانية الاستخدام", body: "كل مذكرة ونموذج ودليل مجاني. أخبرنا بما تحتاج إليه وسنرسله إليك بالبريد الإلكتروني." },
+      { title: "يُرسل بالبريد الإلكتروني", body: "أخبرنا بالمذكرة أو النموذج أو الدليل الذي تحتاج إليه وسنرسله إليك بالبريد الإلكتروني." },
       { title: "تركيز على أيرلندا والمملكة المتحدة", body: "متوافقة مع ممارسات Revenue وHMRC: النماذج والحدود والمواعيد المذكورة هي التي ستتعامل معها فعلًا." },
       { title: "تزداد كل شهر", body: "تُضاف مذكرات ونماذج وأدلة جديدة بانتظام. إذا احتجت إلى شيء غير موجود هنا بعد، فاسأل فقط وسنرسله إليك." },
     ],
@@ -437,7 +437,7 @@ export const toolkitMessages: Translations<ToolkitMessages> = {
         other: "كل ما يستحق أن يكون في متناول يدك.",
       },
       nothingToDownload:
-        "لا شيء للتنزيل هنا: أخبرنا بما تحتاج إليه وسنرسله إليك بالبريد الإلكتروني مجانًا، لتحصل على النسخة الحالية ويمكنك أن تسألنا عنها.",
+        "لا شيء للتنزيل هنا: أخبرنا بما تحتاج إليه وسنرسله إليك بالبريد الإلكتروني، لتحصل على النسخة الحالية ويمكنك أن تسألنا عنها.",
       request: "اطلب نسخة",
     },
     resources: {
@@ -475,7 +475,7 @@ export const toolkitMessages: Translations<ToolkitMessages> = {
         description: "اطلب نسخة من أحد موارد مركز المحاسبة في Irish Fintax وسنرسلها إليك بالبريد الإلكتروني.",
       },
       title: "اطلب نسخة",
-      lede: "أخبرنا إلى أين نرسلها وسنرسل الملف بالبريد الإلكتروني. إنه مجاني.",
+      lede: "أخبرنا إلى أين نرسلها وسنرسل الملف بالبريد الإلكتروني.",
       requesting: "أنت تطلب",
       privacy: "نستخدم هذه البيانات فقط لإرسال هذا المورد إليك والرد على أي متابعة. لا نضيفك إلى قائمة تسويقية.",
       name: "اسمك",
@@ -518,13 +518,13 @@ export const toolkitMessages: Translations<ToolkitMessages> = {
     meta: {
       title: "অ্যাকাউন্টিং হাব: মেমো, টেমপ্লেট, কর ও ভ্যাটের ফর্ম",
       description:
-        "উদ্যোক্তা ও ব্যবসার মালিকদের জন্য বিনামূল্যের রিসোর্স: আয়ারল্যান্ড ও যুক্তরাজ্যের জন্য মেমো, টেমপ্লেট, করের ফর্ম, ভ্যাটের ফর্ম ও ব্যবসা শুরু করার গাইড।",
+        "উদ্যোক্তা ও ব্যবসার মালিকদের জন্য রিসোর্স: আয়ারল্যান্ড ও যুক্তরাজ্যের জন্য মেমো, টেমপ্লেট, করের ফর্ম, ভ্যাটের ফর্ম ও ব্যবসা শুরু করার গাইড।",
     },
     home: "হোম",
     title: "অ্যাকাউন্টিং হাব",
-    lede: "মেমো, টেমপ্লেট, কর ও ভ্যাটের ফর্ম, আর ধাপে ধাপে ব্যবসা শুরু করার গাইড: আয়ারল্যান্ড ও যুক্তরাজ্যের উদ্যোক্তাদের জন্য বিনামূল্যের, কাজের রিসোর্স।",
+    lede: "মেমো, টেমপ্লেট, কর ও ভ্যাটের ফর্ম, আর ধাপে ধাপে ব্যবসা শুরু করার গাইড: আয়ারল্যান্ড ও যুক্তরাজ্যের উদ্যোক্তাদের জন্য কাজের রিসোর্স।",
     notes: [
-      { title: "বিনামূল্যে ব্যবহার করুন", body: "প্রতিটি মেমো, টেমপ্লেট ও গাইড বিনামূল্যে। কোনটি দরকার জানান, আমরা ইমেইলে পাঠিয়ে দেব।" },
+      { title: "ইমেইলে পাঠানো হয়", body: "কোন মেমো, টেমপ্লেট বা গাইড দরকার জানান, আমরা ইমেইলে পাঠিয়ে দেব।" },
       { title: "আয়ারল্যান্ড ও যুক্তরাজ্য কেন্দ্রিক", body: "Revenue ও HMRC-এর চর্চার সঙ্গে মিল রেখে: যেসব ফর্ম, সীমা ও শেষ তারিখের কথা বলা হয়েছে, সেগুলোই আপনাকে আসলে সামলাতে হবে।" },
       { title: "প্রতি মাসে বাড়ছে", body: "নিয়মিত নতুন মেমো, টেমপ্লেট ও গাইড যোগ হয়। যা দরকার তা এখনও না থাকলে শুধু জিজ্ঞেস করুন, আমরা পাঠিয়ে দেব।" },
     ],
@@ -542,7 +542,7 @@ export const toolkitMessages: Translations<ToolkitMessages> = {
         other: "হাতের কাছে রাখার মতো বাকি সবকিছু।",
       },
       nothingToDownload:
-        "এখানে ডাউনলোড করার কিছু নেই: কোনটি দরকার জানান, আমরা বিনামূল্যে ইমেইলে পাঠিয়ে দেব, যাতে আপনি হালনাগাদ সংস্করণ পান এবং এ নিয়ে আমাদের প্রশ্নও করতে পারেন।",
+        "এখানে ডাউনলোড করার কিছু নেই: কোনটি দরকার জানান, আমরা ইমেইলে পাঠিয়ে দেব, যাতে আপনি হালনাগাদ সংস্করণ পান এবং এ নিয়ে আমাদের প্রশ্নও করতে পারেন।",
       request: "একটি কপি চান",
     },
     resources: {
@@ -580,7 +580,7 @@ export const toolkitMessages: Translations<ToolkitMessages> = {
         description: "Irish Fintax অ্যাকাউন্টিং হাবের একটি রিসোর্সের কপি চান, আমরা আপনাকে ইমেইলে পাঠিয়ে দেব।",
       },
       title: "একটি কপি চান",
-      lede: "কোথায় পাঠাব জানান, আমরা ফাইলটি ইমেইলে পাঠিয়ে দেব। এটি বিনামূল্যে।",
+      lede: "কোথায় পাঠাব জানান, আমরা ফাইলটি ইমেইলে পাঠিয়ে দেব।",
       requesting: "আপনি চাইছেন",
       privacy: "এই তথ্য আমরা শুধু এই রিসোর্সটি পাঠাতে আর পরের কোনো প্রশ্নের উত্তর দিতে ব্যবহার করি। আপনাকে কোনো মার্কেটিং তালিকায় যোগ করি না।",
       name: "আপনার নাম",
@@ -623,13 +623,13 @@ export const toolkitMessages: Translations<ToolkitMessages> = {
     meta: {
       title: "अकाउंटिंग हब: मेमो, टेम्पलेट, टैक्स और वैट फ़ॉर्म",
       description:
-        "संस्थापकों और कारोबारियों के लिए मुफ़्त संसाधन: आयरलैंड और यूके के लिए मेमो, टेम्पलेट, टैक्स फ़ॉर्म, वैट फ़ॉर्म और कारोबार शुरू करने की गाइड।",
+        "संस्थापकों और कारोबारियों के लिए संसाधन: आयरलैंड और यूके के लिए मेमो, टेम्पलेट, टैक्स फ़ॉर्म, वैट फ़ॉर्म और कारोबार शुरू करने की गाइड।",
     },
     home: "होम",
     title: "अकाउंटिंग हब",
-    lede: "मेमो, टेम्पलेट, टैक्स और वैट फ़ॉर्म, और क़दम दर क़दम कारोबार शुरू करने की गाइड: आयरलैंड और यूके के संस्थापकों के लिए मुफ़्त, काम के संसाधन।",
+    lede: "मेमो, टेम्पलेट, टैक्स और वैट फ़ॉर्म, और क़दम दर क़दम कारोबार शुरू करने की गाइड: आयरलैंड और यूके के संस्थापकों के लिए काम के संसाधन।",
     notes: [
-      { title: "मुफ़्त इस्तेमाल", body: "हर मेमो, टेम्पलेट और गाइड मुफ़्त है। बताइए आपको कौन-सा चाहिए और हम ईमेल कर देंगे।" },
+      { title: "ईमेल से भेजा जाता है", body: "बताइए आपको कौन-सा मेमो, टेम्पलेट या गाइड चाहिए और हम ईमेल कर देंगे।" },
       { title: "आयरलैंड और यूके पर केंद्रित", body: "Revenue और HMRC की प्रक्रिया के अनुरूप: जिन फ़ॉर्म, सीमाओं और अंतिम तारीख़ों का ज़िक्र है, वही हैं जिनसे आपका असल में वास्ता पड़ेगा।" },
       { title: "हर महीने बढ़ रहा है", body: "नए मेमो, टेम्पलेट और गाइड नियमित रूप से जुड़ते हैं। अगर आपको कुछ ऐसा चाहिए जो अभी यहाँ नहीं है, तो बस पूछें और हम भेज देंगे।" },
     ],
@@ -647,7 +647,7 @@ export const toolkitMessages: Translations<ToolkitMessages> = {
         other: "बाक़ी सब कुछ जो पास रखने लायक़ है।",
       },
       nothingToDownload:
-        "यहाँ डाउनलोड करने को कुछ नहीं है: बताइए आपको कौन-सा चाहिए और हम मुफ़्त में ईमेल कर देंगे, ताकि आपको नया संस्करण मिले और आप उसके बारे में हमसे पूछ भी सकें।",
+        "यहाँ डाउनलोड करने को कुछ नहीं है: बताइए आपको कौन-सा चाहिए और हम ईमेल कर देंगे, ताकि आपको नया संस्करण मिले और आप उसके बारे में हमसे पूछ भी सकें।",
       request: "एक कॉपी माँगें",
     },
     resources: {
@@ -685,7 +685,7 @@ export const toolkitMessages: Translations<ToolkitMessages> = {
         description: "Irish Fintax अकाउंटिंग हब के किसी संसाधन की कॉपी माँगें और हम आपको ईमेल कर देंगे।",
       },
       title: "एक कॉपी माँगें",
-      lede: "बताइए कहाँ भेजें और हम फ़ाइल ईमेल कर देंगे। यह मुफ़्त है।",
+      lede: "बताइए कहाँ भेजें और हम फ़ाइल ईमेल कर देंगे।",
       requesting: "आप माँग रहे हैं",
       privacy: "हम इस जानकारी का इस्तेमाल केवल यह संसाधन भेजने और किसी भी आगे के सवाल का जवाब देने के लिए करते हैं। हम आपको किसी मार्केटिंग सूची में नहीं जोड़ते।",
       name: "आपका नाम",

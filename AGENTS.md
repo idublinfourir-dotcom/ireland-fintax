@@ -6,10 +6,10 @@ Git push/merge workflow: see `CLAUDE.md`.
 
 ## Project
 
-**Irish Fintax** is a free learning platform for Irish tax and personal
+**Irish Fintax** is a learning platform for Irish tax and personal
 finance (Oct 2026 direction): calculators, guides and an "Ask a question"
-form, not a firm with services or fees. UK copy + tone: professional, plain
-English, no jargon. Public pages are in English and Irish: see "Languages" below. See "Direction: FREE LEARNING PLATFORM" in `CLAUDE.md`.
+form, not a firm with services. The copy never calls the site free. UK copy + tone: professional, plain
+English, no jargon. Public pages are in English and Irish: see "Languages" below. See "Direction: LEARNING PLATFORM" in `CLAUDE.md`.
 
 
 

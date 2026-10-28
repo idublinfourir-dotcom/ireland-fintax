@@ -6,7 +6,7 @@ import { LanguageList } from "./language-menu";
 import { getMessages } from "../lib/messages";
 
 /* Pricing and Services stay hidden (app/_pricing, app/_services): this is a
-   free learning site, not a firm. Labels are t.footer.links. */
+   learning site, not a firm. Labels are t.footer.links. */
 const exploreHrefs = {
   budget: LATEST_BUDGET.href,
   calculators: "/tools/ireland-income-tax",
