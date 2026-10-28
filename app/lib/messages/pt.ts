@@ -5,9 +5,9 @@ import { toolNames } from "./tool-names.ts";
    Ireland. USC, PRSI, CGT and CAT stay as Revenue writes them. */
 export const pt: Messages = {
   meta: {
-    title: "Irish Fintax: aprenda grátis sobre impostos e dinheiro",
+    title: "Irish Fintax: aprenda sobre impostos e dinheiro",
     description:
-      "Calculadoras, guias e modelos gratuitos que explicam impostos e finanças pessoais na Irlanda em palavras simples: imposto de renda, IVA, CGT, financiamento imobiliário, investimentos e como abrir uma empresa.",
+      "Calculadoras, guias e modelos que explicam impostos e finanças pessoais na Irlanda em palavras simples: imposto de renda, IVA, CGT, financiamento imobiliário, investimentos e como abrir uma empresa.",
   },
 
   header: {
@@ -46,7 +46,7 @@ export const pt: Messages = {
 
   footer: {
     blurb:
-      "Calculadoras, guias e modelos gratuitos que explicam impostos e finanças pessoais na Irlanda em palavras simples.",
+      "Calculadoras, guias e modelos que explicam impostos e finanças pessoais na Irlanda em palavras simples.",
     explore: "Explorar",
     links: {
       budget: "Orçamento",
@@ -66,10 +66,10 @@ export const pt: Messages = {
   },
 
   hero: {
-    eyebrow: "Aprenda finanças grátis · Irlanda",
+    eyebrow: "Aprenda finanças · Irlanda",
     title: "Entenda impostos e dinheiro, *em palavras simples.*",
     lede:
-      "Calculadoras, guias e modelos gratuitos sobre impostos na Irlanda, financiamento imobiliário, investimentos e como abrir uma empresa. Aprenda como funciona e depois faça suas próprias contas.",
+      "Calculadoras, guias e modelos sobre impostos na Irlanda, financiamento imobiliário, investimentos e como abrir uma empresa. Aprenda como funciona e depois faça suas próprias contas.",
     cta: "Experimente as calculadoras",
     ask: "Faça uma pergunta",
   },
@@ -84,11 +84,11 @@ export const pt: Messages = {
   who: {
     eyebrow: "Um pouco sobre nós",
     title: "Primeiro entender. Depois decidir.",
-    body: "A Irish Fintax é um site gratuito para aprender sobre impostos e finanças pessoais. Leia uma explicação clara, explore as ferramentas e aprenda no seu ritmo.",
+    body: "A Irish Fintax é um site para aprender sobre impostos e finanças pessoais. Leia uma explicação clara, explore as ferramentas e aprenda no seu ritmo.",
     more: "Conheça a Irish Fintax",
     caption: "Abra espaço para uma visão mais clara.",
     principles: [
-      { title: "Grátis para explorar", note: "Não precisa pagar nem criar conta para começar." },
+      { title: "Comece já", note: "Não precisa criar conta para começar." },
       { title: "Palavras simples", note: "A explicação do dia a dia, com os termos técnicos quando ajudam." },
       { title: "Fontes que você pode conferir", note: "Veja as fontes públicas por trás das regras." },
       { title: "Aprendizado, não aconselhamento", note: "Para decisões pessoais, fale com um consultor regulamentado." },
@@ -106,7 +106,7 @@ export const pt: Messages = {
   },
 
   calculators: {
-    eyebrow: "Ferramentas gratuitas para pensar com clareza",
+    eyebrow: "Ferramentas para pensar com clareza",
     title: "Transforme suas perguntas em números.",
     lede: "Escolha uma calculadora. Mude os dados. Entenda o que se move.",
     caption: "Seus números. Uma imagem mais clara.",
@@ -135,7 +135,6 @@ export const pt: Messages = {
     eyebrow: "Antes de começar",
     title: "Algumas coisas que você pode estar se perguntando.",
     items: [
-      { question: "A Irish Fintax é grátis mesmo?", answer: "Sim. Você pode explorar calculadoras, guias e modelos sem pagar, e fazer uma pergunta também é grátis." },
       { question: "Preciso de uma conta?", answer: "Não precisa de conta para começar a explorar. Entrando na sua conta, você guarda perguntas e respostas em um só lugar." },
       { question: "Isto é aconselhamento financeiro ou fiscal?", answer: "Não. O site oferece informação geral de aprendizado. Fale com um consultor devidamente qualificado sobre decisões específicas da sua situação." },
       { question: "Por onde começo?", answer: "Comece por uma calculadora se tiver números para explorar, pela Central de contabilidade para guias, ou faça uma pergunta se precisar de ajuda para entender um tema." },

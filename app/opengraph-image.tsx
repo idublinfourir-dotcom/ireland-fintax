@@ -32,7 +32,7 @@ export default function OpenGraphImage() {
             Learn how Irish tax and money work.
           </div>
           <div style={{ marginTop: 28, fontSize: 30, lineHeight: 1.35, color: "#c9cfe6" }}>
-            Free calculators and plain-English guides: income tax, VAT, CGT, mortgages and more.
+            Calculators and plain-English guides: income tax, VAT, CGT, mortgages and more.
           </div>
         </div>
         <div style={{ display: "flex", alignItems: "center", fontSize: 24, color: "#a1afff" }}>

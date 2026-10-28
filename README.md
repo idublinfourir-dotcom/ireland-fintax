@@ -1,7 +1,7 @@
 # Irish Fintax
 
-A free site for learning Irish tax and personal finance: calculators, guides
-and a client/admin area, with no firm, services or fees attached. In English
+A site for learning Irish tax and personal finance: calculators, guides
+and a client/admin area, with no firm or services attached. In English
 and Irish (`/ga`). Next.js 16
 (App Router), React 19, TypeScript, Tailwind v4, **MongoDB** and **Auth.js v5**.
 

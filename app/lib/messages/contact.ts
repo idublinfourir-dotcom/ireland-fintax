@@ -10,12 +10,12 @@ const en = {
   meta: {
     title: "Ask a question",
     description:
-      "Ask a question about Irish tax or personal finance and get a plain-English answer by email. Free.",
+      "Ask a question about Irish tax or personal finance and get a plain-English answer by email.",
   },
   hero: {
     eyebrow: "Ask a question",
     title: "Ask us anything about tax and money.",
-    lede: "No question is too basic. Ask it the way you’d ask a friend and we’ll explain it in plain English. It’s free.",
+    lede: "No question is too basic. Ask it the way you’d ask a friend and we’ll explain it in plain English.",
   },
   nextHeading: "What happens next",
   nextSteps: [
@@ -51,7 +51,7 @@ const en = {
     next: "Next",
     sending: "Sending…",
     send: "Send question",
-    footnote: "Free. We reply by email: no newsletters, no spam.",
+    footnote: "We reply by email: no newsletters, no spam.",
     successTitle: "Thank you, we’ve got it.",
     successBody: "Your question is in. A real person, not an autoresponder, will reply by email.",
     successSpam: "We’ve emailed you a confirmation. If it isn’t in your inbox, check your spam or junk folder.",
@@ -97,12 +97,12 @@ export const contactMessages: Translations<ContactMessages> = {
     meta: {
       title: "Haz una pregunta",
       description:
-        "Haz una pregunta sobre impuestos o finanzas personales en Irlanda y recibe por correo una respuesta clara. Gratis.",
+        "Haz una pregunta sobre impuestos o finanzas personales en Irlanda y recibe por correo una respuesta clara.",
     },
     hero: {
       eyebrow: "Haz una pregunta",
       title: "Pregúntanos lo que quieras sobre impuestos y dinero.",
-      lede: "Ninguna pregunta es demasiado básica. Pregúntalo como se lo preguntarías a un amigo y te lo explicaremos con palabras sencillas. Es gratis.",
+      lede: "Ninguna pregunta es demasiado básica. Pregúntalo como se lo preguntarías a un amigo y te lo explicaremos con palabras sencillas.",
     },
     nextHeading: "Qué pasa después",
     nextSteps: [
@@ -137,7 +137,7 @@ export const contactMessages: Translations<ContactMessages> = {
       next: "Siguiente",
       sending: "Enviando…",
       send: "Enviar pregunta",
-      footnote: "Gratis. Respondemos por correo: sin boletines ni spam.",
+      footnote: "Respondemos por correo: sin boletines ni spam.",
       successTitle: "Gracias, la hemos recibido.",
       successBody: "Tu pregunta ha llegado. Te responderá por correo una persona real, no una respuesta automática.",
       successSpam: "Te hemos enviado una confirmación por correo. Si no está en tu bandeja de entrada, revisa la carpeta de spam o correo no deseado.",
@@ -176,12 +176,12 @@ export const contactMessages: Translations<ContactMessages> = {
     meta: {
       title: "Faça uma pergunta",
       description:
-        "Faça uma pergunta sobre impostos ou finanças pessoais na Irlanda e receba por e-mail uma resposta clara. Grátis.",
+        "Faça uma pergunta sobre impostos ou finanças pessoais na Irlanda e receba por e-mail uma resposta clara.",
     },
     hero: {
       eyebrow: "Faça uma pergunta",
       title: "Pergunte o que quiser sobre impostos e dinheiro.",
-      lede: "Nenhuma pergunta é básica demais. Pergunte do jeito que perguntaria a um amigo e explicamos em palavras simples. É grátis.",
+      lede: "Nenhuma pergunta é básica demais. Pergunte do jeito que perguntaria a um amigo e explicamos em palavras simples.",
     },
     nextHeading: "O que acontece depois",
     nextSteps: [
@@ -216,7 +216,7 @@ export const contactMessages: Translations<ContactMessages> = {
       next: "Próximo",
       sending: "Enviando…",
       send: "Enviar pergunta",
-      footnote: "Grátis. Respondemos por e-mail: sem newsletters, sem spam.",
+      footnote: "Respondemos por e-mail: sem newsletters, sem spam.",
       successTitle: "Obrigado, recebemos.",
       successBody: "Sua pergunta chegou. Uma pessoa de verdade, não uma resposta automática, vai responder por e-mail.",
       successSpam: "Enviamos uma confirmação por e-mail. Se não estiver na sua caixa de entrada, confira a pasta de spam ou lixo eletrônico.",
@@ -255,12 +255,12 @@ export const contactMessages: Translations<ContactMessages> = {
     meta: {
       title: "Cuir ceist",
       description:
-        "Cuir ceist faoi cháin nó airgeadas pearsanta in Éirinn agus faigh freagra soiléir ar ríomhphost. Saor in aisce.",
+        "Cuir ceist faoi cháin nó airgeadas pearsanta in Éirinn agus faigh freagra soiléir ar ríomhphost.",
     },
     hero: {
       eyebrow: "Cuir ceist",
       title: "Cuir ceist orainn faoi cháin agus airgead.",
-      lede: "Níl aon cheist ró-bhunúsach. Cuir í mar a chuirfeá ar chara í agus míneoimid i dteanga shimplí í. Tá sé saor in aisce.",
+      lede: "Níl aon cheist ró-bhunúsach. Cuir í mar a chuirfeá ar chara í agus míneoimid i dteanga shimplí í.",
     },
     nextHeading: "Cad a tharlóidh ansin",
     nextSteps: [
@@ -295,7 +295,7 @@ export const contactMessages: Translations<ContactMessages> = {
       next: "Ar aghaidh",
       sending: "Á sheoladh…",
       send: "Seol an cheist",
-      footnote: "Saor in aisce. Freagraímid ar ríomhphost: gan nuachtlitreacha, gan turscar.",
+      footnote: "Freagraímid ar ríomhphost: gan nuachtlitreacha, gan turscar.",
       successTitle: "Go raibh maith agat, fuaireamar í.",
       successBody: "Tá do cheist faighte againn. Freagróidh duine ar ríomhphost, ní freagróir uathoibríoch.",
       successSpam: "Sheolamar dearbhú chugat ar ríomhphost. Mura bhfuil sé i do bhosca isteach, féach i d’fhillteán turscair.",
@@ -334,12 +334,12 @@ export const contactMessages: Translations<ContactMessages> = {
     meta: {
       title: "اطرح سؤالًا",
       description:
-        "اطرح سؤالًا عن الضرائب أو التمويل الشخصي في أيرلندا واحصل على إجابة بلغة بسيطة بالبريد الإلكتروني. مجانًا.",
+        "اطرح سؤالًا عن الضرائب أو التمويل الشخصي في أيرلندا واحصل على إجابة بلغة بسيطة بالبريد الإلكتروني.",
     },
     hero: {
       eyebrow: "اطرح سؤالًا",
       title: "اسألنا أي شيء عن الضرائب والمال.",
-      lede: "لا يوجد سؤال بسيط أكثر من اللازم. اسأله كما تسأل صديقًا وسنشرحه لك بلغة بسيطة. إنه مجاني.",
+      lede: "لا يوجد سؤال بسيط أكثر من اللازم. اسأله كما تسأل صديقًا وسنشرحه لك بلغة بسيطة.",
     },
     nextHeading: "ماذا يحدث بعد ذلك",
     nextSteps: [
@@ -375,7 +375,7 @@ export const contactMessages: Translations<ContactMessages> = {
       next: "التالي",
       sending: "جارٍ الإرسال…",
       send: "أرسل السؤال",
-      footnote: "مجاني. نرد بالبريد الإلكتروني: لا نشرات إخبارية ولا رسائل مزعجة.",
+      footnote: "نرد بالبريد الإلكتروني: لا نشرات إخبارية ولا رسائل مزعجة.",
       successTitle: "شكرًا لك، وصلنا سؤالك.",
       successBody: "تم استلام سؤالك. سيرد عليك شخص حقيقي، لا رد آلي، بالبريد الإلكتروني.",
       successSpam: "أرسلنا إليك تأكيدًا بالبريد الإلكتروني. إن لم تجده في صندوق الوارد، فتحقق من مجلد الرسائل المزعجة.",
@@ -416,12 +416,12 @@ export const contactMessages: Translations<ContactMessages> = {
     meta: {
       title: "প্রশ্ন করুন",
       description:
-        "আয়ারল্যান্ডের কর বা ব্যক্তিগত অর্থ নিয়ে প্রশ্ন করুন এবং ইমেইলে সহজ ভাষায় উত্তর পান। বিনামূল্যে।",
+        "আয়ারল্যান্ডের কর বা ব্যক্তিগত অর্থ নিয়ে প্রশ্ন করুন এবং ইমেইলে সহজ ভাষায় উত্তর পান।",
     },
     hero: {
       eyebrow: "প্রশ্ন করুন",
       title: "কর আর টাকা-পয়সা নিয়ে যা খুশি জিজ্ঞেস করুন।",
-      lede: "কোনো প্রশ্নই খুব সাধারণ নয়। বন্ধুকে যেভাবে জিজ্ঞেস করতেন সেভাবেই করুন, আমরা সহজ ভাষায় বুঝিয়ে দেব। এটি বিনামূল্যে।",
+      lede: "কোনো প্রশ্নই খুব সাধারণ নয়। বন্ধুকে যেভাবে জিজ্ঞেস করতেন সেভাবেই করুন, আমরা সহজ ভাষায় বুঝিয়ে দেব।",
     },
     nextHeading: "এরপর কী হয়",
     nextSteps: [
@@ -457,7 +457,7 @@ export const contactMessages: Translations<ContactMessages> = {
       next: "পরবর্তী",
       sending: "পাঠানো হচ্ছে…",
       send: "প্রশ্ন পাঠান",
-      footnote: "বিনামূল্যে। আমরা ইমেইলে উত্তর দিই: কোনো নিউজলেটার নয়, কোনো স্প্যাম নয়।",
+      footnote: "আমরা ইমেইলে উত্তর দিই: কোনো নিউজলেটার নয়, কোনো স্প্যাম নয়।",
       successTitle: "ধন্যবাদ, আমরা পেয়েছি।",
       successBody: "আপনার প্রশ্ন পৌঁছেছে। কোনো স্বয়ংক্রিয় উত্তর নয়, একজন সত্যিকারের মানুষ ইমেইলে উত্তর দেবেন।",
       successSpam: "আমরা আপনাকে একটি নিশ্চিতকরণ ইমেইল পাঠিয়েছি। ইনবক্সে না পেলে স্প্যাম বা জাঙ্ক ফোল্ডার দেখুন।",
@@ -498,12 +498,12 @@ export const contactMessages: Translations<ContactMessages> = {
     meta: {
       title: "सवाल पूछें",
       description:
-        "आयरलैंड के टैक्स या निजी वित्त के बारे में सवाल पूछें और ईमेल पर आसान भाषा में जवाब पाएँ। मुफ़्त।",
+        "आयरलैंड के टैक्स या निजी वित्त के बारे में सवाल पूछें और ईमेल पर आसान भाषा में जवाब पाएँ।",
     },
     hero: {
       eyebrow: "सवाल पूछें",
       title: "टैक्स और पैसे के बारे में हमसे कुछ भी पूछें।",
-      lede: "कोई सवाल बहुत बुनियादी नहीं होता। वैसे ही पूछें जैसे किसी दोस्त से पूछते, हम आसान भाषा में समझा देंगे। यह मुफ़्त है।",
+      lede: "कोई सवाल बहुत बुनियादी नहीं होता। वैसे ही पूछें जैसे किसी दोस्त से पूछते, हम आसान भाषा में समझा देंगे।",
     },
     nextHeading: "आगे क्या होता है",
     nextSteps: [
@@ -539,7 +539,7 @@ export const contactMessages: Translations<ContactMessages> = {
       next: "आगे",
       sending: "भेजा जा रहा है…",
       send: "सवाल भेजें",
-      footnote: "मुफ़्त। हम ईमेल पर जवाब देते हैं: कोई न्यूज़लेटर नहीं, कोई स्पैम नहीं।",
+      footnote: "हम ईमेल पर जवाब देते हैं: कोई न्यूज़लेटर नहीं, कोई स्पैम नहीं।",
       successTitle: "धन्यवाद, हमें मिल गया।",
       successBody: "आपका सवाल पहुँच गया है। कोई ऑटो-रिप्लाई नहीं, एक असली इंसान ईमेल पर जवाब देगा।",
       successSpam: "हमने आपको पुष्टि का ईमेल भेजा है। अगर वह इनबॉक्स में नहीं है, तो स्पैम या जंक फ़ोल्डर देखें।",

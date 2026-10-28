@@ -16,7 +16,7 @@ const en = {
   redirecting: "Redirecting…",
 
   login: {
-    meta: { title: "Sign in", description: "Sign in to your free Irish Fintax account." },
+    meta: { title: "Sign in", description: "Sign in to your Irish Fintax account." },
     title: "Sign in.",
     lede: "See the questions you have asked and our answers, all in one place.",
     notices: {
@@ -34,9 +34,9 @@ const en = {
   },
 
   signup: {
-    meta: { title: "Create an account", description: "Create a free Irish Fintax account." },
+    meta: { title: "Create an account", description: "Create an Irish Fintax account." },
     title: "Create your account.",
-    lede: "Free, and takes under a minute. Keep the questions you ask and our answers in one place.",
+    lede: "It takes under a minute. Keep the questions you ask and our answers in one place.",
     checkTitle: "Check your email",
     sentTo: "We’ve sent a message to {email}. Open it to finish setting up your account.",
     cantFind: "Can’t find it? Check your spam or junk folder, and mark it as not spam so future messages reach your inbox.",
@@ -140,7 +140,7 @@ export const accountMessages: Translations<AccountMessages> = {
     google: "Continuar con Google",
     redirecting: "Redirigiendo…",
     login: {
-      meta: { title: "Iniciar sesión", description: "Inicia sesión en tu cuenta gratuita de Irish Fintax." },
+      meta: { title: "Iniciar sesión", description: "Inicia sesión en tu cuenta de Irish Fintax." },
       title: "Inicia sesión.",
       lede: "Consulta las preguntas que has hecho y nuestras respuestas, todo en un mismo sitio.",
       notices: {
@@ -157,9 +157,9 @@ export const accountMessages: Translations<AccountMessages> = {
       forgot: "¿Has olvidado tu contraseña?",
     },
     signup: {
-      meta: { title: "Crear una cuenta", description: "Crea una cuenta gratuita de Irish Fintax." },
+      meta: { title: "Crear una cuenta", description: "Crea una cuenta de Irish Fintax." },
       title: "Crea tu cuenta.",
-      lede: "Es gratis y se tarda menos de un minuto. Guarda tus preguntas y nuestras respuestas en un mismo sitio.",
+      lede: "Se tarda menos de un minuto. Guarda tus preguntas y nuestras respuestas en un mismo sitio.",
       checkTitle: "Revisa tu correo",
       sentTo: "Hemos enviado un mensaje a {email}. Ábrelo para terminar de crear tu cuenta.",
       cantFind: "¿No lo encuentras? Revisa la carpeta de spam o correo no deseado y márcalo como «no es spam» para que los próximos mensajes lleguen a tu bandeja de entrada.",
@@ -255,7 +255,7 @@ export const accountMessages: Translations<AccountMessages> = {
     google: "Continuar com o Google",
     redirecting: "Redirecionando…",
     login: {
-      meta: { title: "Entrar", description: "Entre na sua conta gratuita da Irish Fintax." },
+      meta: { title: "Entrar", description: "Entre na sua conta da Irish Fintax." },
       title: "Entrar.",
       lede: "Veja as perguntas que você fez e nossas respostas, tudo em um só lugar.",
       notices: {
@@ -272,9 +272,9 @@ export const accountMessages: Translations<AccountMessages> = {
       forgot: "Esqueceu a senha?",
     },
     signup: {
-      meta: { title: "Criar uma conta", description: "Crie uma conta gratuita na Irish Fintax." },
+      meta: { title: "Criar uma conta", description: "Crie uma conta na Irish Fintax." },
       title: "Crie sua conta.",
-      lede: "É grátis e leva menos de um minuto. Guarde suas perguntas e nossas respostas em um só lugar.",
+      lede: "Leva menos de um minuto. Guarde suas perguntas e nossas respostas em um só lugar.",
       checkTitle: "Confira seu e-mail",
       sentTo: "Enviamos uma mensagem para {email}. Abra-a para terminar de criar sua conta.",
       cantFind: "Não encontrou? Confira a pasta de spam ou lixo eletrônico e marque como “não é spam” para que as próximas mensagens cheguem à sua caixa de entrada.",
@@ -370,7 +370,7 @@ export const accountMessages: Translations<AccountMessages> = {
     google: "Lean ar aghaidh le Google",
     redirecting: "Á atreorú…",
     login: {
-      meta: { title: "Sínigh isteach", description: "Sínigh isteach i do chuntas saor in aisce Irish Fintax." },
+      meta: { title: "Sínigh isteach", description: "Sínigh isteach i do chuntas Irish Fintax." },
       title: "Sínigh isteach.",
       lede: "Féach ar na ceisteanna a chuir tú agus ar ár bhfreagraí, in aon áit amháin.",
       notices: {
@@ -387,9 +387,9 @@ export const accountMessages: Translations<AccountMessages> = {
       forgot: "Ar dhearmad tú do phasfhocal?",
     },
     signup: {
-      meta: { title: "Cruthaigh cuntas", description: "Cruthaigh cuntas saor in aisce Irish Fintax." },
+      meta: { title: "Cruthaigh cuntas", description: "Cruthaigh cuntas Irish Fintax." },
       title: "Cruthaigh do chuntas.",
-      lede: "Saor in aisce, agus tógann sé níos lú ná nóiméad. Coinnigh na ceisteanna a chuireann tú agus ár bhfreagraí in aon áit amháin.",
+      lede: "Tógann sé níos lú ná nóiméad. Coinnigh na ceisteanna a chuireann tú agus ár bhfreagraí in aon áit amháin.",
       checkTitle: "Féach ar do ríomhphost",
       sentTo: "Sheolamar teachtaireacht chuig {email}. Oscail í chun do chuntas a chur ar bun.",
       cantFind: "Ní féidir leat í a aimsiú? Féach i d’fhillteán turscair, agus marcáil í mar nach turscar í ionas go sroichfidh teachtaireachtaí amach anseo do bhosca isteach.",
@@ -486,7 +486,7 @@ export const accountMessages: Translations<AccountMessages> = {
     redirecting: "جارٍ التحويل…",
 
     login: {
-      meta: { title: "تسجيل الدخول", description: "سجّل الدخول إلى حسابك المجاني في Irish Fintax." },
+      meta: { title: "تسجيل الدخول", description: "سجّل الدخول إلى حسابك في Irish Fintax." },
       title: "تسجيل الدخول.",
       lede: "شاهد الأسئلة التي طرحتها وإجاباتنا، كلها في مكان واحد.",
       notices: {
@@ -504,9 +504,9 @@ export const accountMessages: Translations<AccountMessages> = {
     },
 
     signup: {
-      meta: { title: "إنشاء حساب", description: "أنشئ حسابًا مجانيًا في Irish Fintax." },
+      meta: { title: "إنشاء حساب", description: "أنشئ حسابًا في Irish Fintax." },
       title: "أنشئ حسابك.",
-      lede: "مجاني، ويستغرق أقل من دقيقة. احتفظ بالأسئلة التي تطرحها وإجاباتنا في مكان واحد.",
+      lede: "يستغرق أقل من دقيقة. احتفظ بالأسئلة التي تطرحها وإجاباتنا في مكان واحد.",
       checkTitle: "تحقق من بريدك الإلكتروني",
       sentTo: "أرسلنا رسالة إلى {email}. افتحها لإكمال إعداد حسابك.",
       cantFind: "لا تجدها؟ تحقق من مجلد الرسائل المزعجة، وضع علامة عليها بأنها ليست مزعجة لتصل الرسائل القادمة إلى صندوق الوارد.",
@@ -605,7 +605,7 @@ export const accountMessages: Translations<AccountMessages> = {
     redirecting: "নিয়ে যাওয়া হচ্ছে…",
 
     login: {
-      meta: { title: "সাইন ইন", description: "আপনার বিনামূল্যের Irish Fintax অ্যাকাউন্টে সাইন ইন করুন।" },
+      meta: { title: "সাইন ইন", description: "আপনার Irish Fintax অ্যাকাউন্টে সাইন ইন করুন।" },
       title: "সাইন ইন করুন।",
       lede: "আপনার করা প্রশ্ন আর আমাদের উত্তর, সব এক জায়গায় দেখুন।",
       notices: {
@@ -623,9 +623,9 @@ export const accountMessages: Translations<AccountMessages> = {
     },
 
     signup: {
-      meta: { title: "অ্যাকাউন্ট খুলুন", description: "একটি বিনামূল্যের Irish Fintax অ্যাকাউন্ট খুলুন।" },
+      meta: { title: "অ্যাকাউন্ট খুলুন", description: "একটি Irish Fintax অ্যাকাউন্ট খুলুন।" },
       title: "আপনার অ্যাকাউন্ট খুলুন।",
-      lede: "বিনামূল্যে, আর এক মিনিটের কম সময় লাগে। আপনার প্রশ্ন আর আমাদের উত্তর এক জায়গায় রাখুন।",
+      lede: "এক মিনিটের কম সময় লাগে। আপনার প্রশ্ন আর আমাদের উত্তর এক জায়গায় রাখুন।",
       checkTitle: "আপনার ইমেইল দেখুন",
       sentTo: "আমরা {email}-এ একটি বার্তা পাঠিয়েছি। অ্যাকাউন্ট খোলা শেষ করতে সেটি খুলুন।",
       cantFind: "খুঁজে পাচ্ছেন না? স্প্যাম বা জাঙ্ক ফোল্ডার দেখুন, আর সেটিকে স্প্যাম নয় হিসেবে চিহ্নিত করুন যাতে পরের বার্তাগুলো ইনবক্সে আসে।",
@@ -724,7 +724,7 @@ export const accountMessages: Translations<AccountMessages> = {
     redirecting: "ले जाया जा रहा है…",
 
     login: {
-      meta: { title: "साइन इन", description: "अपने मुफ़्त Irish Fintax अकाउंट में साइन इन करें।" },
+      meta: { title: "साइन इन", description: "अपने Irish Fintax अकाउंट में साइन इन करें।" },
       title: "साइन इन करें।",
       lede: "आपके पूछे सवाल और हमारे जवाब, सब एक जगह देखें।",
       notices: {
@@ -742,9 +742,9 @@ export const accountMessages: Translations<AccountMessages> = {
     },
 
     signup: {
-      meta: { title: "अकाउंट बनाएँ", description: "मुफ़्त Irish Fintax अकाउंट बनाएँ।" },
+      meta: { title: "अकाउंट बनाएँ", description: "Irish Fintax अकाउंट बनाएँ।" },
       title: "अपना अकाउंट बनाएँ।",
-      lede: "मुफ़्त, और एक मिनट से कम लगता है। अपने सवाल और हमारे जवाब एक जगह रखें।",
+      lede: "एक मिनट से कम लगता है। अपने सवाल और हमारे जवाब एक जगह रखें।",
       checkTitle: "अपना ईमेल देखें",
       sentTo: "हमने {email} पर एक संदेश भेजा है। अपना अकाउंट बनाना पूरा करने के लिए उसे खोलें।",
       cantFind: "नहीं मिल रहा? स्पैम या जंक फ़ोल्डर देखें, और उसे स्पैम नहीं के रूप में चिह्नित करें ताकि आगे के संदेश इनबॉक्स में आएँ।",

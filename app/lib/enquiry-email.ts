@@ -25,7 +25,7 @@ export function ackSubject(): string {
 }
 
 /** The one line of substance, shared by both parts so they cannot drift. It
-    promises a reply but no turnaround: the site is free, so it makes no service
+    promises a reply but no turnaround: a learning site, not a firm, makes no service
     level. If one is ever promised, it goes here and nowhere else. */
 const ACK_LINE =
   "Thanks for your question. It has reached us, and a real person will reply by email.";

@@ -49,7 +49,7 @@ export default function PrivacyPage() {
           <div className="mt-8 flex flex-col gap-10">
             <Section title="Who is responsible">
               <p>
-                Irish Fintax (irishfintax.ie) is a free site for learning about Irish tax and
+                Irish Fintax (irishfintax.ie) is a site for learning about Irish tax and
                 personal finance. Irish Fintax decides how the personal data described here is
                 used. For anything about your data, send a message through{" "}
                 <Link href="/contact" className={link}>
