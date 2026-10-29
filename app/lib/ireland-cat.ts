@@ -28,7 +28,8 @@
    - Rate 33%: revenue.ie/.../cat-thresholds-rates-and-aggregation-rules/cat-rates
    - Group thresholds A €420k / B €44k / C €22k for gifts and inheritances on
      or after 7 Oct 2026 (Budget 2027; Revenue eBrief 149/26). Before that,
-     €400k / €40k / €20k from 2 Oct 2024: .../cat-thresholds
+     €400k / €40k / €20k from 2 Oct 2024: .../cat-thresholds (PREVIOUS_THRESHOLDS,
+     chosen by takenBeforeRise; earlier benefits are not covered)
    - Groups (relationships): .../cat-groups
    - Aggregation since 5 Dec 1991: .../cat-aggregation-rules
    - Small gift exemption €3,000, gifts only, not aggregated:
@@ -86,6 +87,11 @@ export const CAT_CONFIG_DEFAULT: CatConfig = {
   smallGiftExemptionEur: 3_000,
   reliefs: { agriculturalPercent: 90, businessPercent: 90, dwellingHousePercent: 100 },
 };
+
+/* The thresholds before Budget 2027's rise. History, so a constant rather than
+   editable config: gifts and inheritances taken from 2 October 2024 to
+   6 October 2026 keep them (Revenue eBrief 149/26). */
+export const PREVIOUS_THRESHOLDS: CatConfig["thresholds"] = { groupA: 400_000, groupB: 40_000, groupC: 20_000 };
 
 const pct = (v: unknown): number | null =>
   typeof v === "number" && Number.isFinite(v) && v >= 0 && v <= 100 ? v : null;
@@ -220,6 +226,9 @@ export interface CatInput {
   priorBenefits: number;
   /** Valuation month 1 to 12, for the pay-and-file date. */
   valuationMonth?: number;
+  /** Taken from 2 October 2024 to 6 October 2026, so the PREVIOUS_THRESHOLDS
+      apply. Left out, the configured (current) thresholds do. */
+  takenBeforeRise?: boolean;
 }
 
 export interface CatResult {
@@ -271,7 +280,10 @@ export function computeCat(input: CatInput, config: CatConfig): CatResult {
   const currentTaxableValue = round2(Math.max(0, reducedValue - smallGiftExemptionApplied));
 
   const group = groupFor(input.relationship, input.benefitType);
-  const groupThreshold = thresholdFor(group, config);
+  const groupThreshold = thresholdFor(
+    group,
+    input.takenBeforeRise ? { ...config, thresholds: PREVIOUS_THRESHOLDS } : config,
+  );
   const thresholdRemaining = round2(Math.max(0, groupThreshold - priorBenefits));
   const taxableExcess = round2(Math.max(0, currentTaxableValue - thresholdRemaining));
 

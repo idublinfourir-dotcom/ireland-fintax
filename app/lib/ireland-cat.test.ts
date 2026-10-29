@@ -14,6 +14,7 @@ import {
   reliefPercentFor,
   round2,
   CAT_CONFIG_DEFAULT,
+  PREVIOUS_THRESHOLDS,
   type CatInput,
 } from "./ireland-cat.ts";
 
@@ -58,6 +59,23 @@ test("threshold + relief lookups read the config", () => {
   assert.equal(reliefPercentFor("business", CAT_CONFIG_DEFAULT), 90);
   assert.equal(reliefPercentFor("dwelling-house", CAT_CONFIG_DEFAULT), 100);
   assert.equal(reliefPercentFor("none", CAT_CONFIG_DEFAULT), 0);
+});
+
+test("taken before 7 Oct 2026: the earlier thresholds, whatever the config says", () => {
+  assert.deepEqual(PREVIOUS_THRESHOLDS, PRE_BUDGET_2027.thresholds);
+  // €500k from a parent: €80k over the new €420k, €100k over the old €400k.
+  const gift = { ...base, marketValue: 500_000, applySmallGiftExemption: false };
+  const after = computeCat(gift, CAT_CONFIG_DEFAULT);
+  const before = computeCat({ ...gift, takenBeforeRise: true }, CAT_CONFIG_DEFAULT);
+  assert.equal(after.groupThreshold, 420_000);
+  assert.equal(after.catDue, 26_400);
+  assert.equal(before.groupThreshold, 400_000);
+  assert.equal(before.catDue, 33_000);
+  // Groups B and C follow, and a false flag is the same as leaving it out.
+  const niece = { ...base, relationship: "niece-nephew" as const, takenBeforeRise: true };
+  assert.equal(computeCat(niece, CAT_CONFIG_DEFAULT).groupThreshold, 40_000);
+  assert.equal(computeCat({ ...base, relationship: "other", takenBeforeRise: true }, CAT_CONFIG_DEFAULT).groupThreshold, 20_000);
+  assert.equal(computeCat({ ...gift, takenBeforeRise: false }, CAT_CONFIG_DEFAULT).catDue, after.catDue);
 });
 
 test("Revenue 'Claire': Group A, prior €365k, current €40k → excess €5,000", () => {

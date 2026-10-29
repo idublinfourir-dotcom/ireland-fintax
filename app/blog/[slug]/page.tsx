@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { REVIEWER } from "../../lib/reviewer";
 import { cache } from "react";
 import { notFound } from "next/navigation";
 import { Container, SectionHeading } from "../../components/ui";
@@ -6,6 +7,8 @@ import { ContactCta } from "../../components/sections";
 import { JsonLd } from "../../components/json-ld";
 import { PostBlocks } from "../../components/post-body";
 import {
+  EN,
+  inLocale,
   PageNav,
   PostCard,
   PostCover,
@@ -15,10 +18,11 @@ import {
 } from "../../components/blog";
 import { getPublishedPost, getRelatedPosts, type Post } from "../../lib/posts";
 import { headingAnchors, splitPages, tableOfContents } from "../../lib/post-blocks";
-import { imageUrl, POST_DISCLAIMER } from "../../lib/post-types";
+import { imageUrl } from "../../lib/post-types";
 import { site } from "../../lib/content";
-import { DEFAULT_LOCALE } from "../../lib/i18n";
-import { getLocale } from "../../lib/messages";
+import { DEFAULT_LOCALE, type Locale } from "../../lib/i18n";
+import { getLocale, getT } from "../../lib/messages";
+import { blogMessages, type BlogMessages } from "../../lib/messages/blog";
 
 type Params = Promise<{ slug: string }>;
 type Search = Promise<{ page?: string | string[] }>;
@@ -27,16 +31,16 @@ const sourceDate = new Intl.DateTimeFormat("en-IE", { day: "numeric", month: "lo
 
 /**
  * Where a news-agent post came from. Rendered from the post's stored origin,
- * like POST_DISCLAIMER, so no edit can drop it: the links and each licence's
+ * like the disclaimer, so no edit can drop it: the links and each licence's
  * attribution are what the CC BY terms ask for, and the last line says plainly
  * that AI drafted it and a person checked it.
  */
-function PostSources({ sources }: { sources: NonNullable<Post["sources"]> }) {
+function PostSources({ sources, t, locale }: { sources: NonNullable<Post["sources"]>; t: BlogMessages; locale: Locale }) {
   const attributions = [...new Set(sources.map((s) => s.attribution).filter(Boolean))];
   return (
     <section aria-labelledby="post-sources" className="mb-10">
-      <h2 id="post-sources" className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted">
-        Sources
+      <h2 {...inLocale(locale)} id="post-sources" className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted">
+        {t.sources}
       </h2>
       <ul className="mt-3 space-y-2 text-sm leading-6">
         {sources.map((s) => (
@@ -62,9 +66,8 @@ function PostSources({ sources }: { sources: NonNullable<Post["sources"]> }) {
           {a}
         </p>
       ))}
-      <p className="mt-3 text-xs leading-5 text-muted">
-        Drafted with the help of AI from the official sources above, then checked and edited by a person before
-        publishing.
+      <p {...inLocale(locale)} className="mt-3 text-xs leading-5 text-muted">
+        {t.aiNote}
       </p>
     </section>
   );
@@ -129,10 +132,12 @@ export default async function BlogPostPage({
   const toc = tableOfContents(post.blocks);
   const showToc = toc.length >= 2;
   const url = `${site.url}/blog/${post.slug}`;
-  const [related, locale] = await Promise.all([getRelatedPosts(post), getLocale()]);
+  const [related, locale, t] = await Promise.all([getRelatedPosts(post), getLocale(), getT(blogMessages)]);
+  const ui = inLocale(locale);
 
-  /* lang="en" dir="ltr": the post is English even under /ga, /es, /pt or /ar, where the
-     header, footer and call to action are not (CHROME_ONLY_PATHS). */
+  /* The post is English in every language (CHROME_ONLY_PATHS): its column is
+     lang="en" dir="ltr", and the labels inside it carry the page's language
+     back. Header, cards and the call to action are in the page's language. */
   // The article for search engines; the author is the site, which names no firm.
   const coverUrl = imageUrl(post.cover, 1200);
   const article = {
@@ -151,12 +156,12 @@ export default async function BlogPostPage({
   return (
     <>
       <JsonLd data={article} />
-      <div lang="en" dir="ltr">
+      <div>
         <article>
           <PostHeader post={post} url={url} page={page} pages={pages.length} />
           {page === 1 && <PostCover image={post.cover} />}
 
-          <div className="relative pb-6 pt-12 sm:pt-16">
+          <div {...EN} className="relative pb-6 pt-12 sm:pt-16">
             {/* Wide screens: the contents sit in the left margin, beside the
                 reading column, and stay in view while reading. */}
             {showToc && (
@@ -179,9 +184,10 @@ export default async function BlogPostPage({
               <PageNav slug={post.slug} page={page} pages={pages.length} />
 
               <div className="mt-14 border-t border-line pt-8">
-                {post.sources && post.sources.length > 0 && <PostSources sources={post.sources} />}
+                {post.sources && post.sources.length > 0 && <PostSources sources={post.sources} t={t} locale={locale} />}
                 <ShareLinks url={url} title={post.title} />
-                <p className="mt-8 text-sm leading-6 text-muted">{POST_DISCLAIMER}</p>
+                <p {...ui} className="mt-8 text-sm leading-6 text-muted">{t.disclaimer}</p>
+                <p {...ui} className="mt-2 text-sm leading-6 text-muted">{t.reviewed.replace("{reviewer}", REVIEWER)}</p>
               </div>
             </div>
           </div>
@@ -190,7 +196,7 @@ export default async function BlogPostPage({
         {related.length > 0 && (
           <section className="mt-10 border-t border-line bg-surface-muted">
             <Container className="py-16 sm:py-20">
-              <SectionHeading eyebrow="Keep reading" title="More from the blog" />
+              <SectionHeading eyebrow={t.keepReading} title={t.moreFromBlog} />
               <ul className="mt-10 grid gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
                 {related.map((p) => (
                   <li key={p.id}>

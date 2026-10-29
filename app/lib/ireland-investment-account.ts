@@ -13,7 +13,7 @@
    ACCOUNT_DATA_AS_OF whenever a figure or rule below changes.
    ────────────────────────────────────────────────────────────────────────── */
 
-export const ACCOUNT_DATA_AS_OF = "23 October 2026";
+export const ACCOUNT_DATA_AS_OF = "29 October 2026";
 
 export const INVESTMENT_ACCOUNT = {
   /** Government plan date (Revenue, CCPC); the legal start is a ministerial order. */

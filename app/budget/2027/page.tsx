@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { ReviewedBy } from "../../components/reviewed-by";
 import { Breadcrumbs, Chevron, Container, GroupRow } from "../../components/ui";
 import { ContactCta } from "../../components/sections";
 import { Budget2027Planner } from "../../components/budget-2027-planner";
@@ -98,6 +99,7 @@ export default async function Budget2027Page() {
                       <p className="text-[15px] font-semibold text-ink">{t.measures[m.id]?.title ?? m.title}</p>
                       <p className="mt-1 text-sm leading-6 text-ink-body">{t.measures[m.id]?.summary ?? m.summary}</p>
                       <p className="mt-1.5 text-xs text-muted">{t.measures[m.id]?.starts ?? m.starts.label}</p>
+                      <p className="mt-1 text-xs font-semibold text-amber-900">{t.statuses[m.status] ?? m.statusLabel}</p>
                     </li>
                   ))}
                 </ul>
@@ -136,6 +138,7 @@ export default async function Budget2027Page() {
           <p className="mt-10 max-w-2xl text-xs leading-5 text-muted">
             {t.pageDisclaimer}
           </p>
+          <ReviewedBy className="mt-2 max-w-2xl" />
         </Container>
       </section>
 

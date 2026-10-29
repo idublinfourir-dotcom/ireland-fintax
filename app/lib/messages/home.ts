@@ -21,11 +21,11 @@ import type { Translations } from "../i18n";
 const en = {
   hero: {
     eyebrow: "Finance learning · Ireland",
-    title: "Master your Irish tax. *Save, grow, prosper.*",
-    lede: "{count} statutory Irish tax calculators, Central Bank 4x mortgage rules, and plain-English financial intelligence. Zero guesswork.",
+    title: "See what {budget} means *for your pay.*",
+    lede: "{count} Irish tax calculators built on Revenue’s published rates, the Central Bank’s mortgage rules, and plain-English guides.",
     cta: "Start planning",
     budget: "{budget} hub",
-    checks: ["Explore without an account", "No account needed to start"],
+    checks: ["Budget 2027 changes included, subject to the Finance Bill"],
     stats: {
       tools: "Tax calculators",
       band: "Standard cut-off, {year}",
@@ -34,7 +34,7 @@ const en = {
   },
 
   finder: {
-    eyebrow: "Confidence architecture · 60-second finder",
+    eyebrow: "60-second finder",
     title: "Not sure where to start?\nLet’s route you.",
     items: [
       { title: "Salary & Budget", note: "Take-home pay, the {band} standard band and tax credits." },
@@ -50,9 +50,9 @@ const en = {
     body: "Irish Fintax is a learning platform. We explain Irish tax and personal finance in plain English, and give you calculators to try your own numbers, so you understand what is going on before you decide anything.",
     more: "More about us",
     note: "No sales pitches, no tracking cookies. Independent tax and finance education for individuals, landlords and founders across Ireland.",
-    caption: "Revenue.ie calibrated · Calculators run in your browser",
+    caption: "Built on Revenue’s published rates · Calculators run in your browser",
     principles: [
-      { label: "Public interest", title: "For everyone", note: "Every calculator, guide and template is available, and you don’t need an account to start." },
+      { label: "Public interest", title: "For everyone", note: "Every calculator, guide and template is open to everyone." },
       { label: "Plain English", title: "Jargon-free", note: "The rules explained the way you’d explain them to a friend, without the confusing jargon." },
       { label: "Built on public sources", title: "Checked against Revenue", note: "The calculators use Revenue’s published rates and link to where each figure comes from." },
       { label: "Information, not advice", title: "Clear about limits", note: "We help you understand. For a decision that hinges on your situation, see a regulated adviser." },
@@ -60,10 +60,10 @@ const en = {
   },
 
   calendar: {
-    eyebrow: "Revenue.ie statutory schedule",
+    eyebrow: "Revenue’s published deadlines",
     title: "Irish Tax Calendar *{years}*",
-    body: "Key statutory filing and payment deadlines for individuals, self-employed contractors, landlords and limited companies.",
-    next: "Next statutory deadline",
+    body: "Key filing and payment deadlines for individuals, self-employed contractors, landlords and limited companies.",
+    next: "Next deadline",
     more: "View full calendar",
     less: "Show fewer dates",
     /* By kind, as lib/tax-calendar.ts lists them. {year} is the deadline's
@@ -117,7 +117,7 @@ const en = {
   topics: {
     eyebrow: "Everything in one place",
     title: "Whatever you’re dealing with, there’s a tool and a guide.",
-    lede: "Every calculator is calibrated against Revenue.ie statutory rules, {budget} and Central Bank prudential guidelines.",
+    lede: "Every calculator is built on Revenue’s published rates, the {budget} announcements and the Central Bank’s mortgage rules.",
     caption: "Your numbers. A clearer picture.",
     items: [
       {
@@ -142,7 +142,7 @@ const en = {
       },
       {
         title: "Investment Account",
-        note: "The new account from 1 July 2027: 1% a year on value above €50,000, and no deemed disposal.",
+        note: "Announced, in the Finance Bill and not yet law (status checked 29 October 2026). From 1 July 2027: 1% a year on value above €50,000, and no deemed disposal.",
         tags: ["1% a year", "€12,000 a year in", "From July 2027"],
       },
       {
@@ -163,13 +163,14 @@ const en = {
     cardEyebrow: "Your life. Your questions.",
     topics: ["Home & renting", "Work & income", "Family", "Saving & pensions"],
     caption: "A clearer view of what changes.",
+    status: "Announced on 6 October 2026. Most changes become law with the Finance Act. Checked {date}.",
   },
 
   learn: {
-    eyebrow: "A clear path forward · Statutory methodology",
+    eyebrow: "A clear path forward · How it works",
     title: "Learn. Calculate. *Take action.*",
     items: [
-      { title: "Learn", note: "Read easy-to-understand statutory guides on income tax, USC brackets, PRSI and investment tax rules.", link: "Browse guides" },
+      { title: "Learn", note: "Read plain-English guides on income tax, USC bands, PRSI and investment tax rules.", link: "Browse guides" },
       { title: "Calculate", note: "Simulate take-home pay, 4x Central Bank mortgage borrowing limits and capital gains tax.", link: "Open calculators" },
       { title: "Take action", note: "Execute Form 11 returns, claim rent tax credits, meet Revenue Pay & File deadlines and build tax-efficient wealth.", link: "View deadlines" },
     ],
@@ -182,7 +183,7 @@ const en = {
     items: [
       {
         question: "How is an ETF taxed in Ireland?",
-        answer: "Most Irish-domiciled and European UCITS ETFs are taxed under exit tax, not capital gains tax (CGT): 38% in 2026, and 35% from 1 January 2027 under Budget 2027. Tax is due when you sell, and every 8 years under the deemed disposal rule. Losses cannot be set against gains on ordinary shares.",
+        answer: "Most Irish-domiciled and European UCITS ETFs are taxed under exit tax, not capital gains tax (CGT): 38% in 2026, and 35% from 1 January 2027 under Budget 2027 (announced, subject to the Finance Bill). Tax is due when you sell, and every 8 years under the deemed disposal rule. Losses cannot be set against gains on ordinary shares.",
         link: "Read the complete ETF guide",
       },
       {
@@ -210,17 +211,22 @@ const en = {
     ],
   },
 
-  quote: {
-    quote: "“Don’t work for money. *Make money work for you.*”",
-    body: "In Ireland, building generational wealth starts with knowing how money moves: leveraging tax-efficient pensions, entrepreneur relief and Revenue-compliant compounding strategies.",
-    link: "Explore Irish investment tax strategies",
+  founder: {
+    eyebrow: "About the Founder",
+    paragraphs: [
+      "Arif Bhuiyan is a Fellow Chartered Accountant and senior finance professional with extensive experience across leading multinational organisations, including Apple Ireland, Meta Ireland, Deloitte Ireland, Bank of Ireland and Citi.",
+      "As EMEA Finance Manager at one of the largest FinTech companies in the world, he specialises in financial management, statutory reporting, technical accounting and financial controls.",
+      "With a strong passion for education, Arif has taught at Trinity College Dublin, mentored international students at UCD Michael Smurfit Graduate Business School, and provided one-to-one coaching to hundreds of Chartered Accountants Ireland students preparing for professional qualifications.",
+      "His achievements include the Prime Minister Gold Medal Award, first-class honours from UCD Smurfit, an Erasmus Mundus Scholarship and outstanding academic rankings (1st position) at his Bachelor and MBA programmes.",
+      "Arif founded Irish Fintax to make Irish tax, accounting and financial knowledge accessible to everyone. Combining practical industry expertise with years of teaching and mentoring experience, he aims to improve financial literacy across Ireland and empower individuals to make informed financial decisions with confidence.",
+    ],
   },
 
   trust: [
-    "Reviewed by Chartered Accountants",
-    "Sourced to public statutory rates",
+    "Reviewed by {name} and Ireland-based finance professionals",
+    "Budget changes marked until they are law",
+    "Built on Revenue’s published rates",
     "Information, not regulated advice",
-    "Updated every national Budget",
   ],
 
   cta: {
@@ -236,11 +242,11 @@ type HomeMessages = typeof en;
 const ga: HomeMessages = {
   hero: {
     eyebrow: "Foghlaim airgeadais · Éire",
-    title: "Bí i gceannas ar do cháin. *Coigil, fás, bí rathúil.*",
-    lede: "Áireamháin chánach reachtúla na hÉireann ({count}), rialacha morgáiste 4x an Bhainc Ceannais agus faisnéis airgeadais i dteanga shimplí. Gan buille faoi thuairim.",
+    title: "Féach cad a chiallaíonn {budget} *do do phá.*",
+    lede: "Áireamháin chánach na hÉireann ({count}) bunaithe ar rátaí foilsithe Revenue, rialacha morgáiste an Bhainc Ceannais agus treoracha i dteanga shimplí.",
     cta: "Tosaigh ag pleanáil",
     budget: "Mol {budget}",
-    checks: ["Fiosraigh gan chuntas", "Ní gá cuntas chun tosú"],
+    checks: ["Athruithe Bhuiséad 2027 san áireamh, faoi réir an Bhille Airgeadais"],
     stats: {
       tools: "Áireamháin chánach",
       band: "Banda caighdeánach, {year}",
@@ -249,7 +255,7 @@ const ga: HomeMessages = {
   },
 
   finder: {
-    eyebrow: "Treoir mhuiníne · Aimsitheoir 60 soicind",
+    eyebrow: "Aimsitheoir 60 soicind",
     title: "Níl tú cinnte cá dtosófá?\nTreoróimid thú.",
     items: [
       { title: "Tuarastal agus Buiséad", note: "Glanphá, an banda caighdeánach {band} agus creidmheasanna cánach." },
@@ -265,9 +271,9 @@ const ga: HomeMessages = {
     body: "Ardán foghlama é Irish Fintax. Mínímid cáin agus airgeadas pearsanta na hÉireann i dteanga shimplí, agus tugaimid áireamháin duit le d’fhigiúirí féin a thriail, ionas go dtuigfidh tú cad atá ar siúl sula socraíonn tú aon rud.",
     more: "Tuilleadh fúinn",
     note: "Gan bhrú díolacháin, gan fianáin rianaithe. Oideachas neamhspleách ar cháin agus airgeadas do dhaoine aonair, tiarnaí talún agus bunaitheoirí ar fud na hÉireann.",
-    caption: "Bunaithe ar Revenue.ie · Ritheann na háireamháin i do bhrabhsálaí",
+    caption: "Bunaithe ar rátaí foilsithe Revenue · Ritheann na háireamháin i do bhrabhsálaí",
     principles: [
-      { label: "Leas an phobail", title: "Do chách", note: "Tá gach áireamhán, treoir agus teimpléad ar fáil, agus ní gá cuntas chun tosú." },
+      { label: "Leas an phobail", title: "Do chách", note: "Tá gach áireamhán, treoir agus teimpléad oscailte do chách." },
       { label: "Teanga shimplí", title: "Gan bhéarlagair", note: "Na rialacha mínithe mar a mhíneofá do chara iad, gan an béarlagair mearbhallach." },
       { label: "Bunaithe ar fhoinsí poiblí", title: "Seiceáilte in aghaidh Revenue", note: "Úsáideann na háireamháin na rátaí a fhoilsíonn Revenue agus nascann siad leis an áit as a dtagann gach figiúr." },
       { label: "Eolas, ní comhairle", title: "Soiléir faoi theorainneacha", note: "Cabhraímid leat tuiscint a fháil. Maidir le cinneadh a bhraitheann ar do chás, téigh chuig comhairleoir rialáilte." },
@@ -275,10 +281,10 @@ const ga: HomeMessages = {
   },
 
   calendar: {
-    eyebrow: "Sceideal reachtúil Revenue.ie",
+    eyebrow: "Spriocdhátaí foilsithe Revenue",
     title: "Féilire Cánach na hÉireann *{years}*",
-    body: "Príomhdhátaí reachtúla comhdaithe agus íocaíochta do dhaoine aonair, conraitheoirí féinfhostaithe, tiarnaí talún agus comhlachtaí teoranta.",
-    next: "An chéad spriocdháta reachtúil eile",
+    body: "Príomhdhátaí comhdaithe agus íocaíochta do dhaoine aonair, conraitheoirí féinfhostaithe, tiarnaí talún agus comhlachtaí teoranta.",
+    next: "An chéad spriocdháta eile",
     more: "Féach an féilire iomlán",
     less: "Taispeáin níos lú dátaí",
     kinds: {
@@ -330,7 +336,7 @@ const ga: HomeMessages = {
   topics: {
     eyebrow: "Gach rud in aon áit amháin",
     title: "Is cuma cad atá romhat, tá uirlis agus treoir ann.",
-    lede: "Tá gach áireamhán calabraithe in aghaidh rialacha reachtúla Revenue.ie, {budget} agus treoirlínte stuamachta an Bhainc Ceannais.",
+    lede: "Tá gach áireamhán bunaithe ar rátaí foilsithe Revenue, ar fhógraí {budget} agus ar rialacha morgáiste an Bhainc Ceannais.",
     caption: "D’fhigiúirí féin. Pictiúr níos soiléire.",
     items: [
       {
@@ -355,7 +361,7 @@ const ga: HomeMessages = {
       },
       {
         title: "Cuntas Infheistíochta",
-        note: "An cuntas nua ón 1 Iúil 2027: 1% sa bhliain ar luach os cionn €50,000, agus gan diúscairt mheasta.",
+        note: "Fógartha, sa Bhille Airgeadais agus nach dlí fós (stádas seiceáilte 29 Deireadh Fómhair 2026). An cuntas nua ón 1 Iúil 2027: 1% sa bhliain ar luach os cionn €50,000, agus gan diúscairt mheasta.",
         tags: ["1% sa bhliain", "€12,000 isteach sa bhliain", "Ó Iúil 2027"],
       },
       {
@@ -375,10 +381,11 @@ const ga: HomeMessages = {
     cardEyebrow: "Do shaol. Do cheisteanna.",
     topics: ["Teach agus cíos", "Obair agus ioncam", "Teaghlach", "Coigilt agus pinsin"],
     caption: "Léargas níos soiléire ar a n-athraíonn.",
+    status: "Fógartha ar 6 Deireadh Fómhair 2026. Déantar dlí den chuid is mó de na hathruithe leis an Acht Airgeadais. Seiceáilte {date}.",
   },
 
   learn: {
-    eyebrow: "Cosán soiléir chun cinn · Modheolaíocht reachtúil",
+    eyebrow: "Cosán soiléir chun cinn · Conas a oibríonn sé",
     title: "Foghlaim. Áirigh. *Gníomhaigh.*",
     items: [
       { title: "Foghlaim", note: "Léigh treoracha soiléire ar cháin ioncaim, bandaí MSU, ÁSPC agus rialacha cánach ar infheistíocht.", link: "Brabhsáil na treoracha" },
@@ -393,7 +400,7 @@ const ga: HomeMessages = {
     items: [
       {
         question: "Conas a ghearrtar cáin ar ETF in Éirinn?",
-        answer: "Gearrtar cáin scoir, ní cáin ghnóchan caipitiúil (CGC), ar fhormhór na ETFanna atá lonnaithe in Éirinn agus ar ETFanna Eorpacha UCITS: 38% in 2026, agus 35% ón 1 Eanáir 2027 faoi Bhuiséad 2027. Bíonn cáin dlite nuair a dhíolann tú, agus gach 8 mbliana faoin riail diúscartha measta. Ní féidir caillteanais a fhritháireamh in aghaidh gnóchan ar ghnáthscaireanna.",
+        answer: "Gearrtar cáin scoir, ní cáin ghnóchan caipitiúil (CGC), ar fhormhór na ETFanna atá lonnaithe in Éirinn agus ar ETFanna Eorpacha UCITS: 38% in 2026, agus 35% ón 1 Eanáir 2027 faoi Bhuiséad 2027 (fógartha, faoi réir an Bhille Airgeadais). Bíonn cáin dlite nuair a dhíolann tú, agus gach 8 mbliana faoin riail diúscartha measta. Ní féidir caillteanais a fhritháireamh in aghaidh gnóchan ar ghnáthscaireanna.",
         link: "Léigh an treoir iomlán ar ETFanna",
       },
       {
@@ -421,17 +428,22 @@ const ga: HomeMessages = {
     ],
   },
 
-  quote: {
-    quote: "“Ná hoibrigh ar son airgid. *Cuir an t-airgead ag obair duitse.*”",
-    body: "In Éirinn, tosaíonn saibhreas do na glúnta atá romhainn le tuiscint ar conas a ghluaiseann airgead: pinsin atá éifeachtach ó thaobh cánach de, faoiseamh fiontraithe agus straitéisí ús iolraithe a chloíonn le rialacha Revenue.",
-    link: "Fiosraigh straitéisí cánach infheistíochta na hÉireann",
+  founder: {
+    eyebrow: "Faoin mBunaitheoir",
+    paragraphs: [
+      "Is Cuntasóir Cairte Comhalta é Arif Bhuiyan agus gairmí sinsearach airgeadais a bhfuil taithí fhairsing aige in eagraíochtaí ilnáisiúnta móra, ina measc Apple Ireland, Meta Ireland, Deloitte Ireland, Bank of Ireland agus Citi.",
+      "Mar Bhainisteoir Airgeadais EMEA ag ceann de na cuideachtaí FinTech is mó ar domhan, déanann sé speisialtóireacht i mbainistíocht airgeadais, tuairisciú reachtúil, cuntasaíocht theicniúil agus rialuithe airgeadais.",
+      "Le paisean láidir don oideachas, mhúin Arif i gColáiste na Tríonóide, Baile Átha Cliath, rinne sé meantóireacht ar mhic léinn idirnáisiúnta i Scoil Ghnó Iarchéime Michael Smurfit UCD, agus chuir sé cóitseáil duine le duine ar fáil do na céadta mac léinn de chuid Chartered Accountants Ireland a bhí ag ullmhú do cháilíochtaí gairmiúla.",
+      "I measc a ghnóthachtálacha tá Gradam Bonn Óir an Phríomh-Aire, onóracha den chéad grád ó UCD Smurfit, Scoláireacht Erasmus Mundus agus rangú acadúil den scoth (an chéad áit) ina chláir Baitsiléara agus MBA.",
+      "Bhunaigh Arif Irish Fintax chun eolas ar cháin, ar chuntasaíocht agus ar airgeadas na hÉireann a chur ar fáil do chách. Le saineolas praiticiúil ón tionscal agus blianta de thaithí ag múineadh agus ag meantóireacht, tá sé mar aidhm aige litearthacht airgeadais a fheabhsú ar fud na hÉireann agus cumhacht a thabhairt do dhaoine cinntí airgeadais eolasacha a dhéanamh go muiníneach.",
+    ],
   },
 
   trust: [
-    "Athbhreithnithe ag Cuntasóirí Cairte",
-    "Bunaithe ar rátaí reachtúla poiblí",
+    "Athbhreithnithe ag {name} agus gairmithe airgeadais in Éirinn",
+    "Athruithe Buiséid marcáilte go dtí gur dlí iad",
+    "Bunaithe ar rátaí foilsithe Revenue",
     "Eolas, ní comhairle rialáilte",
-    "Nuashonraithe le gach Buiséad náisiúnta",
   ],
 
   cta: {
@@ -445,11 +457,11 @@ const ga: HomeMessages = {
 const es: HomeMessages = {
   hero: {
     eyebrow: "Aprende finanzas · Irlanda",
-    title: "Domina tus impuestos en Irlanda. *Ahorra, crece, prospera.*",
-    lede: "{count} calculadoras fiscales irlandesas basadas en la ley, las reglas hipotecarias de 4x del Banco Central e información financiera con palabras sencillas. Sin conjeturas.",
+    title: "Mira qué significa el {budget} *para tu sueldo.*",
+    lede: "{count} calculadoras fiscales irlandesas basadas en los tipos publicados por Revenue, las reglas hipotecarias del Banco Central y guías con palabras sencillas.",
     cta: "Empieza a planificar",
     budget: "Centro del {budget}",
-    checks: ["Explora sin cuenta", "No necesitas cuenta para empezar"],
+    checks: ["Incluye los cambios del Presupuesto 2027, sujetos al Proyecto de Ley de Finanzas"],
     stats: {
       tools: "Calculadoras fiscales",
       band: "Banda estándar, {year}",
@@ -458,7 +470,7 @@ const es: HomeMessages = {
   },
 
   finder: {
-    eyebrow: "Arquitectura de confianza · Buscador de 60 segundos",
+    eyebrow: "Buscador de 60 segundos",
     title: "¿No sabes por dónde empezar?\nTe orientamos.",
     items: [
       { title: "Salario y Presupuesto", note: "Sueldo neto, la banda estándar de {band} y los créditos fiscales." },
@@ -474,9 +486,9 @@ const es: HomeMessages = {
     body: "Irish Fintax es una plataforma para aprender. Explicamos los impuestos y las finanzas personales en Irlanda con palabras sencillas y te damos calculadoras para probar tus propios números, para que entiendas qué pasa antes de decidir nada.",
     more: "Más sobre nosotros",
     note: "Sin discursos de venta, sin cookies de seguimiento. Formación independiente sobre impuestos y finanzas para particulares, arrendadores y emprendedores de toda Irlanda.",
-    caption: "Calibrado con Revenue.ie · Las calculadoras funcionan en tu navegador",
+    caption: "Basado en los tipos publicados por Revenue · Las calculadoras funcionan en tu navegador",
     principles: [
-      { label: "Interés público", title: "Para todos", note: "Todas las calculadoras, guías y plantillas están disponibles, y no necesitas cuenta para empezar." },
+      { label: "Interés público", title: "Para todos", note: "Todas las calculadoras, guías y plantillas están abiertas a todo el mundo." },
       { label: "Palabras sencillas", title: "Sin jerga", note: "Las normas explicadas como se las explicarías a un amigo, sin jerga confusa." },
       { label: "Basado en fuentes públicas", title: "Contrastado con Revenue", note: "Las calculadoras usan los tipos que publica Revenue y enlazan al origen de cada cifra." },
       { label: "Información, no asesoramiento", title: "Claros con los límites", note: "Te ayudamos a entender. Para una decisión que depende de tu situación, consulta a un asesor regulado." },
@@ -484,9 +496,9 @@ const es: HomeMessages = {
   },
 
   calendar: {
-    eyebrow: "Calendario legal de Revenue.ie",
+    eyebrow: "Fechas publicadas por Revenue",
     title: "Calendario fiscal irlandés *{years}*",
-    body: "Las principales fechas legales de presentación y pago para particulares, autónomos, arrendadores y sociedades limitadas.",
+    body: "Las principales fechas de presentación y pago para particulares, autónomos, arrendadores y sociedades limitadas.",
     next: "Próxima fecha límite",
     more: "Ver el calendario completo",
     less: "Mostrar menos fechas",
@@ -539,7 +551,7 @@ const es: HomeMessages = {
   topics: {
     eyebrow: "Todo en un mismo sitio",
     title: "Sea cual sea tu situación, hay una herramienta y una guía.",
-    lede: "Cada calculadora se ajusta a las normas legales de Revenue.ie, al {budget} y a las directrices prudenciales del Banco Central.",
+    lede: "Cada calculadora se basa en los tipos publicados por Revenue, los anuncios del {budget} y las reglas hipotecarias del Banco Central.",
     caption: "Tus números. Una imagen más clara.",
     items: [
       {
@@ -549,7 +561,7 @@ const es: HomeMessages = {
       },
       {
         title: "Inversión y ETF",
-        note: "Compara formas de ahorrar e invertir después de impuestos en Irlanda, del exit tax a la venta presunta (deemed disposal).",
+        note: "Compara formas de ahorrar e invertir después de impuestos en Irlanda, del impuesto de salida a la transmisión ficticia (deemed disposal).",
         tags: ["Exit tax de ETF", "Deemed disposal"],
       },
       {
@@ -564,7 +576,7 @@ const es: HomeMessages = {
       },
       {
         title: "Cuenta de Inversión",
-        note: "La nueva cuenta desde el 1 de julio de 2027: 1% al año sobre el valor que supere 50.000 €, sin venta presunta.",
+        note: "Anunciado, en el Proyecto de Ley de Finanzas y aún no es ley (estado revisado el 29 de octubre de 2026). La nueva cuenta desde el 1 de julio de 2027: 1% al año sobre el valor que supere 50.000 €, sin transmisión ficticia.",
         tags: ["1% al año", "12.000 € al año", "Desde julio de 2027"],
       },
       {
@@ -584,10 +596,11 @@ const es: HomeMessages = {
     cardEyebrow: "Tu vida. Tus preguntas.",
     topics: ["Vivienda y alquiler", "Trabajo e ingresos", "Familia", "Ahorro y pensiones"],
     caption: "Una visión más clara de lo que cambia.",
+    status: "Anunciado el 6 de octubre de 2026. La mayoría de los cambios serán ley con la Ley de Finanzas. Revisado el {date}.",
   },
 
   learn: {
-    eyebrow: "Un camino claro · Método basado en la ley",
+    eyebrow: "Un camino claro · Cómo funciona",
     title: "Aprende. Calcula. *Actúa.*",
     items: [
       { title: "Aprende", note: "Lee guías fáciles de entender sobre el impuesto sobre la renta, los tramos del USC, el PRSI y la fiscalidad de las inversiones.", link: "Ver las guías" },
@@ -602,7 +615,7 @@ const es: HomeMessages = {
     items: [
       {
         question: "¿Cómo tributa un ETF en Irlanda?",
-        answer: "La mayoría de los ETF domiciliados en Irlanda y de los ETF UCITS europeos tributan por exit tax, no por el impuesto sobre ganancias de capital (CGT): 38% en 2026 y 35% desde el 1 de enero de 2027 según el Presupuesto 2027. Se paga al vender y cada 8 años por la regla de la venta presunta (deemed disposal). Las pérdidas no se pueden compensar con ganancias en acciones normales.",
+        answer: "La mayoría de los ETF domiciliados en Irlanda y de los ETF UCITS europeos tributan por el impuesto de salida, no por el impuesto sobre ganancias de capital (CGT): 38% en 2026 y 35% desde el 1 de enero de 2027 según el Presupuesto 2027 (anunciado, sujeto al Proyecto de Ley de Finanzas). Se paga al vender y cada 8 años por la regla de la transmisión ficticia (deemed disposal). Las pérdidas no se pueden compensar con ganancias en acciones normales.",
         link: "Lee la guía completa sobre ETF",
       },
       {
@@ -616,9 +629,9 @@ const es: HomeMessages = {
         link: "Revenue sobre las rentas de alquiler",
       },
       {
-        question: "¿Qué es la venta presunta (deemed disposal) y cuándo se aplica?",
-        answer: "Cada 8 años, un fondo o ETF que tienes tributa como si lo hubieras vendido y vuelto a comprar: se paga exit tax sobre la ganancia acumulada, aunque no hayas vendido nada. Lo pagado se descuenta del impuesto que debas cuando por fin vendas.",
-        link: "La venta presunta, explicada",
+        question: "¿Qué es la transmisión ficticia (deemed disposal) y cuándo se aplica?",
+        answer: "Cada 8 años, un fondo o ETF que tienes tributa como si lo hubieras vendido y vuelto a comprar: se paga impuesto de salida sobre la ganancia acumulada, aunque no hayas vendido nada. Lo pagado se descuenta del impuesto que debas cuando por fin vendas.",
+        link: "La transmisión ficticia, explicada",
       },
       {
         question: "¿Cuánto puedo heredar sin impuestos con el Capital Acquisitions Tax (CAT)?",
@@ -630,17 +643,22 @@ const es: HomeMessages = {
     ],
   },
 
-  quote: {
-    quote: "«No trabajes por dinero. *Haz que el dinero trabaje para ti.*»",
-    body: "En Irlanda, construir un patrimonio para las próximas generaciones empieza por saber cómo se mueve el dinero: pensiones eficientes en impuestos, la desgravación para emprendedores (Entrepreneur Relief) y estrategias de interés compuesto que cumplen con Revenue.",
-    link: "Explora estrategias fiscales de inversión en Irlanda",
+  founder: {
+    eyebrow: "Sobre el fundador",
+    paragraphs: [
+      "Arif Bhuiyan es Fellow Chartered Accountant y profesional sénior de finanzas con amplia experiencia en grandes organizaciones multinacionales, como Apple Ireland, Meta Ireland, Deloitte Ireland, Bank of Ireland y Citi.",
+      "Como EMEA Finance Manager en una de las mayores empresas FinTech del mundo, está especializado en gestión financiera, información financiera obligatoria, contabilidad técnica y controles financieros.",
+      "Apasionado por la educación, Arif ha dado clases en el Trinity College Dublin, ha sido mentor de estudiantes internacionales en la UCD Michael Smurfit Graduate Business School y ha ofrecido tutoría individual a cientos de estudiantes de Chartered Accountants Ireland que preparaban sus títulos profesionales.",
+      "Entre sus logros figuran el Prime Minister Gold Medal Award, first-class honours en UCD Smurfit, una beca Erasmus Mundus y resultados académicos sobresalientes (primer puesto) en su grado y en su MBA.",
+      "Arif fundó Irish Fintax para que el conocimiento sobre impuestos, contabilidad y finanzas en Irlanda esté al alcance de todos. Con experiencia práctica en el sector y años de docencia y mentoría, quiere mejorar la educación financiera en Irlanda y ayudar a las personas a tomar decisiones financieras informadas con confianza.",
+    ],
   },
 
   trust: [
-    "Revisado por Chartered Accountants",
-    "Basado en tipos legales públicos",
+    "Revisado por {name} y profesionales de las finanzas en Irlanda",
+    "Cambios del Presupuesto señalados hasta que sean ley",
+    "Basado en los tipos publicados por Revenue",
     "Información, no asesoramiento regulado",
-    "Actualizado con cada Presupuesto nacional",
   ],
 
   cta: {
@@ -654,11 +672,11 @@ const es: HomeMessages = {
 const pt: HomeMessages = {
   hero: {
     eyebrow: "Aprenda finanças · Irlanda",
-    title: "Domine seus impostos na Irlanda. *Poupe, cresça, prospere.*",
-    lede: "{count} calculadoras de impostos irlandeses baseadas na lei, as regras de financiamento de 4x do Banco Central e informação financeira em palavras simples. Sem achismos.",
+    title: "Veja o que o {budget} significa *para o seu salário.*",
+    lede: "{count} calculadoras de impostos irlandeses baseadas nas taxas publicadas pela Revenue, as regras de financiamento do Banco Central e guias em palavras simples.",
     cta: "Comece a planejar",
     budget: "Central do {budget}",
-    checks: ["Explore sem conta", "Não precisa de conta para começar"],
+    checks: ["Inclui as mudanças do Orçamento 2027, sujeitas ao Projeto de Lei de Finanças"],
     stats: {
       tools: "Calculadoras de impostos",
       band: "Faixa padrão, {year}",
@@ -667,7 +685,7 @@ const pt: HomeMessages = {
   },
 
   finder: {
-    eyebrow: "Arquitetura de confiança · Localizador de 60 segundos",
+    eyebrow: "Localizador de 60 segundos",
     title: "Não sabe por onde começar?\nA gente mostra o caminho.",
     items: [
       { title: "Salário e Orçamento", note: "Salário líquido, a faixa padrão de {band} e os créditos fiscais." },
@@ -683,9 +701,9 @@ const pt: HomeMessages = {
     body: "A Irish Fintax é uma plataforma de aprendizado. Explicamos os impostos e as finanças pessoais na Irlanda em palavras simples e oferecemos calculadoras para você testar seus próprios números, para entender o que está acontecendo antes de decidir qualquer coisa.",
     more: "Mais sobre nós",
     note: "Sem papo de vendas, sem cookies de rastreamento. Educação independente sobre impostos e finanças para pessoas, proprietários de imóveis alugados e empreendedores em toda a Irlanda.",
-    caption: "Calibrado com a Revenue.ie · As calculadoras rodam no seu navegador",
+    caption: "Baseado nas taxas publicadas pela Revenue · As calculadoras rodam no seu navegador",
     principles: [
-      { label: "Interesse público", title: "Para todos", note: "Todas as calculadoras, guias e modelos estão disponíveis, e você não precisa de conta para começar." },
+      { label: "Interesse público", title: "Para todos", note: "Todas as calculadoras, guias e modelos estão abertos a todos." },
       { label: "Palavras simples", title: "Sem jargão", note: "As regras explicadas do jeito que você explicaria a um amigo, sem jargão confuso." },
       { label: "Baseado em fontes públicas", title: "Conferido com a Revenue", note: "As calculadoras usam as taxas publicadas pela Revenue e mostram de onde vem cada número." },
       { label: "Informação, não aconselhamento", title: "Claros sobre os limites", note: "Ajudamos você a entender. Para uma decisão que depende da sua situação, procure um consultor regulamentado." },
@@ -693,10 +711,10 @@ const pt: HomeMessages = {
   },
 
   calendar: {
-    eyebrow: "Calendário legal da Revenue.ie",
+    eyebrow: "Prazos publicados pela Revenue",
     title: "Calendário fiscal irlandês *{years}*",
-    body: "Os principais prazos legais de declaração e pagamento para pessoas físicas, autônomos, proprietários de imóveis alugados e empresas limitadas.",
-    next: "Próximo prazo legal",
+    body: "Os principais prazos de declaração e pagamento para pessoas físicas, autônomos, proprietários de imóveis alugados e empresas limitadas.",
+    next: "Próximo prazo",
     more: "Ver o calendário completo",
     less: "Mostrar menos datas",
     kinds: {
@@ -748,7 +766,7 @@ const pt: HomeMessages = {
   topics: {
     eyebrow: "Tudo em um só lugar",
     title: "Seja qual for a sua situação, há uma ferramenta e um guia.",
-    lede: "Cada calculadora segue as regras legais da Revenue.ie, o {budget} e as diretrizes prudenciais do Banco Central.",
+    lede: "Cada calculadora se baseia nas taxas publicadas pela Revenue, nos anúncios do {budget} e nas regras de financiamento do Banco Central.",
     caption: "Seus números. Uma imagem mais clara.",
     items: [
       {
@@ -758,7 +776,7 @@ const pt: HomeMessages = {
       },
       {
         title: "Investimentos e ETFs",
-        note: "Compare formas de poupar e investir depois dos impostos irlandeses, do exit tax à venda presumida (deemed disposal).",
+        note: "Compare formas de poupar e investir depois dos impostos irlandeses, do imposto de saída à alienação presumida (deemed disposal).",
         tags: ["Exit tax de ETF", "Deemed disposal"],
       },
       {
@@ -773,7 +791,7 @@ const pt: HomeMessages = {
       },
       {
         title: "Conta de Investimento",
-        note: "A nova conta a partir de 1º de julho de 2027: 1% ao ano sobre o valor acima de € 50.000, sem venda presumida.",
+        note: "Anunciado, no Projeto de Lei de Finanças e ainda não é lei (situação verificada em 29 de outubro de 2026). A nova conta a partir de 1º de julho de 2027: 1% ao ano sobre o valor acima de € 50.000, sem alienação presumida.",
         tags: ["1% ao ano", "€ 12.000 por ano", "A partir de julho de 2027"],
       },
       {
@@ -793,10 +811,11 @@ const pt: HomeMessages = {
     cardEyebrow: "Sua vida. Suas perguntas.",
     topics: ["Moradia e aluguel", "Trabalho e renda", "Família", "Poupança e aposentadoria"],
     caption: "Uma visão mais clara do que muda.",
+    status: "Anunciado em 6 de outubro de 2026. A maioria das mudanças vira lei com a Lei de Finanças. Verificado em {date}.",
   },
 
   learn: {
-    eyebrow: "Um caminho claro · Método baseado na lei",
+    eyebrow: "Um caminho claro · Como funciona",
     title: "Aprenda. Calcule. *Aja.*",
     items: [
       { title: "Aprenda", note: "Leia guias fáceis de entender sobre imposto de renda, faixas do USC, PRSI e a tributação de investimentos.", link: "Ver os guias" },
@@ -811,7 +830,7 @@ const pt: HomeMessages = {
     items: [
       {
         question: "Como um ETF é tributado na Irlanda?",
-        answer: "A maioria dos ETFs domiciliados na Irlanda e dos ETFs UCITS europeus paga exit tax, não o imposto sobre ganho de capital (CGT): 38% em 2026 e 35% a partir de 1º de janeiro de 2027, pelo Orçamento 2027. O imposto é devido quando você vende e a cada 8 anos pela regra da venda presumida (deemed disposal). Perdas não podem ser compensadas com ganhos em ações comuns.",
+        answer: "A maioria dos ETFs domiciliados na Irlanda e dos ETFs UCITS europeus paga imposto de saída, não o imposto sobre ganho de capital (CGT): 38% em 2026 e 35% a partir de 1º de janeiro de 2027, pelo Orçamento 2027 (anunciado, sujeito ao Projeto de Lei de Finanças). O imposto é devido quando você vende e a cada 8 anos pela regra da alienação presumida (deemed disposal). Perdas não podem ser compensadas com ganhos em ações comuns.",
         link: "Leia o guia completo sobre ETFs",
       },
       {
@@ -825,9 +844,9 @@ const pt: HomeMessages = {
         link: "A Revenue sobre renda de aluguel",
       },
       {
-        question: "O que é a venda presumida (deemed disposal) e quando ela acontece?",
-        answer: "A cada 8 anos, um fundo ou ETF que você tem é tributado como se você tivesse vendido e comprado de volta: o exit tax é devido sobre o ganho até ali, mesmo sem nenhuma venda. O imposto pago é abatido do imposto devido quando você finalmente vender.",
-        link: "A venda presumida, explicada",
+        question: "O que é a alienação presumida (deemed disposal) e quando ela acontece?",
+        answer: "A cada 8 anos, um fundo ou ETF que você tem é tributado como se você tivesse vendido e comprado de volta: o imposto de saída é devido sobre o ganho até ali, mesmo sem nenhuma venda. O imposto pago é abatido do imposto devido quando você finalmente vender.",
+        link: "A alienação presumida, explicada",
       },
       {
         question: "Quanto posso herdar sem imposto pelo Capital Acquisitions Tax (CAT)?",
@@ -839,17 +858,22 @@ const pt: HomeMessages = {
     ],
   },
 
-  quote: {
-    quote: "“Não trabalhe por dinheiro. *Faça o dinheiro trabalhar para você.*”",
-    body: "Na Irlanda, construir um patrimônio para as próximas gerações começa por saber como o dinheiro se move: aposentadorias eficientes em impostos, o alívio para empreendedores (Entrepreneur Relief) e estratégias de juros compostos dentro das regras da Revenue.",
-    link: "Explore estratégias fiscais de investimento na Irlanda",
+  founder: {
+    eyebrow: "Sobre o fundador",
+    paragraphs: [
+      "Arif Bhuiyan é Fellow Chartered Accountant e profissional sênior de finanças, com ampla experiência em grandes organizações multinacionais, como Apple Ireland, Meta Ireland, Deloitte Ireland, Bank of Ireland e Citi.",
+      "Como EMEA Finance Manager em uma das maiores empresas de FinTech do mundo, é especialista em gestão financeira, relatórios obrigatórios, contabilidade técnica e controles financeiros.",
+      "Apaixonado por educação, Arif lecionou no Trinity College Dublin, foi mentor de estudantes internacionais na UCD Michael Smurfit Graduate Business School e deu orientação individual a centenas de estudantes da Chartered Accountants Ireland que se preparavam para qualificações profissionais.",
+      "Entre suas conquistas estão o Prime Minister Gold Medal Award, first-class honours pela UCD Smurfit, uma bolsa Erasmus Mundus e desempenho acadêmico de destaque (1º lugar) na graduação e no MBA.",
+      "Arif fundou a Irish Fintax para tornar o conhecimento sobre impostos, contabilidade e finanças na Irlanda acessível a todos. Unindo experiência prática no setor a anos de ensino e mentoria, ele quer melhorar a educação financeira na Irlanda e ajudar as pessoas a tomar decisões financeiras informadas com confiança.",
+    ],
   },
 
   trust: [
-    "Revisado por Chartered Accountants",
-    "Baseado em taxas legais públicas",
+    "Revisado por {name} e profissionais de finanças na Irlanda",
+    "Mudanças do Orçamento sinalizadas até virarem lei",
+    "Baseado nas taxas publicadas pela Revenue",
     "Informação, não aconselhamento regulamentado",
-    "Atualizado a cada Orçamento nacional",
   ],
 
   cta: {
@@ -863,11 +887,11 @@ const pt: HomeMessages = {
 const ar: HomeMessages = {
   hero: {
     eyebrow: "تعلّم المال · أيرلندا",
-    title: "أتقِن ضرائبك في أيرلندا. *ادّخر، انمُ، وازدهر.*",
-    lede: "{count} حاسبات ضريبية أيرلندية مبنية على القانون، وقواعد الرهن العقاري للبنك المركزي (4 أضعاف الدخل)، ومعلومات مالية بلغة بسيطة. بلا تخمين.",
+    title: "اعرف ماذا تعني {budget} *لراتبك.*",
+    lede: "{count} حاسبات ضريبية أيرلندية مبنية على الأسعار التي تنشرها Revenue، وقواعد الرهن العقاري للبنك المركزي، وأدلة بلغة بسيطة.",
     cta: "ابدأ التخطيط",
     budget: "مركز {budget}",
-    checks: ["استكشف دون حساب", "لا تحتاج إلى حساب لتبدأ"],
+    checks: ["تشمل تغييرات ميزانية 2027، رهنًا بمشروع قانون المالية"],
     stats: {
       tools: "حاسبات ضريبية",
       band: "الشريحة القياسية، {year}",
@@ -876,7 +900,7 @@ const ar: HomeMessages = {
   },
 
   finder: {
-    eyebrow: "مرشد الثقة · دليل في 60 ثانية",
+    eyebrow: "دليل في 60 ثانية",
     title: "لست متأكدًا من أين تبدأ؟\nدعنا نرشدك.",
     items: [
       { title: "الراتب والميزانية", note: "صافي الأجر، والشريحة القياسية {band}، والإعفاءات الضريبية." },
@@ -892,9 +916,9 @@ const ar: HomeMessages = {
     body: "Irish Fintax منصّة تعليمية. نشرح الضرائب والتمويل الشخصي في أيرلندا بلغة بسيطة، ونقدّم لك حاسبات تجرّب فيها أرقامك، لتفهم ما يجري قبل أن تتخذ أي قرار.",
     more: "المزيد عنا",
     note: "لا عروض بيع، ولا ملفات تعريف ارتباط للتتبّع. تعليم مستقل في الضرائب والمال للأفراد والمؤجّرين ورواد الأعمال في أنحاء أيرلندا.",
-    caption: "مُعايَر وفق Revenue.ie · الحاسبات تعمل في متصفحك",
+    caption: "مبني على الأسعار التي تنشرها Revenue · الحاسبات تعمل في متصفحك",
     principles: [
-      { label: "للمصلحة العامة", title: "للجميع", note: "كل الحاسبات والأدلة والنماذج متاحة، ولا تحتاج إلى حساب لتبدأ." },
+      { label: "للمصلحة العامة", title: "للجميع", note: "كل الحاسبات والأدلة والنماذج متاحة للجميع." },
       { label: "لغة بسيطة", title: "بلا مصطلحات معقّدة", note: "القواعد مشروحة كما تشرحها لصديق، دون مصطلحات مربكة." },
       { label: "مبني على مصادر عامة", title: "مُراجَع وفق Revenue", note: "تستخدم الحاسبات الأسعار التي تنشرها Revenue وتربط بمصدر كل رقم." },
       { label: "معلومات، لا نصيحة", title: "واضحون بشأن الحدود", note: "نساعدك على الفهم. أما القرار الذي يتوقف على ظروفك فاستشر فيه مستشارًا مرخّصًا." },
@@ -902,10 +926,10 @@ const ar: HomeMessages = {
   },
 
   calendar: {
-    eyebrow: "الجدول القانوني من Revenue.ie",
+    eyebrow: "المواعيد التي تنشرها Revenue",
     title: "التقويم الضريبي الأيرلندي *{years}*",
-    body: "أهم المواعيد القانونية لتقديم الإقرارات والدفع للأفراد والعاملين لحسابهم والمؤجّرين والشركات المحدودة.",
-    next: "الموعد القانوني التالي",
+    body: "أهم مواعيد تقديم الإقرارات والدفع للأفراد والعاملين لحسابهم والمؤجّرين والشركات المحدودة.",
+    next: "الموعد التالي",
     more: "عرض التقويم كاملًا",
     less: "عرض تواريخ أقل",
     kinds: {
@@ -957,7 +981,7 @@ const ar: HomeMessages = {
   topics: {
     eyebrow: "كل شيء في مكان واحد",
     title: "مهما كان ما تتعامل معه، هناك أداة ودليل.",
-    lede: "كل حاسبة مُعايَرة وفق القواعد القانونية في Revenue.ie و{budget} والإرشادات الاحترازية للبنك المركزي.",
+    lede: "كل حاسبة مبنية على الأسعار التي تنشرها Revenue وإعلانات {budget} وقواعد الرهن العقاري للبنك المركزي.",
     caption: "أرقامك. صورة أوضح.",
     items: [
       {
@@ -982,7 +1006,7 @@ const ar: HomeMessages = {
       },
       {
         title: "حساب الاستثمار",
-        note: "الحساب الجديد اعتبارًا من 1 يوليو 2027: 1% سنويًا على القيمة التي تتجاوز € 50,000، ودون بيع افتراضي.",
+        note: "معلن، ضمن مشروع قانون المالية ولم يصبح قانونًا بعد (تم التحقق من الوضع في 29 أكتوبر 2026). الحساب الجديد اعتبارًا من 1 يوليو 2027: 1% سنويًا على القيمة التي تتجاوز € 50,000، ودون بيع افتراضي.",
         tags: ["1% سنويًا", "€ 12,000 في السنة", "من يوليو 2027"],
       },
       {
@@ -1002,10 +1026,11 @@ const ar: HomeMessages = {
     cardEyebrow: "حياتك. أسئلتك.",
     topics: ["السكن والإيجار", "العمل والدخل", "الأسرة", "الادخار والمعاشات"],
     caption: "رؤية أوضح لما يتغيّر.",
+    status: "أُعلن في 6 أكتوبر 2026. تصبح معظم التغييرات قانونًا مع قانون المالية. تم التحقق في {date}.",
   },
 
   learn: {
-    eyebrow: "طريق واضح للأمام · منهجية قانونية",
+    eyebrow: "طريق واضح للأمام · كيف يعمل",
     title: "تعلّم. احسب. *تصرّف.*",
     items: [
       { title: "تعلّم", note: "اقرأ أدلة سهلة الفهم عن ضريبة الدخل وشرائح USC وPRSI وقواعد ضرائب الاستثمار.", link: "تصفّح الأدلة" },
@@ -1020,7 +1045,7 @@ const ar: HomeMessages = {
     items: [
       {
         question: "كيف تُفرض الضريبة على صناديق ETF في أيرلندا؟",
-        answer: "تخضع معظم صناديق ETF المسجّلة في أيرلندا وصناديق UCITS الأوروبية لضريبة الخروج، لا لضريبة الأرباح الرأسمالية (CGT): 38% في 2026، و35% اعتبارًا من 1 يناير 2027 بموجب ميزانية 2027. تُستحق الضريبة عند البيع، وكل 8 سنوات وفق قاعدة البيع الافتراضي. ولا يمكن مقاصّة الخسائر بأرباح الأسهم العادية.",
+        answer: "تخضع معظم صناديق ETF المسجّلة في أيرلندا وصناديق UCITS الأوروبية لضريبة الخروج، لا لضريبة الأرباح الرأسمالية (CGT): 38% في 2026، و35% اعتبارًا من 1 يناير 2027 بموجب ميزانية 2027 (معلن، رهنًا بمشروع قانون المالية). تُستحق الضريبة عند البيع، وكل 8 سنوات وفق قاعدة البيع الافتراضي. ولا يمكن مقاصّة الخسائر بأرباح الأسهم العادية.",
         link: "اقرأ الدليل الكامل عن ETF",
       },
       {
@@ -1048,17 +1073,22 @@ const ar: HomeMessages = {
     ],
   },
 
-  quote: {
-    quote: "«لا تعمل من أجل المال. *اجعل المال يعمل من أجلك.*»",
-    body: "في أيرلندا، يبدأ بناء ثروة تمتد عبر الأجيال بفهم كيف يتحرك المال: معاشات تقاعدية بكفاءة ضريبية، وإعفاء رواد الأعمال، واستراتيجيات نمو مركّب متوافقة مع قواعد Revenue.",
-    link: "استكشف استراتيجيات ضرائب الاستثمار في أيرلندا",
+  founder: {
+    eyebrow: "عن المؤسس",
+    paragraphs: [
+      "Arif Bhuiyan محاسب قانوني زميل (Fellow Chartered Accountant) ومتخصص مالي أول ذو خبرة واسعة في مؤسسات متعددة الجنسيات رائدة، منها Apple Ireland وMeta Ireland وDeloitte Ireland وBank of Ireland وCiti.",
+      "بصفته مدير المالية لمنطقة أوروبا والشرق الأوسط وأفريقيا (EMEA) في إحدى أكبر شركات التكنولوجيا المالية في العالم، يتخصص في الإدارة المالية والتقارير النظامية والمحاسبة الفنية والضوابط المالية.",
+      "بشغف كبير بالتعليم، درّس Arif في Trinity College Dublin، وأرشد طلابًا دوليين في UCD Michael Smurfit Graduate Business School، وقدّم تدريبًا فرديًا لمئات من طلاب Chartered Accountants Ireland الذين يستعدون للمؤهلات المهنية.",
+      "من إنجازاته جائزة الميدالية الذهبية لرئيس الوزراء (Prime Minister Gold Medal Award)، ومرتبة الشرف الأولى من UCD Smurfit، ومنحة Erasmus Mundus، وتصنيف أكاديمي متميز (المركز الأول) في برنامجي البكالوريوس والماجستير في إدارة الأعمال (MBA).",
+      "أسس Arif منصة Irish Fintax لإتاحة المعرفة بالضرائب والمحاسبة والشؤون المالية في أيرلندا للجميع. يجمع بين الخبرة العملية في القطاع وسنوات من التدريس والإرشاد، ويهدف إلى تحسين الثقافة المالية في أيرلندا وتمكين الأفراد من اتخاذ قرارات مالية مدروسة بثقة.",
+    ],
   },
 
   trust: [
-    "يراجعه محاسبون قانونيون معتمدون",
-    "مبني على أسعار قانونية منشورة",
+    "راجعه {name} ومتخصصون ماليون في أيرلندا",
+    "تغييرات الميزانية موضّحة حتى تصبح قانونًا",
+    "مبني على الأسعار التي تنشرها Revenue",
     "معلومات، لا نصيحة منظَّمة",
-    "يُحدَّث مع كل ميزانية وطنية",
   ],
 
   cta: {
@@ -1071,221 +1101,227 @@ const ar: HomeMessages = {
 
 const bn: HomeMessages = {
   hero: {
-    eyebrow: "অর্থ শিক্ষা · আয়ারল্যান্ড",
-    title: "আয়ারল্যান্ডের কর আয়ত্ত করুন। *সঞ্চয় করুন, বাড়ান, এগিয়ে যান।*",
-    lede: "{count}টি আইনভিত্তিক আইরিশ কর ক্যালকুলেটর, সেন্ট্রাল ব্যাংকের 4x মর্টগেজ নিয়ম আর সহজ ভাষায় আর্থিক জ্ঞান। আন্দাজের কোনো জায়গা নেই।",
+    eyebrow: "আর্থিক শিক্ষা · আয়ারল্যান্ড",
+    title: "দেখুন {budget} *আপনার বেতনে কী বদলাচ্ছে।*",
+    lede: "Revenue-এর প্রকাশিত করহার, Central Bank-এর মর্টগেজ নীতিমালা এবং সহজ নির্দেশিকার ওপর ভিত্তি করে তৈরি {count}টি আইরিশ কর ক্যালকুলেটর।",
     cta: "পরিকল্পনা শুরু করুন",
     budget: "{budget} হাব",
-    checks: ["অ্যাকাউন্ট ছাড়াই ঘুরে দেখুন", "শুরু করতে অ্যাকাউন্ট লাগে না"],
+    checks: ["বাজেট 2027-এর পরিবর্তনগুলো অন্তর্ভুক্ত, Finance Bill পাসের ওপর নির্ভরশীল"],
     stats: {
       tools: "কর ক্যালকুলেটর",
-      band: "স্ট্যান্ডার্ড সীমা, {year}",
+      band: "সাধারণ করহারের সর্বোচ্চ সীমা, {year}",
       languages: "ভাষা",
     },
   },
 
   finder: {
-    eyebrow: "আত্মবিশ্বাসের কাঠামো · 60 সেকেন্ডের খোঁজ",
-    title: "কোথা থেকে শুরু করবেন বুঝছেন না?\nআমরা পথ দেখাই।",
+    eyebrow: "60 সেকেন্ডের ফাইন্ডার",
+    title: "কোথা থেকে শুরু করবেন বুঝতে পারছেন না?\nআমরা আপনাকে পথ দেখাই।",
     items: [
-      { title: "বেতন ও বাজেট", note: "হাতে পাওয়া বেতন, {band} স্ট্যান্ডার্ড ব্যান্ড আর ট্যাক্স ক্রেডিট।" },
-      { title: "শেয়ার, সম্পত্তি, ক্রিপ্টো", note: "ক্যাপিটাল গেইনস ট্যাক্স আর বছরে {exemption} ছাড়।" },
-      { title: "বাড়ি কেনা", note: "4x ধারের সীমা আর ঋণদাতাদের সুদের হার।" },
-      { title: "ব্যবসা শুরু", note: "সোল ট্রেডার নাকি Ltd, ভ্যাট নিবন্ধন আর Form 11।" },
+      { title: "বেতন ও বাজেট", note: "ঘরে নেওয়া আয়, {band} সাধারণ করের ধাপ এবং কর ক্রেডিট।" },
+      { title: "শেয়ার, সম্পত্তি ও ক্রিপ্টো", note: "মূলধনি লাভ কর (CGT) এবং {exemption} বার্ষিক কর অব্যাহতি।" },
+      { title: "বাড়ি কেনা", note: "আয়ের 4 গুণ ঋণ নেওয়ার সীমা এবং ঋণদাতা প্রতিষ্ঠানের সুদের হার।" },
+      { title: "ব্যবসা শুরু করা", note: "সোল ট্রেডার বনাম Ltd, ভ্যাট নিবন্ধন এবং Form 11।" },
     ],
   },
 
   who: {
-    eyebrow: "আমাদের সম্পর্কে একটু",
-    title: "আয়ারল্যান্ডের কর আর টাকা-পয়সা কীভাবে চলে, তা শেখার জায়গা।",
-    body: "Irish Fintax একটি শেখার প্ল্যাটফর্ম। আমরা আয়ারল্যান্ডের কর আর ব্যক্তিগত অর্থ সহজ ভাষায় বুঝিয়ে বলি, আর নিজের সংখ্যা দিয়ে যাচাই করার জন্য ক্যালকুলেটর দিই, যাতে কোনো সিদ্ধান্তের আগেই আপনি বোঝেন কী ঘটছে।",
-    more: "আমাদের সম্পর্কে আরও",
-    note: "বিক্রির চাপ নেই, ট্র্যাকিং কুকি নেই। আয়ারল্যান্ড জুড়ে ব্যক্তি, বাড়িওয়ালা আর উদ্যোক্তাদের জন্য স্বাধীন কর ও অর্থ শিক্ষা।",
-    caption: "Revenue.ie অনুযায়ী মেলানো · ক্যালকুলেটর আপনার ব্রাউজারেই চলে",
+    eyebrow: "আমাদের সম্পর্কে সংক্ষেপে",
+    title: "আইরিশ কর ও অর্থব্যবস্থা বোঝার নির্ভরযোগ্য মাধ্যম।",
+    body: "Irish Fintax একটি শিক্ষামূলক প্ল্যাটফর্ম। আমরা সহজ ভাষায় আইরিশ কর ও ব্যক্তিগত অর্থব্যবস্থা ব্যাখ্যা করি এবং আপনাকে ক্যালকুলেটরের মাধ্যমে নিজের হিসাব যাচাইয়ের সুযোগ দিই, যাতে কোনো সিদ্ধান্ত নেওয়ার আগেই আপনি সবকিছু স্পষ্ট বুঝতে পারেন।",
+    more: "আমাদের সম্পর্কে আরও জানুন",
+    note: "কোনো কিছু বিক্রির চেষ্টা নেই, কোনো ট্র্যাকিং কুকিজ নেই। আয়ারল্যান্ডজুড়ে সাধারণ মানুষ, বাড়িওয়ালা ও উদ্যোক্তাদের জন্য কর ও অর্থব্যবস্থার নিরপেক্ষ শিক্ষা।",
+    caption: "Revenue-এর প্রকাশিত করহারের ওপর নির্মিত · ক্যালকুলেটরগুলো আপনার ব্রাউজারেই চলে",
     principles: [
-      { label: "জনস্বার্থে", title: "সবার জন্য", note: "সব ক্যালকুলেটর, গাইড আর টেমপ্লেট পাওয়া যায়, আর শুরু করতে অ্যাকাউন্ট লাগে না।" },
-      { label: "সহজ ভাষা", title: "জটিল শব্দ ছাড়া", note: "নিয়মগুলো এমনভাবে বোঝানো, যেভাবে আপনি একজন বন্ধুকে বোঝাতেন, বিভ্রান্তিকর পরিভাষা ছাড়াই।" },
-      { label: "সরকারি উৎসের ওপর গড়া", title: "Revenue-এর সঙ্গে মেলানো", note: "ক্যালকুলেটরগুলো Revenue-এর প্রকাশিত হার ব্যবহার করে, আর প্রতিটি সংখ্যা কোথা থেকে এসেছে তার লিংক দেয়।" },
-      { label: "তথ্য, পরামর্শ নয়", title: "সীমা নিয়ে স্পষ্ট", note: "আমরা বুঝতে সাহায্য করি। আপনার পরিস্থিতির ওপর নির্ভর করে এমন সিদ্ধান্তের জন্য একজন নিয়ন্ত্রিত উপদেষ্টার সঙ্গে কথা বলুন।" },
+      { label: "জনকল্যাণ", title: "সবার জন্য উন্মুক্ত", note: "প্রতিটি ক্যালকুলেটর, নির্দেশিকা ও টেমপ্লেট সবার জন্য উন্মুক্ত।" },
+      { label: "সহজ ভাষা", title: "জটিলতামুক্ত", note: "কোনো দুর্বোধ্য পরিভাষা ছাড়াই একজন বন্ধুর মতো সহজ ভাষায় নিয়মগুলো ব্যাখ্যা করা হয়েছে।" },
+      { label: "সরকারি তথ্যের ওপর নির্মিত", title: "Revenue-এর তথ্যের সাথে যাচাইকৃত", note: "ক্যালকুলেটরগুলোতে Revenue-এর প্রকাশিত করহার ব্যবহৃত হয়েছে এবং প্রতিটি সংখ্যার উৎস উল্লেখ করা আছে।" },
+      { label: "কেবল তথ্য, পরামর্শ নয়", title: "সীমার ব্যাপারে স্পষ্ট", note: "আমরা আপনাকে বুঝতে সাহায্য করি। আপনার ব্যক্তিগত পরিস্থিতির ওপর নির্ভরশীল কোনো সিদ্ধান্তের জন্য অনুমোদিত পেশাদার উপদেষ্টার পরামর্শ নিন।" },
     ],
   },
 
   calendar: {
-    eyebrow: "Revenue.ie-এর আইনি সময়সূচি",
+    eyebrow: "Revenue-এর প্রকাশিত সময়সীমা",
     title: "আইরিশ কর ক্যালেন্ডার *{years}*",
-    body: "ব্যক্তি, স্বনিযুক্ত কন্ট্রাক্টর, বাড়িওয়ালা আর লিমিটেড কোম্পানির জন্য রিটার্ন জমা ও কর পরিশোধের মূল আইনি তারিখ।",
-    next: "পরবর্তী আইনি সময়সীমা",
-    more: "পুরো ক্যালেন্ডার দেখুন",
-    less: "কম তারিখ দেখান",
+    body: "ব্যক্তি, স্বনিয়োজিত কন্ট্রাক্টর, বাড়িওয়ালা ও লিমিটেড কোম্পানির জন্য রিটার্ন দাখিল ও কর পরিশোধের মূল সময়সীমা।",
+    next: "পরবর্তী সময়সীমা",
+    more: "সম্পূর্ণ ক্যালেন্ডার দেখুন",
+    less: "সংক্ষিপ্ত তালিকা দেখুন",
     kinds: {
       payFile: {
-        audience: "স্বনিযুক্ত ও বাড়িওয়ালা",
-        title: "পে অ্যান্ড ফাইল",
-        note: "{prev} সালের রিটার্ন জমা দিন, {prev} সালের বকেয়া কর আর {year} সালের প্রিলিমিনারি ট্যাক্স পরিশোধ করুন। কাগজে রিটার্ন আর ROS-এর বাইরে পরিশোধের তারিখ।",
-        link: "সময়সীমার বিস্তারিত",
+        audience: "স্বনিয়োজিত ও বাড়িওয়ালা",
+        title: "Pay and File",
+        note: "আপনার {prev} সালের রিটার্ন দাখিল করুন, {prev}-এর বকেয়া কর পরিশোধ করুন এবং {year}-এর জন্য অগ্রিম কর পরিশোধ করুন। কাগজের রিটার্ন ও ROS-এর বাইরে পরিশোধের শেষ তারিখ।",
+        link: "সময়সীমার বিবরণ",
       },
       rosExtension: {
-        audience: "ROS-এর বাড়তি সময় · স্বনিযুক্ত ও বাড়িওয়ালা",
+        audience: "ROS সময়সীমা বৃদ্ধি · স্বনিয়োজিত ও বাড়িওয়ালা",
         title: "ROS-এ Form 11",
-        note: "{prev} সালের Form 11 জমা আর পরিশোধ দুটোই ROS-এ করলে এই পরের তারিখ। 31 আগস্ট পর্যন্ত বছরে মূল্যায়িত উপহার ও উত্তরাধিকারের CAT রিটার্নেও এটি প্রযোজ্য।",
-        link: "Revenue-এর নোটিশ",
+        note: "ROS-এর মাধ্যমে {prev} সালের Form 11 দাখিল ও কর পরিশোধের বর্ধিত সময়সীমা। 31 আগস্ট পর্যন্ত মূল্যায়িত উপহার ও উত্তরাধিকারের CAT রিটার্নও এর অন্তর্ভুক্ত।",
+        link: "Revenue-এর বিজ্ঞপ্তি",
       },
       prelimCt: {
         audience: "লিমিটেড কোম্পানি",
-        title: "প্রিলিমিনারি কর্পোরেশন ট্যাক্স",
-        note: "31 ডিসেম্বরে হিসাব-বছর শেষ হলে: ছোট কোম্পানির একমাত্র কিস্তি, বা বড় কোম্পানির দ্বিতীয় কিস্তি।",
-        link: "প্রিলিমিনারি CT-র নিয়ম",
+        title: "অগ্রিম করপোরেট কর",
+        note: "31 ডিসেম্বর সমাপ্ত অর্থবছরের জন্য: ছোট কোম্পানির একমাত্র কিস্তি, অথবা বড় কোম্পানির দ্বিতীয় কিস্তি।",
+        link: "অগ্রিম করপোরেট করের নিয়ম",
       },
       prelimCtFirst: {
         audience: "বড় কোম্পানি",
-        title: "প্রিলিমিনারি CT, প্রথম কিস্তি",
-        note: "31 ডিসেম্বরে হিসাব-বছর শেষ হয় এমন বড় কোম্পানির দুই কিস্তির প্রথমটি।",
-        link: "প্রিলিমিনারি CT-র নিয়ম",
+        title: "অগ্রিম করপোরেট কর, প্রথম কিস্তি",
+        note: "31 ডিসেম্বর সমাপ্ত অর্থবছরের বড় কোম্পানির দুটি কিস্তির প্রথমটি।",
+        link: "অগ্রিম করপোরেট করের নিয়ম",
       },
       ct1: {
         audience: "লিমিটেড কোম্পানি",
-        title: "কর্পোরেশন ট্যাক্স, Form CT1",
-        note: "31 ডিসেম্বর {prev}-এ শেষ হওয়া হিসাব-বছরের CT1 জমা দিন আর বাকি কর পরিশোধ করুন।",
+        title: "Form CT1 করপোরেট কর",
+        note: "31 ডিসেম্বর {prev} সমাপ্ত হিসাবকালের জন্য CT1 দাখিল করুন এবং বকেয়া কর পরিশোধ করুন।",
         link: "CT1-এর সময়সীমা",
       },
       cgtInitial: {
-        audience: "যিনি কোনো সম্পদ বিক্রি করেছেন",
-        title: "ক্যাপিটাল গেইনস ট্যাক্স",
-        note: "1 জানুয়ারি থেকে 30 নভেম্বর {year}-এর মধ্যে করা লাভের CGT পরিশোধ করুন।",
+        audience: "যাঁরা সম্পদ বিক্রি করেছেন",
+        title: "মূলধনি লাভ কর (CGT)",
+        note: "1 জানুয়ারি থেকে 30 নভেম্বর {year} পর্যন্ত অর্জিত লাভের ওপর CGT পরিশোধ করুন।",
         link: "CGT পরিশোধের তারিখ",
       },
       cgtLater: {
-        audience: "যিনি কোনো সম্পদ বিক্রি করেছেন",
-        title: "ক্যাপিটাল গেইনস ট্যাক্স",
-        note: "ডিসেম্বর {prev}-এ করা লাভের CGT পরিশোধ করুন।",
+        audience: "যাঁরা সম্পদ বিক্রি করেছেন",
+        title: "মূলধনি লাভ কর (CGT)",
+        note: "ডিসেম্বর {prev}-এ অর্জিত লাভের ওপর CGT পরিশোধ করুন।",
         link: "CGT পরিশোধের তারিখ",
       },
     },
   },
 
   topics: {
-    eyebrow: "সব কিছু এক জায়গায়",
-    title: "যে বিষয়ই সামলান, তার জন্য আছে একটি টুল আর একটি গাইড।",
-    lede: "প্রতিটি ক্যালকুলেটর Revenue.ie-এর আইনি নিয়ম, {budget} আর সেন্ট্রাল ব্যাংকের সতর্কতামূলক নির্দেশনার সঙ্গে মেলানো।",
-    caption: "আপনার সংখ্যা। আরও স্পষ্ট চিত্র।",
+    eyebrow: "সবকিছু এক জায়গায়",
+    title: "আপনার আর্থিক প্রয়োজন যাই হোক, এখানে রয়েছে প্রয়োজনীয় টুল ও গাইড।",
+    lede: "প্রতিটি ক্যালকুলেটর Revenue-এর প্রকাশিত করহার, {budget}-এর ঘোষণা এবং Central Bank-এর মর্টগেজ নীতিমালার ওপর ভিত্তি করে তৈরি।",
+    caption: "আপনার হিসাব। একটি স্পষ্ট ধারণা।",
     items: [
       {
         title: "কর ক্যালকুলেটর হাব",
-        note: "ব্যক্তিগত কর (PAYE, USC, PRSI), ভ্যাট, কর্পোরেশন ট্যাক্স, CGT আর উত্তরাধিকার কর।",
-        tags: ["আয়কর", "ভ্যাট", "কর্পোরেশন ট্যাক্স", "CGT", "CAT"],
+        note: "ব্যক্তিগত কর (PAYE, USC, PRSI), ভ্যাট, করপোরেট কর, CGT এবং উত্তরাধিকার কর।",
+        tags: ["আয়কর", "ভ্যাট", "করপোরেট কর", "CGT", "CAT"],
       },
       {
         title: "বিনিয়োগ ও ETF",
-        note: "আইরিশ করের পরে সঞ্চয় ও বিনিয়োগের পথ তুলনা করুন, এক্সিট ট্যাক্স থেকে ডিমড ডিসপোজাল পর্যন্ত।",
+        note: "এক্সিট ট্যাক্স থেকে ডিমড ডিসপোজাল পর্যন্ত আইরিশ কর কাটার পর সঞ্চয় ও বিনিয়োগের বিকল্পগুলোর তুলনা করুন।",
         tags: ["ETF এক্সিট ট্যাক্স", "ডিমড ডিসপোজাল"],
       },
       {
         title: "সম্পত্তি ও মর্টগেজ",
-        note: "সেন্ট্রাল ব্যাংকের 4x ধারের নিয়ম, ঋণদাতাদের হার, গ্রিন মর্টগেজ আর ক্যাশব্যাক।",
-        tags: ["মর্টগেজ ক্যালকুলেটর", "ঋণদাতাদের হার", "গ্রিন মর্টগেজ"],
+        note: "Central Bank-এর 4 গুণ ঋণ নেওয়ার নিয়ম, ঋণদাতা প্রতিষ্ঠানের সুদের হার, গ্রিন মর্টগেজ এবং ক্যাশব্যাক অফার।",
+        tags: ["মর্টগেজ ক্যালকুলেটর", "ঋণদাতার সুদের হার", "গ্রিন মর্টগেজ"],
       },
       {
-        title: "কোম্পানি শুরু",
-        note: "সোল ট্রেডার নাকি Ltd, ভ্যাট নিবন্ধনের সীমা আর ধাপে ধাপে Form 11।",
-        tags: ["সোল ট্রেডার নাকি Ltd", "ভ্যাট নিবন্ধন", "Form 11"],
+        title: "কোম্পানি শুরু করা",
+        note: "সোল ট্রেডার বনাম Ltd, ভ্যাট নিবন্ধনের সীমা এবং Form 11 পূরণের ধারাবাহিক ধাপ।",
+        tags: ["সোল ট্রেডার বনাম Ltd", "ভ্যাট নিবন্ধন", "Form 11"],
       },
       {
         title: "ইনভেস্টমেন্ট অ্যাকাউন্ট",
-        note: "1 জুলাই 2027 থেকে নতুন অ্যাকাউন্ট: €50,000-এর বেশি মূল্যের ওপর বছরে 1%, আর কোনো ডিমড ডিসপোজাল নেই।",
-        tags: ["বছরে 1%", "বছরে €12,000 জমা", "জুলাই 2027 থেকে"],
+        note: "ঘোষিত, Finance Bill-এ অন্তর্ভুক্ত কিন্তু এখনো আইন হয়নি (29 অক্টোবর 2026 তারিখ অনুযায়ী অবস্থা)। 1 জুলাই 2027 থেকে: €50,000-এর বেশি মূল্যের ওপর বছরে 1%, এবং কোনো ডিমড ডিসপোজাল নেই।",
+        tags: ["বছরে 1%", "বছরে জমা €12,000", "জুলাই 2027 থেকে"],
       },
       {
         title: "{budget} হাব",
-        note: "আপনার পকেটে কী বদলাচ্ছে: ব্যান্ড, USC আর রেন্ট ট্যাক্স ক্রেডিট।",
-        tags: ["বাজেটের পরিবর্তন", "এক নজরে হার"],
+        note: "আপনার আর্থিক হিসেবে কী বদলাচ্ছে: করের ধাপে পরিবর্তন, USC এবং Rent Tax Credit।",
+        tags: ["বাজেটের পরিবর্তন", "একনজরে করহার"],
       },
     ],
-    footnote: "ক্যালকুলেটরগুলো শেখার টুল। প্রতিটি টুলের পাতায় অনুমান ও উৎস মিলিয়ে নিন।",
+    footnote: "ক্যালকুলেটরগুলো কেবল শেখার সহায়ক টুল। প্রতিটি টুলের পাতায় অনুমান ও তথ্যের উৎস যাচাই করে নিন।",
   },
 
   budget: {
     eyebrow: "{budget} · সহজ ব্যাখ্যা",
-    title: "বাজেট অনেক বড়। শুরু করুন *আপনার কাছে যা গুরুত্বপূর্ণ* তা দিয়ে।",
-    body: "20% ব্যান্ড বেড়ে €46,500, USC-র 2% ধাপ বেড়ে €30,300 আর রেন্ট ট্যাক্স ক্রেডিট বেড়ে €1,150। ভাড়া থাকেন, বাড়ি কিনছেন, পেনশনের জন্য জমাচ্ছেন বা পরিবার সামলাচ্ছেন? দেখুন আপনার জন্য কী বদলাচ্ছে।",
+    title: "বাজেট অনেক বড়। শুরু করুন যা *আপনার জন্য জরুরি।*",
+    body: "20% করের ধাপ বেড়ে €46,500 হয়েছে, USC 2% ধাপ প্রসারিত হয়ে €30,300 হয়েছে এবং Rent Tax Credit বৃদ্ধি পেয়ে €1,150 হয়েছে। ভাড়া দিচ্ছেন, বাড়ি কিনছেন, পেনশনের জন্য সঞ্চয় করছেন নাকি সন্তান পালন করছেন? দেখে নিন আপনার জন্য কী বদলাচ্ছে।",
     cta: "{budget} দেখুন",
     cardEyebrow: "আপনার জীবন। আপনার প্রশ্ন।",
     topics: ["বাড়ি ও ভাড়া", "কাজ ও আয়", "পরিবার", "সঞ্চয় ও পেনশন"],
-    caption: "কী বদলাচ্ছে তার আরও স্পষ্ট চিত্র।",
+    caption: "কী বদলাচ্ছে তার একটি স্পষ্ট চিত্র।",
+    status: "6 অক্টোবর 2026 তারিখে ঘোষিত। অধিকাংশ পরিবর্তন Finance Act-এর মাধ্যমে আইনে পরিণত হয়। যাচাইকৃত {date}।",
   },
 
   learn: {
-    eyebrow: "সামনে এগোনোর স্পষ্ট পথ · আইনভিত্তিক পদ্ধতি",
-    title: "শিখুন। হিসাব করুন। *পদক্ষেপ নিন।*",
+    eyebrow: "স্পষ্ট পথনির্দেশ · যেভাবে কাজ করে",
+    title: "জানুন। হিসাব করুন। *পদক্ষেপ নিন।*",
     items: [
-      { title: "শিখুন", note: "আয়কর, USC-র ধাপ, PRSI আর বিনিয়োগ করের নিয়ম নিয়ে সহজে বোঝার মতো গাইড পড়ুন।", link: "গাইডগুলো দেখুন" },
-      { title: "হিসাব করুন", note: "হাতে পাওয়া বেতন, সেন্ট্রাল ব্যাংকের 4x মর্টগেজ সীমা আর ক্যাপিটাল গেইনস ট্যাক্স হিসাব করে দেখুন।", link: "ক্যালকুলেটর খুলুন" },
-      { title: "পদক্ষেপ নিন", note: "Form 11 রিটার্ন জমা দিন, রেন্ট ট্যাক্স ক্রেডিট দাবি করুন, Revenue-এর পে অ্যান্ড ফাইল সময়সীমা মানুন আর কর-সাশ্রয়ী সম্পদ গড়ুন।", link: "সময়সীমা দেখুন" },
+      { title: "জানুন", note: "আয়কর, USC-এর ধাপ, PRSI এবং বিনিয়োগ করের নিয়মের ওপর সহজ নির্দেশিকা পড়ুন।", link: "গাইডগুলো দেখুন" },
+      { title: "হিসাব করুন", note: "ঘরে নেওয়া আয়, Central Bank-এর 4 গুণ মর্টগেজ ঋণ গ্রহণের সীমা এবং মূলধনি লাভ করের হিসাব যাচাই করুন।", link: "ক্যালকুলেটর খুলুন" },
+      { title: "পদক্ষেপ নিন", note: "Form 11 রিটার্ন জমা দিন, Rent Tax Credit দাবি করুন, Revenue-এর Pay & File সময়সীমা মেনে চলুন এবং কর সাশ্রয়ী সম্পদ গড়ে তুলুন।", link: "সময়সীমা দেখুন" },
     ],
   },
 
   faq: {
-    eyebrow: "সোজাসাপ্টা উত্তর",
-    title: "যে প্রশ্নগুলো মানুষ সত্যিই করে।",
+    eyebrow: "সরাসরি উত্তর",
+    title: "মানুষ সচরাচর যেসব প্রশ্ন করেন।",
     items: [
       {
-        question: "আয়ারল্যান্ডে ETF-এর ওপর কীভাবে কর বসে?",
-        answer: "আয়ারল্যান্ডে নিবন্ধিত বেশির ভাগ ETF আর ইউরোপীয় UCITS ETF-এর ওপর এক্সিট ট্যাক্স বসে, ক্যাপিটাল গেইনস ট্যাক্স (CGT) নয়: 2026 সালে 38%, আর বাজেট 2027 অনুযায়ী 1 জানুয়ারি 2027 থেকে 35%। বিক্রির সময় কর দিতে হয়, আর ডিমড ডিসপোজাল নিয়মে প্রতি 8 বছরেও। লোকসান সাধারণ শেয়ারের লাভের সঙ্গে সমন্বয় করা যায় না।",
-        link: "ETF নিয়ে পুরো গাইড পড়ুন",
+        question: "আয়ারল্যান্ডে ETF-এর ওপর কীভাবে কর ধার্য হয়?",
+        answer: "আয়ারল্যান্ডভিত্তিক ও ইউরোপীয় বেশিরভাগ UCITS ETF-এর ওপর মূলধনি লাভ কর (CGT)-এর বদলে এক্সিট ট্যাক্স (Exit Tax) প্রযোজ্য হয়: 2026 সালে 38%, এবং বাজেট 2027 অনুযায়ী 1 জানুয়ারি 2027 থেকে 35% (ঘোষিত, Finance Bill পাসের ওপর নির্ভরশীল)। বিক্রির সময় কর প্রদেয় হয়, এবং ডিমড ডিসপোজাল নিয়মের অধীনে প্রতি 8 বছর পর লাভ হিসাব করে কর দিতে হয়। এই ক্ষতি সাধারণ শেয়ারের লাভের সাথে সমন্বয় করা যায় না।",
+        link: "সম্পূর্ণ ETF গাইড পড়ুন",
       },
       {
-        question: "আয়ারল্যান্ডে কখন আইনত ভ্যাট নিবন্ধন করতেই হবে?",
-        answer: "যখন টানা যেকোনো 12 মাসে আপনার টার্নওভার পণ্যের ক্ষেত্রে {goods} বা সেবার ক্ষেত্রে {services} ছাড়ায়, বা ছাড়ানোর সম্ভাবনা থাকে। চাইলে আগেও নিবন্ধন করতে পারেন, যেমন ব্যবসার খরচের ভ্যাট ফেরত পেতে।",
-        link: "ব্যবসা শুরুর গাইড দেখুন",
+        question: "আয়ারল্যান্ডে আইনগতভাবে কখন ভ্যাট নিবন্ধন করতে হয়?",
+        answer: "যেকোনো ধারাবাহিক 12 মাসে পণ্যের ক্ষেত্রে টার্নওভার {goods} অথবা সেবার ক্ষেত্রে {services} অতিক্রম করলে বা করার সম্ভাবনা থাকলে। তবে চাইলে আপনি আগেও নিবন্ধন করতে পারেন, যেমন ব্যবসার খরচের ওপর পরিশোধিত ভ্যাট ফেরত পাওয়ার জন্য।",
+        link: "ব্যবসা শুরুর প্রক্রিয়া দেখুন",
       },
       {
-        question: "আয়ারল্যান্ডে ভাড়ার আয়ে কত কর দিতে হয়?",
-        answer: "ভাড়ার মুনাফা আপনার অন্য আয়ের সঙ্গে যোগ হয়ে আপনার প্রান্তিক হারে (20% বা 40%) করযোগ্য হয়, সঙ্গে USC আর PRSI। মুনাফা মানে ভাড়া থেকে অনুমোদিত খরচ বাদ দিয়ে যা থাকে, যেমন ভাড়া দেওয়া বসতবাড়ির মর্টগেজ সুদ, মেরামত, ব্যবস্থাপনা ফি আর RTB নিবন্ধন।",
-        link: "ভাড়ার আয় নিয়ে Revenue",
+        question: "আইরিশ ভাড়ার আয়ের ওপর কত কর দিতে হয়?",
+        answer: "ভাড়া থেকে নিট লাভ আপনার অন্যান্য আয়ের সাথে যোগ হয় এবং প্রান্তিক হারে (20% বা 40%) কর ধার্য হয়, সাথে প্রযোজ্য USC ও PRSI যুক্ত হয়। প্রাপ্ত ভাড়া থেকে অনুমোদিত খরচ (যেমন আবাসিক ভাড়ার মর্টগেজের সুদ, মেরামত, ব্যবস্থাপনা ফি ও RTB নিবন্ধন খরচ) বাদ দিয়ে এই লাভ হিসাব করা হয়।",
+        link: "ভাড়ার আয়ে Revenue-এর নিয়ম",
       },
       {
-        question: "ডিমড ডিসপোজাল কী, আর কখন এটি প্রযোজ্য হয়?",
-        answer: "প্রতি 8 বছরে আপনার কাছে থাকা ফান্ড বা ETF-এর ওপর এমনভাবে কর বসে, যেন আপনি তা বিক্রি করে আবার কিনেছেন: কিছু বিক্রি না করলেও তখন পর্যন্ত লাভের ওপর এক্সিট ট্যাক্স দিতে হয়। শেষে যখন সত্যিই বিক্রি করবেন, তখনকার কর থেকে আগে দেওয়া কর বাদ যায়।",
-        link: "ডিমড ডিসপোজাল, সহজ ব্যাখ্যা",
+        question: "ডিমড ডিসপোজাল কী এবং কখন এটি প্রযোজ্য হয়?",
+        answer: "প্রতি 8 বছর পর, আপনার হাতে থাকা ফান্ড বা ETF এমনভাবে করের আওতায় আসে যেন আপনি তা বিক্রি করে আবার কিনেছেন: কোনো কিছু বিক্রি না করা সত্ত্বেও অর্জিত লাভের ওপর এক্সিট ট্যাক্স দিতে হয়। পরবর্তীতে প্রকৃত বিক্রির সময় এই পরিশোধিত কর মোট কর থেকে বাদ দেওয়া হয়।",
+        link: "ডিমড ডিসপোজালের সহজ ব্যাখ্যা",
       },
       {
-        question: "ক্যাপিটাল অ্যাকুইজিশনস ট্যাক্স (CAT)-এ করমুক্তভাবে কত উত্তরাধিকার পেতে পারি?",
-        answer: "যিনি দিচ্ছেন তাঁর সঙ্গে আপনার সম্পর্কের ওপর নির্ভর করে। আজীবন করমুক্ত সীমা হলো বাবা-মা থেকে সন্তানকে {a} (গ্রুপ A), ভাইবোনের মধ্যে আর নাতি-নাতনি বা ভাইপো-ভাইঝিকে {b} (গ্রুপ B), আর অন্য যেকোনো কারও কাছ থেকে {c} (গ্রুপ C)। এর বেশি হলে {rate} হারে কর বসে।",
-        link: "উত্তরাধিকার ক্যালকুলেটর ব্যবহার করুন",
+        question: "Capital Acquisitions Tax (CAT)-এর অধীনে আমি করমুক্তভাবে কত উত্তরাধিকার পেতে পারি?",
+        answer: "সম্পদ প্রদানকারী ব্যক্তির সাথে আপনার সম্পর্কের ওপর এটি নির্ভর করে। আজীবন করমুক্ত সীমা হলো পিতা-মাতার কাছ থেকে সন্তানে {a} (Group A), ভাই-বোনের মধ্যে এবং নাতি-নাতনি বা ভাইপো-ভাগ্নেদের ক্ষেত্রে {b} (Group B), এবং অন্য যেকোনো ব্যক্তির ক্ষেত্রে {c} (Group C)। এই সীমার অতিরিক্ত যেকোনো অঙ্কের ওপর {rate} হারে কর ধার্য হয়।",
+        link: "উত্তরাধিকার কর ক্যালকুলেটর দেখুন",
       },
-      { question: "অ্যাকাউন্ট কি লাগবে?", answer: "ঘুরে দেখা শুরু করতে কোনো অ্যাকাউন্ট লাগে না। সাইন ইন করলে প্রশ্ন ও উত্তর এক জায়গায় রাখতে পারবেন।", link: "" },
-      { question: "এটা কি আর্থিক বা কর পরামর্শ?", answer: "না। এই সাইট শেখার জন্য সাধারণ তথ্য দেয়। আপনার নিজের পরিস্থিতির সিদ্ধান্তের জন্য একজন যথাযথ যোগ্য উপদেষ্টার সঙ্গে কথা বলুন।", link: "" },
+      { question: "আমার কি একটি অ্যাকাউন্ট খুলতে হবে?", answer: "সাইট ব্যবহারের জন্য কোনো অ্যাকাউন্টের প্রয়োজন নেই। তবে সাইন ইন করলে আপনার প্রশ্ন ও উত্তরগুলো এক জায়গায় সংরক্ষিত থাকে।", link: "" },
+      { question: "এটি কি কোনো আর্থিক বা কর পরামর্শ?", answer: "না। এই ওয়েবসাইটটি কেবল সাধারণ শিক্ষামূলক তথ্য সরবরাহ করে। আপনার নির্দিষ্ট পরিস্থিতি অনুযায়ী সিদ্ধান্তের জন্য উপযুক্ত পেশাদার উপদেষ্টার পরামর্শ নিন।", link: "" },
     ],
   },
 
-  quote: {
-    quote: "“টাকার জন্য কাজ করবেন না। *টাকাকে আপনার জন্য কাজ করান।*”",
-    body: "আয়ারল্যান্ডে প্রজন্মের পর প্রজন্ম টেকে এমন সম্পদ গড়া শুরু হয় টাকা কীভাবে চলে তা জানা থেকে: কর-সাশ্রয়ী পেনশন, এন্টারপ্রেনার রিলিফ আর Revenue-এর নিয়ম মেনে চক্রবৃদ্ধির কৌশল।",
-    link: "আইরিশ বিনিয়োগ করের কৌশল দেখুন",
+  founder: {
+    eyebrow: "প্রতিষ্ঠাতা সম্পর্কে",
+    paragraphs: [
+      "আরিফ ভূঁইয়া একজন ফেলো চার্টার্ড অ্যাকাউন্ট্যান্ট (FCA) এবং অভিজ্ঞ ফাইন্যান্স পেশাজীবী, যাঁর Apple Ireland, Meta Ireland, Deloitte Ireland, Bank of Ireland এবং Citi-র মতো শীর্ষস্থানীয় বহুজাতিক প্রতিষ্ঠানে কাজের দীর্ঘ অভিজ্ঞতা রয়েছে।",
+      "বিশ্বের অন্যতম বৃহৎ ফিনটেক কোম্পানির EMEA ফাইন্যান্স ম্যানেজার হিসেবে তিনি আর্থিক ব্যবস্থাপনা, সংবিধিবদ্ধ রিপোর্টিং, টেকনিক্যাল অ্যাকাউন্টিং এবং ফিন্যান্সিয়াল কন্ট্রোলে বিশেষজ্ঞ।",
+      "শিক্ষাদানের প্রতি গভীর অনুরাগী আরিফ Trinity College Dublin-এ শিক্ষকতা করেছেন, UCD Michael Smurfit Graduate Business School-এ আন্তর্জাতিক শিক্ষার্থীদের মেন্টরিং করেছেন এবং পেশাদার সনদের প্রস্তুতি নেওয়া Chartered Accountants Ireland-এর শত শত শিক্ষার্থীকে ব্যক্তিগতভাবে প্রশিক্ষণ দিয়েছেন।",
+      "তাঁর সাফল্যের ঝুলিতে রয়েছে প্রধানমন্ত্রী স্বর্ণপদক, UCD Smurfit থেকে প্রথম শ্রেণিতে সম্মান, ইরাসমাস মুন্ডুস বৃত্তি এবং স্নাতক ও এমবিএ উভয় কোর্সেই প্রথম স্থান অর্জনের গৌরব।",
+      "আইরিশ কর, অ্যাকাউন্টিং ও অর্থব্যবস্থার জ্ঞান সবার জন্য সহজলভ্য করার লক্ষ্য নিয়ে আরিফ Irish Fintax প্রতিষ্ঠা করেন। দীর্ঘ কর্মক্ষেত্রের বাস্তব অভিজ্ঞতা এবং শিক্ষকতার সমন্বয়ে আয়ারল্যান্ডজুড়ে আর্থিক সচেতনতা বৃদ্ধি এবং মানুষকে আত্মবিশ্বাসের সাথে সঠিক আর্থিক সিদ্ধান্ত নিতে সক্ষম করাই তাঁর মূল উদ্দেশ্য।",
+    ],
   },
 
   trust: [
-    "চার্টার্ড অ্যাকাউন্ট্যান্টদের দ্বারা পর্যালোচিত",
-    "সরকারি আইনি হারের ওপর ভিত্তি করে",
-    "তথ্য, নিয়ন্ত্রিত পরামর্শ নয়",
-    "প্রতিটি জাতীয় বাজেটে হালনাগাদ",
+    "{name} এবং আয়ারল্যান্ডের আর্থিক পেশাজীবীদের দ্বারা পর্যালোচিত",
+    "আইন হওয়ার পূর্ব পর্যন্ত বাজেটের পরিবর্তনগুলো চিহ্নিত থাকে",
+    "Revenue-এর প্রকাশিত করহারের ওপর ভিত্তি করে তৈরি",
+    "কেবল তথ্য, অনুমোদিত আর্থিক পরামর্শ নয়",
   ],
 
   cta: {
-    title: "নিজের অর্থের *নিয়ন্ত্রণ নিতে প্রস্তুত?*",
-    body: "আয়ারল্যান্ডের কর বুঝতে, আগে থেকে পরিকল্পনা করতে আর আরও উজ্জ্বল আর্থিক ভবিষ্যৎ গড়তে আমাদের টুল ও গাইড দেখুন।",
+    title: "নিজের আর্থিক ব্যবস্থাপনায় *সচেতন হতে প্রস্তুত?*",
+    body: "আইরিশ কর ব্যবস্থা সহজে বুঝতে, ভবিষ্যতের পরিকল্পনা করতে এবং উজ্জ্বল আর্থিক ভবিষ্যৎ গড়তে আমাদের টুল ও গাইডগুলো দেখুন।",
     explore: "টুলগুলো দেখুন",
-    account: "আপনার অ্যাকাউন্ট খুলুন",
+    account: "অ্যাকাউন্ট তৈরি করুন",
   },
 };
 
 const hi: HomeMessages = {
   hero: {
     eyebrow: "वित्तीय शिक्षा · आयरलैंड",
-    title: "आयरलैंड के टैक्स पर पकड़ बनाएँ। *बचाएँ, बढ़ाएँ, आगे बढ़ें।*",
-    lede: "{count} क़ानून-आधारित आयरिश टैक्स कैलकुलेटर, सेंट्रल बैंक के 4x मॉर्गेज नियम और आसान भाषा में वित्तीय जानकारी। अंदाज़े की कोई ज़रूरत नहीं।",
+    title: "देखें {budget} से *आपकी तनख़्वाह में क्या बदलता है।*",
+    lede: "Revenue की प्रकाशित दरों पर बने {count} आयरिश टैक्स कैलकुलेटर, सेंट्रल बैंक के मॉर्गेज नियम और आसान भाषा में गाइड।",
     cta: "योजना शुरू करें",
     budget: "{budget} हब",
-    checks: ["बिना अकाउंट के देखें", "शुरू करने के लिए अकाउंट ज़रूरी नहीं"],
+    checks: ["बजट 2027 के बदलाव शामिल, Finance Bill के अधीन"],
     stats: {
       tools: "टैक्स कैलकुलेटर",
       band: "स्टैंडर्ड सीमा, {year}",
@@ -1294,7 +1330,7 @@ const hi: HomeMessages = {
   },
 
   finder: {
-    eyebrow: "भरोसे की रूपरेखा · 60 सेकंड में राह",
+    eyebrow: "60 सेकंड में राह",
     title: "समझ नहीं आ रहा कहाँ से शुरू करें?\nहम राह दिखाते हैं।",
     items: [
       { title: "वेतन और बजट", note: "हाथ में आने वाली तनख़्वाह, {band} का स्टैंडर्ड बैंड और टैक्स क्रेडिट।" },
@@ -1310,9 +1346,9 @@ const hi: HomeMessages = {
     body: "Irish Fintax सीखने का एक प्लेटफ़ॉर्म है। हम आयरलैंड के टैक्स और निजी वित्त को आसान भाषा में समझाते हैं, और अपने आँकड़े आज़माने के लिए कैलकुलेटर देते हैं, ताकि कोई भी फ़ैसला लेने से पहले आप समझ लें कि क्या हो रहा है।",
     more: "हमारे बारे में और",
     note: "कोई बिक्री की बात नहीं, कोई ट्रैकिंग कुकी नहीं। पूरे आयरलैंड के लोगों, मकान-मालिकों और संस्थापकों के लिए स्वतंत्र टैक्स और वित्त शिक्षा।",
-    caption: "Revenue.ie के अनुसार मिलाया गया · कैलकुलेटर आपके ब्राउज़र में ही चलते हैं",
+    caption: "Revenue की प्रकाशित दरों पर आधारित · कैलकुलेटर आपके ब्राउज़र में ही चलते हैं",
     principles: [
-      { label: "जनहित में", title: "सबके लिए", note: "हर कैलकुलेटर, गाइड और टेम्पलेट उपलब्ध है, और शुरू करने के लिए अकाउंट ज़रूरी नहीं।" },
+      { label: "जनहित में", title: "सबके लिए", note: "हर कैलकुलेटर, गाइड और टेम्पलेट सबके लिए खुला है।" },
       { label: "आसान भाषा", title: "बिना उलझे शब्दों के", note: "नियम वैसे समझाए गए जैसे आप किसी दोस्त को समझाते, बिना उलझाने वाली शब्दावली के।" },
       { label: "सार्वजनिक स्रोतों पर आधारित", title: "Revenue से मिलान किया गया", note: "कैलकुलेटर Revenue की प्रकाशित दरें इस्तेमाल करते हैं और हर आँकड़े के स्रोत का लिंक देते हैं।" },
       { label: "जानकारी, सलाह नहीं", title: "सीमाओं को लेकर साफ़", note: "हम समझने में मदद करते हैं। जो फ़ैसला आपकी परिस्थिति पर टिका हो, उसके लिए किसी विनियमित सलाहकार से मिलें।" },
@@ -1320,10 +1356,10 @@ const hi: HomeMessages = {
   },
 
   calendar: {
-    eyebrow: "Revenue.ie का क़ानूनी कैलेंडर",
+    eyebrow: "Revenue की प्रकाशित समय-सीमाएँ",
     title: "आयरिश टैक्स कैलेंडर *{years}*",
-    body: "व्यक्तियों, स्व-रोज़गार ठेकेदारों, मकान-मालिकों और लिमिटेड कंपनियों के लिए रिटर्न भरने और भुगतान की मुख्य क़ानूनी तारीख़ें।",
-    next: "अगली क़ानूनी समय-सीमा",
+    body: "व्यक्तियों, स्व-रोज़गार ठेकेदारों, मकान-मालिकों और लिमिटेड कंपनियों के लिए रिटर्न भरने और भुगतान की मुख्य तारीख़ें।",
+    next: "अगली समय-सीमा",
     more: "पूरा कैलेंडर देखें",
     less: "कम तारीख़ें दिखाएँ",
     kinds: {
@@ -1375,7 +1411,7 @@ const hi: HomeMessages = {
   topics: {
     eyebrow: "सब कुछ एक जगह",
     title: "आप जिस भी चीज़ से जूझ रहे हों, उसके लिए एक टूल और एक गाइड है।",
-    lede: "हर कैलकुलेटर Revenue.ie के क़ानूनी नियमों, {budget} और सेंट्रल बैंक के विवेकपूर्ण दिशानिर्देशों से मिलाया गया है।",
+    lede: "हर कैलकुलेटर Revenue की प्रकाशित दरों, {budget} की घोषणाओं और सेंट्रल बैंक के मॉर्गेज नियमों पर आधारित है।",
     caption: "आपके आँकड़े। साफ़ तस्वीर।",
     items: [
       {
@@ -1400,7 +1436,7 @@ const hi: HomeMessages = {
       },
       {
         title: "इन्वेस्टमेंट अकाउंट",
-        note: "1 जुलाई 2027 से नया अकाउंट: €50,000 से ऊपर की वैल्यू पर सालाना 1%, और कोई डीम्ड डिस्पोज़ल नहीं।",
+        note: "घोषित, Finance Bill में है और अभी कानून नहीं बना (स्थिति 29 अक्टूबर 2026 को जाँची गई)। 1 जुलाई 2027 से नया अकाउंट: €50,000 से ऊपर की वैल्यू पर सालाना 1%, और कोई डीम्ड डिस्पोज़ल नहीं।",
         tags: ["सालाना 1%", "साल में €12,000 तक जमा", "जुलाई 2027 से"],
       },
       {
@@ -1420,10 +1456,11 @@ const hi: HomeMessages = {
     cardEyebrow: "आपकी ज़िंदगी। आपके सवाल।",
     topics: ["घर और किराया", "काम और आय", "परिवार", "बचत और पेंशन"],
     caption: "क्या बदल रहा है, इसकी साफ़ तस्वीर।",
+    status: "6 अक्टूबर 2026 को घोषित। ज़्यादातर बदलाव Finance Act के साथ कानून बनेंगे। {date} को जाँचा गया।",
   },
 
   learn: {
-    eyebrow: "आगे का साफ़ रास्ता · क़ानून-आधारित तरीक़ा",
+    eyebrow: "आगे का साफ़ रास्ता · यह कैसे काम करता है",
     title: "सीखें। हिसाब लगाएँ। *क़दम उठाएँ।*",
     items: [
       { title: "सीखें", note: "इनकम टैक्स, USC के स्लैब, PRSI और निवेश पर टैक्स के नियमों पर आसान गाइड पढ़ें।", link: "गाइड देखें" },
@@ -1438,7 +1475,7 @@ const hi: HomeMessages = {
     items: [
       {
         question: "आयरलैंड में ETF पर टैक्स कैसे लगता है?",
-        answer: "आयरलैंड में पंजीकृत ज़्यादातर ETF और यूरोपीय UCITS ETF पर एग्ज़िट टैक्स लगता है, कैपिटल गेन्स टैक्स (CGT) नहीं: 2026 में 38%, और बजट 2027 के तहत 1 जनवरी 2027 से 35%। टैक्स बेचने पर लगता है, और डीम्ड डिस्पोज़ल नियम के तहत हर 8 साल पर भी। घाटे को आम शेयरों के मुनाफ़े से नहीं घटाया जा सकता।",
+        answer: "आयरलैंड में पंजीकृत ज़्यादातर ETF और यूरोपीय UCITS ETF पर एग्ज़िट टैक्स लगता है, कैपिटल गेन्स टैक्स (CGT) नहीं: 2026 में 38%, और बजट 2027 के तहत 1 जनवरी 2027 से 35% (घोषित, Finance Bill के अधीन)। टैक्स बेचने पर लगता है, और डीम्ड डिस्पोज़ल नियम के तहत हर 8 साल पर भी। घाटे को आम शेयरों के मुनाफ़े से नहीं घटाया जा सकता।",
         link: "ETF पर पूरी गाइड पढ़ें",
       },
       {
@@ -1466,17 +1503,22 @@ const hi: HomeMessages = {
     ],
   },
 
-  quote: {
-    quote: "“पैसे के लिए काम मत करो। *पैसे को अपने लिए काम करने दो।*”",
-    body: "आयरलैंड में पीढ़ियों तक चलने वाली संपत्ति बनाना यह जानने से शुरू होता है कि पैसा कैसे चलता है: टैक्स-कुशल पेंशन, एंटरप्रेन्योर रिलीफ़ और Revenue के नियमों के मुताबिक़ चक्रवृद्धि की रणनीतियाँ।",
-    link: "आयरलैंड में निवेश टैक्स की रणनीतियाँ देखें",
+  founder: {
+    eyebrow: "संस्थापक के बारे में",
+    paragraphs: [
+      "Arif Bhuiyan एक फ़ेलो चार्टर्ड अकाउंटेंट और वरिष्ठ वित्त पेशेवर हैं, जिन्हें Apple Ireland, Meta Ireland, Deloitte Ireland, Bank of Ireland और Citi समेत प्रमुख बहुराष्ट्रीय संगठनों में व्यापक अनुभव है।",
+      "दुनिया की सबसे बड़ी फ़िनटेक कंपनियों में से एक में EMEA फ़ाइनेंस मैनेजर के रूप में वे वित्तीय प्रबंधन, वैधानिक रिपोर्टिंग, तकनीकी लेखांकन और वित्तीय नियंत्रण के विशेषज्ञ हैं।",
+      "शिक्षा के प्रति गहरे लगाव के साथ Arif ने ट्रिनिटी कॉलेज डबलिन में पढ़ाया है, UCD माइकल स्मरफ़िट ग्रेजुएट बिज़नेस स्कूल में अंतरराष्ट्रीय छात्रों को मार्गदर्शन दिया है, और पेशेवर योग्यताओं की तैयारी कर रहे Chartered Accountants Ireland के सैकड़ों छात्रों को व्यक्तिगत कोचिंग दी है।",
+      "उनकी उपलब्धियों में प्रधानमंत्री स्वर्ण पदक, UCD स्मरफ़िट से फ़र्स्ट-क्लास ऑनर्स, इरास्मस मुंडस छात्रवृत्ति, और स्नातक व MBA कार्यक्रमों में उत्कृष्ट शैक्षणिक रैंकिंग (पहला स्थान) शामिल हैं।",
+      "Arif ने Irish Fintax की स्थापना इसलिए की ताकि आयरलैंड के टैक्स, लेखांकन और वित्त का ज्ञान सबके लिए सुलभ हो। उद्योग के व्यावहारिक अनुभव और वर्षों के शिक्षण व मार्गदर्शन को जोड़कर वे पूरे आयरलैंड में वित्तीय साक्षरता बढ़ाना और लोगों को आत्मविश्वास के साथ सोच-समझकर वित्तीय फ़ैसले लेने में सक्षम बनाना चाहते हैं।",
+    ],
   },
 
   trust: [
-    "चार्टर्ड अकाउंटेंट्स द्वारा समीक्षित",
-    "सार्वजनिक क़ानूनी दरों पर आधारित",
+    "{name} और आयरलैंड के वित्त पेशेवरों द्वारा समीक्षित",
+    "क़ानून बनने तक बजट के बदलाव चिह्नित",
+    "Revenue की प्रकाशित दरों पर आधारित",
     "जानकारी, विनियमित सलाह नहीं",
-    "हर राष्ट्रीय बजट के साथ अपडेट",
   ],
 
   cta: {

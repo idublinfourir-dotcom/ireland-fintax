@@ -58,6 +58,7 @@ export function IrelandCatCalculator({ config }: { config: CatConfig }) {
   const [applySmallGift, setApplySmallGift] = useState(true);
   const [priorBenefits, setPriorBenefits] = useState(0);
   const [valuationMonth, setValuationMonth] = useState(6);
+  const [takenBeforeRise, setTakenBeforeRise] = useState(false);
 
   const r = computeCat(
     {
@@ -69,6 +70,7 @@ export function IrelandCatCalculator({ config }: { config: CatConfig }) {
       applySmallGiftExemption: applySmallGift,
       priorBenefits,
       valuationMonth,
+      takenBeforeRise,
     },
     config,
   );
@@ -111,6 +113,16 @@ export function IrelandCatCalculator({ config }: { config: CatConfig }) {
           {RELATIONSHIPS.map((rel) => (
             <option key={rel.value} value={rel.value}>{t.relationships[rel.value]}</option>
           ))}
+        </SelectField>
+
+        <SelectField
+          label={t.taken}
+          value={takenBeforeRise ? "before" : "after"}
+          onChange={(v) => setTakenBeforeRise(v === "before")}
+          hint={t.takenHint}
+        >
+          <option value="after">{t.takenAfter}</option>
+          <option value="before">{t.takenBefore}</option>
         </SelectField>
 
         <CurrencyField
