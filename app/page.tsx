@@ -7,7 +7,7 @@ import {
   BudgetFeature,
   LearnBand,
   Faq,
-  Quote,
+  Founder,
   TrustStrip,
   HomeCta,
 } from "./components/sections";
@@ -41,7 +41,7 @@ export default async function Home() {
       <BudgetFeature />
       <LearnBand />
       <Faq />
-      <Quote />
+      <Founder />
       <TrustStrip />
       <HomeCta />
     </>

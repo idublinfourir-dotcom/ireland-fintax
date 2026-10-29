@@ -59,6 +59,8 @@ export const TRANSLATED_PATHS = [
   "/tools/*",
   "/personal/*",
   "/budget/*",
+  "/investment-account",
+  "/privacy",
   "/login",
   "/signup",
   "/forgot-password",
@@ -85,8 +87,6 @@ export const ENGLISH_ONLY_PATHS = [
   "/api/*",
   "/auth/*",
   "/media/*",
-  "/investment-account",
-  "/privacy",
 ];
 
 const matches = (list: string[], path: string) =>
@@ -178,7 +178,8 @@ export function plural(locale: Locale, n: number, forms: PluralForms): string {
   return (forms[rule] ?? forms.other).replace("{n}", numberFormat(locale).format(n));
 }
 
-const MONTHS = [
+/** English month names, 0 = January: build "1 July 2027" for localDate(). */
+export const MONTHS = [
   "January", "February", "March", "April", "May", "June",
   "July", "August", "September", "October", "November", "December",
 ];

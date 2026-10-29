@@ -48,8 +48,11 @@ test("switchHref keeps the page, or falls back to that language's home", () => {
   assert.equal(switchHref("ar", "/blog/some-post"), "/ar/blog/some-post");
   assert.equal(switchHref("en", "/tools/ireland-vat"), "/tools/ireland-vat");
   // An English-only page has no Arabic version: go to the Arabic home page.
-  assert.equal(switchHref("ar", "/investment-account"), "/ar");
-  assert.equal(switchHref("en", "/investment-account"), "/investment-account");
+  assert.equal(switchHref("ar", "/admin"), "/ar");
+  assert.equal(switchHref("en", "/admin"), "/admin");
+  // Translated since 29 Oct 2026.
+  assert.equal(switchHref("bn", "/investment-account"), "/bn/investment-account");
+  assert.equal(switchHref("bn", "/privacy"), "/bn/privacy");
 });
 
 test("plural picks the language's own category", () => {

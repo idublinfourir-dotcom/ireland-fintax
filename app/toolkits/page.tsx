@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { ReviewedBy } from "../components/reviewed-by";
 import { Breadcrumbs, Container, PageHero } from "../components/ui";
 import { ContactCta } from "../components/sections";
 import { ToolkitBrowser } from "../components/toolkit-browser";
@@ -28,6 +29,7 @@ export default async function FoundersHubPage() {
         <div className="rounded-none border border-line bg-canvas p-6 sm:p-8 lg:p-10">
           <ToolkitBrowser />
         </div>
+        <ReviewedBy className="mt-6" />
 
         <div className="mt-12 grid gap-6 sm:grid-cols-3">
           {t.notes.map((note) => (

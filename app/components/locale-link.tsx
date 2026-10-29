@@ -45,7 +45,9 @@ export function LocaleLink({
   const current = useLocale();
   const from = locale ?? current;
   const to = href.startsWith("/") ? localeHref(from, href) : href;
-  if (!href.startsWith("/") || splitLocale(to).locale !== from) {
+  // Against the page's own language, not `from`: a link forced into English
+  // from /bn lands in another language and needs the full load.
+  if (!href.startsWith("/") || splitLocale(to).locale !== current) {
     return <a href={to} {...props} />;
   }
   return <Link href={to} {...props} />;

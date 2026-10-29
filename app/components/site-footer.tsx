@@ -2,6 +2,7 @@ import { LocaleLink } from "./locale-link";
 import { site } from "../lib/content";
 import { images } from "../lib/images";
 import { LATEST_BUDGET } from "../lib/budgets";
+import { REVIEWER } from "../lib/reviewer";
 import { LanguageList } from "./language-menu";
 import { getMessages } from "../lib/messages";
 
@@ -116,7 +117,8 @@ export async function SiteFooter() {
 
         <div className="mt-14 flex flex-col gap-3 border-t border-white/10 pt-6 text-xs leading-5 text-white/45 lg:flex-row lg:items-center lg:justify-between lg:gap-8">
           <p>
-            © {new Date().getFullYear()} Irish Fintax. {t.disclaimer} {t.sources}
+            © {new Date().getFullYear()} Irish Fintax. {t.disclaimer} {t.sources}{" "}
+            {t.reviewed.replace("{reviewer}", REVIEWER)}
           </p>
           <p className="flex shrink-0 gap-2">
             <LocaleLink

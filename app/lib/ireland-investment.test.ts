@@ -72,8 +72,8 @@ test("reproduces the workbook's net returns", () => {
   // Investment trust 6.5% mid less 31% CGT = 4.485%. The workbook had 4.355%
   // at 33%; CGT fell to 31% on 7 October 2026 (Budget 2027).
   assert.ok(Math.abs(netReturn(byId("investment-trusts"), m) - 0.04485) < 1e-9);
-  // Raisin 3.245% mid less 33% DIRT = 2.17415%
-  assert.ok(Math.abs(netReturn(byId("raisin-fixed-term"), m) - 0.0217415) < 1e-9);
+  // Raisin 3.35% mid less 33% DIRT = 2.2445% (rates of 26 October 2026)
+  assert.ok(Math.abs(netReturn(byId("raisin-fixed-term"), m) - 0.022445) < 1e-9);
 });
 
 test("marginal-rate options follow the investor's own rate", () => {
@@ -81,8 +81,8 @@ test("marginal-rate options follow the investor's own rate", () => {
   assert.equal(bond.effectiveTax, "marginal");
   assert.equal(effectiveTaxRate(bond, 0.52), 0.52);
   assert.equal(effectiveTaxRate(bond, 0.2), 0.2);
-  // 3.295% mid less 52% = 1.5816%, the workbook's figure
-  assert.ok(Math.abs(netReturn(bond, 0.52) - 0.015816) < 1e-9);
+  // 3.52% yield (28 October 2026) less 52% = 1.6896%
+  assert.ok(Math.abs(netReturn(bond, 0.52) - 0.016896) < 1e-9);
   // A standard-rate taxpayer keeps more of the same coupon.
   assert.ok(netReturn(bond, 0.2) > netReturn(bond, 0.52));
 });

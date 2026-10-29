@@ -2,8 +2,17 @@
 
 import { useState } from "react";
 
-/** Copies a post's address, and says so for two seconds. */
-export function CopyLinkButton({ url, className }: { url: string; className: string }) {
+/** Copies a post's address, and says so for two seconds. The labels come
+    from the server, in the page's language. */
+export function CopyLinkButton({
+  url,
+  className,
+  labels,
+}: {
+  url: string;
+  className: string;
+  labels: { copy: string; copied: string };
+}) {
   const [copied, setCopied] = useState(false);
 
   async function copy() {
@@ -19,7 +28,7 @@ export function CopyLinkButton({ url, className }: { url: string; className: str
 
   return (
     <button type="button" onClick={copy} className={className}>
-      <span aria-live="polite">{copied ? "Copied" : "Copy link"}</span>
+      <span aria-live="polite">{copied ? labels.copied : labels.copy}</span>
     </button>
   );
 }

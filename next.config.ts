@@ -35,10 +35,32 @@ const nextConfig: NextConfig = {
   outputFileTracingRoot: process.cwd(),
   turbopack: { root: process.cwd() },
 
-  experimental: { agentUpgrade: "security" },
+  experimental: {
+    agentUpgrade: "security",
+    /* Every page is dynamic (the root layout reads the session), so by default
+       each client-side navigation refetches the page, even one visited a
+       moment ago. Keep a visited page for 30s so going back and forth is
+       instant. Server actions (sign-in, forms, admin edits) still clear this
+       client cache. */
+    staleTimes: { dynamic: 30 },
+  },
 
   async headers() {
-    return [{ source: "/:path*", headers: securityHeaders }];
+    return [
+      { source: "/:path*", headers: securityHeaders },
+      /* Next serves public/ with max-age=0, so the browser re-checks every
+         file on every visit: the hero videos are 1.3 to 1.7MB each. Their
+         names carry a content hash (hero-1.77020ed2.mp4), so a changed file
+         is a new URL and these can be kept for a year, as Next does for its
+         own hashed assets. The optimiser's copies (/_next/image) follow, as
+         it takes the longer of this and images.minimumCacheTTL. Only names
+         with the hash match: a plain hero-1.mp4 would fall back to max-age=0
+         rather than stick for a year. */
+      {
+        source: "/:name(hero-\\d+\\.[0-9a-f]{8}\\.(?:jpg|mp4))",
+        headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }],
+      },
+    ];
   },
 
   async redirects() {

@@ -292,6 +292,18 @@ export function BreadcrumbNav({ children }: { children: React.ReactNode }) {
 
 /* ---------- the newest Budget ---------- */
 
+/** BudgetNote's caveat (ui.tsx): the measures are announced, not yet law. */
+export function BudgetNoteStatus() {
+  const t = useT(calcMessages);
+  const locale = useLocale();
+  const label = useT(toolNames)[LATEST_BUDGET.href]?.label ?? LATEST_BUDGET.label;
+  return (
+    <>
+      {t.budgetStatus.replace("{budget}", label).replace("{date}", localDate(locale, LATEST_BUDGET.checked))}
+    </>
+  );
+}
+
 /** BudgetNote's link (ui.tsx), here because it needs the page's language. */
 export function BudgetNoteLink() {
   const t = useT(calcMessages);

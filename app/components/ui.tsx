@@ -3,7 +3,7 @@ import Link from "./locale-link";
 import { images, type ImageKey } from "../lib/images";
 import { LocaleLink } from "./locale-link";
 import type { Locale } from "../lib/i18n";
-import { BreadcrumbNav, BudgetNoteLink } from "./calculator-fields";
+import { BreadcrumbNav, BudgetNoteLink, BudgetNoteStatus } from "./calculator-fields";
 
 export function Container({
   children,
@@ -302,7 +302,7 @@ export function GroupRow({
 export function BudgetNote({ children }: { children: ReactNode }) {
   return (
     <p className="mt-6 text-sm leading-6 text-muted">
-      {children} <BudgetNoteLink />
+      {children} <BudgetNoteStatus /> <BudgetNoteLink />
     </p>
   );
 }

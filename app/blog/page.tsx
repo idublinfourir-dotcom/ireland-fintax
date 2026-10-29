@@ -6,14 +6,14 @@ import { ContactCta } from "../components/sections";
 import { ToolTabs } from "../components/tool-tabs";
 import { FeaturedPost, PostCard } from "../components/blog";
 import { listPublishedPosts } from "../lib/posts";
-import { isPostCategory, POST_CATEGORY_LABELS } from "../lib/post-types";
+import { isPostCategory } from "../lib/post-types";
+import { getLocale, getT } from "../lib/messages";
+import { blogMessages } from "../lib/messages/blog";
 
-export const metadata: Metadata = {
-  title: "Insights: Irish tax and personal finance, explained",
-  description:
-    "Guides, explainers and news on Irish tax and personal finance in plain English: income tax, CGT, VAT, mortgages, investing and starting a company.",
-  alternates: { canonical: "/blog" },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getT(blogMessages);
+  return { ...t.meta, alternates: { canonical: "/blog" } };
+}
 
 const PER_PAGE = 12;
 
@@ -24,7 +24,7 @@ export default async function BlogPage({
 }: {
   searchParams: Promise<{ category?: string | string[]; page?: string | string[] }>;
 }) {
-  const params = await searchParams;
+  const [params, t, locale] = await Promise.all([searchParams, getT(blogMessages), getLocale()]);
   const requested = first(params.category);
   const category = isPostCategory(requested) ? requested : null;
   const pageParam = Number(first(params.page));
@@ -50,8 +50,8 @@ export default async function BlogPage({
   /* Only categories with something in them get a tab, like the Founders Hub.
      One category alone needs no switcher. */
   const tabs = [
-    { href: "/blog", label: "All" },
-    ...categories.map((c) => ({ href: `/blog?category=${c}`, label: POST_CATEGORY_LABELS[c] })),
+    { href: "/blog", label: t.all },
+    ...categories.map((c) => ({ href: `/blog?category=${c}`, label: t.categories[c] })),
   ];
   const currentTab = category ? `/blog?category=${category}` : "/blog";
 
@@ -59,24 +59,25 @@ export default async function BlogPage({
   const featured = !category && page === 1 ? posts[0] : undefined;
   const rest = featured ? posts.slice(1) : posts;
 
-  /* lang="en" dir="ltr": under /ga, /es, /pt or /ar the header, footer and call to action
-     are in that language, but the blog itself is English (CHROME_ONLY_PATHS). */
+  /* The labels are in the page's language; the posts are English
+     (CHROME_ONLY_PATHS), and their cards mark their own words lang="en". */
   return (
     <>
-      <div lang="en" dir="ltr">
+      <div>
         <section className="border-b border-line">
           <Container className="pb-4 pt-12 sm:pt-16">
             <div className="animate-fade-up">
-              <Breadcrumbs tone="light" items={[{ label: "Home", href: "/" }, { label: "Insights" }]} />
+              <Breadcrumbs tone="light" items={[{ label: t.home, href: "/" }, { label: t.insights }]} />
             </div>
             <h1 className="animate-fade-up mt-6 font-display text-5xl font-bold leading-[0.98] tracking-[-0.025em] text-ink [animation-delay:80ms] sm:text-6xl lg:text-7xl">
-              {category ? POST_CATEGORY_LABELS[category] : "Insights"}
+              {category ? t.categories[category] : t.insights}
             </h1>
             <p className="animate-fade-up mt-5 max-w-2xl text-lg leading-8 text-ink-body [animation-delay:150ms] sm:text-xl">
-              Guides, explainers and news on Irish tax and personal finance, in plain English.
+              {t.lede}
+              {locale !== "en" && ` ${t.inEnglish}`}
             </p>
             <div className="mt-10">
-              {categories.length > 1 && <ToolTabs heading="Topics" tools={tabs} current={currentTab} />}
+              {categories.length > 1 && <ToolTabs heading={t.topics} tools={tabs} current={currentTab} />}
             </div>
           </Container>
         </section>
@@ -85,18 +86,18 @@ export default async function BlogPage({
           {posts.length === 0 ? (
             <div className="border border-dashed border-line px-6 py-16 text-center">
               <p className="font-display text-xl font-semibold text-ink">
-                {category ? "Nothing in this topic yet" : "No posts yet"}
+                {category ? t.emptyTopic : t.emptyBlog}
               </p>
               <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-muted">
                 {category ? (
                   <>
-                    New posts are on the way.{" "}
+                    {t.emptyTopicBody}{" "}
                     <Link href="/blog" className="font-semibold text-primary-600 hover:text-primary-500">
-                      See every post
+                      {t.seeAll}
                     </Link>
                   </>
                 ) : (
-                  "The first guides are on the way. In the meantime, the calculators are ready to use."
+                  t.emptyBlogBody
                 )}
               </p>
             </div>
@@ -107,7 +108,7 @@ export default async function BlogPage({
                 <>
                   {featured && (
                     <h2 className="mt-16 border-t border-line pt-10 text-xs font-semibold uppercase tracking-[0.16em] text-muted">
-                      More posts
+                      {t.morePosts}
                     </h2>
                   )}
                   <ul className={`grid gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-3 ${featured ? "mt-8" : ""}`}>
@@ -124,22 +125,22 @@ export default async function BlogPage({
 
           {pages > 1 && (
             <nav
-              aria-label="Pages"
+              aria-label={t.pagesNav}
               className="mt-16 flex items-center justify-between gap-4 border-t border-line pt-6 text-sm"
             >
               {page > 1 ? (
                 <Link href={hrefFor(page - 1)} className="font-semibold text-primary-600 hover:text-primary-500">
-                  <span aria-hidden="true">←</span> Newer posts
+                  <span aria-hidden="true" className="inline-block rtl:-scale-x-100">←</span> {t.newer}
                 </Link>
               ) : (
                 <span />
               )}
               <span className="tabular-nums text-muted">
-                Page {page} of {pages}
+                {t.pageOf.replace("{page}", String(page)).replace("{pages}", String(pages))}
               </span>
               {page < pages ? (
                 <Link href={hrefFor(page + 1)} className="font-semibold text-primary-600 hover:text-primary-500">
-                  Older posts <span aria-hidden="true">→</span>
+                  {t.older} <span aria-hidden="true" className="inline-block rtl:-scale-x-100">→</span>
                 </Link>
               ) : (
                 <span />

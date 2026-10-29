@@ -18,6 +18,7 @@ import { getCgtData } from "../lib/cgt-data";
 import { getCatData } from "../lib/cat-data";
 import { getMortgageData } from "../lib/mortgage-data";
 import { LATEST_BUDGET } from "../lib/budgets";
+import { REVIEWER, REVIEWER_CREDENTIALS, REVIEWER_NAME } from "../lib/reviewer";
 import { serviceCategories } from "../lib/content";
 import { LIVE_LOCALES, localDate, numberFormat, shortMonth, type Locale } from "../lib/i18n";
 import { irishToday, upcomingDeadlines } from "../lib/tax-calendar";
@@ -31,7 +32,7 @@ import laptopCharts from "../assets/home/laptop-charts.jpg";
 import notebook from "../assets/home/notebook.jpg";
 import laptopFigures from "../assets/home/laptop-figures.jpg";
 import table from "../assets/home/table.jpg";
-import arifBhuiyan from "../assets/home/arif-bhuiyan.webp";
+import founder from "../assets/home/founder.jpeg";
 
 /* ---------- shared by the home sections ---------- */
 
@@ -124,17 +125,23 @@ export async function Hero() {
           // 7.5 MB to 4.4 MB for the three (28 Oct 2026). The posters stay
           // 1920px; next/image serves them resized.
           //
+          // The part after the number is the first 8 hex of the file's
+          // sha256, and the files are cached for a year (next.config.ts).
+          // scripts/hash-hero.mjs keeps the names and these paths in step
+          // (it runs before dev and build): to replace one, drop the new
+          // file in public/ as plain hero-N.mp4 or .jpg.
+          //
           // Down the Liffey through the office quarter, quays on both banks.
           // The concrete tower fills the left third, which is where the scrim
           // and the headline sit: white text measures 12.4:1 over that region.
-          { src: "/hero-1.mp4", poster: "/hero-1.jpg" },
+          { src: "/hero-1.77020ed2.mp4", poster: "/hero-1.c788c91e.jpg" },
           // Dublin Docklands / IFSC: River Liffey and the Samuel Beckett Bridge
-          { src: "/hero-2.mp4", poster: "/hero-2.jpg" },
+          { src: "/hero-2.a7630019.mp4", poster: "/hero-2.d21fc69f.jpg" },
           // Low over the water toward the Beckett Bridge and the Convention
           // Centre. Opens dark as the drone lifts off the water; that lands
           // under the 1s cross-fade from the previous clip, so it reads as
           // intended rather than as a black frame.
-          { src: "/hero-3.mp4", poster: "/hero-3.jpg" },
+          { src: "/hero-3.4ec11020.mp4", poster: "/hero-3.8100e577.jpg" },
         ]}
         className="absolute inset-0 -z-20"
       />
@@ -156,7 +163,7 @@ export async function Hero() {
             <Eyebrow tone="dark">{h.eyebrow}</Eyebrow>
           </span>
           <h1 className="animate-fade-up mt-6 font-display text-[2.5rem] font-normal leading-[1.1] tracking-[-0.04em] text-balance [animation-delay:80ms] sm:text-5xl lg:text-[2.875rem] xl:text-6xl 2xl:text-[4.25rem]">
-            <Emphasis text={h.title} className="block text-primary-300 not-italic" />
+            <Emphasis text={h.title.replace("{budget}", budgetLabel(t))} className="block text-primary-300 not-italic" />
           </h1>
           <p className="animate-fade-up mt-7 max-w-xl text-lg leading-8 text-white/80 [animation-delay:150ms]">
             {h.lede.replace("{count}", num.format(CALCULATOR_TOOLS.length))}
@@ -609,6 +616,9 @@ export async function BudgetFeature() {
             <Emphasis text={b.title} className="text-primary-400 not-italic" />
           </h2>
           <p className="mt-6 max-w-md leading-[1.65] text-muted">{b.body}</p>
+          <p className="mt-3 max-w-md text-sm leading-6 text-muted">
+            {b.status.replace("{date}", localDate(locale, LATEST_BUDGET.checked))}
+          </p>
           <div className="mt-8">
             <Button
               locale={locale}
@@ -769,54 +779,57 @@ export async function Faq() {
   );
 }
 
-/* ---------- quote ---------- */
+/* ---------- founder ---------- */
 
-/* The owner's choice of person and words (ui-ux-reviews design, 28 Oct 2026).
-   The photo is already cut to its shape, so the shadow follows its alpha. */
-const QUOTE_NAME = "Arif Bhuiyan, Bridg Money";
+/* About the Founder (ui-ux-reviews design, frame 470:2090; owner, 29 Oct 2026).
+   It replaced the closing quote, which the site review found promotional. The
+   name and credentials are the reviewer's, from lib/reviewer.ts.
+   Built to the frame's own measurements, not the site's home-section box: a
+   1180px container, Arial throughout (the only section set in it; Liberation
+   Sans and Arimo share its metrics), the frame's colours, and a blurred blue
+   glow behind the photo. The text column keeps the frame's empty 49px below the
+   last paragraph, which is what centres the photo against it. */
+const FOUNDER_FONT =
+  "Arial, Helvetica, 'Liberation Sans', Arimo, var(--font-arabic), var(--font-bengali), var(--font-devanagari), sans-serif";
 
-export async function Quote() {
-  const { locale } = await getMessages();
-  const q = (await getT(homeMessages)).quote;
-  const [lead, emphasis, tail] = q.quote.split("*");
+export async function Founder() {
+  const f = (await getT(homeMessages)).founder;
   return (
-    <section className="relative isolate overflow-hidden bg-midnight text-white">
+    <section
+      aria-labelledby="founder"
+      className="relative isolate overflow-hidden bg-midnight text-white"
+      style={{ fontFamily: FOUNDER_FONT }}
+    >
       <div
         aria-hidden="true"
         className="absolute inset-x-0 top-0 -z-10 h-full bg-[radial-gradient(60%_80%_at_50%_0%,rgb(48_70_181/0.18),transparent_70%)]"
       />
-      <div className={`${wide} grid items-center gap-12 py-20 sm:py-[6.25rem] md:grid-cols-[minmax(0,333px)_minmax(0,1fr)] lg:gap-[7.5rem] lg:ps-[4.75rem]`}>
+      <div className="mx-auto grid w-full max-w-[1244px] items-center gap-12 px-5 py-20 sm:px-8 sm:py-[100px] lg:grid-cols-[410px_minmax(0,1fr)] lg:gap-[90px]">
         <Reveal>
-          <figure className="w-full max-w-[260px] md:max-w-[333px]">
+          <figure className="relative w-full max-w-[320px] md:max-w-[360px] lg:ms-2.5 lg:max-w-[400px]">
+            <div
+              aria-hidden="true"
+              className="absolute inset-x-6 top-[14%] -z-10 h-[82%] rounded-full bg-[radial-gradient(closest-side,rgb(74_95_214/0.7),transparent)] blur-[56px]"
+            />
             <Image
-              src={arifBhuiyan}
-              alt="Arif Bhuiyan"
-              sizes="(min-width: 768px) 333px, 260px"
-              className="h-auto w-full drop-shadow-[0_30px_72px_rgb(0_0_0/0.6)]"
+              src={founder}
+              alt={REVIEWER_NAME}
+              sizes="(min-width: 1024px) 400px, (min-width: 768px) 360px, 320px"
+              className="h-auto w-full rounded-xl shadow-[0_30px_72px_rgb(0_0_0/0.6)]"
             />
           </figure>
         </Reveal>
-        <Reveal delay={120}>
-          <blockquote>
-            {/* the emphasised sentence starts its own line, and the closing
-                quote mark stays on it */}
-            <p className={`max-w-[36rem] text-[2rem] sm:text-[2.75rem] ${lightTitle}`}>
-              {lead}
-              <br className="hidden sm:inline" />
-              <em className="text-primary-200 not-italic">{emphasis}</em>
-              {tail}
-            </p>
-            <footer className="mt-6 text-[13px] text-white/60">{QUOTE_NAME}</footer>
-          </blockquote>
-          <p className="mt-7 max-w-[620px] leading-[1.65] text-white/60">{q.body}</p>
-          <LocaleLink
-            locale={locale}
-            href="/personal/investment"
-            className="group mt-7 inline-flex items-center gap-1.5 text-[13px] font-bold text-primary-200 transition-colors duration-200 hover:text-white"
-          >
-            {q.link}
-            <ArrowUpRight className={nudge} />
-          </LocaleLink>
+        <Reveal delay={120} className="lg:pb-[49px]">
+          <p className="text-xs leading-[19.8px] font-bold tracking-[0.12em] text-[#8493ff] uppercase">{f.eyebrow}</p>
+          <h2 id="founder" className="mt-[35px] text-[2rem] leading-[1.2] font-bold tracking-[-0.02em] sm:text-[38px]">
+            {REVIEWER_NAME}
+          </h2>
+          <p className="mt-1.5 text-[17px] leading-[1.4] font-semibold text-[#8493ff]">{REVIEWER_CREDENTIALS}</p>
+          <div className="mt-5 flex max-w-[620px] flex-col gap-3.5 text-[15px] leading-[1.65] text-[#c0c9dc]">
+            {f.paragraphs.map((p) => (
+              <p key={p}>{p}</p>
+            ))}
+          </div>
         </Reveal>
       </div>
     </section>
@@ -829,11 +842,11 @@ export async function TrustStrip() {
   const items = (await getT(homeMessages)).trust;
   return (
     <section className="border-y border-line bg-surface-soft">
-      <ul className={`${wide} grid grid-cols-1 gap-x-8 gap-y-2.5 py-5 text-xs font-semibold leading-5 text-ink-body sm:grid-cols-2 lg:flex lg:justify-between`}>
+      <ul className={`${wide} grid grid-cols-1 gap-x-8 gap-y-2.5 py-5 text-xs font-semibold leading-5 text-ink-body sm:grid-cols-2 lg:gap-x-16`}>
         {items.map((item) => (
-          <li key={item} className="flex items-center gap-2">
+          <li key={item} className="flex items-center gap-2 lg:whitespace-nowrap">
             <span aria-hidden="true" className="text-primary-500">✓</span>
-            {item}
+            {item.replace("{name}", REVIEWER_NAME).replace("{reviewer}", REVIEWER)}
           </li>
         ))}
       </ul>

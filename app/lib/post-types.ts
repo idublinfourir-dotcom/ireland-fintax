@@ -159,14 +159,13 @@ export function parseImageRef(raw: unknown): PostImage | null {
   return null;
 }
 
-/* ── slugs, disclaimer ─────────────────────────────────────────────────── */
+/* ── slugs ─────────────────────────────────────────────────────────────── */
 
 /** URL slug from a title. The same rules as the Founders Hub request URLs. */
 export const postSlug = toolkitSlug;
 
 export const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
-/* Rendered under every post, from here rather than per post, so no post can
-   go out without it. Same wording as the FAQ's "Is this advice?" answer. */
-export const POST_DISCLAIMER =
-  "General information only, not financial, tax or legal advice. Rates and rules change and your own situation matters, so check with Revenue or a qualified, regulated adviser before acting on a big decision.";
+/* The disclaimer under every post is `disclaimer` in messages/blog.ts,
+   rendered by the post page rather than stored per post, so no post can go
+   out without it. Same wording as the FAQ's "Is this advice?" answer. */

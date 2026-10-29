@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { ReviewedBy } from "../../components/reviewed-by";
 import { Breadcrumbs, BudgetNote, Container, PageHero } from "../../components/ui";
 import { ContactCta } from "../../components/sections";
 import { CalculatorTabs } from "../../components/tool-tabs";
@@ -42,6 +43,7 @@ export default async function IrelandCapitalAllowancesPage() {
         <CapitalAllowancesTool config={config} />
 
         <BudgetNote>{t.budgetNote}</BudgetNote>
+        <ReviewedBy className="mt-2" />
       </Container>
 
       <ContactCta />

@@ -54,7 +54,7 @@ export async function languageAlternates(): Promise<{
   const h = await headers();
   const path = h.get(PATH_HEADER) ?? "";
   if (!path) return {};
-  // English-only pages (the Investment Account, privacy, sign-in...) still get
+  // English-only pages (admin, the blog's posts...) still get
   // a canonical, to themselves; blog posts set their own in generateMetadata.
   if (!isTranslated(path)) return { canonical: path };
   const locale = await getLocale();

@@ -1,14 +1,25 @@
 import Link from "./locale-link";
-import { Breadcrumbs } from "./ui";
+import { Breadcrumbs, fill } from "./ui";
 import { CopyLinkButton } from "./copy-link-button";
 import { PostImg } from "./post-body";
-import { POST_CATEGORY_LABELS, type PostImage } from "../lib/post-types";
+import type { PostImage } from "../lib/post-types";
 import type { TocEntry } from "../lib/post-blocks";
 import type { Post, PostSummary } from "../lib/posts";
+import { localDate, RTL_LOCALES, type Locale } from "../lib/i18n";
+import { getLocale, getT } from "../lib/messages";
+import { blogMessages } from "../lib/messages/blog";
 
 /* Blog building blocks: cards, the post header and cover, sharing, the table
    of contents and page navigation. Server components, apart from the copy
-   button. */
+   button. Labels follow the page's language; a post's own words (title,
+   excerpt, headings) are English everywhere and say so with EN. */
+
+/** On a post's own English words, inside a page in another language. */
+export const EN = { lang: "en", dir: "ltr" } as const;
+
+/** On a label in the page's language, inside a post's English column. */
+export const inLocale = (locale: Locale) =>
+  ({ lang: locale, dir: RTL_LOCALES.includes(locale) ? "rtl" : "ltr" }) as const;
 
 /* Dates in Irish time: the server runs in UTC, and a post published just
    after midnight in summer would otherwise show the day before. */
@@ -20,26 +31,28 @@ const dateFmt = new Intl.DateTimeFormat("en-GB", {
 });
 const dayKey = new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Dublin" });
 
-export const formatPostDate = (d: Date) => dateFmt.format(d);
+export const formatPostDate = (d: Date, locale: Locale = "en") => localDate(locale, dateFmt.format(d));
 
 /** Edited on a later day than it was published? Then the post says so. */
 export function wasUpdated(post: Pick<PostSummary, "publishedAt" | "updatedAt">) {
   return dayKey.format(post.updatedAt) > dayKey.format(post.publishedAt);
 }
 
-function Meta({ post }: { post: PostSummary }) {
+async function Meta({ post }: { post: PostSummary }) {
+  const [t, locale] = await Promise.all([getT(blogMessages), getLocale()]);
   return (
     <>
-      <time dateTime={post.publishedAt.toISOString()}>{formatPostDate(post.publishedAt)}</time>
+      <time dateTime={post.publishedAt.toISOString()}>{formatPostDate(post.publishedAt, locale)}</time>
       <span aria-hidden="true"> · </span>
-      {post.readingMinutes} min read
+      {t.minRead.replace("{n}", String(post.readingMinutes))}
     </>
   );
 }
 
 const eyebrow = "text-[11px] font-semibold uppercase tracking-[0.16em] text-primary-500";
 
-export function PostCard({ post, headingLevel = 2 }: { post: PostSummary; headingLevel?: 2 | 3 }) {
+export async function PostCard({ post, headingLevel = 2 }: { post: PostSummary; headingLevel?: 2 | 3 }) {
+  const t = await getT(blogMessages);
   const Heading = headingLevel === 2 ? "h2" : "h3";
   return (
     <Link
@@ -54,11 +67,11 @@ export function PostCard({ post, headingLevel = 2 }: { post: PostSummary; headin
           className="h-full w-full object-cover transition-transform duration-300 ease-snappy group-hover:scale-[1.03]"
         />
       </div>
-      <p className={`mt-5 ${eyebrow}`}>{POST_CATEGORY_LABELS[post.category]}</p>
-      <Heading className="mt-2 font-display text-xl font-semibold leading-snug tracking-tight text-balance text-ink transition-colors duration-200 group-hover:text-primary-600">
+      <p className={`mt-5 ${eyebrow}`}>{t.categories[post.category]}</p>
+      <Heading {...EN} className="mt-2 font-display text-xl font-semibold leading-snug tracking-tight text-balance text-ink transition-colors duration-200 group-hover:text-primary-600">
         {post.title}
       </Heading>
-      <p className="mt-2 line-clamp-2 text-[15px] leading-6 text-muted">{post.excerpt}</p>
+      <p {...EN} className="mt-2 line-clamp-2 text-[15px] leading-6 text-muted">{post.excerpt}</p>
       <p className="mt-3 text-xs text-muted">
         <Meta post={post} />
       </p>
@@ -67,7 +80,8 @@ export function PostCard({ post, headingLevel = 2 }: { post: PostSummary; headin
 }
 
 /** The newest post, large, at the top of the blog. */
-export function FeaturedPost({ post }: { post: PostSummary }) {
+export async function FeaturedPost({ post }: { post: PostSummary }) {
+  const t = await getT(blogMessages);
   return (
     <Link
       href={`/blog/${post.slug}`}
@@ -84,18 +98,18 @@ export function FeaturedPost({ post }: { post: PostSummary }) {
       </div>
       <div>
         <p className={eyebrow}>
-          Latest <span aria-hidden="true">·</span> {POST_CATEGORY_LABELS[post.category]}
+          {t.latest} <span aria-hidden="true">·</span> {t.categories[post.category]}
         </p>
-        <h2 className="mt-4 font-display text-3xl font-bold leading-[1.08] tracking-[-0.02em] text-balance text-ink transition-colors duration-200 group-hover:text-primary-600 sm:text-4xl lg:text-[2.75rem]">
+        <h2 {...EN} className="mt-4 font-display text-3xl font-bold leading-[1.08] tracking-[-0.02em] text-balance text-ink transition-colors duration-200 group-hover:text-primary-600 sm:text-4xl lg:text-[2.75rem]">
           {post.title}
         </h2>
-        <p className="mt-4 line-clamp-3 text-lg leading-8 text-ink-body">{post.excerpt}</p>
+        <p {...EN} className="mt-4 line-clamp-3 text-lg leading-8 text-ink-body">{post.excerpt}</p>
         <p className="mt-5 text-sm text-muted">
           <Meta post={post} />
         </p>
         <span className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-primary-600">
-          Read the post
-          <span aria-hidden="true" className="transition-transform duration-200 group-hover:translate-x-1">
+          {t.readPost}
+          <span aria-hidden="true" className="inline-block transition-transform duration-200 group-hover:translate-x-1 rtl:-scale-x-100 rtl:group-hover:-translate-x-1">
             →
           </span>
         </span>
@@ -109,31 +123,31 @@ const chip =
 
 /** Share links: plain links to each service's own share page, so no third
     party script ever loads on the site. */
-export function ShareLinks({ url, title, centered = false }: { url: string; title: string; centered?: boolean }) {
+export async function ShareLinks({ url, title, centered = false }: { url: string; title: string; centered?: boolean }) {
+  const [t, locale] = await Promise.all([getT(blogMessages), getLocale()]);
   const u = encodeURIComponent(url);
-  const t = encodeURIComponent(title);
   const services = [
     { label: "LinkedIn", href: `https://www.linkedin.com/sharing/share-offsite/?url=${u}` },
-    { label: "X", href: `https://x.com/intent/post?url=${u}&text=${t}` },
+    { label: "X", href: `https://x.com/intent/post?url=${u}&text=${encodeURIComponent(title)}` },
     { label: "WhatsApp", href: `https://wa.me/?text=${encodeURIComponent(`${title} ${url}`)}` },
   ];
   return (
-    <div className={`flex flex-wrap items-center gap-2 ${centered ? "justify-center" : ""}`}>
-      <span className="me-1 text-xs font-semibold uppercase tracking-[0.14em] text-muted">Share</span>
-      <CopyLinkButton url={url} className={chip} />
+    <div {...inLocale(locale)} className={`flex flex-wrap items-center gap-2 ${centered ? "justify-center" : ""}`}>
+      <span className="me-1 text-xs font-semibold uppercase tracking-[0.14em] text-muted">{t.share}</span>
+      <CopyLinkButton url={url} className={chip} labels={{ copy: t.copyLink, copied: t.copied }} />
       {services.map((s) => (
         <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer" className={chip}>
           {s.label}
         </a>
       ))}
-      <a href={`mailto:?subject=${t}&body=${u}`} className={chip}>
-        Email
+      <a href={`mailto:?subject=${encodeURIComponent(title)}&body=${u}`} className={chip}>
+        {t.email}
       </a>
     </div>
   );
 }
 
-export function PostHeader({
+export async function PostHeader({
   post,
   url,
   page,
@@ -144,7 +158,8 @@ export function PostHeader({
   page: number;
   pages: number;
 }) {
-  const category = POST_CATEGORY_LABELS[post.category];
+  const [t, locale] = await Promise.all([getT(blogMessages), getLocale()]);
+  const category = t.categories[post.category];
   return (
     <header>
       <div className="mx-auto w-full max-w-3xl px-5 pb-10 pt-10 text-center sm:px-8 sm:pb-12 sm:pt-14">
@@ -152,8 +167,8 @@ export function PostHeader({
           <Breadcrumbs
             tone="light"
             items={[
-              { label: "Home", href: "/" },
-              { label: "Insights", href: "/blog" },
+              { label: t.home, href: "/" },
+              { label: t.insights, href: "/blog" },
               { label: category, href: `/blog?category=${post.category}` },
             ]}
           />
@@ -167,27 +182,36 @@ export function PostHeader({
             <Meta post={post} />
           </span>
         </p>
-        <h1 className="animate-fade-up mt-5 font-display text-4xl font-bold leading-[1.05] tracking-[-0.025em] text-balance text-ink [animation-delay:100ms] sm:text-5xl lg:text-[3.5rem]">
+        <h1 {...EN} className="animate-fade-up mt-5 font-display text-4xl font-bold leading-[1.05] tracking-[-0.025em] text-balance text-ink [animation-delay:100ms] sm:text-5xl lg:text-[3.5rem]">
           {post.title}
         </h1>
         {post.excerpt && (
-          <p className="animate-fade-up mx-auto mt-5 max-w-2xl text-lg leading-8 text-balance text-ink-body [animation-delay:140ms] sm:text-xl">
+          <p {...EN} className="animate-fade-up mx-auto mt-5 max-w-2xl text-lg leading-8 text-balance text-ink-body [animation-delay:140ms] sm:text-xl">
             {post.excerpt}
           </p>
         )}
         <p className="animate-fade-up mt-4 text-xs text-muted [animation-delay:160ms]">
-          By Irish Fintax
+          {t.byline}
           {wasUpdated(post) && (
             <>
               {" "}
-              <span aria-hidden="true">·</span> Updated{" "}
-              <time dateTime={post.updatedAt.toISOString()}>{formatPostDate(post.updatedAt)}</time>
+              <span aria-hidden="true">·</span>{" "}
+              {fill(t.updated, {
+                date: <time dateTime={post.updatedAt.toISOString()}>{formatPostDate(post.updatedAt, locale)}</time>,
+              })}
             </>
           )}
           {pages > 1 && (
             <>
               {" "}
-              <span aria-hidden="true">·</span> Page {page} of {pages}
+              <span aria-hidden="true">·</span>{" "}
+              {t.pageOf.replace("{page}", String(page)).replace("{pages}", String(pages))}
+            </>
+          )}
+          {locale !== "en" && (
+            <>
+              {" "}
+              <span aria-hidden="true">·</span> {t.postInEnglish}
             </>
           )}
         </p>
@@ -217,7 +241,7 @@ function tocHref(entry: TocEntry, slug: string, page: number) {
 
 /** "On this page": a sticky list beside the text on wide screens, a
     collapsible box above it everywhere else. */
-export function TableOfContents({
+export async function TableOfContents({
   entries,
   slug,
   page,
@@ -228,6 +252,8 @@ export function TableOfContents({
   page: number;
   variant: "side" | "inline";
 }) {
+  const [t, locale] = await Promise.all([getT(blogMessages), getLocale()]);
+  const ui = inLocale(locale);
   const multiPage = entries.some((e) => e.page !== entries[0]?.page);
   const list = (
     <ol className="mt-3 space-y-0.5 border-s border-line">
@@ -241,7 +267,7 @@ export function TableOfContents({
           >
             {e.text}
             {multiPage && e.page !== page && (
-              <span className="ms-1.5 text-[11px] text-muted">p. {e.page}</span>
+              <span {...ui} className="ms-1.5 text-[11px] text-muted">{t.pageShort.replace("{n}", String(e.page))}</span>
             )}
           </a>
         </li>
@@ -251,8 +277,8 @@ export function TableOfContents({
 
   if (variant === "side") {
     return (
-      <nav aria-label="On this page" className="text-[13px]">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-ink">On this page</p>
+      <nav aria-label={t.onThisPage} className="text-[13px]">
+        <p {...ui} className="text-[11px] font-semibold uppercase tracking-[0.16em] text-ink">{t.onThisPage}</p>
         {list}
       </nav>
     );
@@ -260,26 +286,27 @@ export function TableOfContents({
   return (
     <details className="group mb-2 border border-line bg-surface-muted/50 px-5 py-4 text-sm">
       <summary className="flex cursor-pointer list-none items-center justify-between font-semibold text-ink">
-        On this page
+        <span {...ui}>{t.onThisPage}</span>
         <span aria-hidden="true" className="text-muted transition-transform duration-200 group-open:rotate-180">
           ⌄
         </span>
       </summary>
-      <nav aria-label="On this page">{list}</nav>
+      <nav aria-label={t.onThisPage}>{list}</nav>
     </details>
   );
 }
 
 /** Previous / numbered / next links for a post split by page breaks. */
-export function PageNav({ slug, page, pages }: { slug: string; page: number; pages: number }) {
+export async function PageNav({ slug, page, pages }: { slug: string; page: number; pages: number }) {
   if (pages <= 1) return null;
+  const [t, locale] = await Promise.all([getT(blogMessages), getLocale()]);
   const href = (p: number) => (p > 1 ? `/blog/${slug}?page=${p}` : `/blog/${slug}`);
   return (
-    <nav aria-label="Post pages" className="mt-14 border-t border-line pt-8">
+    <nav {...inLocale(locale)} aria-label={t.postPages} className="mt-14 border-t border-line pt-8">
       <div className="flex flex-wrap items-center justify-between gap-4">
         {page > 1 ? (
           <Link href={href(page - 1)} className="text-sm font-semibold text-primary-600 hover:text-primary-500">
-            <span aria-hidden="true">←</span> Previous page
+            <span aria-hidden="true" className="inline-block rtl:-scale-x-100">←</span> {t.previousPage}
           </Link>
         ) : (
           <span />
@@ -310,7 +337,7 @@ export function PageNav({ slug, page, pages }: { slug: string; page: number; pag
             href={href(page + 1)}
             className="inline-flex h-10 items-center gap-2 bg-primary-500 px-5 text-sm font-semibold text-white transition-colors duration-200 hover:bg-primary-600"
           >
-            Next page <span aria-hidden="true">→</span>
+            {t.nextPage} <span aria-hidden="true" className="inline-block rtl:-scale-x-100">→</span>
           </Link>
         ) : (
           <span />

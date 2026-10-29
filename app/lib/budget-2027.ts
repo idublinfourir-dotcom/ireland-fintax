@@ -31,13 +31,15 @@ import {
   type IncomeTaxResult,
   type YearRates,
 } from "./ireland-income-tax.ts";
+import { BUDGETS } from "./budgets.ts";
 
 /** The two tax years this Budget compares. Copying the module for a later
     Budget means moving these (and the prose dates), nothing else in code. */
 export const YEARS = { before: 2026, after: 2027 } as const;
 
-/** When the figures below were last checked. Move it whenever one changes. */
-export const BUDGET_DATA_AS_OF = "13 October 2026";
+/** When the figures below were last checked: `checked` on this Budget in budgets.ts,
+    which the calculator pages and home page show too. Move it whenever one changes. */
+export const BUDGET_DATA_AS_OF = BUDGETS.find((b) => b.year === YEARS.after)?.checked ?? "";
 
 /* ---------- sources ---------- */
 
@@ -247,7 +249,7 @@ export const EMPTY_PROFILE: BudgetProfile = {
 type Status = "in-force" | "awaiting-finance-act" | "announced" | "already-law";
 
 const STATUS_LABEL: Record<Status, string> = {
-  "in-force": "In force",
+  "in-force": "In effect now, becomes final with the Finance Act",
   "awaiting-finance-act": "Announced, becomes law with the Finance Act",
   announced: "Announced",
   "already-law": "Already law before this Budget",
@@ -565,7 +567,7 @@ const MEASURES: MeasureDef[] = [
     group: "Home",
     title: "Mortgage Interest Tax Credit ends",
     starts: { date: "2026-12-31", label: "Ends with 2026" },
-    status: "in-force",
+    status: "already-law",
     source: "financeAct2025",
     appliesTo: (p) => p.mortgage,
     impact: () => ({
@@ -768,10 +770,10 @@ const MEASURES: MeasureDef[] = [
   },
   {
     id: "cost-of-disability",
-    summary: "A one-off €500 in early 2027 for people on long-term disability payments.",
+    summary: "A one-off €500 in 2027 for people on long-term disability payments.",
     group: "Support",
     title: "Cost of Disability payment",
-    starts: { date: "2027-01-01", label: "First quarter of 2027" },
+    starts: { date: "2027-01-01", label: "2027, date not announced" },
     status: "announced",
     source: "expenditure",
     appliesTo: (p) => p.disabilityPayment,
