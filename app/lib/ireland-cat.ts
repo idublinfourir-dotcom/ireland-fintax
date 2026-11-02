@@ -24,7 +24,7 @@
    c − max(0,T−p))  for all p,c,T ≥ 0. This equality DEPENDS ON THE FLAT RATE:
    if CAT ever gets bands, replace this with an aggregate-minus-prior computation.
 
-   Sources (verified July 2026):
+   Sources (verified October 2026):
    - Rate 33%: revenue.ie/.../cat-thresholds-rates-and-aggregation-rules/cat-rates
    - Group thresholds A €420k / B €44k / C €22k for gifts and inheritances on
      or after 7 Oct 2026 (Budget 2027; Revenue eBrief 149/26). Before that,
