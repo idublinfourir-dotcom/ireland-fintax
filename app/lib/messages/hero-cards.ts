@@ -56,7 +56,7 @@ const en = {
     eyebrow: "{rate} credit, paid over three years",
     spend: "Qualifying R&D spend",
     result: "R&D tax credit",
-    sub: "Year 1 payment {amount}",
+    sub: "Year 1 payment {amount} · {earlier} for earlier periods",
     year: "Year {n}",
   },
   ca: {
@@ -169,7 +169,7 @@ export const heroCardMessages: Translations<typeof en> = {
       eyebrow: "Crédito del {rate}, pagado en tres años",
       spend: "Gasto en I+D que cumple los requisitos",
       result: "Crédito fiscal por I+D",
-      sub: "Pago del año 1: {amount}",
+      sub: "Pago del año 1: {amount} · {earlier} en periodos anteriores",
       year: "Año {n}",
     },
     ca: {
@@ -279,7 +279,7 @@ export const heroCardMessages: Translations<typeof en> = {
       eyebrow: "Crédito de {rate}, pago em três anos",
       spend: "Gasto qualificado de P&D",
       result: "Crédito fiscal de P&D",
-      sub: "Pagamento do ano 1: {amount}",
+      sub: "Pagamento do ano 1: {amount} · {earlier} em períodos anteriores",
       year: "Ano {n}",
     },
     ca: {
@@ -389,7 +389,7 @@ export const heroCardMessages: Translations<typeof en> = {
       eyebrow: "Creidmheas {rate}, íoctha thar thrí bliana",
       spend: "Caiteachas incháilithe T&F",
       result: "Creidmheas cánach T&F",
-      sub: "Íocaíocht bhliain 1: {amount}",
+      sub: "Íocaíocht bhliain 1: {amount} · {earlier} do thréimhsí níos luaithe",
       year: "Bliain {n}",
     },
     ca: {
@@ -499,7 +499,7 @@ export const heroCardMessages: Translations<typeof en> = {
       eyebrow: "ائتمان {rate}، يُدفع على ثلاث سنوات",
       spend: "إنفاق البحث والتطوير المؤهل",
       result: "الائتمان الضريبي للبحث والتطوير",
-      sub: "دفعة السنة 1: {amount}",
+      sub: "دفعة السنة 1: {amount} · {earlier} للفترات السابقة",
       year: "السنة {n}",
     },
     ca: {
@@ -609,11 +609,11 @@ export const heroCardMessages: Translations<typeof en> = {
       eyebrow: "{rate} ক্রেডিট, তিন বছরে পরিশোধিত",
       spend: "যোগ্য R&D খরচ",
       result: "R&D কর ক্রেডিট",
-      sub: "প্রথম বছরের পরিশোধ {amount}",
+      sub: "প্রথম বছরের পরিশোধ {amount} · পূর্ববর্তী হিসাবকালে {earlier}",
       year: "বছর {n}",
     },
     ca: {
-      eyebrow: "অবচয় বা ক্ষয়ক্ষতি",
+      eyebrow: "মূলধনি ভাতা (Capital Allowances)",
       cost: "সম্পদের খরচ",
       asset: "সম্পদ",
       plant: "যন্ত্রপাতি",
@@ -719,7 +719,7 @@ export const heroCardMessages: Translations<typeof en> = {
       eyebrow: "{rate} क्रेडिट, तीन साल में भुगतान",
       spend: "योग्य R&D ख़र्च",
       result: "R&D टैक्स क्रेडिट",
-      sub: "साल 1 का भुगतान {amount}",
+      sub: "साल 1 का भुगतान {amount} · पहले की अवधियों पर {earlier}",
       year: "साल {n}",
     },
     ca: {
