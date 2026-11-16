@@ -1286,7 +1286,7 @@ export const SOURCES: { topic: string; source: string; url: string }[] = [
   },
   {
     topic: "ISEQ 20 returns, yield and constituents",
-    source: "Euronext: ISEQ 20 index factsheet (31 March 2026)",
+    source: "Euronext: ISEQ 20 index factsheet (30 September 2026)",
     url: "https://live.euronext.com/sites/default/files/documentation/index-fact-sheets/ISEQ_20_Index_Factsheet.pdf",
   },
   {
