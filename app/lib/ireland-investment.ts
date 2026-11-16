@@ -574,7 +574,7 @@ export const INVESTMENT_OPTIONS: InvestmentOption[] = [
     category: "fixed-term",
     risk: 1,
     grossLow: 0.032,
-    grossHigh: 0.035,
+    grossHigh: 0.0353,
     taxTreatment: "DIRT 33%, self-declared",
     effectiveTax: TAX.dirt,
     liquidity: "Locked for the term",
@@ -583,7 +583,7 @@ export const INVESTMENT_OPTIONS: InvestmentOption[] = [
     cap: "€100,000 deposit guarantee per bank",
     guarantee: "dgs",
     lumpSum: true,
-    note: "Best 1-year 3.20% (BluOr, Latvia), 2-year 3.39% (CA Auto Bank, Italy), 3-year 3.35% (Hamburg Commercial Bank, Germany), 5-year 3.50% (Aareal, Germany), at 26 October 2026. Five years pays only 0.3 points more than one. Each bank carries its own national €100,000 guarantee. Net of DIRT, 3.20% becomes 2.14%, less than the tax-free 10-year Solidarity Bond.",
+    note: "Best 1-year 3.20% (BluOr, Latvia), 2-year 3.40% (Creditplus Bank, Germany), 3-year 3.42% (Achmea Bank, Netherlands), 5-year 3.53% (Achmea Bank, Netherlands), at 16 November 2026. Five years pays only 0.3 points more than one. Each bank carries its own national €100,000 guarantee. Net of DIRT, 3.20% becomes 2.14%, less than the tax-free 10-year Solidarity Bond.",
     link: {
       label: "CCPC: saving in other EU countries",
       url: "https://www.ccpc.ie/manage-your-money/saving-and-investments/saving-in-other-eu-countries",
