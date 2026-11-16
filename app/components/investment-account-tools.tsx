@@ -129,7 +129,7 @@ export function AccountProjection() {
           </ul>
           <p className="mt-3 text-sm">
             {t.source}{" "}
-            <a className="text-primary-500 hover:underline" href="https://data.oireachtas.ie/ie/oireachtas/bill/2026/98/eng/initiated/b9826d.pdf" target="_blank" rel="noopener noreferrer">
+            <a className="text-primary-500 hover:underline" href="https://data.oireachtas.ie/ie/oireachtas/bill/2026/98/eng/ver_a/b98a26d.pdf" target="_blank" rel="noopener noreferrer">
               {t.sourceLink}
             </a>
             .

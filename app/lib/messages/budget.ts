@@ -36,6 +36,7 @@ const en = {
     "awaiting-finance-act": "Announced, becomes law with the Finance Act",
     announced: "Announced",
     "already-law": "Already law before this Budget",
+    "made-law": "Now law, set by ministerial order",
   } as M,
   calculators: {
     "CGT calculator": "CGT calculator",
@@ -79,7 +80,7 @@ const en = {
     "help-to-buy": {
       title: "Help to Buy",
       summary: "The most a first-time buyer of a new home can get rises from €30,000 to €35,000.",
-      starts: "Applications from 7 October 2026",
+      starts: "Contracts from 7 October 2026",
       body: "Up to {now} on a {price} new home (was {before}): the lesser of €35,000, 10% of the price{taxPart}. First-time buyers, new homes only, mortgage of at least 70%, and you must live there for five years.",
       taxGiven: " and the tax you paid in the last four years",
       taxMissing: ", and the income tax and DIRT you paid in the last four years, which you did not enter",
@@ -94,14 +95,14 @@ const en = {
     "rent-a-room": {
       title: "Rent-a-room relief",
       summary: "Tax-free room income rises from €14,000 to €16,000 and covers certain garden units.",
-      starts: "1 January 2027",
-      body: "Room income up to €16,000 a year is tax-free (was €14,000). It now also covers certain garden or auxiliary units installed after 27 July 2026.",
+      starts: "1 January 2027; garden units from 27 July 2026",
+      body: "Room income up to €16,000 a year is tax-free from 2027 (was €14,000). Under the Finance Bill it also covers rooms in certain garden units from 27 July 2026, once their planning notice has been given.",
     },
     solar: {
       title: "Selling solar power to the grid",
       summary: "Tax-free profit from selling home-generated electricity rises from €400 to €600.",
-      starts: "Not announced yet",
-      body: "Up to €600 a year of profit from electricity you sell to the grid is free of income tax, USC and PRSI (was €400). The first tax year has not been announced.",
+      starts: "1 January 2027",
+      body: "Up to €600 a year of profit from electricity you sell to the grid is free of income tax, USC and PRSI (was €400), from the 2027 tax year.",
     },
     "derelict-property": {
       title: "Derelict Property Tax",
@@ -120,7 +121,7 @@ const en = {
       summary: "The universal hourly subsidy rises from €2.14 to €2.50 from September 2027; the top weekly fee in Core Funding services falls from €280 to €250.",
       starts: "September 2027",
       change: "36c an hour less",
-      body: "The National Childcare Scheme subsidy rises from €2.14 to €2.50 an hour for children up to senior infants. Separately, the most a Core Funding service can charge for a typical full-time place falls from €280 to €250 a week; its start date has not been announced.",
+      body: "The National Childcare Scheme subsidy rises from €2.14 to €2.50 an hour for children up to senior infants. Separately, the most a Core Funding service can charge for a typical full-time place falls from €280 to €250 a week, from the Core Funding year that starts in September 2027.",
       estimate: "{perWeek} a week less at {hours} subsidised hours a week.",
     },
     "home-carer": {
@@ -133,7 +134,7 @@ const en = {
       title: "Childminding relief",
       summary: "Tax-free childminding income rises from €15,000 to €20,000, with no limit on the number of children.",
       starts: "2027",
-      body: "Childminding income in your own home is tax-free up to €20,000 a year (was €15,000), and the limit on how many children you mind is removed.",
+      body: "Childminding income in your own home is tax-free up to €20,000 a year (was €15,000), and the limit on how many children you mind is removed. If the Child Care Act 1991 requires you to register as an early years service, you must be registered.",
     },
     "welfare-rates": {
       title: "Weekly social welfare payment",
@@ -169,7 +170,7 @@ const en = {
       title: "Cost of Disability payment",
       summary: "A one-off €500 in 2027 for people on long-term disability payments.",
       starts: "2027, date not announced",
-      body: "A one-off €500 for people getting a long-term disability payment, about 240,000 people. Which payments count has not been published yet.",
+      body: "A one-off €500 for people getting a long-term disability payment, about 240,000 people: Blind Pension, Disability Allowance, Invalidity Pension or Partial Capacity Benefit. The payment date has not been announced.",
     },
     "carers-allowance": {
       title: "Carer's Allowance income limit",
@@ -232,17 +233,17 @@ const en = {
     "heating-oil": {
       title: "Home heating oil",
       summary: "Carbon tax falls to €48.50 a tonne, about €43 less per 1,000 litres.",
-      starts: "Not announced yet",
+      starts: "14 October 2026",
       change: "€43 less per 1,000 litres",
-      body: "Carbon tax falls from €63.50 to €48.50 a tonne and stays there until 2030. The start date has not been announced.",
+      body: "Carbon tax fell from €63.50 to €48.50 a tonne on 14 October 2026 and stays there until 2030.",
       estimate: "{yearly} at {litres} litres a year.",
     },
     gas: {
       title: "Gas heating",
       summary: "Carbon tax falls to €48.50 a tonne, about €32 less per 11,000 kWh.",
-      starts: "Not announced yet",
+      starts: "14 October 2026",
       change: "€32 less per 11,000 kWh",
-      body: "Carbon tax falls from €63.50 to €48.50 a tonne. 11,000 kWh is the Budget's typical home for a year. The start date has not been announced.",
+      body: "Carbon tax fell from €63.50 to €48.50 a tonne on 14 October 2026. 11,000 kWh is the Budget's typical home for a year.",
       estimate: "{yearly} at {kwh} kWh a year.",
     },
     cigarettes: {
@@ -271,7 +272,7 @@ const en = {
       title: "Running a company",
       summary: "Employer PRSI threshold €600 a week, start-up relief to 2030, R&D first-year payment €105,000, preliminary tax small company limit €350,000.",
       starts: "Various",
-      body: "Employer PRSI's lower rate applies up to €600 a week of pay (was €552) from 1 January 2027. Start-up relief is extended to the end of 2030. The \"small company\" limit for preliminary tax rises from €200,000 to €350,000. The R&D credit paid in full in year one rises from €87,500 to €105,000.",
+      body: "Employer PRSI's lower rate applies up to €600 a week of pay (was €552) from 1 January 2027. Start-up relief is extended to the end of 2030. The \"small company\" limit for preliminary tax rises from €200,000 to €350,000. The R&D credit paid in full in year one rises from €87,500 to €105,000, for accounting periods whose return is due on or after 23 September 2028.",
     },
     farm: {
       title: "Farming",
@@ -382,6 +383,7 @@ export const budgetMessages: Translations<BudgetMessages> = {
       "awaiting-finance-act": "Anunciado; será ley con la Ley de Finanzas",
       announced: "Anunciado",
       "already-law": "Ya era ley antes de este Presupuesto",
+      "made-law": "Ya es ley, fijado por orden ministerial",
     },
     calculators: {
       "CGT calculator": "Calculadora de CGT",
@@ -424,7 +426,7 @@ export const budgetMessages: Translations<BudgetMessages> = {
       "help-to-buy": {
         title: "Help to Buy",
         summary: "Lo máximo que puede recibir quien compra su primera vivienda nueva sube de 30.000 € a 35.000 €.",
-        starts: "Solicitudes desde el 7 de octubre de 2026",
+        starts: "Contratos desde el 7 de octubre de 2026",
         body: "Hasta {now} por una vivienda nueva de {price} (antes {before}): lo menor entre 35.000 €, el 10 % del precio{taxPart}. Solo para primeros compradores y viviendas nuevas, con una hipoteca de al menos el 70 %, y tienes que vivir en ella cinco años.",
         taxGiven: " y los impuestos que pagaste en los últimos cuatro años",
         taxMissing: " y el impuesto sobre la renta y el DIRT que pagaste en los últimos cuatro años, que no has introducido",
@@ -439,14 +441,14 @@ export const budgetMessages: Translations<BudgetMessages> = {
       "rent-a-room": {
         title: "Exención por alquilar una habitación",
         summary: "Los ingresos libres de impuestos por alquilar una habitación suben de 14.000 € a 16.000 € e incluyen algunas unidades en el jardín.",
-        starts: "1 de enero de 2027",
-        body: "Los ingresos por alquilar una habitación están libres de impuestos hasta 16.000 € al año (antes 14.000 €). Ahora también cubren algunas unidades en el jardín o auxiliares instaladas después del 27 de julio de 2026.",
+        starts: "1 de enero de 2027; unidades en el jardín desde el 27 de julio de 2026",
+        body: "Los ingresos por alquilar una habitación están libres de impuestos hasta 16.000 € al año desde 2027 (antes 14.000 €). Según el Proyecto de Ley de Finanzas, también cubren habitaciones en algunas unidades en el jardín desde el 27 de julio de 2026, una vez comunicado su aviso de planificación.",
       },
       solar: {
         title: "Vender electricidad solar a la red",
         summary: "El beneficio libre de impuestos por vender electricidad generada en casa sube de 400 € a 600 €.",
-        starts: "Aún no anunciado",
-        body: "Hasta 600 € al año de beneficio por la electricidad que vendes a la red quedan libres de impuesto sobre la renta, USC y PRSI (antes 400 €). Aún no se ha anunciado el primer año fiscal.",
+        starts: "1 de enero de 2027",
+        body: "Hasta 600 € al año de beneficio por la electricidad que vendes a la red quedan libres de impuesto sobre la renta, USC y PRSI (antes 400 €), desde el ejercicio fiscal de 2027.",
       },
       "derelict-property": {
         title: "Impuesto sobre inmuebles abandonados",
@@ -465,7 +467,7 @@ export const budgetMessages: Translations<BudgetMessages> = {
         summary: "La ayuda universal por hora sube de 2,14 € a 2,50 € desde septiembre de 2027; la tarifa semanal máxima en los centros con Core Funding baja de 280 € a 250 €.",
         starts: "Septiembre de 2027",
         change: "36 céntimos menos la hora",
-        body: "La ayuda del National Childcare Scheme sube de 2,14 € a 2,50 € la hora para niños hasta el segundo año de infantil (senior infants). Aparte, lo máximo que un centro con Core Funding puede cobrar por una plaza típica a jornada completa baja de 280 € a 250 € a la semana; no se ha anunciado desde cuándo.",
+        body: "La ayuda del National Childcare Scheme sube de 2,14 € a 2,50 € la hora para niños hasta el segundo año de infantil (senior infants). Aparte, lo máximo que un centro con Core Funding puede cobrar por una plaza típica a jornada completa baja de 280 € a 250 € a la semana, desde el año de Core Funding que empieza en septiembre de 2027.",
         estimate: "{perWeek} menos a la semana con {hours} horas subvencionadas a la semana.",
       },
       "home-carer": {
@@ -478,7 +480,7 @@ export const budgetMessages: Translations<BudgetMessages> = {
         title: "Exención por cuidar niños en casa",
         summary: "Los ingresos libres de impuestos por cuidar niños suben de 15.000 € a 20.000 €, sin límite de número de niños.",
         starts: "2027",
-        body: "Los ingresos por cuidar niños en tu propia casa están libres de impuestos hasta 20.000 € al año (antes 15.000 €), y se elimina el límite de cuántos niños puedes cuidar.",
+        body: "Los ingresos por cuidar niños en tu propia casa están libres de impuestos hasta 20.000 € al año (antes 15.000 €), y se elimina el límite de cuántos niños puedes cuidar. Si la Child Care Act 1991 te obliga a inscribirte como servicio de educación infantil, debes estar inscrito.",
       },
       "welfare-rates": {
         title: "Prestación social semanal",
@@ -514,7 +516,7 @@ export const budgetMessages: Translations<BudgetMessages> = {
         title: "Pago por coste de la discapacidad",
         summary: "Un pago único de 500 € en 2027 para quienes reciben prestaciones de discapacidad de larga duración.",
         starts: "2027, fecha sin anunciar",
-        body: "Un pago único de 500 € para quienes reciben una prestación de discapacidad de larga duración, unas 240.000 personas. Aún no se ha publicado qué prestaciones cuentan.",
+        body: "Un pago único de 500 € para quienes reciben una prestación de discapacidad de larga duración, unas 240.000 personas: Blind Pension, Disability Allowance, Invalidity Pension o Partial Capacity Benefit. Aún no se ha anunciado la fecha del pago.",
       },
       "carers-allowance": {
         title: "Límite de ingresos de la prestación por cuidador",
@@ -577,17 +579,17 @@ export const budgetMessages: Translations<BudgetMessages> = {
       "heating-oil": {
         title: "Gasóleo de calefacción",
         summary: "El impuesto al carbono baja a 48,50 € la tonelada, unos 43 € menos por cada 1.000 litros.",
-        starts: "Aún no anunciado",
+        starts: "14 de octubre de 2026",
         change: "43 € menos por cada 1.000 litros",
-        body: "El impuesto al carbono baja de 63,50 € a 48,50 € la tonelada y se queda ahí hasta 2030. No se ha anunciado la fecha de inicio.",
+        body: "El impuesto al carbono bajó de 63,50 € a 48,50 € la tonelada el 14 de octubre de 2026 y se queda ahí hasta 2030.",
         estimate: "{yearly} con {litres} litros al año.",
       },
       gas: {
         title: "Calefacción de gas",
         summary: "El impuesto al carbono baja a 48,50 € la tonelada, unos 32 € menos por cada 11.000 kWh.",
-        starts: "Aún no anunciado",
+        starts: "14 de octubre de 2026",
         change: "32 € menos por cada 11.000 kWh",
-        body: "El impuesto al carbono baja de 63,50 € a 48,50 € la tonelada. 11.000 kWh es el consumo anual de una vivienda típica según el Presupuesto. No se ha anunciado la fecha de inicio.",
+        body: "El impuesto al carbono bajó de 63,50 € a 48,50 € la tonelada el 14 de octubre de 2026. 11.000 kWh es el consumo anual de una vivienda típica según el Presupuesto.",
         estimate: "{yearly} con {kwh} kWh al año.",
       },
       cigarettes: {
@@ -616,7 +618,7 @@ export const budgetMessages: Translations<BudgetMessages> = {
         title: "Dirigir una empresa",
         summary: "Umbral del PRSI de la empresa en 600 € a la semana, deducción para empresas nuevas hasta 2030, primer pago del crédito por I+D de 105.000 €, límite de pequeña empresa para el pago a cuenta de 350.000 €.",
         starts: "Varias",
-        body: "El tipo reducido del PRSI de la empresa se aplica hasta 600 € de sueldo a la semana (antes 552 €) desde el 1 de enero de 2027. La deducción para empresas nuevas se prorroga hasta finales de 2030. El límite de \"pequeña empresa\" para el pago a cuenta sube de 200.000 € a 350.000 €. El crédito por I+D que se paga entero el primer año sube de 87.500 € a 105.000 €.",
+        body: "El tipo reducido del PRSI de la empresa se aplica hasta 600 € de sueldo a la semana (antes 552 €) desde el 1 de enero de 2027. La deducción para empresas nuevas se prorroga hasta finales de 2030. El límite de \"pequeña empresa\" para el pago a cuenta sube de 200.000 € a 350.000 €. El crédito por I+D que se paga entero el primer año sube de 87.500 € a 105.000 €, para ejercicios cuya declaración venza el 23 de septiembre de 2028 o después.",
       },
       farm: {
         title: "Agricultura",
@@ -721,6 +723,7 @@ export const budgetMessages: Translations<BudgetMessages> = {
       "awaiting-finance-act": "Anunciado; vira lei com a Lei de Finanças",
       announced: "Anunciado",
       "already-law": "Já era lei antes deste Orçamento",
+      "made-law": "Já é lei, definido por ordem ministerial",
     },
     calculators: {
       "CGT calculator": "Calculadora de CGT",
@@ -763,7 +766,7 @@ export const budgetMessages: Translations<BudgetMessages> = {
       "help-to-buy": {
         title: "Help to Buy",
         summary: "O máximo que quem compra o primeiro imóvel novo pode receber sobe de € 30.000 para € 35.000.",
-        starts: "Pedidos a partir de 7 de outubro de 2026",
+        starts: "Contratos a partir de 7 de outubro de 2026",
         body: "Até {now} num imóvel novo de {price} (antes {before}): o menor entre € 35.000, 10% do preço{taxPart}. Só para primeiro imóvel e imóveis novos, com financiamento de pelo menos 70%, e você precisa morar nele por cinco anos.",
         taxGiven: " e o imposto que você pagou nos últimos quatro anos",
         taxMissing: " e o imposto de renda e o DIRT que você pagou nos últimos quatro anos, que você não informou",
@@ -778,14 +781,14 @@ export const budgetMessages: Translations<BudgetMessages> = {
       "rent-a-room": {
         title: "Isenção por alugar um quarto",
         summary: "A renda isenta de impostos por alugar um quarto sobe de € 14.000 para € 16.000 e inclui algumas unidades no quintal.",
-        starts: "1º de janeiro de 2027",
-        body: "A renda com aluguel de quarto é isenta até € 16.000 por ano (antes € 14.000). Agora também cobre algumas unidades no quintal ou auxiliares instaladas depois de 27 de julho de 2026.",
+        starts: "1º de janeiro de 2027; unidades no quintal a partir de 27 de julho de 2026",
+        body: "A renda com aluguel de quarto é isenta até € 16.000 por ano a partir de 2027 (antes € 14.000). Pelo Projeto de Lei de Finanças, também cobre quartos em algumas unidades no quintal a partir de 27 de julho de 2026, depois que o aviso de planejamento for dado.",
       },
       solar: {
         title: "Vender energia solar para a rede",
         summary: "O lucro isento com a venda de eletricidade gerada em casa sobe de € 400 para € 600.",
-        starts: "Ainda não anunciado",
-        body: "Até € 600 por ano de lucro com a eletricidade que você vende para a rede ficam isentos de imposto de renda, USC e PRSI (antes € 400). O primeiro ano fiscal ainda não foi anunciado.",
+        starts: "1º de janeiro de 2027",
+        body: "Até € 600 por ano de lucro com a eletricidade que você vende para a rede ficam isentos de imposto de renda, USC e PRSI (antes € 400), a partir do ano fiscal de 2027.",
       },
       "derelict-property": {
         title: "Imposto sobre imóveis abandonados",
@@ -804,7 +807,7 @@ export const budgetMessages: Translations<BudgetMessages> = {
         summary: "O subsídio universal por hora sobe de € 2,14 para € 2,50 a partir de setembro de 2027; a mensalidade semanal máxima nos serviços com Core Funding cai de € 280 para € 250.",
         starts: "Setembro de 2027",
         change: "36 centavos a menos por hora",
-        body: "O subsídio do National Childcare Scheme sobe de € 2,14 para € 2,50 por hora para crianças até o segundo ano da educação infantil (senior infants). À parte, o máximo que um serviço com Core Funding pode cobrar por uma vaga típica em tempo integral cai de € 280 para € 250 por semana; a data de início não foi anunciada.",
+        body: "O subsídio do National Childcare Scheme sobe de € 2,14 para € 2,50 por hora para crianças até o segundo ano da educação infantil (senior infants). À parte, o máximo que um serviço com Core Funding pode cobrar por uma vaga típica em tempo integral cai de € 280 para € 250 por semana, a partir do ano do Core Funding que começa em setembro de 2027.",
         estimate: "{perWeek} a menos por semana com {hours} horas subsidiadas por semana.",
       },
       "home-carer": {
@@ -817,7 +820,7 @@ export const budgetMessages: Translations<BudgetMessages> = {
         title: "Isenção para quem cuida de crianças em casa",
         summary: "A renda isenta por cuidar de crianças sobe de € 15.000 para € 20.000, sem limite de número de crianças.",
         starts: "2027",
-        body: "A renda por cuidar de crianças na sua própria casa é isenta até € 20.000 por ano (antes € 15.000), e acaba o limite de quantas crianças você pode cuidar.",
+        body: "A renda por cuidar de crianças na sua própria casa é isenta até € 20.000 por ano (antes € 15.000), e acaba o limite de quantas crianças você pode cuidar. Se a Child Care Act 1991 exigir que você se registre como serviço de educação infantil, precisa estar registrado.",
       },
       "welfare-rates": {
         title: "Benefício social semanal",
@@ -853,7 +856,7 @@ export const budgetMessages: Translations<BudgetMessages> = {
         title: "Pagamento pelo custo da deficiência",
         summary: "Um pagamento único de € 500 em 2027 para quem recebe benefícios de deficiência de longa duração.",
         starts: "2027, data não anunciada",
-        body: "Um pagamento único de € 500 para quem recebe um benefício de deficiência de longa duração, cerca de 240.000 pessoas. Ainda não foi publicado quais benefícios contam.",
+        body: "Um pagamento único de € 500 para quem recebe um benefício de deficiência de longa duração, cerca de 240.000 pessoas: Blind Pension, Disability Allowance, Invalidity Pension ou Partial Capacity Benefit. A data do pagamento não foi anunciada.",
       },
       "carers-allowance": {
         title: "Limite de renda do auxílio-cuidador",
@@ -916,17 +919,17 @@ export const budgetMessages: Translations<BudgetMessages> = {
       "heating-oil": {
         title: "Óleo de aquecimento",
         summary: "O imposto de carbono cai para € 48,50 por tonelada, cerca de € 43 a menos a cada 1.000 litros.",
-        starts: "Ainda não anunciado",
+        starts: "14 de outubro de 2026",
         change: "€ 43 a menos a cada 1.000 litros",
-        body: "O imposto de carbono cai de € 63,50 para € 48,50 por tonelada e fica assim até 2030. A data de início não foi anunciada.",
+        body: "O imposto de carbono caiu de € 63,50 para € 48,50 por tonelada em 14 de outubro de 2026 e fica assim até 2030.",
         estimate: "{yearly} com {litres} litros por ano.",
       },
       gas: {
         title: "Aquecimento a gás",
         summary: "O imposto de carbono cai para € 48,50 por tonelada, cerca de € 32 a menos a cada 11.000 kWh.",
-        starts: "Ainda não anunciado",
+        starts: "14 de outubro de 2026",
         change: "€ 32 a menos a cada 11.000 kWh",
-        body: "O imposto de carbono cai de € 63,50 para € 48,50 por tonelada. 11.000 kWh é o consumo anual de uma casa típica segundo o Orçamento. A data de início não foi anunciada.",
+        body: "O imposto de carbono caiu de € 63,50 para € 48,50 por tonelada em 14 de outubro de 2026. 11.000 kWh é o consumo anual de uma casa típica segundo o Orçamento.",
         estimate: "{yearly} com {kwh} kWh por ano.",
       },
       cigarettes: {
@@ -955,7 +958,7 @@ export const budgetMessages: Translations<BudgetMessages> = {
         title: "Administrar uma empresa",
         summary: "Limite do PRSI do empregador de € 600 por semana, alívio para empresas novas até 2030, primeiro pagamento do crédito de P&D de € 105.000, limite de pequena empresa para o imposto antecipado de € 350.000.",
         starts: "Várias",
-        body: "A alíquota menor do PRSI do empregador vale até € 600 de salário por semana (antes € 552) a partir de 1º de janeiro de 2027. O alívio para empresas novas vai até o fim de 2030. O limite de \"pequena empresa\" para o imposto antecipado sobe de € 200.000 para € 350.000. O crédito de P&D pago inteiro no primeiro ano sobe de € 87.500 para € 105.000.",
+        body: "A alíquota menor do PRSI do empregador vale até € 600 de salário por semana (antes € 552) a partir de 1º de janeiro de 2027. O alívio para empresas novas vai até o fim de 2030. O limite de \"pequena empresa\" para o imposto antecipado sobe de € 200.000 para € 350.000. O crédito de P&D pago inteiro no primeiro ano sobe de € 87.500 para € 105.000, para exercícios cuja declaração vença em 23 de setembro de 2028 ou depois.",
       },
       farm: {
         title: "Agricultura",
@@ -1060,6 +1063,7 @@ export const budgetMessages: Translations<BudgetMessages> = {
       "awaiting-finance-act": "Fógartha, beidh sé ina dhlí leis an Acht Airgeadais",
       announced: "Fógartha",
       "already-law": "Ina dhlí cheana roimh an mBuiséad seo",
+      "made-law": "Ina dhlí anois, socraithe le hordú aireachta",
     },
     calculators: {
       "CGT calculator": "Áireamhán CGC",
@@ -1102,7 +1106,7 @@ export const budgetMessages: Translations<BudgetMessages> = {
       "help-to-buy": {
         title: "Cabhair le Ceannach",
         summary: "Ardaíonn an t-uasmhéid is féidir le céad cheannaitheoir tí nua a fháil ó €30,000 go €35,000.",
-        starts: "Iarratais ó 7 Deireadh Fómhair 2026",
+        starts: "Conarthaí ó 7 Deireadh Fómhair 2026",
         body: "Suas le {now} ar theach nua {price} (bhí sé {before}): an ceann is lú de €35,000, 10% den phraghas{taxPart}. Céad cheannaitheoirí, tithe nua amháin, morgáiste 70% ar a laghad, agus caithfidh tú cónaí ann ar feadh cúig bliana.",
         taxGiven: " agus an cháin a d’íoc tú le ceithre bliana anuas",
         taxMissing: ", agus an cháin ioncaim agus DIRT a d’íoc tú le ceithre bliana anuas, nár chuir tú isteach",
@@ -1117,14 +1121,14 @@ export const budgetMessages: Translations<BudgetMessages> = {
       "rent-a-room": {
         title: "Faoiseamh seomra ar cíos",
         summary: "Ardaíonn ioncam seomra saor ó cháin ó €14,000 go €16,000 agus clúdaíonn sé aonaid áirithe gairdín.",
-        starts: "1 Eanáir 2027",
-        body: "Tá ioncam seomra suas le €16,000 sa bhliain saor ó cháin (bhí €14,000). Clúdaíonn sé anois freisin aonaid áirithe gairdín nó chúnta a suiteáladh tar éis 27 Iúil 2026.",
+        starts: "1 Eanáir 2027; aonaid ghairdín ó 27 Iúil 2026",
+        body: "Tá ioncam seomra suas le €16,000 sa bhliain saor ó cháin ó 2027 (bhí €14,000). Faoin mBille Airgeadais, clúdaíonn sé freisin seomraí in aonaid áirithe gairdín ó 27 Iúil 2026, a luaithe a thugtar a bhfógra pleanála.",
       },
       solar: {
         title: "Cumhacht ghréine a dhíol leis an eangach",
         summary: "Ardaíonn brabús saor ó cháin ó leictreachas a ghintear sa bhaile a dhíol ó €400 go €600.",
-        starts: "Níl sé fógartha fós",
-        body: "Tá suas le €600 sa bhliain de bhrabús ó leictreachas a dhíolann tú leis an eangach saor ó cháin ioncaim, MSU agus ÁSPC (bhí €400). Níl an chéad bhliain chánach fógartha.",
+        starts: "1 Eanáir 2027",
+        body: "Tá suas le €600 sa bhliain de bhrabús ó leictreachas a dhíolann tú leis an eangach saor ó cháin ioncaim, MSU agus ÁSPC (bhí €400), ó bhliain chánach 2027.",
       },
       "derelict-property": {
         title: "Cáin ar Mhaoin Thréigthe",
@@ -1143,7 +1147,7 @@ export const budgetMessages: Translations<BudgetMessages> = {
         summary: "Ardaíonn an fóirdheontas uilíoch in aghaidh na huaire ó €2.14 go €2.50 ó Mheán Fómhair 2027; titeann an táille sheachtainiúil is airde i seirbhísí Croímhaoinithe ó €280 go €250.",
         starts: "Meán Fómhair 2027",
         change: "36c níos lú san uair",
-        body: "Ardaíonn fóirdheontas na Scéime Náisiúnta Cúram Leanaí ó €2.14 go €2.50 san uair do leanaí suas go naíonáin shinsearacha. Ar leith, titeann an méid is mó is féidir le seirbhís Chroímhaoinithe a ghearradh ar áit lánaimseartha thipiciúil ó €280 go €250 sa tseachtain; níl a dháta tosaigh fógartha.",
+        body: "Ardaíonn fóirdheontas na Scéime Náisiúnta Cúram Leanaí ó €2.14 go €2.50 san uair do leanaí suas go naíonáin shinsearacha. Ar leith, titeann an méid is mó is féidir le seirbhís Chroímhaoinithe a ghearradh ar áit lánaimseartha thipiciúil ó €280 go €250 sa tseachtain, ón mbliain Chroímhaoinithe a thosaíonn i Meán Fómhair 2027.",
         estimate: "{perWeek} níos lú sa tseachtain ag {hours} uair an chloig fhóirdheonaithe sa tseachtain.",
       },
       "home-carer": {
@@ -1156,7 +1160,7 @@ export const budgetMessages: Translations<BudgetMessages> = {
         title: "Faoiseamh feighlíochta leanaí",
         summary: "Ardaíonn ioncam feighlíochta leanaí saor ó cháin ó €15,000 go €20,000, gan teorainn ar líon na leanaí.",
         starts: "2027",
-        body: "Tá ioncam feighlíochta leanaí i do theach féin saor ó cháin suas le €20,000 sa bhliain (bhí €15,000), agus baintear an teorainn ar an líon leanaí a dtugann tú aire dóibh.",
+        body: "Tá ioncam feighlíochta leanaí i do theach féin saor ó cháin suas le €20,000 sa bhliain (bhí €15,000), agus baintear an teorainn ar an líon leanaí a dtugann tú aire dóibh. Má éilíonn an tAcht um Chúram Leanaí 1991 ort clárú mar sheirbhís luathbhlianta, caithfidh tú a bheith cláraithe.",
       },
       "welfare-rates": {
         title: "Íocaíocht leasa shóisialaigh sheachtainiúil",
@@ -1192,7 +1196,7 @@ export const budgetMessages: Translations<BudgetMessages> = {
         title: "Íocaíocht Costas Míchumais",
         summary: "€500 aon uaire in 2027 do dhaoine ar íocaíochtaí míchumais fadtéarmacha.",
         starts: "2027, dáta gan fógairt",
-        body: "€500 aon uaire do dhaoine a fhaigheann íocaíocht mhíchumais fhadtéarmach, thart ar 240,000 duine. Níl sé foilsithe fós cé na híocaíochtaí a áirítear.",
+        body: "€500 aon uaire do dhaoine a fhaigheann íocaíocht mhíchumais fhadtéarmach, thart ar 240,000 duine: Blind Pension, Disability Allowance, Invalidity Pension nó Partial Capacity Benefit. Níl dáta na híocaíochta fógartha.",
       },
       "carers-allowance": {
         title: "Teorainn ioncaim Liúntas Cúramóra",
@@ -1255,17 +1259,17 @@ export const budgetMessages: Translations<BudgetMessages> = {
       "heating-oil": {
         title: "Ola téimh tí",
         summary: "Titeann cáin charbóin go €48.50 an tona, thart ar €43 níos lú in aghaidh 1,000 lítear.",
-        starts: "Níl sé fógartha fós",
+        starts: "14 Deireadh Fómhair 2026",
         change: "€43 níos lú in aghaidh 1,000 lítear",
-        body: "Titeann cáin charbóin ó €63.50 go €48.50 an tona agus fanann sí ansin go 2030. Níl an dáta tosaigh fógartha.",
+        body: "Thit cáin charbóin ó €63.50 go €48.50 an tona ar 14 Deireadh Fómhair 2026 agus fanann sí ansin go 2030.",
         estimate: "{yearly} ag {litres} lítear sa bhliain.",
       },
       gas: {
         title: "Téamh gáis",
         summary: "Titeann cáin charbóin go €48.50 an tona, thart ar €32 níos lú in aghaidh 11,000 kWh.",
-        starts: "Níl sé fógartha fós",
+        starts: "14 Deireadh Fómhair 2026",
         change: "€32 níos lú in aghaidh 11,000 kWh",
-        body: "Titeann cáin charbóin ó €63.50 go €48.50 an tona. Is é 11,000 kWh teach tipiciúil an Bhuiséid ar feadh bliana. Níl an dáta tosaigh fógartha.",
+        body: "Thit cáin charbóin ó €63.50 go €48.50 an tona ar 14 Deireadh Fómhair 2026. Is é 11,000 kWh teach tipiciúil an Bhuiséid ar feadh bliana.",
         estimate: "{yearly} ag {kwh} kWh sa bhliain.",
       },
       cigarettes: {
@@ -1294,7 +1298,7 @@ export const budgetMessages: Translations<BudgetMessages> = {
         title: "Cuideachta a reáchtáil",
         summary: "Tairseach ÁSPC fostóra €600 sa tseachtain, faoiseamh nuathionscanta go 2030, íocaíocht T&F sa chéad bhliain €105,000, teorainn chomhlachta bhig réamhcánach €350,000.",
         starts: "Éagsúil",
-        body: "Baineann ráta níos ísle ÁSPC fostóra le suas le €600 sa tseachtain de phá (bhí €552) ó 1 Eanáir 2027. Leathnaítear faoiseamh nuathionscanta go deireadh 2030. Ardaíonn teorainn an \"chomhlachta bhig\" don réamhcháin ó €200,000 go €350,000. Ardaíonn an creidmheas T&F a íoctar ina iomláine sa chéad bhliain ó €87,500 go €105,000.",
+        body: "Baineann ráta níos ísle ÁSPC fostóra le suas le €600 sa tseachtain de phá (bhí €552) ó 1 Eanáir 2027. Leathnaítear faoiseamh nuathionscanta go deireadh 2030. Ardaíonn teorainn an \"chomhlachta bhig\" don réamhcháin ó €200,000 go €350,000. Ardaíonn an creidmheas T&F a íoctar ina iomláine sa chéad bhliain ó €87,500 go €105,000, do thréimhsí cuntasaíochta a bhfuil a dtuairisceán dlite ar 23 Meán Fómhair 2028 nó ina dhiaidh.",
       },
       farm: {
         title: "Feirmeoireacht",
@@ -1400,6 +1404,7 @@ export const budgetMessages: Translations<BudgetMessages> = {
       "awaiting-finance-act": "مُعلن، يصبح قانونًا مع قانون المالية",
       announced: "مُعلن",
       "already-law": "كان قانونًا قبل هذه الميزانية",
+      "made-law": "أصبح قانونًا الآن، بأمر وزاري",
     },
     calculators: {
       "CGT calculator": "حاسبة CGT",
@@ -1443,7 +1448,7 @@ export const budgetMessages: Translations<BudgetMessages> = {
       "help-to-buy": {
         title: "Help to Buy",
         summary: "يرتفع الحد الأقصى الذي يمكن أن يحصل عليه المشتري لأول مرة لمنزل جديد من 30,000 يورو إلى 35,000 يورو.",
-        starts: "الطلبات اعتبارًا من 7 أكتوبر 2026",
+        starts: "العقود اعتبارًا من 7 أكتوبر 2026",
         body: "حتى {now} على منزل جديد بسعر {price} (كان {before}): الأقل بين 35,000 يورو و10% من السعر{taxPart}. للمشترين لأول مرة، والمنازل الجديدة فقط، برهن لا يقل عن 70%، ويجب أن تسكن فيه خمس سنوات.",
         taxGiven: " والضريبة التي دفعتها في السنوات الأربع الماضية",
         taxMissing: "، وضريبة الدخل وDIRT اللتين دفعتهما في السنوات الأربع الماضية، ولم تُدخلهما",
@@ -1458,14 +1463,14 @@ export const budgetMessages: Translations<BudgetMessages> = {
       "rent-a-room": {
         title: "إعفاء تأجير غرفة",
         summary: "يرتفع دخل الغرفة المعفى من الضريبة من 14,000 يورو إلى 16,000 يورو ويشمل بعض الوحدات في الحدائق.",
-        starts: "1 يناير 2027",
-        body: "دخل الغرفة حتى 16,000 يورو سنويًا معفى من الضريبة (كان 14,000 يورو). ويشمل الآن أيضًا بعض الوحدات في الحدائق أو الوحدات الملحقة المركّبة بعد 27 يوليو 2026.",
+        starts: "1 يناير 2027؛ وحدات الحدائق اعتبارًا من 27 يوليو 2026",
+        body: "دخل الغرفة حتى 16,000 يورو سنويًا معفى من الضريبة اعتبارًا من 2027 (كان 14,000 يورو). وبموجب مشروع قانون المالية، يشمل أيضًا الغرف في بعض الوحدات في الحدائق اعتبارًا من 27 يوليو 2026، متى قُدِّم إشعار التخطيط الخاص بها.",
       },
       solar: {
         title: "بيع الطاقة الشمسية للشبكة",
         summary: "يرتفع الربح المعفى من الضريبة من بيع الكهرباء المولّدة منزليًا من 400 يورو إلى 600 يورو.",
-        starts: "لم يُعلن بعد",
-        body: "ما يصل إلى 600 يورو سنويًا من الربح من الكهرباء التي تبيعها للشبكة معفى من ضريبة الدخل وUSC وPRSI (كان 400 يورو). لم تُعلن أول سنة ضريبية بعد.",
+        starts: "1 يناير 2027",
+        body: "ما يصل إلى 600 يورو سنويًا من الربح من الكهرباء التي تبيعها للشبكة معفى من ضريبة الدخل وUSC وPRSI (كان 400 يورو)، اعتبارًا من السنة الضريبية 2027.",
       },
       "derelict-property": {
         title: "ضريبة العقارات المهجورة",
@@ -1484,7 +1489,7 @@ export const budgetMessages: Translations<BudgetMessages> = {
         summary: "يرتفع الدعم الشامل للساعة من 2.14 يورو إلى 2.50 يورو اعتبارًا من سبتمبر 2027؛ وينخفض الحد الأعلى للرسوم الأسبوعية في خدمات Core Funding من 280 يورو إلى 250 يورو.",
         starts: "سبتمبر 2027",
         change: "أقل بمقدار 36 سنتًا للساعة",
-        body: "يرتفع دعم البرنامج الوطني لرعاية الأطفال من 2.14 يورو إلى 2.50 يورو للساعة للأطفال حتى مرحلة senior infants. وبشكل منفصل، ينخفض الحد الأقصى الذي يمكن لخدمة Core Funding أن تتقاضاه عن مكان نموذجي بدوام كامل من 280 يورو إلى 250 يورو أسبوعيًا؛ ولم يُعلن تاريخ بدء ذلك.",
+        body: "يرتفع دعم البرنامج الوطني لرعاية الأطفال من 2.14 يورو إلى 2.50 يورو للساعة للأطفال حتى مرحلة senior infants. وبشكل منفصل، ينخفض الحد الأقصى الذي يمكن لخدمة Core Funding أن تتقاضاه عن مكان نموذجي بدوام كامل من 280 يورو إلى 250 يورو أسبوعيًا، اعتبارًا من سنة Core Funding التي تبدأ في سبتمبر 2027.",
         estimate: "أقل بمقدار {perWeek} أسبوعيًا عند {hours} ساعة مدعومة أسبوعيًا.",
       },
       "home-carer": {
@@ -1497,7 +1502,7 @@ export const budgetMessages: Translations<BudgetMessages> = {
         title: "إعفاء رعاية الأطفال في المنزل",
         summary: "يرتفع دخل رعاية الأطفال المعفى من الضريبة من 15,000 يورو إلى 20,000 يورو، دون حد لعدد الأطفال.",
         starts: "2027",
-        body: "دخل رعاية الأطفال في منزلك معفى من الضريبة حتى 20,000 يورو سنويًا (كان 15,000 يورو)، ويُلغى الحد على عدد الأطفال الذين ترعاهم.",
+        body: "دخل رعاية الأطفال في منزلك معفى من الضريبة حتى 20,000 يورو سنويًا (كان 15,000 يورو)، ويُلغى الحد على عدد الأطفال الذين ترعاهم. وإذا كان قانون رعاية الأطفال لعام 1991 يُلزمك بالتسجيل كخدمة للطفولة المبكرة، فيجب أن تكون مسجلًا.",
       },
       "welfare-rates": {
         title: "الإعانة الاجتماعية الأسبوعية",
@@ -1533,7 +1538,7 @@ export const budgetMessages: Translations<BudgetMessages> = {
         title: "دفعة تكلفة الإعاقة",
         summary: "دفعة لمرة واحدة بقيمة 500 يورو في 2027 للأشخاص الذين يتلقون إعانات إعاقة طويلة الأجل.",
         starts: "2027، لم يُعلن التاريخ",
-        body: "دفعة لمرة واحدة بقيمة 500 يورو للأشخاص الذين يتلقون إعانة إعاقة طويلة الأجل، نحو 240,000 شخص. لم يُنشر بعد أي الإعانات تُحتسب.",
+        body: "دفعة لمرة واحدة بقيمة 500 يورو للأشخاص الذين يتلقون إعانة إعاقة طويلة الأجل، نحو 240,000 شخص: Blind Pension أو Disability Allowance أو Invalidity Pension أو Partial Capacity Benefit. لم يُعلن تاريخ الدفعة بعد.",
       },
       "carers-allowance": {
         title: "حد الدخل لبدل مقدم الرعاية",
@@ -1596,17 +1601,17 @@ export const budgetMessages: Translations<BudgetMessages> = {
       "heating-oil": {
         title: "زيت التدفئة المنزلية",
         summary: "تنخفض ضريبة الكربون إلى 48.50 يورو للطن، أي نحو 43 يورو أقل لكل 1,000 لتر.",
-        starts: "لم يُعلن بعد",
+        starts: "14 أكتوبر 2026",
         change: "43 يورو أقل لكل 1,000 لتر",
-        body: "تنخفض ضريبة الكربون من 63.50 يورو إلى 48.50 يورو للطن وتبقى عند ذلك حتى 2030. لم يُعلن تاريخ البدء.",
+        body: "انخفضت ضريبة الكربون من 63.50 يورو إلى 48.50 يورو للطن في 14 أكتوبر 2026 وتبقى عند ذلك حتى 2030.",
         estimate: "{yearly} عند {litres} لترًا سنويًا.",
       },
       gas: {
         title: "التدفئة بالغاز",
         summary: "تنخفض ضريبة الكربون إلى 48.50 يورو للطن، أي نحو 32 يورو أقل لكل 11,000 كيلوواط ساعة.",
-        starts: "لم يُعلن بعد",
+        starts: "14 أكتوبر 2026",
         change: "32 يورو أقل لكل 11,000 كيلوواط ساعة",
-        body: "تنخفض ضريبة الكربون من 63.50 يورو إلى 48.50 يورو للطن. و11,000 كيلوواط ساعة هي استهلاك المنزل النموذجي لسنة في الميزانية. لم يُعلن تاريخ البدء.",
+        body: "انخفضت ضريبة الكربون من 63.50 يورو إلى 48.50 يورو للطن في 14 أكتوبر 2026. و11,000 كيلوواط ساعة هي استهلاك المنزل النموذجي لسنة في الميزانية.",
         estimate: "{yearly} عند {kwh} كيلوواط ساعة سنويًا.",
       },
       cigarettes: {
@@ -1635,7 +1640,7 @@ export const budgetMessages: Translations<BudgetMessages> = {
         title: "إدارة شركة",
         summary: "حد PRSI لصاحب العمل 600 يورو أسبوعيًا، وإعفاء الشركات الناشئة حتى 2030، ودفعة السنة الأولى للبحث والتطوير 105,000 يورو، وحد الشركات الصغيرة للضريبة المبدئية 350,000 يورو.",
         starts: "متعددة",
-        body: "ينطبق المعدل الأدنى لـPRSI صاحب العمل حتى 600 يورو أسبوعيًا من الأجر (كان 552 يورو) اعتبارًا من 1 يناير 2027. ويُمدد إعفاء الشركات الناشئة حتى نهاية 2030. ويرتفع حد «الشركة الصغيرة» للضريبة المبدئية من 200,000 يورو إلى 350,000 يورو. ويرتفع ائتمان البحث والتطوير المدفوع كاملًا في السنة الأولى من 87,500 يورو إلى 105,000 يورو.",
+        body: "ينطبق المعدل الأدنى لـPRSI صاحب العمل حتى 600 يورو أسبوعيًا من الأجر (كان 552 يورو) اعتبارًا من 1 يناير 2027. ويُمدد إعفاء الشركات الناشئة حتى نهاية 2030. ويرتفع حد «الشركة الصغيرة» للضريبة المبدئية من 200,000 يورو إلى 350,000 يورو. ويرتفع ائتمان البحث والتطوير المدفوع كاملًا في السنة الأولى من 87,500 يورو إلى 105,000 يورو، للفترات المحاسبية التي يستحق إقرارها في 23 سبتمبر 2028 أو بعده.",
       },
       farm: {
         title: "الزراعة",
@@ -1742,6 +1747,7 @@ export const budgetMessages: Translations<BudgetMessages> = {
       "awaiting-finance-act": "ঘোষিত, Finance Act-এর মাধ্যমে আইনে পরিণত হবে",
       announced: "ঘোষিত",
       "already-law": "এই বাজেটের পূর্বেই পাসকৃত আইন",
+      "made-law": "এখন আইন, মন্ত্রীর আদেশে নির্ধারিত",
     },
     calculators: {
       "CGT calculator": "CGT ক্যালকুলেটর",
@@ -1785,7 +1791,7 @@ export const budgetMessages: Translations<BudgetMessages> = {
       "help-to-buy": {
         title: "Help to Buy",
         summary: "নতুন বাড়ির প্রথমবার ক্রেতাদের সর্বোচ্চ প্রাপ্ত অর্থ €30,000 থেকে বৃদ্ধি পেয়ে €35,000 হয়েছে।",
-        starts: "7 অক্টোবর 2026 থেকে আবেদনসমূহ",
+        starts: "7 অক্টোবর 2026 থেকে চুক্তিসমূহ",
         body: "{price} মূল্যের নতুন বাড়িতে সর্বোচ্চ {now} (পূর্বে ছিল {before}): €35,000 অথবা মূল্যের 10%-এর মধ্যে যেটি কম{taxPart}। প্রথমবার বাড়ি ক্রেতা, কেবল নতুন বাড়ি, কমপক্ষে 70% মর্টগেজ এবং আপনাকে সেখানে পাঁচ বছর বসবাস করতে হবে।",
         taxGiven: " এবং গত চার বছরে আপনার পরিশোধিত কর",
         taxMissing: ", এবং গত চার বছরে আপনার পরিশোধিত আয়কর ও DIRT, যা আপনি উল্লেখ করেননি",
@@ -1800,14 +1806,14 @@ export const budgetMessages: Translations<BudgetMessages> = {
       "rent-a-room": {
         title: "Rent-a-room কর ছাড়",
         summary: "করমুক্ত রুম ভাড়ার আয় €14,000 থেকে বৃদ্ধি পেয়ে €16,000 হয়েছে এবং নির্দিষ্ট বাগান ইউনিট এর আওতাভুক্ত।",
-        starts: "1 জানুয়ারি 2027",
-        body: "বছরে €16,000 পর্যন্ত রুম ভাড়ার আয় করমুক্ত (পূর্বে €14,000 ছিল)। 27 জুলাই 2026-এর পর স্থাপিত নির্দিষ্ট বাগান বা সহায়ক ইউনিটও এখন এর আওতাভুক্ত।",
+        starts: "1 জানুয়ারি 2027; বাগান ইউনিট 27 জুলাই 2026 থেকে",
+        body: "বছরে €16,000 পর্যন্ত রুম ভাড়ার আয় 2027 থেকে করমুক্ত (পূর্বে €14,000 ছিল)। Finance Bill অনুযায়ী 27 জুলাই 2026 থেকে নির্দিষ্ট বাগান ইউনিটের রুমও এর আওতাভুক্ত, তবে এর জন্য পরিকল্পনা নোটিশ দেওয়া থাকতে হবে।",
       },
       solar: {
         title: "গ্রিডে সৌরবিদ্যুৎ বিক্রি",
         summary: "বাসাবাড়িতে উৎপাদিত বিদ্যুৎ বিক্রি থেকে করমুক্ত লাভ €400 থেকে বেড়ে €600 হয়েছে।",
-        starts: "এখনও ঘোষণা করা হয়নি",
-        body: "গ্রিডে বিক্রিত বিদ্যুৎ থেকে বছরে €600 পর্যন্ত লাভ আয়কর, USC ও PRSI মুক্ত (পূর্বে €400 ছিল)। প্রথম কার্যকর কর বছর এখনও ঘোষণা করা হয়নি।",
+        starts: "1 জানুয়ারি 2027",
+        body: "গ্রিডে বিক্রিত বিদ্যুৎ থেকে বছরে €600 পর্যন্ত লাভ আয়কর, USC ও PRSI মুক্ত (পূর্বে €400 ছিল), 2027 কর বছর থেকে।",
       },
       "derelict-property": {
         title: "পরিত্যক্ত সম্পত্তি কর (Derelict Property Tax)",
@@ -1826,7 +1832,7 @@ export const budgetMessages: Translations<BudgetMessages> = {
         summary: "সার্বজনীন ঘণ্টাপ্রতি ভর্তুকি সেপ্টেম্বর 2027 থেকে €2.14 থেকে বেড়ে €2.50 হচ্ছে; Core Funding সেবায় সর্বোচ্চ সাপ্তাহিক ফি €280 থেকে কমে €250 হচ্ছে।",
         starts: "সেপ্টেম্বর 2027",
         change: "ঘণ্টায় 36c কম",
-        body: "সিনিয়র ইনফ্যান্টস পর্যন্ত শিশুদের জন্য National Childcare Scheme-এর ভর্তুকি ঘণ্টায় €2.14 থেকে বেড়ে €2.50 হচ্ছে। আলাদাভাবে, সাধারণ পূর্ণকালীন সেবার জন্য Core Funding প্রতিষ্ঠান সর্বোচ্চ যে ফি নিতে পারে তা সপ্তাহে €280 থেকে কমে €250 হচ্ছে; এর শুরুর তারিখ এখনও ঘোষণা করা হয়নি।",
+        body: "সিনিয়র ইনফ্যান্টস পর্যন্ত শিশুদের জন্য National Childcare Scheme-এর ভর্তুকি ঘণ্টায় €2.14 থেকে বেড়ে €2.50 হচ্ছে। আলাদাভাবে, সাধারণ পূর্ণকালীন সেবার জন্য Core Funding প্রতিষ্ঠান সর্বোচ্চ যে ফি নিতে পারে তা সপ্তাহে €280 থেকে কমে €250 হচ্ছে, সেপ্টেম্বর 2027 থেকে শুরু হওয়া Core Funding বছর থেকে।",
         estimate: "সপ্তাহে {hours} ঘণ্টা ভর্তুকিপ্রাপ্ত সেবায় সপ্তাহে {perWeek} কম।",
       },
       "home-carer": {
@@ -1839,7 +1845,7 @@ export const budgetMessages: Translations<BudgetMessages> = {
         title: "Childminding কর ছাড়",
         summary: "করমুক্ত চাইল্ডমাইন্ডিং আয় €15,000 থেকে বেড়ে €20,000 হয়েছে, শিশুর সংখ্যার কোনো সীমাবদ্ধতা নেই।",
         starts: "2027",
-        body: "নিজের বাড়িতে চাইল্ডমাইন্ডিংয়ের আয় বছরে €20,000 পর্যন্ত করমুক্ত (পূর্বে €15,000 ছিল), এবং কতজন শিশুর যত্ন নেওয়া যাবে তার সীমাবদ্ধতা তুলে নেওয়া হয়েছে।",
+        body: "নিজের বাড়িতে চাইল্ডমাইন্ডিংয়ের আয় বছরে €20,000 পর্যন্ত করমুক্ত (পূর্বে €15,000 ছিল), এবং কতজন শিশুর যত্ন নেওয়া যাবে তার সীমাবদ্ধতা তুলে নেওয়া হয়েছে। Child Care Act 1991 অনুযায়ী আর্লি ইয়ার্স সার্ভিস হিসেবে নিবন্ধন বাধ্যতামূলক হলে আপনাকে নিবন্ধিত থাকতে হবে।",
       },
       "welfare-rates": {
         title: "সাপ্তাহিক সমাজকল্যাণ ভাতা",
@@ -1875,7 +1881,7 @@ export const budgetMessages: Translations<BudgetMessages> = {
         title: "Cost of Disability এককালীন ভাতা",
         summary: "দীর্ঘমেয়াদী প্রতিবন্ধী ভাতা গ্রহণকারীদের জন্য 2027 সালে এককালীন €500।",
         starts: "2027, তারিখ এখনও ঘোষণা করা হয়নি",
-        body: "দীর্ঘমেয়াদী প্রতিবন্ধী ভাতা পান এমন প্রায় 240,000 ব্যক্তির জন্য এককালীন €500। কোন কোন ভাতা এর আওতাভুক্ত হবে তা এখনও প্রকাশিত হয়নি।",
+        body: "দীর্ঘমেয়াদী প্রতিবন্ধী ভাতা পান এমন প্রায় 240,000 ব্যক্তির জন্য এককালীন €500: Blind Pension, Disability Allowance, Invalidity Pension বা Partial Capacity Benefit। এই টাকা কবে দেওয়া হবে তা এখনও ঘোষণা করা হয়নি।",
       },
       "carers-allowance": {
         title: "Carer's Allowance আয়ের সীমা",
@@ -1938,17 +1944,17 @@ export const budgetMessages: Translations<BudgetMessages> = {
       "heating-oil": {
         title: "বাসাবাড়ির হিটিং অয়েল",
         summary: "কার্বন কর কমে প্রতি টনে €48.50 হয়েছে, প্রতি 1,000 লিটারে প্রায় €43 কম।",
-        starts: "এখনও ঘোষণা করা হয়নি",
+        starts: "14 অক্টোবর 2026",
         change: "প্রতি 1,000 লিটারে €43 কম",
-        body: "কার্বন কর প্রতি টনে €63.50 থেকে কমে €48.50 হয়েছে এবং 2030 পর্যন্ত বহাল থাকবে। শুরুর তারিখ এখনও ঘোষণা করা হয়নি।",
+        body: "কার্বন কর 14 অক্টোবর 2026 থেকে প্রতি টনে €63.50 থেকে কমে €48.50 হয়েছে এবং 2030 পর্যন্ত বহাল থাকবে।",
         estimate: "বছরে {litres} লিটারে বছরে {yearly}।",
       },
       gas: {
         title: "গ্যাস হিটিং",
         summary: "কার্বন কর কমে প্রতি টনে €48.50 হয়েছে, প্রতি 11,000 kWh-এ প্রায় €32 কম।",
-        starts: "এখনও ঘোষণা করা হয়নি",
+        starts: "14 অক্টোবর 2026",
         change: "প্রতি 11,000 kWh-এ €32 কম",
-        body: "কার্বন কর প্রতি টনে €63.50 থেকে কমে €48.50 হয়েছে। এক বছরে সাধারণ পরিবারের জন্য বাজেটে 11,000 kWh ধরা হয়েছে। শুরুর তারিখ এখনও ঘোষণা করা হয়নি।",
+        body: "কার্বন কর 14 অক্টোবর 2026 থেকে প্রতি টনে €63.50 থেকে কমে €48.50 হয়েছে। এক বছরে সাধারণ পরিবারের জন্য বাজেটে 11,000 kWh ধরা হয়েছে।",
         estimate: "বছরে {kwh} kWh-এ বছরে {yearly}।",
       },
       cigarettes: {
@@ -1977,7 +1983,7 @@ export const budgetMessages: Translations<BudgetMessages> = {
         title: "কোম্পানি পরিচালনা",
         summary: "নিয়োগকর্তার PRSI সীমা সপ্তাহে €600, স্টার্ট-আপ কর ছাড় 2030 পর্যন্ত, R&D প্রথম বছরের পরিশোধ €105,000, অগ্রিম করে ছোট কোম্পানির সীমা €350,000।",
         starts: "বিভিন্ন",
-        body: "1 জানুয়ারি 2027 থেকে নিয়োগকর্তার PRSI-এর নিম্ন হার সপ্তাহে সর্বোচ্চ €600 পর্যন্ত বেতনে প্রযোজ্য (পূর্বে €552 ছিল)। স্টার্ট-আপ কর ছাড় 2030 সালের শেষ পর্যন্ত বৃদ্ধি করা হয়েছে। অগ্রিম করের জন্য \"ছোট কোম্পানি\"-র সীমা €200,000 থেকে বৃদ্ধি পেয়ে €350,000 হয়েছে। প্রথম বছরে সম্পূর্ণ পরিশোধিত R&D ক্রেডিট €87,500 থেকে বৃদ্ধি পেয়ে €105,000 হয়েছে।",
+        body: "1 জানুয়ারি 2027 থেকে নিয়োগকর্তার PRSI-এর নিম্ন হার সপ্তাহে সর্বোচ্চ €600 পর্যন্ত বেতনে প্রযোজ্য (পূর্বে €552 ছিল)। স্টার্ট-আপ কর ছাড় 2030 সালের শেষ পর্যন্ত বৃদ্ধি করা হয়েছে। অগ্রিম করের জন্য \"ছোট কোম্পানি\"-র সীমা €200,000 থেকে বৃদ্ধি পেয়ে €350,000 হয়েছে। প্রথম বছরে সম্পূর্ণ পরিশোধিত R&D ক্রেডিট €87,500 থেকে বেড়ে €105,000 হবে, সেই হিসাবকালের জন্য যার রিটার্ন 23 সেপ্টেম্বর 2028 বা তার পরে জমা দিতে হয়।",
       },
       farm: {
         title: "কৃষিকাজ",
@@ -2084,6 +2090,7 @@ export const budgetMessages: Translations<BudgetMessages> = {
       "awaiting-finance-act": "घोषित, Finance Act के साथ क़ानून बनेगा",
       announced: "घोषित",
       "already-law": "इस बजट से पहले ही क़ानून",
+      "made-law": "अब क़ानून, मंत्री के आदेश से तय",
     },
     calculators: {
       "CGT calculator": "CGT कैलकुलेटर",
@@ -2127,7 +2134,7 @@ export const budgetMessages: Translations<BudgetMessages> = {
       "help-to-buy": {
         title: "Help to Buy",
         summary: "नए घर के पहली बार ख़रीदार को अधिकतम जो मिल सकता है, वह €30,000 से बढ़कर €35,000।",
-        starts: "7 अक्टूबर 2026 से आवेदनों पर",
+        starts: "7 अक्टूबर 2026 से अनुबंधों पर",
         body: "{price} के नए घर पर अधिकतम {now} (पहले {before}): €35,000, क़ीमत का 10%{taxPart}, इनमें से जो कम हो। केवल पहली बार ख़रीदार, केवल नए घर, कम से कम 70% मॉर्टगेज, और आपको पाँच साल वहाँ रहना होगा।",
         taxGiven: " और पिछले चार सालों में आपका चुकाया टैक्स",
         taxMissing: ", और पिछले चार सालों में चुकाया आयकर और DIRT (जो आपने नहीं डाला)",
@@ -2142,14 +2149,14 @@ export const budgetMessages: Translations<BudgetMessages> = {
       "rent-a-room": {
         title: "Rent-a-room राहत",
         summary: "कमरे की टैक्स-मुक्त आय €14,000 से बढ़कर €16,000, और कुछ गार्डन यूनिट भी शामिल।",
-        starts: "1 जनवरी 2027",
-        body: "साल में €16,000 तक कमरे की आय टैक्स-मुक्त है (पहले €14,000)। अब इसमें 27 जुलाई 2026 के बाद लगाई गई कुछ गार्डन या सहायक यूनिट भी शामिल हैं।",
+        starts: "1 जनवरी 2027; गार्डन यूनिट 27 जुलाई 2026 से",
+        body: "साल में €16,000 तक कमरे की आय 2027 से टैक्स-मुक्त है (पहले €14,000)। Finance Bill के तहत 27 जुलाई 2026 से कुछ गार्डन यूनिट के कमरे भी शामिल हैं, बशर्ते उनका प्लानिंग नोटिस दिया जा चुका हो।",
       },
       solar: {
         title: "ग्रिड को सौर बिजली बेचना",
         summary: "घर पर बनी बिजली बेचने का टैक्स-मुक्त लाभ €400 से बढ़कर €600।",
-        starts: "अभी घोषित नहीं",
-        body: "ग्रिड को बेची बिजली से साल में €600 तक का लाभ आयकर, USC और PRSI से मुक्त है (पहले €400)। पहला टैक्स वर्ष अभी घोषित नहीं हुआ है।",
+        starts: "1 जनवरी 2027",
+        body: "ग्रिड को बेची बिजली से साल में €600 तक का लाभ आयकर, USC और PRSI से मुक्त है (पहले €400), 2027 टैक्स वर्ष से।",
       },
       "derelict-property": {
         title: "Derelict Property Tax",
@@ -2168,7 +2175,7 @@ export const budgetMessages: Translations<BudgetMessages> = {
         summary: "सितंबर 2027 से सार्वभौमिक प्रति घंटा सब्सिडी €2.14 से बढ़कर €2.50; Core Funding सेवाओं में अधिकतम साप्ताहिक फ़ीस €280 से घटकर €250।",
         starts: "सितंबर 2027",
         change: "प्रति घंटा 36 सेंट कम",
-        body: "senior infants तक के बच्चों के लिए National Childcare Scheme की सब्सिडी €2.14 से बढ़कर €2.50 प्रति घंटा। अलग से, Core Funding सेवा एक सामान्य पूर्णकालिक जगह के लिए अधिकतम जो ले सकती है, वह €280 से घटकर €250 प्रति हफ़्ता; इसकी शुरुआत की तारीख़ घोषित नहीं हुई है।",
+        body: "senior infants तक के बच्चों के लिए National Childcare Scheme की सब्सिडी €2.14 से बढ़कर €2.50 प्रति घंटा। अलग से, Core Funding सेवा एक सामान्य पूर्णकालिक जगह के लिए अधिकतम जो ले सकती है, वह €280 से घटकर €250 प्रति हफ़्ता, सितंबर 2027 में शुरू होने वाले Core Funding वर्ष से।",
         estimate: "हफ़्ते में {hours} सब्सिडी वाले घंटों पर हफ़्ते में {perWeek} कम।",
       },
       "home-carer": {
@@ -2181,7 +2188,7 @@ export const budgetMessages: Translations<BudgetMessages> = {
         title: "Childminding राहत",
         summary: "बच्चों की देखभाल की टैक्स-मुक्त आय €15,000 से बढ़कर €20,000, बच्चों की संख्या की कोई सीमा नहीं।",
         starts: "2027",
-        body: "अपने घर में बच्चों की देखभाल से आय साल में €20,000 तक टैक्स-मुक्त है (पहले €15,000), और आप कितने बच्चों की देखभाल करते हैं इसकी सीमा हटा दी गई है।",
+        body: "अपने घर में बच्चों की देखभाल से आय साल में €20,000 तक टैक्स-मुक्त है (पहले €15,000), और आप कितने बच्चों की देखभाल करते हैं इसकी सीमा हटा दी गई है। अगर Child Care Act 1991 के तहत आपको अर्ली इयर्स सर्विस के रूप में पंजीकरण कराना ज़रूरी है, तो आपका पंजीकृत होना ज़रूरी है।",
       },
       "welfare-rates": {
         title: "साप्ताहिक सामाजिक कल्याण भुगतान",
@@ -2217,7 +2224,7 @@ export const budgetMessages: Translations<BudgetMessages> = {
         title: "Cost of Disability भुगतान",
         summary: "लंबी अवधि के विकलांगता भुगतान पाने वालों के लिए 2027 में एक बार €500।",
         starts: "2027, तारीख घोषित नहीं",
-        body: "लंबी अवधि का विकलांगता भुगतान पाने वाले लगभग 240,000 लोगों के लिए एक बार €500। कौन-से भुगतान गिने जाएँगे, यह अभी प्रकाशित नहीं हुआ है।",
+        body: "लंबी अवधि का विकलांगता भुगतान पाने वाले लगभग 240,000 लोगों के लिए एक बार €500: Blind Pension, Disability Allowance, Invalidity Pension या Partial Capacity Benefit। भुगतान की तारीख़ घोषित नहीं हुई है।",
       },
       "carers-allowance": {
         title: "Carer's Allowance आय सीमा",
@@ -2280,17 +2287,17 @@ export const budgetMessages: Translations<BudgetMessages> = {
       "heating-oil": {
         title: "घर गरम करने का तेल",
         summary: "कार्बन टैक्स घटकर €48.50 प्रति टन, प्रति 1,000 लीटर लगभग €43 कम।",
-        starts: "अभी घोषित नहीं",
+        starts: "14 अक्टूबर 2026",
         change: "प्रति 1,000 लीटर €43 कम",
-        body: "कार्बन टैक्स €63.50 से घटकर €48.50 प्रति टन, और 2030 तक वहीं रहेगा। शुरुआत की तारीख़ घोषित नहीं हुई है।",
+        body: "कार्बन टैक्स 14 अक्टूबर 2026 को €63.50 से घटकर €48.50 प्रति टन हो गया, और 2030 तक वहीं रहेगा।",
         estimate: "साल में {litres} लीटर पर {yearly}।",
       },
       gas: {
         title: "गैस से हीटिंग",
         summary: "कार्बन टैक्स घटकर €48.50 प्रति टन, प्रति 11,000 kWh लगभग €32 कम।",
-        starts: "अभी घोषित नहीं",
+        starts: "14 अक्टूबर 2026",
         change: "प्रति 11,000 kWh €32 कम",
-        body: "कार्बन टैक्स €63.50 से घटकर €48.50 प्रति टन। बजट के हिसाब से एक सामान्य घर साल में 11,000 kWh इस्तेमाल करता है। शुरुआत की तारीख़ घोषित नहीं हुई है।",
+        body: "कार्बन टैक्स 14 अक्टूबर 2026 को €63.50 से घटकर €48.50 प्रति टन हो गया। बजट के हिसाब से एक सामान्य घर साल में 11,000 kWh इस्तेमाल करता है।",
         estimate: "साल में {kwh} kWh पर {yearly}।",
       },
       cigarettes: {
@@ -2319,7 +2326,7 @@ export const budgetMessages: Translations<BudgetMessages> = {
         title: "कंपनी चलाना",
         summary: "नियोक्ता PRSI सीमा €600 प्रति हफ़्ता, स्टार्ट-अप राहत 2030 तक, R&D पहले साल का भुगतान €105,000, प्रिलिमिनरी टैक्स में छोटी कंपनी की सीमा €350,000।",
         starts: "अलग-अलग",
-        body: "1 जनवरी 2027 से नियोक्ता PRSI की निचली दर €600 प्रति हफ़्ते तक के वेतन पर लागू है (पहले €552)। स्टार्ट-अप राहत 2030 के अंत तक बढ़ाई गई है। प्रिलिमिनरी टैक्स के लिए \"छोटी कंपनी\" की सीमा €200,000 से बढ़कर €350,000। पहले साल में पूरा दिया जाने वाला R&D क्रेडिट €87,500 से बढ़कर €105,000।",
+        body: "1 जनवरी 2027 से नियोक्ता PRSI की निचली दर €600 प्रति हफ़्ते तक के वेतन पर लागू है (पहले €552)। स्टार्ट-अप राहत 2030 के अंत तक बढ़ाई गई है। प्रिलिमिनरी टैक्स के लिए \"छोटी कंपनी\" की सीमा €200,000 से बढ़कर €350,000। पहले साल में पूरा दिया जाने वाला R&D क्रेडिट €87,500 से बढ़कर €105,000, उन लेखा अवधियों के लिए जिनका रिटर्न 23 सितंबर 2028 या उसके बाद देय है।",
       },
       farm: {
         title: "खेती",

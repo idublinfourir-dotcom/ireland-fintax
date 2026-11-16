@@ -1,5 +1,5 @@
 /* ──────────────────────────────────────────────────────────────────────────
-   The Irish Investment Account (Budget 2027; Finance (No. 2) Bill 2026, s.26,
+   The Irish Investment Account (Budget 2027; Finance (No. 2) Bill 2026 as amended 12 Nov 2026, s.27,
    new Part 27A, ss.747H to 747AA of the TCA 1997). Pure: no React, no I/O.
 
    projectAccount() follows the account day by day, the way 747Q measures it:
@@ -13,7 +13,7 @@
    ACCOUNT_DATA_AS_OF whenever a figure or rule below changes.
    ────────────────────────────────────────────────────────────────────────── */
 
-export const ACCOUNT_DATA_AS_OF = "29 October 2026";
+export const ACCOUNT_DATA_AS_OF = "16 November 2026";
 
 export const INVESTMENT_ACCOUNT = {
   /** Government plan date (Revenue, CCPC); the legal start is a ministerial order. */

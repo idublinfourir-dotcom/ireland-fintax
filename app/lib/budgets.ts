@@ -18,7 +18,7 @@ export const BUDGETS: BudgetYear[] = [
     href: "/budget/2027",
     label: "Budget 2027",
     desc: "Announced 6 October 2026. See what changes for you.",
-    checked: "29 October 2026",
+    checked: "16 November 2026",
   },
 ];
 

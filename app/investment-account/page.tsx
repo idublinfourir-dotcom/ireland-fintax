@@ -20,7 +20,7 @@ import { investmentAccountMessages } from "../lib/messages/investment-account";
  * than repeating it. Source titles stay English: they name the documents. */
 
 const { annualLimit, taxFreeThreshold } = INVESTMENT_ACCOUNT;
-const BILL = "https://data.oireachtas.ie/ie/oireachtas/bill/2026/98/eng/initiated/b9826d.pdf";
+const BILL = "https://data.oireachtas.ie/ie/oireachtas/bill/2026/98/eng/ver_a/b98a26d.pdf";
 const SPEECH = "https://www.gov.ie/en/department-of-finance/speeches/statement-by-minister-harris-on-budget-2027/";
 
 const euros = (locale: Locale) =>
@@ -60,7 +60,7 @@ function when(locale: Locale, iso: string): string {
 const RELATED = ["/personal/investment", "/tools/ireland-cgt", "/budget/2027", "/blog/how-savings-and-investments-are-taxed"];
 
 const sources = [
-  { href: BILL, label: "Finance (No. 2) Bill 2026, section 26: new Part 27A, Individual Investment Account (19 October 2026)" },
+  { href: BILL, label: "Finance (No. 2) Bill 2026 as amended in Dáil Select Committee, section 27: new Part 27A, Individual Investment Account (12 November 2026)" },
   { href: "https://data.oireachtas.ie/ie/oireachtas/bill/2026/98/eng/memo/b9826d-memo.pdf", label: "Finance (No. 2) Bill 2026, Explanatory Memorandum" },
   { href: "https://assets.gov.ie/static/documents/c6792805/20261012_Budget_2027_Tax_Policy_Changes_Book.pdf", label: "Department of Finance, Budget 2027 Tax Policy Changes, chapter 9 (12 October 2026)" },
   { href: SPEECH, label: "Statement by the Tánaiste and Minister for Finance on Budget 2027 (6 October 2026)" },

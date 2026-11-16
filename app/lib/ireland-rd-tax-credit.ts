@@ -42,7 +42,7 @@
    ────────────────────────────────────────────────────────────────────────── */
 
 /** When the rate/threshold below were last checked against Revenue. */
-export const RD_LAST_REVIEWED = "October 2026";
+export const RD_LAST_REVIEWED = "November 2026";
 export const RD_SOURCE_URL =
   "https://www.revenue.ie/en/companies-and-charities/reliefs-and-exemptions/research-and-development-rd-tax-credit/index.aspx";
 

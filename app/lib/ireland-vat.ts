@@ -11,9 +11,9 @@
    rate as an argument, so they are unchanged. VAT_CATEGORIES (the taxonomy of
    what maps to which rate) stays in code.
 
-   Sources (verified per line; re-checked October 2026 against Revenue's
+   Sources (verified per line; re-checked 16 November 2026 against Revenue's
    historical rates table, and Budget 2027 changed none of these rates):
-   - VAT rates:      revenue.ie/en/vat/vat-rates/historical-vat-rates
+   - VAT rates:      revenue.ie/en/vat/vat-rates/historical-vat-rates/index.aspx
    - Registration thresholds:
                      revenue.ie/en/vat/vat-registration/who-should-register-for-vat/vat-thresholds
 
@@ -22,7 +22,7 @@
    ────────────────────────────────────────────────────────────────────────── */
 
 /** When the rates/thresholds below were last checked against Revenue. */
-export const VAT_LAST_REVIEWED = "October 2026";
+export const VAT_LAST_REVIEWED = "November 2026";
 export const VAT_SOURCE_URL = "https://www.revenue.ie/en/vat/vat-rates/index.aspx";
 
 /* ---------- rates ---------- */
@@ -75,26 +75,26 @@ export const VAT_CONFIG_DEFAULT: VatConfig = {
       key: "reduced",
       percent: 13.5,
       label: "Reduced: 13.5%",
-      applies: "Fuel, electricity, construction, general repairs",
+      applies: "Heating oil and solid fuel, construction, general repairs, cinema and theatre tickets",
     },
     {
       key: "second-reduced",
       percent: 9,
       label: "Second reduced: 9%",
-      applies: "Food & catering, hairdressing, newspapers, sporting facilities",
+      applies: "Food & catering, hairdressing, electricity and gas, magazines, sporting facilities",
       note: "Food & catering and hairdressing moved from 13.5% to 9% on 1 July 2026.",
     },
     {
       key: "livestock",
       percent: 4.8,
       label: "Livestock: 4.8%",
-      applies: "Livestock, greyhounds and the hire of horses",
+      applies: "Livestock, and horses for food or farming",
     },
     {
       key: "zero",
       percent: 0,
       label: "Zero: 0%",
-      applies: "Most food, children's clothing/footwear, oral medicines, exports",
+      applies: "Most food, children's clothing/footwear, oral medicines, books and newspapers, exports",
     },
   ],
   // A rise to €100k / €50k has been discussed but is NOT law: do not use it.
@@ -165,7 +165,11 @@ export function parseVatConfig(raw: unknown): VatConfig | null {
    So the user picks WHAT they're selling and the correct rate resolves
    automatically, instead of having to know the percentage. Grouped by rate in
    the UI. Classification can be nuanced: the on-result disclaimer covers the
-   edge cases. Source: revenue.ie/en/vat/vat-rates (rate database). */
+   edge cases. Source: revenue.ie/en/vat/vat-rates (rate database); the
+   13.5%, 9% and 0% lists re-checked 16 November 2026 on Revenue's
+   reduced-rate, second-reduced-rate and zero-rate pages (electricity and gas
+   9% to 31 Dec 2030; cinema and theatre 13.5% since 1 Sep 2023; newspapers
+   and books 0%; greyhounds and horse hire 13.5%). */
 
 export interface VatCategory {
   label: string;
@@ -181,26 +185,26 @@ export const VAT_CATEGORIES: VatCategory[] = [
   { label: "Professional services (legal, accountancy, consultancy)", rateKey: "standard" },
   { label: "Furniture, cosmetics & most retail goods", rateKey: "standard" },
   // Reduced: 13.5%
-  { label: "Electricity & gas (domestic energy)", rateKey: "reduced" },
   { label: "Home heating oil & solid fuel", rateKey: "reduced" },
   { label: "Building & construction services", rateKey: "reduced" },
   { label: "General repairs & maintenance", rateKey: "reduced" },
   { label: "Hotel & holiday accommodation", rateKey: "reduced" },
+  { label: "Cinema, theatre & concert admission", rateKey: "reduced" },
+  { label: "Greyhounds & hire of horses", rateKey: "reduced" },
   // Second reduced: 9%
   { label: "Restaurant & catering meals", rateKey: "second-reduced" },
   { label: "Hot takeaway food & hot drinks", rateKey: "second-reduced" },
   { label: "Hairdressing", rateKey: "second-reduced" },
-  { label: "Newspapers, periodicals & e-books", rateKey: "second-reduced" },
+  { label: "Electricity & gas (domestic energy)", rateKey: "second-reduced" },
+  { label: "Magazines & periodicals", rateKey: "second-reduced" },
   { label: "Sporting facilities & gym membership", rateKey: "second-reduced" },
-  { label: "Cinema, theatre & concert admission", rateKey: "second-reduced" },
   // Livestock: 4.8%
   { label: "Livestock (cattle, sheep, pigs)", rateKey: "livestock" },
-  { label: "Greyhounds & hire of horses", rateKey: "livestock" },
   // Zero: 0%
   { label: "Groceries & most food and drink", rateKey: "zero" },
   { label: "Children's clothing & footwear", rateKey: "zero" },
   { label: "Oral medicines", rateKey: "zero" },
-  { label: "Printed books", rateKey: "zero" },
+  { label: "Books, e-books & newspapers", rateKey: "zero" },
   { label: "Exports outside the EU", rateKey: "zero" },
 ];
 

@@ -55,7 +55,7 @@
    ────────────────────────────────────────────────────────────────────────── */
 
 /** When the rates below were last checked against Revenue. */
-export const CAT_LAST_REVIEWED = "October 2026";
+export const CAT_LAST_REVIEWED = "November 2026";
 export const CAT_SOURCE_URL =
   "https://www.revenue.ie/en/gains-gifts-and-inheritance/gift-and-inheritance-tax-cat/how-do-you-calculate-cat.aspx";
 

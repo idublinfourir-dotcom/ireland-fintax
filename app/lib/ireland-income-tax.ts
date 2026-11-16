@@ -26,8 +26,10 @@
    - Rent Tax Credit (20%, maximums, capped at income tax due):
        revenue.ie/.../land-and-property/rent-credit/how-much-claim.aspx
    - 2027: Department of Finance, "Budget 2027 Tax Policy Changes" (6 Oct
-       2026), ch. 2 and 3. Its text prints the USC 3% ceiling as €70,444; that
-       is a typo, its own Table 2 only reconciles with €70,044 (unchanged).
+       2026), ch. 2 and 3, and Finance (No. 2) Bill 2026 as amended 12 Nov 2026
+       (s.2: USC bands €12,012 / €18,288 / €39,744, so the 3% band ends at
+       €70,044). An early printing of the book said €70,444, a typo since
+       corrected. All 2025 to 2027 figures re-checked 16 November 2026.
 
    These figures are ESTIMATES for guidance only. Known limitations are marked
    `TODO` inline and MUST stay TODOs until checked against the live Revenue
@@ -36,7 +38,7 @@
 
 /** When the rates below were last checked against Revenue and the Budget
     book, and the page the calculator cites for them. */
-export const INCOME_TAX_LAST_REVIEWED = "October 2026";
+export const INCOME_TAX_LAST_REVIEWED = "November 2026";
 export const INCOME_TAX_SOURCE_URL =
   "https://www.revenue.ie/en/personal-tax-credits-reliefs-and-exemptions/tax-relief-charts/index.aspx";
 
@@ -943,12 +945,14 @@ function employmentCredits(
 /* MyFutureFund auto-enrolment                                                 */
 /* ========================================================================== */
 
-/** One person's yearly contribution, as the Deloitte calculator assumes it:
-    an employee aged over 23 and under 60 (age reached in the year), earning
-    over €20,000, who is enrolled because no pension contribution was entered.
-    The boundaries follow Deloitte and the published summaries ("over
-    €20,000"); the Act's own wording on the ages is not checked here. The form has no
-    spouse age, so the spouse is taken to be in your age range. */
+/** One person's yearly contribution: an employee who is enrolled because no
+    pension contribution was entered. The boundaries are the Act's, s.50(2) and
+    (3) of the Automatic Enrolment Retirement Savings System Act 2024 (checked
+    16 November 2026): "aged at least 23 years and under 60 years" and gross pay
+    "not less than" €20,000 a year. Deloitte's calculator leaves out age 23 and
+    pay of exactly €20,000; the Act includes both. Age is the age reached in the
+    year, as elsewhere on the form. The form has no spouse age, so the spouse is
+    taken to be in your age range. */
 export function computeAutoEnrolment(
   input: IncomeTaxInput,
   rates: YearRates,
@@ -956,8 +960,8 @@ export function computeAutoEnrolment(
 ): number {
   const ae = rates.autoEnrolment;
   if (ae.employeeRate <= 0 || sanitize(input.pensionContribution) > 0) return 0;
-  if (input.age <= ae.minAge || input.age >= ae.maxAge) return 0;
-  if (employmentIncome <= ae.minEarnings) return 0;
+  if (input.age < ae.minAge || input.age >= ae.maxAge) return 0;
+  if (employmentIncome < ae.minEarnings) return 0;
   return Math.min(employmentIncome, ae.earningsCap) * ae.employeeRate;
 }
 

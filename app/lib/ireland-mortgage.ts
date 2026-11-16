@@ -13,7 +13,7 @@
    → €864.93/month).
    ────────────────────────────────────────────────────────────────────────── */
 
-export const RATES_AS_OF = "October 2026";
+export const RATES_AS_OF = "November 2026";
 
 /* ---------- product / applicant types ---------- */
 
@@ -101,7 +101,10 @@ export interface LenderProduct {
 
 const OWNER_OCCUPIER: ProductType[] = ["first-time", "trading-up", "switch"];
 
-/* The October 2026 snapshot: the live rows as re-checked on the lenders' own
+/* The November 2026 snapshot (re-checked 16 Nov 2026: Avant, Bank of Ireland
+   and Haven live, AIB and PTSB from archived copies of 1 and 2 Nov, ICS 3-year
+   from the CCPC tool; ICS buy-to-let still as of 1 Aug). Before that, the
+   October 2026 snapshot: the live rows as re-checked on the lenders' own
    pages on 28 Oct 2026. Each row shows the rate every borrower it admits can
    get: the top LTV band (AIB, Haven, Avant, PTSB, ICS) or the BER G rate (Bank
    of Ireland). Withdrawn products are hidden in the database, not listed here. */
@@ -285,7 +288,7 @@ export const LENDER_PRODUCTS: LenderProduct[] = [
     aprcPercent: 5.49,
     maxLtv: 0.9,
     revertRatePercent: 4.85,
-    details: "5.95% above 70% loan-to-value; 5.90% (APRC 5.48%) at 70% or less. Rolls to ICS's variable rate of 4.85%. APRC on a €300,000 loan over 30 years.",
+    details: "5.95% (APRC 5.49%) above 70% loan-to-value, up to 80%; 5.90% (APRC 5.48%) at 70% or less. Rolls to ICS's variable rate of 5.10%. APRC over 30 years.",
     audience: OWNER_OCCUPIER,
   },
   // ── Variable ──
@@ -326,10 +329,10 @@ export const LENDER_PRODUCTS: LenderProduct[] = [
     lender: "Avant Money",
     name: "Flex Mortgage (variable)",
     rateType: "variable",
-    ratePercent: 4.34,
-    aprcPercent: 4.45,
+    ratePercent: 4.33,
+    aprcPercent: 4.44,
     maxLtv: 0.9,
-    details: "12-month Euribor plus a margin fixed for the life of the loan, reset on the 10th of each month. 4.34% above 80% loan-to-value; 4.14% (APRC 4.24%) at 80% or less. Rate for 10 October to 9 November 2026.",
+    details: "12-month Euribor plus a margin fixed for the life of the loan, reset on the 10th of each month. 4.33% above 80% loan-to-value; 4.13% (APRC 4.23%) at 80% or less. Rate for 10 November to 9 December 2026.",
     audience: OWNER_OCCUPIER,
   },
   // ── Buy-to-let ──

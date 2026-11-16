@@ -55,7 +55,7 @@ test("Energy-efficient equipment: 100% in year one (ACA)", () => {
   assertScheduleSums(r);
 });
 
-test("Car (Group 1, ≤155 g/km): capped at €24,000, full relief", () => {
+test("Car (Group 1, ≤140 g/km, Category A and B): capped at €24,000, full relief", () => {
   const r = computeCapitalAllowance({
     assetKey: "motor-vehicle",
     cost: 30_000,
@@ -78,7 +78,7 @@ test("Car (Group 1) below the cap: allowances on the actual cost", () => {
   assert.equal(r.restricted, false);
 });
 
-test("Car (Group 2, 156 to 190 g/km): 50% of the capped cost", () => {
+test("Car (Group 2, 141 to 155 g/km, Category C): half the capped cost, so at most €12,000", () => {
   const over = computeCapitalAllowance({
     assetKey: "motor-vehicle",
     cost: 30_000,
@@ -96,7 +96,7 @@ test("Car (Group 2, 156 to 190 g/km): 50% of the capped cost", () => {
   assert.equal(under.annualAllowance, 1_250);
 });
 
-test("Car (Group 3, >190 g/km): no allowances at all", () => {
+test("Car (Group 3, >155 g/km, Category D to F): no allowances at all", () => {
   const r = computeCapitalAllowance({
     assetKey: "motor-vehicle",
     cost: 30_000,

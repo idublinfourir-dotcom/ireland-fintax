@@ -96,6 +96,10 @@ export const BUDGET_SOURCES = {
     label: "Revenue, Mortgage Interest Tax Credit",
     url: "https://www.revenue.ie/en/personal-tax-credits-reliefs-and-exemptions/land-and-property/mortgage/interest-paid.aspx",
   },
+  minimumWageOrder: {
+    label: "S.I. No. 533 of 2026, National Minimum Wage Order 2026",
+    url: "https://www.irishstatutebook.ie/eli/2026/si/533/made/en/print",
+  },
   financeAct2025: {
     label: "Finance Act 2025",
     url: "https://www.irishstatutebook.ie/eli/2025/act/18/enacted/en/print.html",
@@ -246,13 +250,14 @@ export const EMPTY_PROFILE: BudgetProfile = {
 
 /* ---------- measures ---------- */
 
-type Status = "in-force" | "awaiting-finance-act" | "announced" | "already-law";
+type Status = "in-force" | "awaiting-finance-act" | "announced" | "already-law" | "made-law";
 
 const STATUS_LABEL: Record<Status, string> = {
   "in-force": "In effect now, becomes final with the Finance Act",
   "awaiting-finance-act": "Announced, becomes law with the Finance Act",
   announced: "Announced",
   "already-law": "Already law before this Budget",
+  "made-law": "Now law, set by ministerial order",
 };
 
 /** The areas, in the order they are shown everywhere. */
@@ -401,7 +406,7 @@ const FUEL = {
 } as const;
 
 /** Heating, from the Budget in Brief's typical bundles (checked against
-    Revenue's rates: kerosene €160.81 → €122.82 per 1,000 litres plus 13.5%
+    Revenue's rates: kerosene €160.81 → €122.83 per 1,000 litres plus 13.5%
     VAT; gas €11.48 → €8.77 per MWh plus 9% VAT). */
 const HEATING = { oilPer1000Litres: 43, gasPer11000Kwh: 32 } as const;
 
@@ -480,8 +485,8 @@ const MEASURES: MeasureDef[] = [
     group: "Tax and pay",
     title: "Minimum wage",
     starts: { date: "2027-01-01", label: "1 January 2027" },
-    status: "announced",
-    source: "dofTax",
+    status: "made-law",
+    source: "minimumWageOrder",
     appliesTo: (p) => p.minimumWage && pos(p.minimumWageHours) > 0,
     impact: (p, { rates, tax }) => {
       const rise = (MINIMUM_WAGE.to - MINIMUM_WAGE.from) * pos(p.minimumWageHours) * 52;
@@ -534,7 +539,7 @@ const MEASURES: MeasureDef[] = [
     summary: "The most a first-time buyer of a new home can get rises from €30,000 to €35,000.",
     group: "Home",
     title: "Help to Buy",
-    starts: { date: "2026-10-07", label: "Applications from 7 October 2026" },
+    starts: { date: "2026-10-07", label: "Contracts from 7 October 2026" },
     status: "in-force",
     source: "revenueHtb",
     appliesTo: (p) => p.buyingFirstHome && pos(p.homePrice) > 0,
@@ -580,13 +585,13 @@ const MEASURES: MeasureDef[] = [
     summary: "Tax-free room income rises from €14,000 to €16,000 and covers certain garden units.",
     group: "Home",
     title: "Rent-a-room relief",
-    starts: { date: "2027-01-01", label: "1 January 2027" },
+    starts: { date: "2027-01-01", label: "1 January 2027; garden units from 27 July 2026" },
     status: "awaiting-finance-act",
     source: "dofTax",
     appliesTo: (p) => p.lettingRoom,
     impact: () => ({
       kind: "info",
-      text: "Room income up to €16,000 a year is tax-free (was €14,000). It now also covers certain garden or auxiliary units installed after 27 July 2026.",
+      text: "Room income up to €16,000 a year is tax-free from 2027 (was €14,000). Under the Finance Bill it also covers rooms in certain garden units from 27 July 2026, once their planning notice has been given.",
     }),
   },
   {
@@ -594,13 +599,13 @@ const MEASURES: MeasureDef[] = [
     summary: "Tax-free profit from selling home-generated electricity rises from €400 to €600.",
     group: "Home",
     title: "Selling solar power to the grid",
-    starts: NOT_ANNOUNCED,
+    starts: { date: "2027-01-01", label: "1 January 2027" },
     status: "awaiting-finance-act",
     source: "dofTax",
     appliesTo: (p) => p.solarExport,
     impact: () => ({
       kind: "info",
-      text: "Up to €600 a year of profit from electricity you sell to the grid is free of income tax, USC and PRSI (was €400). The first tax year has not been announced.",
+      text: "Up to €600 a year of profit from electricity you sell to the grid is free of income tax, USC and PRSI (was €400), from the 2027 tax year.",
     }),
   },
 
@@ -652,7 +657,7 @@ const MEASURES: MeasureDef[] = [
         change: "36c an hour less",
         cheaper: true,
         vars: { perWeek: 0.36 * hours, hours },
-        text: "The National Childcare Scheme subsidy rises from €2.14 to €2.50 an hour for children up to senior infants. Separately, the most a Core Funding service can charge for a typical full-time place falls from €280 to €250 a week; its start date has not been announced.",
+        text: "The National Childcare Scheme subsidy rises from €2.14 to €2.50 an hour for children up to senior infants. Separately, the most a Core Funding service can charge for a typical full-time place falls from €280 to €250 a week, from the Core Funding year that starts in September 2027.",
         estimate:
           hours > 0 ? `${eur2(0.36 * hours)} a week less at ${hours} subsidised hours a week.` : undefined,
       };
@@ -683,7 +688,7 @@ const MEASURES: MeasureDef[] = [
     appliesTo: (p) => p.childminder,
     impact: () => ({
       kind: "info",
-      text: "Childminding income in your own home is tax-free up to €20,000 a year (was €15,000), and the limit on how many children you mind is removed.",
+      text: "Childminding income in your own home is tax-free up to €20,000 a year (was €15,000), and the limit on how many children you mind is removed. If the Child Care Act 1991 requires you to register as an early years service, you must be registered.",
     }),
   },
 
@@ -781,7 +786,7 @@ const MEASURES: MeasureDef[] = [
       kind: "exact",
       amount: 500,
       period: "once",
-      detail: "A one-off €500 for people getting a long-term disability payment, about 240,000 people. Which payments count has not been published yet.",
+      detail: "A one-off €500 for people getting a long-term disability payment, about 240,000 people: Blind Pension, Disability Allowance, Invalidity Pension or Partial Capacity Benefit. The payment date has not been announced.",
     }),
   },
   {
@@ -932,9 +937,9 @@ const MEASURES: MeasureDef[] = [
     summary: "Carbon tax falls to €48.50 a tonne, about €43 less per 1,000 litres.",
     group: "Spending",
     title: "Home heating oil",
-    starts: NOT_ANNOUNCED,
-    status: "announced",
-    source: "budgetInBrief",
+    starts: { date: "2026-10-14", label: "14 October 2026" },
+    status: "in-force",
+    source: "revenueEnergy",
     appliesTo: (p) => p.heatingOil,
     impact: (p) => {
       const litres = pos(p.heatingOilLitresPerYear);
@@ -943,7 +948,7 @@ const MEASURES: MeasureDef[] = [
         change: "€43 less per 1,000 litres",
         cheaper: true,
         vars: { yearly: (HEATING.oilPer1000Litres * litres) / 1000, litres },
-        text: "Carbon tax falls from €63.50 to €48.50 a tonne and stays there until 2030. The start date has not been announced.",
+        text: "Carbon tax fell from €63.50 to €48.50 a tonne on 14 October 2026 and stays there until 2030.",
         estimate:
           litres > 0
             ? `${yearly((HEATING.oilPer1000Litres * litres) / 1000, false)} at ${litres.toLocaleString("en-IE")} litres a year.`
@@ -956,9 +961,9 @@ const MEASURES: MeasureDef[] = [
     summary: "Carbon tax falls to €48.50 a tonne, about €32 less per 11,000 kWh.",
     group: "Spending",
     title: "Gas heating",
-    starts: NOT_ANNOUNCED,
-    status: "announced",
-    source: "budgetInBrief",
+    starts: { date: "2026-10-14", label: "14 October 2026" },
+    status: "in-force",
+    source: "revenueEnergy",
     appliesTo: (p) => p.gas,
     impact: (p) => {
       const kwh = pos(p.gasKwhPerYear);
@@ -967,7 +972,7 @@ const MEASURES: MeasureDef[] = [
         change: "€32 less per 11,000 kWh",
         cheaper: true,
         vars: { yearly: (HEATING.gasPer11000Kwh * kwh) / 11_000, kwh },
-        text: "Carbon tax falls from €63.50 to €48.50 a tonne. 11,000 kWh is the Budget's typical home for a year. The start date has not been announced.",
+        text: "Carbon tax fell from €63.50 to €48.50 a tonne on 14 October 2026. 11,000 kWh is the Budget's typical home for a year.",
         estimate:
           kwh > 0
             ? `${yearly((HEATING.gasPer11000Kwh * kwh) / 11_000, false)} at ${kwh.toLocaleString("en-IE")} kWh a year.`
@@ -1042,7 +1047,7 @@ const MEASURES: MeasureDef[] = [
     appliesTo: (p) => p.companyDirector,
     impact: () => ({
       kind: "info",
-      text: "Employer PRSI's lower rate applies up to €600 a week of pay (was €552) from 1 January 2027. Start-up relief is extended to the end of 2030. The \"small company\" limit for preliminary tax rises from €200,000 to €350,000. The R&D credit paid in full in year one rises from €87,500 to €105,000.",
+      text: "Employer PRSI's lower rate applies up to €600 a week of pay (was €552) from 1 January 2027. Start-up relief is extended to the end of 2030. The \"small company\" limit for preliminary tax rises from €200,000 to €350,000. The R&D credit paid in full in year one rises from €87,500 to €105,000, for accounting periods whose return is due on or after 23 September 2028.",
     }),
   },
   {

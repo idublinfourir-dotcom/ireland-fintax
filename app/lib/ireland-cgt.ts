@@ -55,7 +55,7 @@
    ────────────────────────────────────────────────────────────────────────── */
 
 /** When the rates/multipliers below were last checked against Revenue. */
-export const CGT_LAST_REVIEWED = "October 2026";
+export const CGT_LAST_REVIEWED = "November 2026";
 export const CGT_SOURCE_URL =
   "https://www.revenue.ie/en/gains-gifts-and-inheritance/transfering-an-asset/how-to-calculate-cgt.aspx";
 

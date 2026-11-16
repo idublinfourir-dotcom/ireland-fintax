@@ -12,7 +12,7 @@ const en = {
   crumb: "Ireland R&D tax credit",
   title: "Ireland R&D tax credit calculator",
   lede: "Estimate the {rate} R&D Corporation Tax Credit and how it's paid out over three years, figures current as of {date}.",
-  budgetNote: "Budget 2027 announced a higher first-year payment (€87,500 to €105,000) and wider subcontracting limits. The Finance Act will set when they start, so this calculator still uses the current rules.",
+  budgetNote: "Budget 2027 announced a higher first-year payment (€87,500 to €105,000) and wider subcontracting limits. In the Finance Bill the higher payment applies to accounting periods whose return is due on or after 23 September 2028, so this calculator still uses the current rules.",
   notes: [
     { title: "35% of qualifying spend", body: "The credit is 35% of qualifying R&D expenditure, on top of the 12.5% trading deduction the same spend attracts, a combined benefit of about 47.5%. The 35% and the €87,500 first-year amount apply to accounting periods with a tax return due on or after 23 September 2027 (in general, periods ending 31 December 2026 or later). Earlier periods get 30% and €75,000." },
     { title: "Paid over three years", body: "The first €87,500 (or 50% of the credit, whichever is greater) is payable in year one; the balance follows across years two and three. You elect cash refund or offset against tax due, it isn't netted against Corporation Tax first." },
@@ -62,7 +62,7 @@ export const rdMessages: Translations<RdMessages> = {
     crumb: "Crédito fiscal por I+D de Irlanda",
     title: "Calculadora del crédito fiscal por I+D de Irlanda",
     lede: "Calcula el crédito por I+D del {rate} en el impuesto de sociedades y cómo se cobra en tres años. Cifras vigentes a {date}.",
-    budgetNote: "El Presupuesto 2027 anunció un primer pago más alto (de 87.500 € a 105.000 €) y límites más amplios para la subcontratación. La Ley de Finanzas fijará cuándo empiezan, así que esta calculadora sigue usando las normas actuales.",
+    budgetNote: "El Presupuesto 2027 anunció un primer pago más alto (de 87.500 € a 105.000 €) y límites más amplios para la subcontratación. En el Finance Bill, el pago más alto se aplica a los periodos contables cuya declaración vence a partir del 23 de septiembre de 2028, así que esta calculadora sigue usando las normas actuales.",
     notes: [
       { title: "35 % del gasto que cumple los requisitos", body: "El crédito es el 35 % del gasto en I+D que cumple los requisitos, además de la deducción comercial del 12,5 % que genera ese mismo gasto: un beneficio combinado de alrededor del 47,5 %. El 35 % y el primer pago de 87.500 € se aplican a los periodos contables cuya declaración vence a partir del 23 de septiembre de 2027 (en general, los que terminan el 31 de diciembre de 2026 o después). Los periodos anteriores tienen un 30 % y 75.000 €." },
       { title: "Se cobra en tres años", body: "Los primeros 87.500 € (o el 50 % del crédito, lo que sea mayor) se pagan el primer año; el resto, en los años dos y tres. Tú eliges entre reembolso en efectivo o compensarlo con impuestos a pagar; no se descuenta antes del impuesto de sociedades." },
@@ -107,7 +107,7 @@ export const rdMessages: Translations<RdMessages> = {
     crumb: "Crédito fiscal de P&D da Irlanda",
     title: "Calculadora do crédito fiscal de P&D da Irlanda",
     lede: "Estime o crédito de P&D de {rate} no imposto sobre empresas e como ele é pago em três anos. Números vigentes em {date}.",
-    budgetNote: "O Orçamento 2027 anunciou um primeiro pagamento maior (de € 87.500 para € 105.000) e limites mais amplos de subcontratação. A Lei de Finanças vai definir quando começam, então esta calculadora ainda usa as regras atuais.",
+    budgetNote: "O Orçamento 2027 anunciou um primeiro pagamento maior (de € 87.500 para € 105.000) e limites mais amplos de subcontratação. No Finance Bill, o pagamento maior aplica-se aos períodos contábeis cuja declaração vence a partir de 23 de setembro de 2028, então esta calculadora ainda usa as regras atuais.",
     notes: [
       { title: "35% dos gastos qualificados", body: "O crédito é de 35% dos gastos de P&D qualificados, além da dedução comercial de 12,5% que esses mesmos gastos geram: um benefício combinado de cerca de 47,5%. Os 35% e o primeiro pagamento de € 87.500 valem para períodos contábeis cuja declaração vence a partir de 23 de setembro de 2027 (em geral, os que terminam em 31 de dezembro de 2026 ou depois). Períodos anteriores têm 30% e € 75.000." },
       { title: "Pago em três anos", body: "Os primeiros € 87.500 (ou 50% do crédito, o que for maior) são pagos no primeiro ano; o restante vem nos anos dois e três. Você escolhe entre reembolso em dinheiro ou compensação com impostos devidos; ele não é abatido do imposto sobre empresas antes." },
@@ -152,7 +152,7 @@ export const rdMessages: Translations<RdMessages> = {
     crumb: "Creidmheas cánach T&F na hÉireann",
     title: "Áireamhán creidmheasa cánach T&F na hÉireann",
     lede: "Meas an Creidmheas Cánach Corparáide T&F {rate} agus conas a íoctar é thar thrí bliana. Figiúirí reatha amhail {date}.",
-    budgetNote: "D’fhógair Buiséad 2027 íocaíocht níos airde sa chéad bhliain (€87,500 go €105,000) agus teorainneacha fochonarthaíochta níos leithne. Socróidh an tAcht Airgeadais cathain a thosóidh siad, mar sin úsáideann an t-áireamhán seo na rialacha reatha fós.",
+    budgetNote: "D’fhógair Buiséad 2027 íocaíocht níos airde sa chéad bhliain (€87,500 go €105,000) agus teorainneacha fochonarthaíochta níos leithne. Sa Bhille Airgeadais, baineann an íocaíocht níos airde le tréimhsí cuntasaíochta a bhfuil a ndearbhú dlite an 23 Meán Fómhair 2028 nó ina dhiaidh, mar sin úsáideann an t-áireamhán seo na rialacha reatha fós.",
     notes: [
       { title: "35% den chaiteachas cáilitheach", body: "Is é an creidmheas 35% den chaiteachas T&F cáilitheach, i dteannta na hasbhainte trádála 12.5% a fhaigheann an caiteachas céanna: sochar comhcheangailte de thart ar 47.5%. Baineann an 35% agus an chéad íocaíocht €87,500 le tréimhsí cuntasaíochta a bhfuil a dtuairisceán dlite ar nó tar éis 23 Meán Fómhair 2027 (go ginearálta, tréimhsí a chríochnaíonn ar 31 Nollaig 2026 nó níos déanaí). Faigheann tréimhsí níos luaithe 30% agus €75,000." },
       { title: "Íoctha thar thrí bliana", body: "Íoctar an chéad €87,500 (nó 50% den chreidmheas, cibé acu is mó) sa chéad bhliain; leanann an t-iarmhéid sa dara agus sa tríú bliain. Roghnaíonn tú aisíocaíocht airgid nó fritháireamh in aghaidh cánach dlite; ní fhritháirítear in aghaidh Cánach Corparáide é ar dtús." },
@@ -197,7 +197,7 @@ export const rdMessages: Translations<RdMessages> = {
     crumb: "ائتمان ضريبة البحث والتطوير في أيرلندا",
     title: "حاسبة ائتمان ضريبة البحث والتطوير في أيرلندا",
     lede: "قدّر ائتمان ضريبة الشركات للبحث والتطوير بنسبة {rate} وكيف يُدفع على ثلاث سنوات، والأرقام سارية حتى {date}.",
-    budgetNote: "أعلنت ميزانية 2027 عن دفعة أعلى في السنة الأولى (من 87,500 يورو إلى 105,000 يورو) وحدود أوسع للتعاقد من الباطن. سيحدد قانون المالية موعد بدء تطبيقها، لذا لا تزال هذه الحاسبة تستخدم القواعد الحالية.",
+    budgetNote: "أعلنت ميزانية 2027 عن دفعة أعلى في السنة الأولى (من 87,500 يورو إلى 105,000 يورو) وحدود أوسع للتعاقد من الباطن. وفي مشروع قانون المالية تنطبق الدفعة الأعلى على الفترات المحاسبية التي يحين موعد إقرارها في 23 سبتمبر 2028 أو بعده، لذا لا تزال هذه الحاسبة تستخدم القواعد الحالية.",
     notes: [
       { title: "35% من الإنفاق المؤهل", body: "الائتمان هو 35% من الإنفاق المؤهل على البحث والتطوير، فوق الخصم التجاري البالغ 12.5% الذي يستحقه الإنفاق نفسه، أي فائدة مجمعة تبلغ نحو 47.5%. ينطبق معدل 35% والدفعة الأولى البالغة 87,500 يورو على الفترات المحاسبية التي يُستحق إقرارها الضريبي في 23 سبتمبر 2027 أو بعده (أي عمومًا الفترات المنتهية في 31 ديسمبر 2026 أو بعده). أما الفترات السابقة فلها 30% و75,000 يورو." },
       { title: "يُدفع على ثلاث سنوات", body: "أول 87,500 يورو (أو 50% من الائتمان، أيهما أكبر) تُدفع في السنة الأولى؛ ويتبعها الرصيد على السنتين الثانية والثالثة. أنت تختار الاسترداد النقدي أو المقاصة مقابل الضريبة المستحقة، ولا يُخصم من ضريبة الشركات أولًا." },
@@ -242,7 +242,7 @@ export const rdMessages: Translations<RdMessages> = {
     crumb: "আইরিশ R&D কর ক্রেডিট",
     title: "আয়ারল্যান্ড R&D কর ক্রেডিট ক্যালকুলেটর",
     lede: "{rate} R&D করপোরেট কর ক্রেডিট এবং তিন বছরে এটি কীভাবে পরিশোধ করা হয় তা হিসাব করুন, {date} তারিখ অনুযায়ী পরিসংখ্যান প্রযোজ্য।",
-    budgetNote: "বাজেট 2027 প্রথম বছরের পরিশোধ বৃদ্ধির (€87,500 থেকে €105,000) এবং সাব-কন্ট্রাক্টিংয়ের বর্ধিত সীমার ঘোষণা দিয়েছে। Finance Act কার্যকর হওয়ার পর এগুলো চালু হবে, তাই এই ক্যালকুলেটরটিতে বর্তমান নিয়ম বহাল রাখা হয়েছে।",
+    budgetNote: "বাজেট 2027 প্রথম বছরের পরিশোধ বৃদ্ধির (€87,500 থেকে €105,000) এবং সাব-কন্ট্রাক্টিংয়ের বর্ধিত সীমার ঘোষণা দিয়েছে। Finance Bill-এ বর্ধিত পরিশোধ সেই হিসাব-বছরগুলোর জন্য প্রযোজ্য, যেগুলোর রিটার্ন 23 সেপ্টেম্বর 2028 বা তার পরে দেয়, তাই এই ক্যালকুলেটরটিতে বর্তমান নিয়ম বহাল রাখা হয়েছে।",
     notes: [
       { title: "যোগ্য ব্যয়ের 35%", body: "যোগ্য R&D ব্যয়ের ওপর 35% কর ক্রেডিট পাওয়া যায়, যা একই ব্যয়ের ওপর প্রাপ্ত 12.5% ব্যবসায়িক কর কর্তনের অতিরিক্ত সুবিধা, ফলে সামগ্রিক সুবিধা দাঁড়ায় প্রায় 47.5%। 35% ক্রেডিট এবং €87,500 প্রথম বছরের অর্থ সেই হিসাবকালের জন্য প্রযোজ্য যার কর রিটার্ন 23 সেপ্টেম্বর 2027 বা তার পরে দাখিলযোগ্য (সাধারণত 31 ডিসেম্বর 2026 বা তার পরে সমাপ্ত হিসাবকাল)। পূর্ববর্তী হিসাবকালে 30% ও €75,000 প্রযোজ্য।" },
       { title: "তিন বছরে পরিশোধিত", body: "প্রথম €87,500 (অথবা মোট ক্রেডিটের 50%, যেটি বেশি) প্রথম বছরে প্রদেয়; অবশিষ্ট অংশ দ্বিতীয় ও তৃতীয় বছরে পরিশোধ করা হয়। আপনি চাইলে নগদ রিফান্ড নিতে পারেন অথবা প্রদেয় করের সাথে সমন্বয় করতে পারেন, এটি করপোরেট করের সাথে আগেই সমন্বয় করা হয় না।" },
@@ -287,7 +287,7 @@ export const rdMessages: Translations<RdMessages> = {
     crumb: "आयरलैंड R&D टैक्स क्रेडिट",
     title: "आयरलैंड R&D टैक्स क्रेडिट कैलकुलेटर",
     lede: "{rate} R&D कॉर्पोरेशन टैक्स क्रेडिट और तीन साल में इसका भुगतान कैसे होता है, इसका अनुमान लगाएँ, आँकड़े {date} तक के हैं।",
-    budgetNote: "बजट 2027 ने पहले साल का बड़ा भुगतान (€87,500 से €105,000) और सबकॉन्ट्रैक्टिंग की बढ़ी हुई सीमाएँ घोषित की हैं। ये कब से लागू होंगे यह Finance Act तय करेगा, इसलिए यह कैलकुलेटर अभी मौजूदा नियमों का इस्तेमाल करता है।",
+    budgetNote: "बजट 2027 ने पहले साल का बड़ा भुगतान (€87,500 से €105,000) और सबकॉन्ट्रैक्टिंग की बढ़ी हुई सीमाएँ घोषित की हैं। Finance Bill में बड़ा भुगतान उन लेखा अवधियों पर लागू होता है जिनका रिटर्न 23 सितंबर 2028 को या उसके बाद देय है, इसलिए यह कैलकुलेटर अभी मौजूदा नियमों का इस्तेमाल करता है।",
     notes: [
       { title: "योग्य ख़र्च का 35%", body: "क्रेडिट योग्य R&D ख़र्च का 35% है, और उसी ख़र्च पर मिलने वाली 12.5% व्यापारिक कटौती के ऊपर, यानी कुल मिलाकर लगभग 47.5% का लाभ। 35% दर और पहले साल का €87,500 उन लेखा अवधियों पर लागू हैं जिनका रिटर्न 23 सितंबर 2027 या उसके बाद देय है (आम तौर पर 31 दिसंबर 2026 या उसके बाद ख़त्म होने वाली अवधियाँ)। इससे पहले की अवधियों पर 30% और €75,000 लागू हैं।" },
       { title: "तीन साल में भुगतान", body: "पहले €87,500 (या क्रेडिट का 50%, जो भी ज़्यादा हो) पहले साल में दिए जाते हैं; बाक़ी दूसरे और तीसरे साल में आता है। आप नक़द वापसी लेना या देय टैक्स में समायोजन चुनते हैं, यह पहले कॉर्पोरेशन टैक्स से नहीं काटा जाता।" },

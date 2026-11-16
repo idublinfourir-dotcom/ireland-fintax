@@ -26,7 +26,7 @@ const en = {
   modeNotes: {
     tax: [
       { title: "Rates by asset", body: "Plant & machinery: 12.5% a year over 8 years. Industrial buildings: 4% over 25 years. Energy-efficient equipment on the SEAI Triple-E register: 100% in year one (accelerated), extended to 31 December 2030." },
-      { title: "Cars are capped", body: "Car allowances are limited to €24,000 and restricted by CO2: full relief up to 155 g/km, 50% from 156 to 190 g/km, and none above 190 g/km. The emissions bands change again on 1 January 2027." },
+      { title: "Cars are capped", body: "Car allowances are limited to €24,000 and restricted by CO2: full relief up to 140 g/km, half relief (at most €12,000) from 141 to 155 g/km, and none above 155 g/km. The emissions bands change again on 1 January 2027." },
       { title: "The cash value", body: "Allowances reduce taxable profit, so the cash saving is the allowance times your tax rate, shown here at the 12.5% trading rate. Disposals can trigger a balancing allowance or charge later." },
     ],
     finance: [
@@ -71,9 +71,9 @@ const en = {
       "energy-efficient": { label: "Energy-efficient equipment (ACA)", note: "Accelerated Capital Allowance, 100% written off in year one for approved energy-efficient equipment on the SEAI Triple-E register. Extended to 31 December 2030. Excludes equipment run on fossil fuels." },
     } as Record<string, AssetText>,
     co2Groups: {
-      group1: { label: "0 to 155 g/km (Category A to C)", note: "Full relief: allowances on the cost up to €24,000." },
-      group2: { label: "156 to 190 g/km (Category D to E)", note: "Half relief: allowances on 50% of the cost (capped at €24,000)." },
-      group3: { label: "Over 190 g/km (Category F to G)", note: "No wear-and-tear allowances are available for this car." },
+      group1: { label: "0 to 140 g/km (Category A and B)", note: "Full relief: allowances on the cost up to €24,000." },
+      group2: { label: "141 to 155 g/km (Category C)", note: "Half relief: allowances on half the cost, up to €12,000." },
+      group3: { label: "Over 155 g/km (Category D to F)", note: "No wear-and-tear allowances are available for this car." },
     } as Record<Co2GroupKey, Co2Text>,
   },
   wc: {
@@ -135,7 +135,7 @@ export const caMessages: Translations<CaMessages> = {
     modeNotes: {
       tax: [
         { title: "Tipos por activo", body: "Maquinaria e instalaciones: 12,5 % al año durante 8 años. Edificios industriales: 4 % durante 25 años. Equipos de eficiencia energética del registro Triple-E de la SEAI: 100 % el primer año (acelerada), ampliada hasta el 31 de diciembre de 2030." },
-        { title: "Los coches tienen límite", body: "La amortización de los coches tiene un máximo de 24.000 € y depende del CO2: deducción completa hasta 155 g/km, 50 % de 156 a 190 g/km y nada por encima de 190 g/km. Los tramos de emisiones cambian otra vez el 1 de enero de 2027." },
+        { title: "Los coches tienen límite", body: "La amortización de los coches tiene un máximo de 24.000 € y depende del CO2: deducción completa hasta 140 g/km, media deducción (como máximo 12.000 €) de 141 a 155 g/km y nada por encima de 155 g/km. Los tramos de emisiones cambian otra vez el 1 de enero de 2027." },
         { title: "El valor en efectivo", body: "Las amortizaciones reducen el beneficio imponible, así que el ahorro en efectivo es la amortización por tu tipo impositivo, aquí al tipo comercial del 12,5 %. Las ventas pueden generar más adelante un ajuste a favor o en contra." },
       ],
       finance: [
@@ -180,9 +180,9 @@ export const caMessages: Translations<CaMessages> = {
         "energy-efficient": { label: "Equipo de eficiencia energética (ACA)", note: "Amortización acelerada: 100 % el primer año para equipos de eficiencia energética aprobados del registro Triple-E de la SEAI. Ampliada hasta el 31 de diciembre de 2030. Excluye los equipos que funcionan con combustibles fósiles." },
       },
       co2Groups: {
-        group1: { label: "0 a 155 g/km (categoría A a C)", note: "Deducción completa: amortización sobre el coste hasta 24.000 €." },
-        group2: { label: "156 a 190 g/km (categoría D a E)", note: "Media deducción: amortización sobre el 50 % del coste (con un máximo de 24.000 €)." },
-        group3: { label: "Más de 190 g/km (categoría F a G)", note: "Este coche no tiene derecho a amortización." },
+        group1: { label: "0 a 140 g/km (categoría A y B)", note: "Deducción completa: amortización sobre el coste hasta 24.000 €." },
+        group2: { label: "141 a 155 g/km (categoría C)", note: "Media deducción: amortización sobre la mitad del coste, hasta 12.000 €." },
+        group3: { label: "Más de 155 g/km (categoría D a F)", note: "Este coche no tiene derecho a amortización." },
       },
     },
     wc: {
@@ -239,7 +239,7 @@ export const caMessages: Translations<CaMessages> = {
     modeNotes: {
       tax: [
         { title: "Alíquotas por ativo", body: "Máquinas e equipamentos: 12,5% ao ano por 8 anos. Edifícios industriais: 4% por 25 anos. Equipamentos de eficiência energética do registro Triple-E da SEAI: 100% no primeiro ano (acelerada), estendida até 31 de dezembro de 2030." },
-        { title: "Carros têm limite", body: "A depreciação de carros é limitada a € 24.000 e depende do CO2: dedução total até 155 g/km, 50% de 156 a 190 g/km e nada acima de 190 g/km. As faixas de emissão mudam de novo em 1º de janeiro de 2027." },
+        { title: "Carros têm limite", body: "A depreciação de carros é limitada a € 24.000 e depende do CO2: dedução total até 140 g/km, meia dedução (no máximo € 12.000) de 141 a 155 g/km e nada acima de 155 g/km. As faixas de emissão mudam de novo em 1º de janeiro de 2027." },
         { title: "O valor em dinheiro", body: "A depreciação reduz o lucro tributável, então a economia em dinheiro é a depreciação vezes a sua alíquota, mostrada aqui na alíquota comercial de 12,5%. Vendas podem gerar depois um ajuste a favor ou contra." },
       ],
       finance: [
@@ -284,9 +284,9 @@ export const caMessages: Translations<CaMessages> = {
         "energy-efficient": { label: "Equipamento de eficiência energética (ACA)", note: "Depreciação acelerada: 100% no primeiro ano para equipamentos de eficiência energética aprovados no registro Triple-E da SEAI. Estendida até 31 de dezembro de 2030. Exclui equipamentos movidos a combustíveis fósseis." },
       },
       co2Groups: {
-        group1: { label: "0 a 155 g/km (categoria A a C)", note: "Dedução total: depreciação sobre o custo até € 24.000." },
-        group2: { label: "156 a 190 g/km (categoria D a E)", note: "Meia dedução: depreciação sobre 50% do custo (limitado a € 24.000)." },
-        group3: { label: "Acima de 190 g/km (categoria F a G)", note: "Não há depreciação disponível para este carro." },
+        group1: { label: "0 a 140 g/km (categoria A e B)", note: "Dedução total: depreciação sobre o custo até € 24.000." },
+        group2: { label: "141 a 155 g/km (categoria C)", note: "Meia dedução: depreciação sobre metade do custo, até € 12.000." },
+        group3: { label: "Acima de 155 g/km (categoria D a F)", note: "Não há depreciação disponível para este carro." },
       },
     },
     wc: {
@@ -343,7 +343,7 @@ export const caMessages: Translations<CaMessages> = {
     modeNotes: {
       tax: [
         { title: "Rátaí de réir sócmhainne", body: "Gléasra agus innealra: 12.5% sa bhliain thar 8 mbliana. Foirgnimh thionsclaíocha: 4% thar 25 bliana. Trealamh éifeachtach ó thaobh fuinnimh ar chlár Triple-E SEAI: 100% sa chéad bhliain (luathaithe), leathnaithe go 31 Nollaig 2030." },
-        { title: "Tá uasteorainn ar charranna", body: "Tá liúntais carranna teoranta do €24,000 agus srianta ag CO2: faoiseamh iomlán suas go 155 g/km, 50% ó 156 go 190 g/km, agus dada os cionn 190 g/km. Athraíonn na bandaí astaíochtaí arís ar 1 Eanáir 2027." },
+        { title: "Tá uasteorainn ar charranna", body: "Tá liúntais carranna teoranta do €24,000 agus srianta ag CO2: faoiseamh iomlán suas go 140 g/km, leath-fhaoiseamh (€12,000 ar a mhéad) ó 141 go 155 g/km, agus dada os cionn 155 g/km. Athraíonn na bandaí astaíochtaí arís ar 1 Eanáir 2027." },
         { title: "An luach airgid", body: "Laghdaíonn liúntais an brabús inchánach, mar sin is é an coigilteas airgid an liúntas faoi do ráta cánach, taispeánta anseo ag an ráta trádála 12.5%. Is féidir le diúscairtí liúntas nó muirear cothromúcháin a spreagadh níos déanaí." },
       ],
       finance: [
@@ -388,9 +388,9 @@ export const caMessages: Translations<CaMessages> = {
         "energy-efficient": { label: "Trealamh éifeachtach ó thaobh fuinnimh (ACA)", note: "Liúntas Caipitiúil Luathaithe, 100% díscríofa sa chéad bhliain do threalamh ceadaithe atá éifeachtach ó thaobh fuinnimh ar chlár Triple-E SEAI. Leathnaithe go 31 Nollaig 2030. Ní áirítear trealamh a ritheann ar bhreoslaí iontaise." },
       },
       co2Groups: {
-        group1: { label: "0 go 155 g/km (Catagóir A go C)", note: "Faoiseamh iomlán: liúntais ar an gcostas suas go €24,000." },
-        group2: { label: "156 go 190 g/km (Catagóir D go E)", note: "Leath-fhaoiseamh: liúntais ar 50% den chostas (uasteorainn €24,000)." },
-        group3: { label: "Os cionn 190 g/km (Catagóir F go G)", note: "Níl aon liúntais caitheamh agus cuimilte ar fáil don charr seo." },
+        group1: { label: "0 go 140 g/km (Catagóir A agus B)", note: "Faoiseamh iomlán: liúntais ar an gcostas suas go €24,000." },
+        group2: { label: "141 go 155 g/km (Catagóir C)", note: "Leath-fhaoiseamh: liúntais ar leath den chostas, suas go €12,000." },
+        group3: { label: "Os cionn 155 g/km (Catagóir D go F)", note: "Níl aon liúntais caitheamh agus cuimilte ar fáil don charr seo." },
       },
     },
     wc: {
@@ -447,7 +447,7 @@ export const caMessages: Translations<CaMessages> = {
     modeNotes: {
       tax: [
         { title: "المعدلات حسب الأصل", body: "المعدات والآلات: 12.5% سنويًا على 8 سنوات. المباني الصناعية: 4% على 25 سنة. المعدات الموفرة للطاقة المدرجة في سجل SEAI Triple-E: ‏100% في السنة الأولى (معجّل)، ممدد حتى 31 ديسمبر 2030." },
-        { title: "السيارات لها سقف", body: "خصومات السيارات محدودة بمبلغ 24,000 يورو ومقيدة بانبعاثات CO2: إعفاء كامل حتى 155 غ/كم، و50% من 156 إلى 190 غ/كم، ولا شيء فوق 190 غ/كم. تتغير شرائح الانبعاثات مجددًا في 1 يناير 2027." },
+        { title: "السيارات لها سقف", body: "خصومات السيارات محدودة بمبلغ 24,000 يورو ومقيدة بانبعاثات CO2: إعفاء كامل حتى 140 غ/كم، ونصف إعفاء (بحد أقصى 12,000 يورو) من 141 إلى 155 غ/كم، ولا شيء فوق 155 غ/كم. تتغير شرائح الانبعاثات مجددًا في 1 يناير 2027." },
         { title: "القيمة النقدية", body: "تخفّض الخصومات الربح الخاضع للضريبة، لذا فإن التوفير النقدي هو الخصم مضروبًا في معدل ضريبتك، معروضًا هنا بالمعدل التجاري 12.5%. قد يؤدي التصرف في الأصل لاحقًا إلى خصم موازنة أو رسم موازنة." },
       ],
       finance: [
@@ -492,9 +492,9 @@ export const caMessages: Translations<CaMessages> = {
         "energy-efficient": { label: "معدات موفرة للطاقة (ACA)", note: "الخصم الرأسمالي المعجّل، 100% تُشطب في السنة الأولى للمعدات الموفرة للطاقة المعتمدة في سجل SEAI Triple-E. ممدد حتى 31 ديسمبر 2030. يستثني المعدات العاملة بالوقود الأحفوري." },
       },
       co2Groups: {
-        group1: { label: "0 إلى 155 غ/كم (الفئات A إلى C)", note: "إعفاء كامل: خصومات على التكلفة حتى 24,000 يورو." },
-        group2: { label: "156 إلى 190 غ/كم (الفئات D إلى E)", note: "نصف إعفاء: خصومات على 50% من التكلفة (بسقف 24,000 يورو)." },
-        group3: { label: "أكثر من 190 غ/كم (الفئات F إلى G)", note: "لا تتوفر خصومات الاستهلاك لهذه السيارة." },
+        group1: { label: "0 إلى 140 غ/كم (الفئتان A وB)", note: "إعفاء كامل: خصومات على التكلفة حتى 24,000 يورو." },
+        group2: { label: "141 إلى 155 غ/كم (الفئة C)", note: "نصف إعفاء: خصومات على نصف التكلفة حتى 12,000 يورو." },
+        group3: { label: "أكثر من 155 غ/كم (الفئات D إلى F)", note: "لا تتوفر خصومات الاستهلاك لهذه السيارة." },
       },
     },
     wc: {
@@ -551,7 +551,7 @@ export const caMessages: Translations<CaMessages> = {
     modeNotes: {
       tax: [
         { title: "সম্পদভিত্তিক করহার", body: "যন্ত্রপাতি ও সরঞ্জাম: 8 বছরে বার্ষিক 12.5%। শিল্প ভবন: 25 বছরে বার্ষিক 4%। SEAI Triple-E রেজিস্টারে তালিকাভুক্ত জ্বালানি-সাশ্রয়ী সরঞ্জাম: প্রথম বছরেই 100% (ত্বরান্বিত সুবিধা), যা 31 ডিসেম্বর 2030 পর্যন্ত বর্ধিত করা হয়েছে।" },
-        { title: "গাড়ির ক্ষেত্রে নির্দিষ্ট সীমা", body: "গাড়ির ক্ষেত্রে মূলধনি ভাতা সর্বোচ্চ €24,000 এবং CO2 নির্গমন অনুযায়ী নিয়ন্ত্রিত: 155 g/km পর্যন্ত সম্পূর্ণ সুবিধা, 156 থেকে 190 g/km পর্যন্ত 50% এবং 190 g/km-এর বেশি হলে কোনো সুবিধা নেই। নির্গমনের ধাপগুলো 1 জানুয়ারি 2027 থেকে আবার পরিবর্তিত হবে।" },
+        { title: "গাড়ির ক্ষেত্রে নির্দিষ্ট সীমা", body: "গাড়ির ক্ষেত্রে মূলধনি ভাতা সর্বোচ্চ €24,000 এবং CO2 নির্গমন অনুযায়ী নিয়ন্ত্রিত: 140 g/km পর্যন্ত সম্পূর্ণ সুবিধা, 141 থেকে 155 g/km পর্যন্ত অর্ধেক সুবিধা (সর্বোচ্চ €12,000) এবং 155 g/km-এর বেশি হলে কোনো সুবিধা নেই। নির্গমনের ধাপগুলো 1 জানুয়ারি 2027 থেকে আবার পরিবর্তিত হবে।" },
         { title: "নগদ সাশ্রয়", body: "মূলধনি ভাতা করযোগ্য মুনাফা কমায়, ফলে নগদ কর সাশ্রয় হলো ভাতা ও করহারের গুণফল, যা এখানে 12.5% ব্যবসায়িক করহারে দেখানো হয়েছে। সম্পদ বিক্রির ক্ষেত্রে পরবর্তীতে ব্যালেন্সিং ভাতা বা চার্জ প্রযোজ্য হতে পারে।" },
       ],
       finance: [
@@ -596,9 +596,9 @@ export const caMessages: Translations<CaMessages> = {
         "energy-efficient": { label: "জ্বালানি-সাশ্রয়ী সরঞ্জাম (ACA)", note: "Accelerated Capital Allowance, SEAI Triple-E রেজিস্টারে অনুমোদিত জ্বালানি-সাশ্রয়ী সরঞ্জামে প্রথম বছরেই 100% অবচয় সমন্বয় সুবিধা। 31 ডিসেম্বর 2030 পর্যন্ত বর্ধিত। জীবাশ্ম জ্বালানিতে চালিত সরঞ্জাম এর আওতাবহির্ভূত।" },
       },
       co2Groups: {
-        group1: { label: "0 থেকে 155 g/km (Category A থেকে C)", note: "সম্পূর্ণ কর ছাড়: €24,000 পর্যন্ত খরচের ওপর পূর্ণ ভাতা।" },
-        group2: { label: "156 থেকে 190 g/km (Category D থেকে E)", note: "অর্ধেক কর ছাড়: খরচের 50%-এর ওপর ভাতা (সর্বোচ্চ €24,000 সীমার মধ্যে)।" },
-        group3: { label: "190 g/km-এর বেশি (Category F থেকে G)", note: "এই গাড়ির জন্য কোনো অবচয় ভাতা পাওয়া যাবে না।" },
+        group1: { label: "0 থেকে 140 g/km (Category A ও B)", note: "সম্পূর্ণ কর ছাড়: €24,000 পর্যন্ত খরচের ওপর পূর্ণ ভাতা।" },
+        group2: { label: "141 থেকে 155 g/km (Category C)", note: "অর্ধেক কর ছাড়: খরচের অর্ধেকের ওপর ভাতা, সর্বোচ্চ €12,000 পর্যন্ত।" },
+        group3: { label: "155 g/km-এর বেশি (Category D থেকে F)", note: "এই গাড়ির জন্য কোনো অবচয় ভাতা পাওয়া যাবে না।" },
       },
     },
     wc: {
@@ -655,7 +655,7 @@ export const caMessages: Translations<CaMessages> = {
     modeNotes: {
       tax: [
         { title: "संपत्ति के अनुसार दरें", body: "प्लांट और मशीनरी: 8 साल तक हर साल 12.5%। औद्योगिक इमारतें: 25 साल में 4%। SEAI Triple-E रजिस्टर पर ऊर्जा-कुशल उपकरण: पहले साल में 100% (त्वरित), 31 दिसंबर 2030 तक बढ़ाया गया।" },
-        { title: "कारों पर सीमा है", body: "कार भत्ते €24,000 तक सीमित हैं और CO2 के हिसाब से और घटते हैं: 155 g/km तक पूरी राहत, 156-190 g/km पर 50%, और 190 g/km से ऊपर कुछ नहीं। 1 जनवरी 2027 को उत्सर्जन बैंड फिर बदलेंगे।" },
+        { title: "कारों पर सीमा है", body: "कार भत्ते €24,000 तक सीमित हैं और CO2 के हिसाब से और घटते हैं: 140 g/km तक पूरी राहत, 141-155 g/km पर आधी राहत (अधिकतम €12,000), और 155 g/km से ऊपर कुछ नहीं। 1 जनवरी 2027 को उत्सर्जन बैंड फिर बदलेंगे।" },
         { title: "नक़द मूल्य", body: "भत्ते कर योग्य लाभ घटाते हैं, इसलिए नक़द बचत भत्ता गुणा आपकी टैक्स दर है, यहाँ 12.5% व्यापारिक दर पर दिखाई गई। बाद में बेचने पर बैलेंसिंग भत्ता या चार्ज लग सकता है।" },
       ],
       finance: [
@@ -700,9 +700,9 @@ export const caMessages: Translations<CaMessages> = {
         "energy-efficient": { label: "ऊर्जा-कुशल उपकरण (ACA)", note: "Accelerated Capital Allowance, SEAI Triple-E रजिस्टर पर स्वीकृत ऊर्जा-कुशल उपकरणों पर पहले साल में 100% घटाव। 31 दिसंबर 2030 तक बढ़ाया गया। जीवाश्म ईंधन से चलने वाले उपकरण शामिल नहीं।" },
       },
       co2Groups: {
-        group1: { label: "0-155 g/km (Category A-C)", note: "पूरी राहत: €24,000 तक की लागत पर भत्ते।" },
-        group2: { label: "156-190 g/km (Category D-E)", note: "आधी राहत: लागत के 50% पर भत्ते (€24,000 की सीमा के साथ)।" },
-        group3: { label: "190 g/km से ऊपर (Category F-G)", note: "इस कार के लिए कोई घिसावट भत्ता उपलब्ध नहीं है।" },
+        group1: { label: "0-140 g/km (Category A और B)", note: "पूरी राहत: €24,000 तक की लागत पर भत्ते।" },
+        group2: { label: "141-155 g/km (Category C)", note: "आधी राहत: लागत के आधे पर भत्ते, €12,000 तक।" },
+        group3: { label: "155 g/km से ऊपर (Category D-F)", note: "इस कार के लिए कोई घिसावट भत्ता उपलब्ध नहीं है।" },
       },
     },
     wc: {

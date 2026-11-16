@@ -26,7 +26,7 @@ export const DATA_AS_OF = "13 October 2026";
 /* ---------- Irish tax constants (2026) ---------- */
 
 export const TAX = {
-  /** Deposit Interest Retention Tax. Unchanged since 2013. */
+  /** Deposit Interest Retention Tax: 33% since 1 January 2020 (Revenue). */
   dirt: 0.33,
   /** Exit tax on funds/ETFs/life policies: 41% → 38% on 1 Jan 2026 → 35% on
       1 Jan 2027 (Budget 2027, DoF Tax Policy Changes 2.2; the Minister's
@@ -241,14 +241,14 @@ export const INVESTMENT_OPTIONS: InvestmentOption[] = [
     grossHigh: 0.0125,
     taxTreatment: "DIRT 33%",
     effectiveTax: TAX.dirt,
-    liquidity: "Instant access",
+    liquidity: "€3,000 a day on demand; more on 7 days' notice",
     lockYears: 0,
-    minimum: 50,
+    minimum: 0,
     cap: "€250,000 per person",
     capAmount: 250_000,
     guarantee: "state-full",
     lumpSum: true,
-    note: "State-guaranteed in full, not just to €100,000. The rate rose from 0.75% to 1.25% on 30 August 2026. The best home for a large emergency buffer that has to be completely safe.",
+    note: "State-guaranteed in full, not just to €100,000. The rate rose from 0.75% to 1.25% on 30 August 2026. No minimum deposit. Up to €3,000 a day is paid on demand at a Post Office and more needs 7 days' notice, so it suits a large emergency buffer you can wait a week for.",
     link: {
       label: "Open on State Savings",
       url: "https://www.statesavings.ie/our-products/book-based-deposit-account",
@@ -264,7 +264,7 @@ export const INVESTMENT_OPTIONS: InvestmentOption[] = [
     grossHigh: 0.0196,
     taxTreatment: "Tax-free",
     effectiveTax: 0,
-    liquidity: "3 years (7 days' notice, forfeits interest)",
+    liquidity: "3 years; cash in early and you get your savings back with the interest due so far",
     lockYears: 3,
     minimum: 50,
     cap: "€120,000 per person / €240,000 joint",
@@ -398,7 +398,7 @@ export const INVESTMENT_OPTIONS: InvestmentOption[] = [
     risk: 2,
     grossLow: 0.025,
     grossHigh: 0.033,
-    taxTreatment: "Exit tax 35% + 8-year deemed disposal",
+    taxTreatment: "Exit tax 38% (35% from 2027, in the Finance Bill) + 8-year deemed disposal",
     effectiveTax: TAX.exit,
     liquidity: "Daily",
     lockYears: 0,
@@ -561,7 +561,7 @@ export const INVESTMENT_OPTIONS: InvestmentOption[] = [
     cap: "€100,000 deposit guarantee per institution",
     guarantee: "dgs",
     lumpSum: true,
-    note: "Trade Republic 3.04%, Bunq up to 3.11% (conditions apply), Revolut 2.50%, in late October 2026. Interest is paid gross, so you must declare it and pay the 33% yourself. Check whether the cash is held as a deposit (guaranteed) or in a money market fund (not guaranteed, and taxed as a fund).",
+    note: "Trade Republic 4.07% for new customers on up to €20,000 until 1 March 2027 (checked 16 November 2026); Bunq up to 3.11% (conditions apply) and Revolut 2.50% in late October 2026. The range here leaves out short new-customer offers. Interest is paid gross, so you must declare it and pay the 33% yourself. Check whether the cash is held as a deposit (guaranteed) or in a money market fund (not guaranteed, and taxed as a fund).",
     link: {
       label: "CCPC: compare savings accounts",
       url: "https://www.ccpc.ie/manage-your-money/saving-and-investments/compare-savings-accounts",
@@ -619,7 +619,7 @@ export const INVESTMENT_OPTIONS: InvestmentOption[] = [
     risk: 4,
     grossLow: 0.05,
     grossHigh: 0.08,
-    taxTreatment: "Exit tax 35% + 8-year deemed disposal",
+    taxTreatment: "Exit tax 38% (35% from 2027, in the Finance Bill) + 8-year deemed disposal",
     effectiveTax: TAX.exit,
     liquidity: "Daily",
     lockYears: 0,
@@ -663,7 +663,7 @@ export const INVESTMENT_OPTIONS: InvestmentOption[] = [
     risk: 3,
     grossLow: 0.04,
     grossHigh: 0.07,
-    taxTreatment: "Exit tax 35% + 1% levy",
+    taxTreatment: "Exit tax 38% (35% from 2027, in the Finance Bill) + 1% levy",
     effectiveTax: TAX.exit,
     liquidity: "Usually a 5-year exit penalty",
     lockYears: 5,
@@ -807,7 +807,7 @@ export const INVESTMENT_OPTIONS: InvestmentOption[] = [
     cap: "€10m lifetime relieved gain",
     guarantee: "none",
     lumpSum: true,
-    note: "16% CGT instead of the standard 31% on certified innovative companies under seven years old. Minimum €20,000, or €10,000 if you take 5% or more, and the relieved gain is capped at twice your investment. The shares must be held before 31 December 2026, which is a live deadline. Most start-ups fail, so invest only what you can lose entirely.",
+    note: "16% CGT instead of the standard 31% on certified innovative companies under seven years old. Minimum €20,000, or €10,000 if you take 5% or more, and the relieved gain is capped at twice your investment. The investment must be made before 31 December 2026; Budget 2027 says the relief is intended to continue in its current form once new EU state aid rules apply from 1 January 2027. Most start-ups fail, so invest only what you can lose entirely.",
     link: {
       label: "Revenue: CGT and reliefs",
       url: "https://www.revenue.ie/en/gains-gifts-and-inheritance/index.aspx",
