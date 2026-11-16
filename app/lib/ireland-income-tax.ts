@@ -70,6 +70,11 @@ export interface IncomeTaxInput {
   age: number;
   employmentIncome: number;
   selfEmploymentOrOtherIncome: number;
+  /** Rental profit and other unearned income. Taxed, and charged USC and PRSI,
+      like other non-PAYE income, but it earns no Earned Income Credit and is
+      not earnings for pension relief. Optional: only the rental calculator
+      sets it. */
+  unearnedIncome?: number;
   pensionContribution: number;
   /** Spouse/civil partner income: only read when maritalStatus is "married".
       Optional so single-person call sites don't need to pass zeros. */
@@ -516,6 +521,11 @@ export interface IncomeTaxResult {
 const clampMin0 = (n: number) => (n > 0 ? n : 0);
 const sanitize = (n: number) => (Number.isFinite(n) ? clampMin0(n) : 0);
 
+/** Your non-PAYE income: self-employment plus unearned (rent). USC's 3%
+    surcharge and PRSI's €5,000 test both look at this total. */
+const nonPaye = (input: IncomeTaxInput) =>
+  sanitize(input.selfEmploymentOrOtherIncome) + sanitize(input.unearnedIncome ?? 0);
+
 /** Spouse incomes: zeros unless married (the fields are only read then). */
 function spouseIncomes(input: IncomeTaxInput): {
   employment: number;
@@ -582,7 +592,7 @@ export function computeIncomeTax(
   const it = rates.incomeTax;
   const employment = sanitize(input.employmentIncome);
   const selfEmp = sanitize(input.selfEmploymentOrOtherIncome);
-  const yourIncome = employment + selfEmp;
+  const yourIncome = employment + nonPaye(input);
   const spouse = spouseIncomes(input);
 
   // Married couples are jointly assessed: one tax computation on the combined
@@ -831,12 +841,7 @@ function uscForPerson(
 }
 
 export function computeUSC(input: IncomeTaxInput, rates: YearRates): IncomeTaxResult["usc"] {
-  return uscForPerson(
-    sanitize(input.employmentIncome),
-    sanitize(input.selfEmploymentOrOtherIncome),
-    input.age,
-    rates,
-  );
+  return uscForPerson(sanitize(input.employmentIncome), nonPaye(input), input.age, rates);
 }
 
 /** Spouse USC on the spouse's own income. The form has no spouse-age field
@@ -907,11 +912,7 @@ export function computePRSI(input: IncomeTaxInput, rates: YearRates): IncomeTaxR
   // anyone getting the State Pension (Contributory). Someone who defers it
   // keeps paying until 70 (revenue.ie, since 1 Jan 2024); the footnote says so.
   if (input.age >= PRSI_EXEMPT_AGE) return { classA: 0, classS: 0, total: 0 };
-  return prsiForPerson(
-    sanitize(input.employmentIncome),
-    sanitize(input.selfEmploymentOrOtherIncome),
-    rates,
-  );
+  return prsiForPerson(sanitize(input.employmentIncome), nonPaye(input), rates);
 }
 
 /** Spouse PRSI on the spouse's own income (individual charge, like USC). */
@@ -974,9 +975,7 @@ export function computeIrishTax(
   const rates = ratesOverride ?? RATES_BY_YEAR[year];
   if (!rates) throw new Error(`No rate config for tax year ${year}`);
 
-  const employment = sanitize(input.employmentIncome);
-  const selfEmp = sanitize(input.selfEmploymentOrOtherIncome);
-  const yourIncome = employment + selfEmp;
+  const yourIncome = sanitize(input.employmentIncome) + nonPaye(input);
   const spouseIncome = spouseIncomes(input).total;
   // Household total: married couples are jointly assessed for income tax.
   const grossIncome = yourIncome + spouseIncome;

@@ -40,6 +40,11 @@ export const CALCULATOR_TOOLS = [
     label: "CAT",
     desc: "Gift & inheritance tax: thresholds & reliefs",
   },
+  {
+    href: "/tools/ireland-rental-tax",
+    label: "Rental tax",
+    desc: "Rent-a-Room Relief vs rental income tax",
+  },
 ] as const;
 
 export interface ToolTab {

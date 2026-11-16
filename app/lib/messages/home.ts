@@ -194,7 +194,7 @@ const en = {
       {
         question: "How much tax do I pay on Irish rental income?",
         answer: "Rental profit is added to your other income and taxed at your marginal rate (20% or 40%), with USC and PRSI on top. Profit is the rent less allowable costs, such as mortgage interest on a residential let, repairs, management fees and RTB registration.",
-        link: "Revenue on rental income",
+        link: "Work out your rental tax",
       },
       {
         question: "What is deemed disposal and when does it trigger?",
@@ -411,7 +411,7 @@ const ga: HomeMessages = {
       {
         question: "Cé mhéad cánach a íocaim ar ioncam cíosa in Éirinn?",
         answer: "Cuirtear brabús cíosa le d’ioncam eile agus gearrtar cáin air ag do ráta imeallach (20% nó 40%), le MSU agus ÁSPC sa bhreis. Is é an brabús an cíos lúide costais incheadaithe, mar ús morgáiste ar ligean cónaithe, deisiúcháin, táillí bainistíochta agus clárú leis an RTB.",
-        link: "Revenue ar ioncam cíosa",
+        link: "Oibrigh amach do cháin chíosa",
       },
       {
         question: "Cad is diúscairt mheasta ann agus cathain a tharlaíonn sí?",
@@ -626,7 +626,7 @@ const es: HomeMessages = {
       {
         question: "¿Cuánto impuesto pago por las rentas de alquiler en Irlanda?",
         answer: "El beneficio del alquiler se suma a tus demás ingresos y tributa a tu tipo marginal (20% o 40%), más el USC y el PRSI. El beneficio es el alquiler menos los gastos deducibles, como los intereses hipotecarios de una vivienda alquilada, las reparaciones, los honorarios de gestión y el registro en la RTB.",
-        link: "Revenue sobre las rentas de alquiler",
+        link: "Calcula tu impuesto por alquiler",
       },
       {
         question: "¿Qué es la transmisión ficticia (deemed disposal) y cuándo se aplica?",
@@ -841,7 +841,7 @@ const pt: HomeMessages = {
       {
         question: "Quanto imposto pago sobre renda de aluguel na Irlanda?",
         answer: "O lucro do aluguel é somado à sua outra renda e tributado pela sua alíquota marginal (20% ou 40%), com USC e PRSI por cima. O lucro é o aluguel menos os custos dedutíveis, como juros do financiamento de um imóvel residencial alugado, reparos, taxas de administração e o registro na RTB.",
-        link: "A Revenue sobre renda de aluguel",
+        link: "Calcule seu imposto sobre aluguel",
       },
       {
         question: "O que é a alienação presumida (deemed disposal) e quando ela acontece?",
@@ -1056,7 +1056,7 @@ const ar: HomeMessages = {
       {
         question: "كم ضريبة أدفع على دخل الإيجار في أيرلندا؟",
         answer: "يُضاف ربح الإيجار إلى دخلك الآخر ويُفرض عليه سعرك الحدّي (20% أو 40%)، مع USC وPRSI فوق ذلك. والربح هو الإيجار مطروحًا منه التكاليف المسموح بها، مثل فوائد الرهن على عقار سكني مؤجّر، والإصلاحات، ورسوم الإدارة، والتسجيل لدى RTB.",
-        link: "Revenue عن دخل الإيجار",
+        link: "احسب ضريبة الإيجار",
       },
       {
         question: "ما البيع الافتراضي ومتى يُطبَّق؟",
@@ -1271,7 +1271,7 @@ const bn: HomeMessages = {
       {
         question: "আইরিশ ভাড়ার আয়ের ওপর কত কর দিতে হয়?",
         answer: "ভাড়া থেকে নিট লাভ আপনার অন্যান্য আয়ের সাথে যোগ হয় এবং প্রান্তিক হারে (20% বা 40%) কর ধার্য হয়, সাথে প্রযোজ্য USC ও PRSI যুক্ত হয়। প্রাপ্ত ভাড়া থেকে অনুমোদিত খরচ (যেমন আবাসিক ভাড়ার মর্টগেজের সুদ, মেরামত, ব্যবস্থাপনা ফি ও RTB নিবন্ধন খরচ) বাদ দিয়ে এই লাভ হিসাব করা হয়।",
-        link: "ভাড়ার আয়ে Revenue-এর নিয়ম",
+        link: "আপনার ভাড়ার কর হিসাব করুন",
       },
       {
         question: "ডিমড ডিসপোজাল কী এবং কখন এটি প্রযোজ্য হয়?",
@@ -1486,7 +1486,7 @@ const hi: HomeMessages = {
       {
         question: "आयरलैंड में किराये की आय पर कितना टैक्स लगता है?",
         answer: "किराये का मुनाफ़ा आपकी बाक़ी आय में जुड़ता है और आपकी मार्जिनल दर (20% या 40%) पर टैक्स लगता है, ऊपर से USC और PRSI। मुनाफ़ा यानी किराये में से मान्य ख़र्च घटाकर बचा हिस्सा, जैसे किराये पर दिए रिहायशी घर का मॉर्गेज ब्याज, मरम्मत, मैनेजमेंट फ़ीस और RTB रजिस्ट्रेशन।",
-        link: "किराये की आय पर Revenue",
+        link: "अपना किराया टैक्स निकालें",
       },
       {
         question: "डीम्ड डिस्पोज़ल क्या है और यह कब लागू होता है?",

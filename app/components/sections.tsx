@@ -740,7 +740,7 @@ export async function LearnBand() {
 const faqLinks = [
   "/blog/how-savings-and-investments-are-taxed",
   "/toolkits",
-  "https://www.revenue.ie/en/property/rental-income/index.aspx",
+  "/tools/ireland-rental-tax",
   "/blog/how-savings-and-investments-are-taxed",
   "/tools/ireland-cat",
   "",
