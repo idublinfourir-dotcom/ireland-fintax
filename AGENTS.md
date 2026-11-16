@@ -32,7 +32,7 @@ Commands: `npm run dev` · `npm run build` · `npm run lint`
 app/
   page.tsx, about/, contact/   # marketing routes
   _services/, _pricing/  # parked: unrouted, every /services URL redirects home
-  tools/             # Accountants Hub: the 7 Ireland tax calculators
+  tools/             # Accountants Hub: the 8 Ireland tax calculators
   personal/          # Personal Hub: mortgage/, investment/
   blog/              # public blog: /blog index + /blog/[slug] posts
   _pricing/          # hidden route: see "Hidden for now" below

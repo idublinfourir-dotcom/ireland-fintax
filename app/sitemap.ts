@@ -27,6 +27,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/tools/ireland-capital-allowances",
     "/tools/ireland-cgt",
     "/tools/ireland-cat",
+    "/tools/ireland-rental-tax",
     "/toolkits",
     "/about",
     "/contact",
