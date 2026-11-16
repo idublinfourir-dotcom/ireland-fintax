@@ -21,7 +21,7 @@
    Update DATA_AS_OF whenever a figure below changes.
    ────────────────────────────────────────────────────────────────────────── */
 
-export const DATA_AS_OF = "13 October 2026";
+export const DATA_AS_OF = "16 November 2026";
 
 /* ---------- Irish tax constants (2026) ---------- */
 
@@ -561,7 +561,7 @@ export const INVESTMENT_OPTIONS: InvestmentOption[] = [
     cap: "€100,000 deposit guarantee per institution",
     guarantee: "dgs",
     lumpSum: true,
-    note: "Trade Republic 4.07% for new customers on up to €20,000 until 1 March 2027 (checked 16 November 2026); Bunq up to 3.11% (conditions apply) and Revolut 2.50% in late October 2026. The range here leaves out short new-customer offers. Interest is paid gross, so you must declare it and pay the 33% yourself. Check whether the cash is held as a deposit (guaranteed) or in a money market fund (not guaranteed, and taxed as a fund).",
+    note: "Trade Republic 4.07% for new customers on up to €20,000 until 1 March 2027 (checked 16 November 2026); Bunq up to 3.11% (conditions apply) and Revolut 2.50% (2.75% on its Ultra plan), both checked 16 November 2026. The range here leaves out short new-customer offers. Interest is paid gross, so you must declare it and pay the 33% yourself. Check whether the cash is held as a deposit (guaranteed) or in a money market fund (not guaranteed, and taxed as a fund).",
     link: {
       label: "CCPC: compare savings accounts",
       url: "https://www.ccpc.ie/manage-your-money/saving-and-investments/compare-savings-accounts",
@@ -605,7 +605,7 @@ export const INVESTMENT_OPTIONS: InvestmentOption[] = [
     cap: "None",
     guarantee: "none",
     lumpSum: true,
-    note: "The ISEQ 20 returned 32.97% in 2025 but 7.64% annualised over five years, on a 3.66% dividend yield. It is extremely concentrated: AIB 20%, Ryanair 19%, Bank of Ireland 18%, Kingspan 14% and Kerry 14% are 85% of the index. Direct shares avoid the 35% exit tax and the deemed disposal, and allow loss offset.",
+    note: "The ISEQ 20 returned 32.97% in 2025 but 10.98% annualised over five years, on a 3.18% dividend yield (Euronext, 30 September 2026). It is extremely concentrated: AIB 20%, Ryanair 21%, Bank of Ireland 18%, Kingspan 15% and Kerry 13% are 87% of the index. Direct shares avoid exit tax and the deemed disposal, and allow loss offset.",
     link: {
       label: "Euronext Dublin",
       url: "https://live.euronext.com/en/markets/dublin",
@@ -715,7 +715,7 @@ export const INVESTMENT_OPTIONS: InvestmentOption[] = [
     cap: "None",
     guarantee: "none",
     lumpSum: true,
-    note: "The last listed Irish REIT and the country's largest private landlord, at roughly 3,900 units. Property exposure with daily liquidity and no management, but REIT distributions are taxed as income at up to 52%, not at CGT rates. It has traded at a discount to net asset value and has been running buybacks.",
+    note: "The last listed Irish REIT and the country's largest private landlord, at roughly 3,600 units (3,611 at 30 June 2026). Property exposure with daily liquidity and no management, but REIT distributions are taxed as income at up to 52%, not at CGT rates. It has traded at a discount to net asset value and has been running buybacks.",
     link: {
       label: "IRES REIT",
       url: "https://www.iresreit.ie/",
