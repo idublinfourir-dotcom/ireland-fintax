@@ -370,7 +370,10 @@ test("Deloitte 2027: credits capped at 20% of income, and PRSI on small or side 
   assert.equal(round(side.prsi.total), 3_466, "PRSI");
 });
 
-test("Deloitte 2027: MyFutureFund boundaries", () => {
+/* The Act (s.50(2), (3)): "aged at least 23 years and under 60 years", pay
+   "not less than" €20,000. Deloitte leaves out age 23 and exactly €20,000;
+   the site follows the Act there. */
+test("MyFutureFund boundaries follow the 2024 Act", () => {
   const base: IncomeTaxInput = {
     maritalStatus: "single",
     hasChildOnChildBenefit: false,
@@ -380,11 +383,13 @@ test("Deloitte 2027: MyFutureFund boundaries", () => {
     selfEmploymentOrOtherIncome: 0,
     pensionContribution: 0,
   };
-  assert.equal(computeIrishTax({ ...base, age: 23 }, 2027).autoEnrolment, 0, "age 23");
+  assert.equal(computeIrishTax({ ...base, age: 22 }, 2027).autoEnrolment, 0, "age 22");
+  assert.equal(computeIrishTax({ ...base, age: 23 }, 2027).autoEnrolment, 450, "age 23");
   assert.equal(computeIrishTax({ ...base, age: 24 }, 2027).autoEnrolment, 450, "age 24");
   assert.equal(computeIrishTax({ ...base, age: 59 }, 2027).autoEnrolment, 450, "age 59");
   assert.equal(computeIrishTax({ ...base, age: 60 }, 2027).autoEnrolment, 0, "age 60");
-  assert.equal(computeIrishTax({ ...base, employmentIncome: 20_000 }, 2027).autoEnrolment, 0, "exactly €20,000");
+  assert.equal(computeIrishTax({ ...base, employmentIncome: 20_000 }, 2027).autoEnrolment, 300, "exactly €20,000");
+  assert.equal(computeIrishTax({ ...base, employmentIncome: 19_999 }, 2027).autoEnrolment, 0, "under €20,000");
 });
 
 /* Captured from the live Deloitte Ireland calculator (services.deloitte.ie) on

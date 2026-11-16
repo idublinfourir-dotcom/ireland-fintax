@@ -15,19 +15,24 @@
      written off against taxable profits over a fixed life at a fixed rate.
        • Plant & machinery:  12.5% straight-line over 8 years.
        • Motor vehicles (cars): 12.5% over 8 years, but the cost is capped at
-         €24,000 and further restricted by CO2 emissions (full / 50% / nil).
+         €24,000 and further restricted by CO2 emissions (full / half / nil).
        • Industrial buildings: 4% straight-line over 25 years.
        • Energy-efficient equipment (ACA): 100% in year one.
    - The cash value is the allowance × the tax rate (12.5% trading here).
 
-   Sources (verified July 2026; rates and lives re-checked October 2026):
+   Sources (verified July 2026; rates, lives and car bands re-checked
+   16 November 2026):
    - Rates + 8-year/25-year lives, 100% ACA (extended to 31 Dec 2030 in
      Budget 2026; excludes fossil-fuel-run equipment):
        revenue.ie/en/companies-and-charities/corporation-tax-for-companies/corporation-tax/capital-allowances-and-deductions
        taxsummaries.pwc.com/ireland/corporate/deductions
-   - Car €24,000 cap + CO2 categories (Group 1 ≤155 g/km full; Group 2 156 to 190
-     g/km 50%; Group 3 >190 g/km nil), s380K TCA 1997:
-       revenue.ie Tax and Duty Manual Part 11-00-01 (Cars: Capital Allowances)
+   - Car €24,000 cap + CO2 categories for spending before 1 Jan 2027 (s.380L
+     TCA 1997): A and B (up to 140 g/km) €24,000; C (141 to 155 g/km) the
+     lesser of €12,000 or half the cost, which is half of the capped cost;
+     D, E and F (over 155 g/km) nil. Revenue, Notes for Guidance TCA Part 11C
+     (Finance Act 2025 edition):
+       revenue.ie/en/tax-professionals/documents/notes-for-guidance/tca/part11c.pdf
+     The bands used before 2021 (full to 155, half to 190) no longer apply.
 
    Figures are ESTIMATES for guidance only: not tax advice. Balancing
    allowances/charges on disposal, private-use restrictions, leasing rules and
@@ -36,7 +41,7 @@
    ────────────────────────────────────────────────────────────────────────── */
 
 /** When the rates/limits below were last checked against Revenue. */
-export const CA_LAST_REVIEWED = "October 2026";
+export const CA_LAST_REVIEWED = "November 2026";
 export const CA_SOURCE_URL =
   "https://www.revenue.ie/en/companies-and-charities/corporation-tax-for-companies/corporation-tax/capital-allowances-and-deductions.aspx";
 
@@ -124,19 +129,19 @@ export interface Co2Group {
 export const CAR_CO2_GROUPS: Co2Group[] = [
   {
     key: "group1",
-    label: "0 to 155 g/km (Category A to C)",
+    label: "0 to 140 g/km (Category A and B)",
     factor: 1,
     note: "Full relief: allowances on the cost up to €24,000.",
   },
   {
     key: "group2",
-    label: "156 to 190 g/km (Category D to E)",
+    label: "141 to 155 g/km (Category C)",
     factor: 0.5,
-    note: "Half relief: allowances on 50% of the cost (capped at €24,000).",
+    note: "Half relief: allowances on half the cost, up to €12,000.",
   },
   {
     key: "group3",
-    label: "Over 190 g/km (Category F to G)",
+    label: "Over 155 g/km (Category D to F)",
     factor: 0,
     note: "No wear-and-tear allowances are available for this car.",
   },

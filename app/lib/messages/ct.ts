@@ -36,7 +36,7 @@ const en = {
   barPassive: "Passive tax {amount}",
   total: "Total corporation tax",
   pillarTitle: "Large groups: Pillar Two",
-  pillarNote: "A 15% minimum effective rate (Pillar Two) applies only to groups with consolidated annual revenue of €750 million or more. It does not affect the standard rates below.",
+  pillarNote: "A 15% minimum effective rate (Pillar Two) applies only to groups with consolidated annual revenue of €750 million or more in at least two of the four preceding years. It does not affect the standard rates below.",
 };
 
 export type CtMessages = typeof en;
@@ -76,7 +76,7 @@ export const ctMessages: Translations<CtMessages> = {
     barPassive: "Impuesto pasivo {amount}",
     total: "Impuesto de sociedades total",
     pillarTitle: "Grandes grupos: Pilar Dos",
-    pillarNote: "Un tipo efectivo mínimo del 15 % (Pilar Dos) solo se aplica a grupos con una facturación anual consolidada de 750 millones de euros o más. No afecta a los tipos normales de abajo.",
+    pillarNote: "Un tipo efectivo mínimo del 15 % (Pilar Dos) solo se aplica a grupos con una facturación anual consolidada de 750 millones de euros o más en al menos dos de los cuatro años anteriores. No afecta a los tipos normales de abajo.",
   },
   pt: {
     meta: {
@@ -111,7 +111,7 @@ export const ctMessages: Translations<CtMessages> = {
     barPassive: "Imposto passivo {amount}",
     total: "Imposto sobre empresas total",
     pillarTitle: "Grandes grupos: Pilar Dois",
-    pillarNote: "Uma alíquota efetiva mínima de 15% (Pilar Dois) só se aplica a grupos com receita anual consolidada de € 750 milhões ou mais. Não afeta as alíquotas normais abaixo.",
+    pillarNote: "Uma alíquota efetiva mínima de 15% (Pilar Dois) só se aplica a grupos com receita anual consolidada de € 750 milhões ou mais em pelo menos dois dos quatro anos anteriores. Não afeta as alíquotas normais abaixo.",
   },
   ga: {
     meta: {
@@ -146,7 +146,7 @@ export const ctMessages: Translations<CtMessages> = {
     barPassive: "Cáin éighníomhach {amount}",
     total: "Cáin chorparáide iomlán",
     pillarTitle: "Grúpaí móra: Colún a Dó",
-    pillarNote: "Ní bhaineann ráta éifeachtach íosta 15% (Colún a Dó) ach le grúpaí a bhfuil ioncam bliantúil comhdhlúite €750 milliún nó níos mó acu. Ní dhéanann sé difear do na gnáthrátaí thíos.",
+    pillarNote: "Ní bhaineann ráta éifeachtach íosta 15% (Colún a Dó) ach le grúpaí a bhfuil ioncam bliantúil comhdhlúite €750 milliún nó níos mó acu in dhá cheann ar a laghad de na ceithre bliana roimhe sin. Ní dhéanann sé difear do na gnáthrátaí thíos.",
   },
   ar: {
     meta: {
@@ -181,7 +181,7 @@ export const ctMessages: Translations<CtMessages> = {
     barPassive: "الضريبة السلبية {amount}",
     total: "إجمالي ضريبة الشركات",
     pillarTitle: "المجموعات الكبيرة: الركيزة الثانية",
-    pillarNote: "لا ينطبق الحد الأدنى للمعدل الفعلي البالغ 15% (الركيزة الثانية) إلا على المجموعات التي تبلغ إيراداتها السنوية الموحدة 750 مليون يورو أو أكثر. ولا يؤثر في المعدلات العادية أدناه.",
+    pillarNote: "لا ينطبق الحد الأدنى للمعدل الفعلي البالغ 15% (الركيزة الثانية) إلا على المجموعات التي تبلغ إيراداتها السنوية الموحدة 750 مليون يورو أو أكثر في سنتين على الأقل من السنوات الأربع السابقة. ولا يؤثر في المعدلات العادية أدناه.",
   },
   bn: {
     meta: {
@@ -216,7 +216,7 @@ export const ctMessages: Translations<CtMessages> = {
     barPassive: "নিষ্ক্রিয় আয়ের কর {amount}",
     total: "মোট করপোরেট কর",
     pillarTitle: "বৃহৎ করপোরেট গ্রুপ: Pillar Two",
-    pillarNote: "15% ন্যূনতম কার্যকর করহার (Pillar Two) কেবল সেই গ্রুপগুলোর জন্য প্রযোজ্য যাদের সমন্বিত বার্ষিক রাজস্ব €750 মিলিয়ন বা তার বেশি। এটি নিচের সাধারণ করহারকে প্রভাবিত করে না।",
+    pillarNote: "15% ন্যূনতম কার্যকর করহার (Pillar Two) কেবল সেই গ্রুপগুলোর জন্য প্রযোজ্য যাদের সমন্বিত বার্ষিক রাজস্ব আগের চার বছরের অন্তত দুই বছরে €750 মিলিয়ন বা তার বেশি ছিল। এটি নিচের সাধারণ করহারকে প্রভাবিত করে না।",
   },
   hi: {
     meta: {
@@ -251,6 +251,6 @@ export const ctMessages: Translations<CtMessages> = {
     barPassive: "निष्क्रिय टैक्स {amount}",
     total: "कुल कॉर्पोरेशन टैक्स",
     pillarTitle: "बड़े समूह: Pillar Two",
-    pillarNote: "15% न्यूनतम प्रभावी दर (Pillar Two) केवल उन समूहों पर लागू होती है जिनका समेकित वार्षिक राजस्व €750 मिलियन या उससे ज़्यादा है। इसका नीचे दी गई मानक दरों पर कोई असर नहीं पड़ता।",
+    pillarNote: "15% न्यूनतम प्रभावी दर (Pillar Two) केवल उन समूहों पर लागू होती है जिनका समेकित वार्षिक राजस्व पिछले चार में से कम से कम दो वर्षों में €750 मिलियन या उससे ज़्यादा रहा है। इसका नीचे दी गई मानक दरों पर कोई असर नहीं पड़ता।",
   },
 };

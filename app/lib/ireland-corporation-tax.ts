@@ -15,7 +15,7 @@
    - 12.5% / 25% basis of charge:
        revenue.ie/en/companies-and-charities/corporation-tax-for-companies/corporation-tax/basis-of-charge.aspx
    - 15% Pillar Two (large groups only):
-       revenue.ie/en/companies-and-charities/corporation-tax-for-companies/pillar-two
+       revenue.ie/en/companies-and-charities/pillar-two/what-is/index.aspx
 
    Figures are ESTIMATES for guidance only: not tax advice. Confirm with a
    qualified adviser or revenue.ie before acting on any number.
@@ -34,7 +34,7 @@
    ────────────────────────────────────────────────────────────────────────── */
 
 /** When the rates below were last checked against Revenue. */
-export const CT_LAST_REVIEWED = "October 2026";
+export const CT_LAST_REVIEWED = "November 2026";
 export const CT_SOURCE_URL =
   "https://www.revenue.ie/en/companies-and-charities/corporation-tax-for-companies/corporation-tax/basis-of-charge.aspx";
 

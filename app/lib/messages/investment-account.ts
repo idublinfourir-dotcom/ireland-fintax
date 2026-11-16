@@ -20,7 +20,7 @@ const en = {
   lede: "A new account for shares, bonds and funds, due from 1 July 2027. Instead of CGT or exit tax, you pay 1% a year on whatever it is worth above {threshold}, and the provider deals with Revenue.",
   status: "In the Finance Bill. Not law yet.",
   statusBody:
-    "Finance (No. 2) Bill 2026 published 19 October 2026. Becomes law with the Finance Act, then starts by ministerial order. Last checked {date}.",
+    "Finance (No. 2) Bill 2026 published 19 October 2026 and amended at Dáil Committee Stage on 12 November 2026. Becomes law with the Finance Act, then starts by ministerial order. Last checked {date}.",
   canOpen: "Can I open one?",
   workOut: "Work out the tax",
   rulesTitle: "The rules in short",
@@ -87,7 +87,7 @@ const en = {
   openQs: [
     {
       q: "When will accounts open?",
-      said: "The Bill allows accounts from 1 January 2027, with the start set by ministerial order. The Government says providers will begin offering them from 1 July 2027.",
+      said: "The Bill sets no start date: it starts by ministerial order. The Government says providers will begin offering accounts from 1 July 2027.",
     },
     {
       q: "Will it count as savings for means-tested welfare payments?",
@@ -107,7 +107,7 @@ const en = {
     },
     {
       q: "Will the Bill change?",
-      said: "It went to Select Committee after the Dáil's Second Stage debate on 20 October and can be amended at Committee and Report Stages.",
+      said: "The Dáil's Select Committee amended it on 12 November 2026, leaving the yearly limit, the 1% charge and the threshold unchanged. It can still change at Report Stage.",
     },
   ],
   timelineTitle: "Where it stands",
@@ -118,15 +118,15 @@ const en = {
     { what: "Budget 2027 sets {limit}, {threshold} and 1%" },
     { what: "Finance (No. 2) Bill published with the account's legal rules" },
     { what: "Dáil Second Stage debate; the Bill goes to Select Committee" },
-    { what: "Committee and Report Stages (expected)" },
+    { what: "Select Committee amends the Bill; Report Stage to follow" },
     { what: "Finance Act signed into law (expected)" },
     { what: "Ministerial order starts the account rules" },
-    { what: "Providers start offering accounts (Government plan; the Bill allows 1 January 2027)" },
+    { what: "Providers start offering accounts (Government plan; the start is set by ministerial order)" },
   ],
   afterAct: "After the Act",
   providersTitle: "Who can offer it",
   providersBody:
-    "Only regulated firms: investment firms and brokers authorised under MiFID, banks with investment permissions, fund management companies, and insurers for insurance-based products. Firms elsewhere in the EEA can offer it too, as long as they run the Irish tax for you. Each provider must register with Revenue, which will publish the list. Credit unions want to take part but aren't among the types named in the Bill.",
+    "Only regulated firms: investment firms and brokers authorised under MiFID, banks with investment permissions, and insurers for insurance-based products. Firms elsewhere in the EEA can offer it too, as long as they run the Irish tax for you. Each provider must register with Revenue, which will publish the list. Credit unions want to take part but aren't among the types named in the Bill.",
   noBrands: "We don't name brands. None has published prices yet, and a list would read as a recommendation.",
   faqTitle: "Questions",
   faqs: [
@@ -156,7 +156,7 @@ const en = {
     },
     {
       q: "What happens when someone dies?",
-      a: "Their personal representatives take it over. Nothing more can be paid in, and the investments must be sold within a year of the grant of probate or administration, or by the third anniversary of the death, whichever comes first. Anything not sold by then is treated as sold at market value.",
+      a: "Their personal representatives take it over. Nothing more can be paid in, and the investments must be sold within a year of the grant of probate or administration, or, if no grant has issued by the third anniversary of the death, within a year of that anniversary. The period ends sooner if the estate is fully administered first. Anything not sold by then is treated as sold at market value.",
     },
     {
       q: "Is it the same as a UK ISA?",
@@ -173,7 +173,7 @@ const en = {
   ccpc: { label: "CCPC Investment Readiness Tool", body: "a short check on whether you are ready to invest" },
   sourcesTitle: "Sources",
   disclaimer:
-    "General information only, not financial, tax or legal advice. Rules are as set out in the Finance (No. 2) Bill 2026, published on 19 October 2026, and may change before it becomes law. The account is not a State guarantee: investments can fall as well as rise.",
+    "General information only, not financial, tax or legal advice. Rules are as set out in the Finance (No. 2) Bill 2026, as amended at Dáil Committee Stage on 12 November 2026, and may change before it becomes law. The account is not a State guarantee: investments can fall as well as rise.",
   calc: {
     opens: "Account opens on",
     first: "Paid in when it opens",
@@ -214,10 +214,10 @@ const en = {
       "The tax is taken from the account on 31 December here. The law lets the provider take it from the account or another way you agree, and pay it to Revenue by 14 April (747Q(6), 747T).",
       "At most {limit} is paid in each calendar year, whatever is taken out (747H, 747L). Payments are made on the 1st of the month.",
       "Growth and the provider fee are spread evenly over the days, so a full year grows by exactly the rate you chose, less the fee. Growth is shown after fees and before this tax.",
-      "Nothing else is taxed: no exit tax, CGT, dividend withholding tax or deemed disposal inside the account, and nothing when you take money out (747P, Finance Bill s.27).",
+      "Nothing else is taxed: no exit tax, CGT, dividend withholding tax or deemed disposal inside the account, and nothing when you take money out (new section 747P, with related changes in Finance Bill section 28).",
     ],
     source: "Source:",
-    sourceLink: "Finance (No. 2) Bill 2026, section 26, new Part 27A",
+    sourceLink: "Finance (No. 2) Bill 2026, section 27, new Part 27A",
     illustration:
       "Illustration only, not advice. It assumes one steady return every year; real returns vary and can be negative. Rules are as in the Finance (No. 2) Bill 2026 and may change before it becomes law.",
   },
@@ -240,7 +240,7 @@ export const investmentAccountMessages: Translations<InvestmentAccountMessages> 
     lede: "Una cuenta nueva para acciones, bonos y fondos, prevista a partir del 1 de julio de 2027. En lugar de CGT o impuesto de salida, pagas un 1% al año sobre lo que valga por encima de {threshold}, y el proveedor se ocupa de Revenue.",
     status: "En el Finance Bill. Todavía no es ley.",
     statusBody:
-      "El Finance (No. 2) Bill 2026 se publicó el 19 de octubre de 2026. Se convierte en ley con la Finance Act y después entra en vigor por orden ministerial. Última comprobación: {date}.",
+      "El Finance (No. 2) Bill 2026 se publicó el 19 de octubre de 2026 y se enmendó en la fase de Committee del Dáil el 12 de noviembre de 2026. Se convierte en ley con la Finance Act y después entra en vigor por orden ministerial. Última comprobación: {date}.",
     canOpen: "¿Puedo abrir una?",
     workOut: "Calcula el impuesto",
     rulesTitle: "Las reglas, en resumen",
@@ -307,7 +307,7 @@ export const investmentAccountMessages: Translations<InvestmentAccountMessages> 
     openQs: [
       {
         q: "¿Cuándo se abrirán las cuentas?",
-        said: "El proyecto permite cuentas desde el 1 de enero de 2027, con el inicio fijado por orden ministerial. El Gobierno dice que los proveedores empezarán a ofrecerlas a partir del 1 de julio de 2027.",
+        said: "El proyecto no fija una fecha de inicio: entra en vigor por orden ministerial. El Gobierno dice que los proveedores empezarán a ofrecer cuentas a partir del 1 de julio de 2027.",
       },
       {
         q: "¿Contará como ahorro para las prestaciones sociales sujetas a prueba de recursos?",
@@ -327,7 +327,7 @@ export const investmentAccountMessages: Translations<InvestmentAccountMessages> 
       },
       {
         q: "¿Cambiará el proyecto de ley?",
-        said: "Pasó a la Select Committee tras el debate de Second Stage en el Dáil el 20 de octubre y se puede enmendar en las fases de Committee y Report.",
+        said: "La Select Committee del Dáil lo enmendó el 12 de noviembre de 2026, sin cambiar el límite anual, el 1% ni el umbral. Todavía puede cambiar en la fase de Report.",
       },
     ],
     timelineTitle: "En qué punto está",
@@ -338,15 +338,15 @@ export const investmentAccountMessages: Translations<InvestmentAccountMessages> 
       { what: "El Presupuesto 2027 fija {limit}, {threshold} y el 1%" },
       { what: "Se publica el Finance (No. 2) Bill con las reglas legales de la cuenta" },
       { what: "Debate de Second Stage en el Dáil; el proyecto pasa a la Select Committee" },
-      { what: "Fases de Committee y Report (previstas)" },
+      { what: "La Select Committee enmienda el proyecto; después sigue la fase de Report" },
       { what: "La Finance Act se convierte en ley (previsto)" },
       { what: "Una orden ministerial pone en marcha las reglas de la cuenta" },
-      { what: "Los proveedores empiezan a ofrecer cuentas (plan del Gobierno; el proyecto permite el 1 de enero de 2027)" },
+      { what: "Los proveedores empiezan a ofrecer cuentas (plan del Gobierno; el inicio lo fija una orden ministerial)" },
     ],
     afterAct: "Tras la Finance Act",
     providersTitle: "Quién puede ofrecerla",
     providersBody:
-      "Solo empresas reguladas: empresas de inversión y brókers autorizados bajo MiFID, bancos con permisos de inversión, gestoras de fondos y aseguradoras para los productos basados en seguros. Las empresas de otros países del EEE también pueden ofrecerla, siempre que gestionen por ti el impuesto irlandés. Cada proveedor debe registrarse en Revenue, que publicará la lista. Las credit unions quieren participar, pero no están entre los tipos que nombra el proyecto.",
+      "Solo empresas reguladas: empresas de inversión y brókers autorizados bajo MiFID, bancos con permisos de inversión y aseguradoras para los productos basados en seguros. Las empresas de otros países del EEE también pueden ofrecerla, siempre que gestionen por ti el impuesto irlandés. Cada proveedor debe registrarse en Revenue, que publicará la lista. Las credit unions quieren participar, pero no están entre los tipos que nombra el proyecto.",
     noBrands: "No nombramos marcas. Ninguna ha publicado precios todavía, y una lista se leería como una recomendación.",
     faqTitle: "Preguntas",
     faqs: [
@@ -376,7 +376,7 @@ export const investmentAccountMessages: Translations<InvestmentAccountMessages> 
       },
       {
         q: "¿Qué pasa cuando alguien fallece?",
-        a: "Sus representantes legales se hacen cargo de ella. No se puede aportar nada más, y las inversiones deben venderse en el plazo de un año desde la concesión de la sucesión (probate o administration), o antes del tercer aniversario del fallecimiento, lo que ocurra primero. Lo que no se haya vendido para entonces se trata como vendido a valor de mercado.",
+        a: "Sus representantes legales se hacen cargo de ella. No se puede aportar nada más, y las inversiones deben venderse en el plazo de un año desde la concesión de la sucesión (probate o administration), o, si para el tercer aniversario del fallecimiento no se ha concedido, en el plazo de un año desde ese aniversario. El plazo termina antes si la herencia queda totalmente administrada primero. Lo que no se haya vendido para entonces se trata como vendido a valor de mercado.",
       },
       {
         q: "¿Es lo mismo que una ISA del Reino Unido?",
@@ -393,7 +393,7 @@ export const investmentAccountMessages: Translations<InvestmentAccountMessages> 
     ccpc: { label: "CCPC Investment Readiness Tool", body: "una comprobación breve de si estás preparado para invertir (en inglés)" },
     sourcesTitle: "Fuentes",
     disclaimer:
-      "Solo información general, no asesoramiento financiero, fiscal ni jurídico. Las reglas son las del Finance (No. 2) Bill 2026, publicado el 19 de octubre de 2026, y pueden cambiar antes de que sea ley. La cuenta no tiene garantía del Estado: las inversiones pueden bajar además de subir.",
+      "Solo información general, no asesoramiento financiero, fiscal ni jurídico. Las reglas son las del Finance (No. 2) Bill 2026, tal como se enmendó en la fase de Committee del Dáil el 12 de noviembre de 2026, y pueden cambiar antes de que sea ley. La cuenta no tiene garantía del Estado: las inversiones pueden bajar además de subir.",
     calc: {
       opens: "La cuenta se abre el",
       first: "Aportación al abrirla",
@@ -434,10 +434,10 @@ export const investmentAccountMessages: Translations<InvestmentAccountMessages> 
         "Aquí el impuesto se toma de la cuenta el 31 de diciembre. La ley permite al proveedor tomarlo de la cuenta o de otra forma que acordéis, y pagarlo a Revenue antes del 14 de abril (747Q(6), 747T).",
         "Se aportan como máximo {limit} cada año natural, se saque lo que se saque (747H, 747L). Las aportaciones se hacen el día 1 del mes.",
         "El crecimiento y la comisión del proveedor se reparten por igual entre los días, así que un año completo crece exactamente la tasa que elegiste, menos la comisión. El crecimiento se muestra después de comisiones y antes de este impuesto.",
-        "Nada más tributa: ni impuesto de salida, ni CGT, ni retención sobre dividendos, ni transmisión ficticia dentro de la cuenta, y nada al sacar dinero (747P, Finance Bill s.27).",
+        "Nada más tributa: ni impuesto de salida, ni CGT, ni retención sobre dividendos, ni transmisión ficticia dentro de la cuenta, y nada al sacar dinero (nueva sección 747P, con cambios relacionados en la sección 28 del Finance Bill).",
       ],
       source: "Fuente:",
-      sourceLink: "Finance (No. 2) Bill 2026, sección 26, nueva Part 27A",
+      sourceLink: "Finance (No. 2) Bill 2026, sección 27, nueva Part 27A",
       illustration:
         "Solo es una ilustración, no asesoramiento. Supone una rentabilidad constante cada año; las rentabilidades reales varían y pueden ser negativas. Las reglas son las del Finance (No. 2) Bill 2026 y pueden cambiar antes de que sea ley.",
     },
@@ -455,7 +455,7 @@ export const investmentAccountMessages: Translations<InvestmentAccountMessages> 
     lede: "Uma conta nova para ações, títulos e fundos, prevista a partir de 1 de julho de 2027. Em vez de CGT ou imposto de saída, você paga 1% ao ano sobre o que ela valer acima de {threshold}, e o provedor trata com a Revenue.",
     status: "No Finance Bill. Ainda não é lei.",
     statusBody:
-      "O Finance (No. 2) Bill 2026 foi publicado em 19 de outubro de 2026. Torna-se lei com a Finance Act e depois entra em vigor por ordem ministerial. Última verificação: {date}.",
+      "O Finance (No. 2) Bill 2026 foi publicado em 19 de outubro de 2026 e alterado na fase de Committee do Dáil em 12 de novembro de 2026. Torna-se lei com a Finance Act e depois entra em vigor por ordem ministerial. Última verificação: {date}.",
     canOpen: "Posso abrir uma?",
     workOut: "Calcule o imposto",
     rulesTitle: "As regras, em resumo",
@@ -522,7 +522,7 @@ export const investmentAccountMessages: Translations<InvestmentAccountMessages> 
     openQs: [
       {
         q: "Quando as contas vão abrir?",
-        said: "O projeto permite contas a partir de 1 de janeiro de 2027, com o início fixado por ordem ministerial. O Governo diz que os provedores começarão a oferecê-las a partir de 1 de julho de 2027.",
+        said: "O projeto não fixa data de início: entra em vigor por ordem ministerial. O Governo diz que os provedores começarão a oferecer contas a partir de 1 de julho de 2027.",
       },
       {
         q: "Vai contar como poupança para os benefícios sociais sujeitos a prova de rendimentos?",
@@ -542,7 +542,7 @@ export const investmentAccountMessages: Translations<InvestmentAccountMessages> 
       },
       {
         q: "O projeto de lei vai mudar?",
-        said: "Seguiu para a Select Committee depois do debate de Second Stage no Dáil em 20 de outubro e pode ser alterado nas fases de Committee e Report.",
+        said: "A Select Committee do Dáil alterou-o em 12 de novembro de 2026, sem mudar o limite anual, o 1% nem o limite de isenção. Ainda pode mudar na fase de Report.",
       },
     ],
     timelineTitle: "Em que ponto está",
@@ -553,15 +553,15 @@ export const investmentAccountMessages: Translations<InvestmentAccountMessages> 
       { what: "O Orçamento 2027 fixa {limit}, {threshold} e 1%" },
       { what: "Publicado o Finance (No. 2) Bill com as regras legais da conta" },
       { what: "Debate de Second Stage no Dáil; o projeto segue para a Select Committee" },
-      { what: "Fases de Committee e Report (previstas)" },
+      { what: "A Select Committee altera o projeto; segue-se a fase de Report" },
       { what: "A Finance Act torna-se lei (previsto)" },
       { what: "Uma ordem ministerial põe em vigor as regras da conta" },
-      { what: "Os provedores começam a oferecer contas (plano do Governo; o projeto permite 1 de janeiro de 2027)" },
+      { what: "Os provedores começam a oferecer contas (plano do Governo; o início é fixado por ordem ministerial)" },
     ],
     afterAct: "Depois da Finance Act",
     providersTitle: "Quem pode oferecer",
     providersBody:
-      "Só empresas regulamentadas: empresas de investimento e corretoras autorizadas ao abrigo da MiFID, bancos com autorização para investimentos, gestoras de fundos e seguradoras para os produtos baseados em seguros. Empresas de outros países do EEE também podem oferecer, desde que tratem do imposto irlandês por você. Cada provedor tem de se registar na Revenue, que vai publicar a lista. As credit unions querem participar, mas não estão entre os tipos nomeados no projeto.",
+      "Só empresas regulamentadas: empresas de investimento e corretoras autorizadas ao abrigo da MiFID, bancos com autorização para investimentos e seguradoras para os produtos baseados em seguros. Empresas de outros países do EEE também podem oferecer, desde que tratem do imposto irlandês por você. Cada provedor tem de se registar na Revenue, que vai publicar a lista. As credit unions querem participar, mas não estão entre os tipos nomeados no projeto.",
     noBrands: "Não nomeamos marcas. Nenhuma publicou preços ainda, e uma lista seria lida como uma recomendação.",
     faqTitle: "Perguntas",
     faqs: [
@@ -591,7 +591,7 @@ export const investmentAccountMessages: Translations<InvestmentAccountMessages> 
       },
       {
         q: "O que acontece quando alguém morre?",
-        a: "Os seus representantes legais assumem a conta. Não se pode aportar mais nada, e os investimentos têm de ser vendidos no prazo de um ano após a concessão da sucessão (probate ou administration), ou até o terceiro aniversário da morte, o que ocorrer primeiro. O que não tiver sido vendido até lá é tratado como vendido a valor de mercado.",
+        a: "Os seus representantes legais assumem a conta. Não se pode aportar mais nada, e os investimentos têm de ser vendidos no prazo de um ano após a concessão da sucessão (probate ou administration), ou, se até o terceiro aniversário da morte não tiver sido concedida, no prazo de um ano a contar desse aniversário. O prazo termina antes se a herança ficar totalmente administrada primeiro. O que não tiver sido vendido até lá é tratado como vendido a valor de mercado.",
       },
       {
         q: "É o mesmo que uma ISA do Reino Unido?",
@@ -608,7 +608,7 @@ export const investmentAccountMessages: Translations<InvestmentAccountMessages> 
     ccpc: { label: "CCPC Investment Readiness Tool", body: "uma verificação rápida de se está pronto para investir (em inglês)" },
     sourcesTitle: "Fontes",
     disclaimer:
-      "Apenas informação geral, não aconselhamento financeiro, fiscal ou jurídico. As regras são as do Finance (No. 2) Bill 2026, publicado em 19 de outubro de 2026, e podem mudar antes de se tornar lei. A conta não tem garantia do Estado: os investimentos podem cair, além de subir.",
+      "Apenas informação geral, não aconselhamento financeiro, fiscal ou jurídico. As regras são as do Finance (No. 2) Bill 2026, com as alterações da fase de Committee do Dáil em 12 de novembro de 2026, e podem mudar antes de se tornar lei. A conta não tem garantia do Estado: os investimentos podem cair, além de subir.",
     calc: {
       opens: "A conta abre em",
       first: "Aporte na abertura",
@@ -649,10 +649,10 @@ export const investmentAccountMessages: Translations<InvestmentAccountMessages> 
         "Aqui o imposto é tirado da conta em 31 de dezembro. A lei deixa o provedor tirá-lo da conta ou de outra forma que combinem, e pagá-lo à Revenue até 14 de abril (747Q(6), 747T).",
         "No máximo {limit} são aportados em cada ano civil, seja o que for retirado (747H, 747L). Os aportes são feitos no dia 1 do mês.",
         "O crescimento e a comissão do provedor são distribuídos por igual pelos dias, então um ano completo cresce exatamente a taxa que escolheu, menos a comissão. O crescimento é mostrado depois das comissões e antes deste imposto.",
-        "Nada mais é tributado: nem imposto de saída, nem CGT, nem retenção sobre dividendos, nem alienação presumida dentro da conta, e nada ao retirar dinheiro (747P, Finance Bill s.27).",
+        "Nada mais é tributado: nem imposto de saída, nem CGT, nem retenção sobre dividendos, nem alienação presumida dentro da conta, e nada ao retirar dinheiro (nova secção 747P, com alterações relacionadas na secção 28 do Finance Bill).",
       ],
       source: "Fonte:",
-      sourceLink: "Finance (No. 2) Bill 2026, secção 26, nova Part 27A",
+      sourceLink: "Finance (No. 2) Bill 2026, secção 27, nova Part 27A",
       illustration:
         "Apenas uma ilustração, não aconselhamento. Supõe um retorno constante todos os anos; os retornos reais variam e podem ser negativos. As regras são as do Finance (No. 2) Bill 2026 e podem mudar antes de se tornar lei.",
     },
@@ -670,7 +670,7 @@ export const investmentAccountMessages: Translations<InvestmentAccountMessages> 
     lede: "Cuntas nua do scaireanna, bannaí agus cistí, le teacht ó 1 Iúil 2027. In ionad CGT nó cáin imeachta, íocann tú 1% sa bhliain ar a luach os cionn {threshold}, agus déileálann an soláthraí le Revenue.",
     status: "Sa Bhille Airgeadais. Ní dlí fós é.",
     statusBody:
-      "Foilsíodh Finance (No. 2) Bill 2026 ar 19 Deireadh Fómhair 2026. Beidh sé ina dhlí leis an Acht Airgeadais, agus ansin tosóidh sé le hordú aire. Seiceáilte go deireanach {date}.",
+      "Foilsíodh Finance (No. 2) Bill 2026 ar 19 Deireadh Fómhair 2026 agus leasaíodh é ag Céim an Choiste sa Dáil ar 12 Samhain 2026. Beidh sé ina dhlí leis an Acht Airgeadais, agus ansin tosóidh sé le hordú aire. Seiceáilte go deireanach {date}.",
     canOpen: "An féidir liom ceann a oscailt?",
     workOut: "Oibrigh amach an cháin",
     rulesTitle: "Na rialacha go hachomair",
@@ -737,7 +737,7 @@ export const investmentAccountMessages: Translations<InvestmentAccountMessages> 
     openQs: [
       {
         q: "Cathain a osclófar cuntais?",
-        said: "Ceadaíonn an Bille cuntais ó 1 Eanáir 2027, agus socraítear an tús le hordú aire. Deir an Rialtas go dtosóidh soláthraithe á dtairiscint ó 1 Iúil 2027.",
+        said: "Ní shocraíonn an Bille dáta tosaithe: tosaíonn sé le hordú aire. Deir an Rialtas go dtosóidh soláthraithe ag tairiscint cuntas ó 1 Iúil 2027.",
       },
       {
         q: "An gcomhaireofar é mar choigilteas d’íocaíochtaí leasa shóisialaigh faoi thástáil acmhainne?",
@@ -757,7 +757,7 @@ export const investmentAccountMessages: Translations<InvestmentAccountMessages> 
       },
       {
         q: "An athróidh an Bille?",
-        said: "Chuaigh sé chuig Roghchoiste tar éis díospóireacht an Dara Céim sa Dáil ar 20 Deireadh Fómhair agus is féidir é a leasú ag Céim an Choiste agus ag Céim na Tuarascála.",
+        said: "Leasaigh Roghchoiste an Dáil é ar 12 Samhain 2026, gan an teorainn bhliantúil, an cháin 1% ná an tairseach a athrú. Is féidir leis athrú fós ag Céim na Tuarascála.",
       },
     ],
     timelineTitle: "Cá bhfuil sé anois",
@@ -768,15 +768,15 @@ export const investmentAccountMessages: Translations<InvestmentAccountMessages> 
       { what: "Socraíonn Buiséad 2027 {limit}, {threshold} agus 1%" },
       { what: "Foilsítear Finance (No. 2) Bill le rialacha dlí an chuntais" },
       { what: "Díospóireacht an Dara Céim sa Dáil; téann an Bille chuig Roghchoiste" },
-      { what: "Céim an Choiste agus Céim na Tuarascála (súil leo)" },
+      { what: "Leasaíonn an Roghchoiste an Bille; leanfaidh Céim na Tuarascála" },
       { what: "An tAcht Airgeadais sínithe ina dhlí (súil leis)" },
       { what: "Cuireann ordú aire tús le rialacha an chuntais" },
-      { what: "Tosaíonn soláthraithe ag tairiscint cuntas (plean an Rialtais; ceadaíonn an Bille 1 Eanáir 2027)" },
+      { what: "Tosaíonn soláthraithe ag tairiscint cuntas (plean an Rialtais; socraítear an tús le hordú aire)" },
     ],
     afterAct: "Tar éis an Achta",
     providersTitle: "Cé a fhéadfaidh é a thairiscint",
     providersBody:
-      "Gnólachtaí rialáilte amháin: gnólachtaí infheistíochta agus bróicéirí atá údaraithe faoi MiFID, bainc a bhfuil ceadanna infheistíochta acu, cuideachtaí bainistíochta cistí, agus árachóirí do tháirgí bunaithe ar árachas. Is féidir le gnólachtaí in áiteanna eile sa LEE é a thairiscint freisin, fad is a reáchtálann siad an cháin Éireannach duit. Caithfidh gach soláthraí clárú le Revenue, a fhoilseoidh an liosta. Ba mhaith le comhar creidmheasa páirt a ghlacadh ach níl siad i measc na gcineálacha a ainmnítear sa Bhille.",
+      "Gnólachtaí rialáilte amháin: gnólachtaí infheistíochta agus bróicéirí atá údaraithe faoi MiFID, bainc a bhfuil ceadanna infheistíochta acu, agus árachóirí do tháirgí bunaithe ar árachas. Is féidir le gnólachtaí in áiteanna eile sa LEE é a thairiscint freisin, fad is a reáchtálann siad an cháin Éireannach duit. Caithfidh gach soláthraí clárú le Revenue, a fhoilseoidh an liosta. Ba mhaith le comhar creidmheasa páirt a ghlacadh ach níl siad i measc na gcineálacha a ainmnítear sa Bhille.",
     noBrands: "Ní ainmnímid brandaí. Níl praghsanna foilsithe ag aon cheann acu fós, agus léifí liosta mar mholadh.",
     faqTitle: "Ceisteanna",
     faqs: [
@@ -806,7 +806,7 @@ export const investmentAccountMessages: Translations<InvestmentAccountMessages> 
       },
       {
         q: "Cad a tharlaíonn nuair a fhaigheann duine bás?",
-        a: "Glacann a n-ionadaithe pearsanta seilbh air. Ní féidir aon rud eile a íoc isteach, agus ní mór na hinfheistíochtaí a dhíol laistigh de bhliain ó dheonú probháide nó riaracháin, nó faoin tríú comóradh ar an mbás, cibé acu is luaithe. Aon rud nach ndíoltar faoin am sin, caitear leis amhail is gur díoladh é ar luach an mhargaidh.",
+        a: "Glacann a n-ionadaithe pearsanta seilbh air. Ní féidir aon rud eile a íoc isteach, agus ní mór na hinfheistíochtaí a dhíol laistigh de bhliain ó dheonú probháide nó riaracháin, nó, mura mbeidh deonú eisithe faoin tríú comóradh ar an mbás, laistigh de bhliain ón gcomóradh sin. Críochnaíonn an tréimhse níos luaithe má dhéantar an t-eastát a riar go hiomlán ar dtús. Aon rud nach ndíoltar faoin am sin, caitear leis amhail is gur díoladh é ar luach an mhargaidh.",
       },
       {
         q: "An ionann é agus ISA sa Ríocht Aontaithe?",
@@ -823,7 +823,7 @@ export const investmentAccountMessages: Translations<InvestmentAccountMessages> 
     ccpc: { label: "CCPC Investment Readiness Tool", body: "seiceáil ghearr an bhfuil tú réidh le hinfheistiú (i mBéarla)" },
     sourcesTitle: "Foinsí",
     disclaimer:
-      "Faisnéis ghinearálta amháin, ní comhairle airgeadais, chánach ná dlí. Is iad na rialacha atá leagtha amach in Finance (No. 2) Bill 2026, a foilsíodh ar 19 Deireadh Fómhair 2026, agus d’fhéadfaidís athrú sula mbeidh sé ina dhlí. Níl ráthaíocht Stáit ar an gcuntas: is féidir le hinfheistíochtaí titim chomh maith le hardú.",
+      "Faisnéis ghinearálta amháin, ní comhairle airgeadais, chánach ná dlí. Is iad na rialacha atá leagtha amach in Finance (No. 2) Bill 2026, mar a leasaíodh ag Céim an Choiste sa Dáil ar 12 Samhain 2026, agus d’fhéadfaidís athrú sula mbeidh sé ina dhlí. Níl ráthaíocht Stáit ar an gcuntas: is féidir le hinfheistíochtaí titim chomh maith le hardú.",
     calc: {
       opens: "Osclaíonn an cuntas ar",
       first: "Íoctha isteach nuair a osclaítear é",
@@ -864,10 +864,10 @@ export const investmentAccountMessages: Translations<InvestmentAccountMessages> 
         "Tógtar an cháin ón gcuntas ar 31 Nollaig anseo. Ligeann an dlí don soláthraí í a thógáil ón gcuntas nó ar bhealach eile a aontaíonn sibh, agus í a íoc le Revenue faoin 14 Aibreán (747Q(6), 747T).",
         "Íoctar {limit} ar a mhéad isteach gach bliain féilire, is cuma cad a bhaintear amach (747H, 747L). Déantar íocaíochtaí ar an 1ú lá den mhí.",
         "Scaiptear an fás agus táille an tsoláthraí go cothrom thar na laethanta, mar sin fásann bliain iomlán go díreach de réir an ráta a roghnaigh tú, lúide an táille. Taispeántar an fás tar éis táillí agus roimh an gcáin seo.",
-        "Ní ghearrtar cáin ar aon rud eile: gan cháin imeachta, CGT, cáin choinneála ar dhíbhinní ná diúscairt mheasta taobh istigh den chuntas, agus dada nuair a bhaineann tú airgead amach (747P, Finance Bill s.27).",
+        "Ní ghearrtar cáin ar aon rud eile: gan cháin imeachta, CGT, cáin choinneála ar dhíbhinní ná diúscairt mheasta taobh istigh den chuntas, agus dada nuair a bhaineann tú airgead amach (alt nua 747P, agus athruithe gaolmhara in alt 28 den Bhille Airgeadais).",
       ],
       source: "Foinse:",
-      sourceLink: "Finance (No. 2) Bill 2026, alt 26, Part 27A nua",
+      sourceLink: "Finance (No. 2) Bill 2026, alt 27, Part 27A nua",
       illustration:
         "Léiriú amháin, ní comhairle. Glacann sé leis go bhfuil toradh seasta amháin gach bliain; athraíonn fíorthorthaí agus is féidir leo a bheith diúltach. Is iad na rialacha atá in Finance (No. 2) Bill 2026, agus d’fhéadfaidís athrú sula mbeidh sé ina dhlí.",
     },
@@ -885,7 +885,7 @@ export const investmentAccountMessages: Translations<InvestmentAccountMessages> 
     lede: "حساب جديد للأسهم والسندات والصناديق، متوقع اعتبارًا من 1 يوليو 2027. بدلًا من CGT أو ضريبة الخروج، تدفع 1% سنويًا على قيمته فوق {threshold}، ويتولى المزوّد التعامل مع Revenue.",
     status: "في مشروع قانون المالية. ليس قانونًا بعد.",
     statusBody:
-      "نُشر Finance (No. 2) Bill 2026 في 19 أكتوبر 2026. يصبح قانونًا مع قانون المالية، ثم يبدأ العمل به بأمر وزاري. آخر تحقق: {date}.",
+      "نُشر Finance (No. 2) Bill 2026 في 19 أكتوبر 2026 وعُدِّل في مرحلة اللجنة في الـDáil في 12 نوفمبر 2026. يصبح قانونًا مع قانون المالية، ثم يبدأ العمل به بأمر وزاري. آخر تحقق: {date}.",
     canOpen: "هل يمكنني فتح حساب؟",
     workOut: "احسب الضريبة",
     rulesTitle: "القواعد باختصار",
@@ -952,7 +952,7 @@ export const investmentAccountMessages: Translations<InvestmentAccountMessages> 
     openQs: [
       {
         q: "متى ستُفتح الحسابات؟",
-        said: "يسمح مشروع القانون بالحسابات من 1 يناير 2027، ويُحدَّد البدء بأمر وزاري. وتقول الحكومة إن المزوّدين سيبدؤون تقديمها اعتبارًا من 1 يوليو 2027.",
+        said: "لا يحدد مشروع القانون تاريخًا للبدء: يبدأ العمل به بأمر وزاري. وتقول الحكومة إن المزوّدين سيبدؤون تقديم الحسابات اعتبارًا من 1 يوليو 2027.",
       },
       {
         q: "هل سيُحتسب ادخارًا في مدفوعات الرعاية الاجتماعية الخاضعة لاختبار الدخل؟",
@@ -972,7 +972,7 @@ export const investmentAccountMessages: Translations<InvestmentAccountMessages> 
       },
       {
         q: "هل سيتغير مشروع القانون؟",
-        said: "أُحيل إلى لجنة مختارة بعد نقاش المرحلة الثانية في الـDáil في 20 أكتوبر، ويمكن تعديله في مرحلتي اللجنة والتقرير.",
+        said: "عدّلته اللجنة المختارة في الـDáil في 12 نوفمبر 2026، دون تغيير الحد السنوي ولا نسبة 1% ولا الحد المعفى. ويمكن أن يتغير بعد في مرحلة التقرير.",
       },
     ],
     timelineTitle: "أين وصل",
@@ -983,15 +983,15 @@ export const investmentAccountMessages: Translations<InvestmentAccountMessages> 
       { what: "ميزانية 2027 تحدد {limit} و{threshold} و1%" },
       { what: "نشر Finance (No. 2) Bill بالقواعد القانونية للحساب" },
       { what: "نقاش المرحلة الثانية في الـDáil؛ يُحال مشروع القانون إلى لجنة مختارة" },
-      { what: "مرحلتا اللجنة والتقرير (متوقع)" },
+      { what: "اللجنة المختارة تعدّل مشروع القانون؛ وتليها مرحلة التقرير" },
       { what: "توقيع قانون المالية ليصبح قانونًا (متوقع)" },
       { what: "أمر وزاري يبدأ العمل بقواعد الحساب" },
-      { what: "المزوّدون يبدؤون تقديم الحسابات (خطة الحكومة؛ ومشروع القانون يسمح بـ1 يناير 2027)" },
+      { what: "المزوّدون يبدؤون تقديم الحسابات (خطة الحكومة؛ ويُحدَّد البدء بأمر وزاري)" },
     ],
     afterAct: "بعد صدور القانون",
     providersTitle: "من يمكنه تقديمه",
     providersBody:
-      "الشركات المنظمة فقط: شركات الاستثمار والوسطاء المرخّصون بموجب MiFID، والبنوك التي لديها تراخيص استثمار، وشركات إدارة الصناديق، وشركات التأمين للمنتجات القائمة على التأمين. ويمكن لشركات في دول أخرى من المنطقة الاقتصادية الأوروبية تقديمه أيضًا، ما دامت تتولى الضريبة الأيرلندية عنك. على كل مزوّد التسجيل لدى Revenue، التي ستنشر القائمة. وتريد الاتحادات الائتمانية المشاركة، لكنها ليست من الأنواع المذكورة في مشروع القانون.",
+      "الشركات المنظمة فقط: شركات الاستثمار والوسطاء المرخّصون بموجب MiFID، والبنوك التي لديها تراخيص استثمار، وشركات التأمين للمنتجات القائمة على التأمين. ويمكن لشركات في دول أخرى من المنطقة الاقتصادية الأوروبية تقديمه أيضًا، ما دامت تتولى الضريبة الأيرلندية عنك. على كل مزوّد التسجيل لدى Revenue، التي ستنشر القائمة. وتريد الاتحادات الائتمانية المشاركة، لكنها ليست من الأنواع المذكورة في مشروع القانون.",
     noBrands: "لا نذكر أسماء شركات. لم تنشر أي منها أسعارًا بعد، وستُقرأ القائمة على أنها توصية.",
     faqTitle: "أسئلة",
     faqs: [
@@ -1021,7 +1021,7 @@ export const investmentAccountMessages: Translations<InvestmentAccountMessages> 
       },
       {
         q: "ماذا يحدث عند وفاة صاحبه؟",
-        a: "يتولاه ممثلوه الشخصيون. لا يمكن إيداع المزيد، ويجب بيع الاستثمارات خلال سنة من صدور منح الوصاية أو الإدارة (probate أو administration)، أو بحلول الذكرى الثالثة للوفاة، أيهما أسبق. وما لم يُبع بحلول ذلك الوقت يُعامل كأنه بيع بقيمة السوق.",
+        a: "يتولاه ممثلوه الشخصيون. لا يمكن إيداع المزيد، ويجب بيع الاستثمارات خلال سنة من صدور منح الوصاية أو الإدارة (probate أو administration)، أو، إذا لم يصدر منح حتى الذكرى الثالثة للوفاة، خلال سنة من تلك الذكرى. وتنتهي المدة أبكر إذا أُدير التركة بالكامل قبل ذلك. وما لم يُبع بحلول ذلك الوقت يُعامل كأنه بيع بقيمة السوق.",
       },
       {
         q: "هل هو مثل حساب ISA في المملكة المتحدة؟",
@@ -1038,7 +1038,7 @@ export const investmentAccountMessages: Translations<InvestmentAccountMessages> 
     ccpc: { label: "CCPC Investment Readiness Tool", body: "اختبار قصير لمعرفة ما إذا كنت مستعدًا للاستثمار (بالإنجليزية)" },
     sourcesTitle: "المصادر",
     disclaimer:
-      "معلومات عامة فقط، وليست نصيحة مالية أو ضريبية أو قانونية. القواعد كما وردت في Finance (No. 2) Bill 2026، المنشور في 19 أكتوبر 2026، وقد تتغير قبل أن يصبح قانونًا. الحساب ليس مضمونًا من الدولة: يمكن أن تنخفض الاستثمارات كما يمكن أن ترتفع.",
+      "معلومات عامة فقط، وليست نصيحة مالية أو ضريبية أو قانونية. القواعد كما وردت في Finance (No. 2) Bill 2026، بصيغته المعدلة في مرحلة اللجنة في الـDáil في 12 نوفمبر 2026، وقد تتغير قبل أن يصبح قانونًا. الحساب ليس مضمونًا من الدولة: يمكن أن تنخفض الاستثمارات كما يمكن أن ترتفع.",
     calc: {
       opens: "يُفتح الحساب في",
       first: "المبلغ المودَع عند الفتح",
@@ -1079,10 +1079,10 @@ export const investmentAccountMessages: Translations<InvestmentAccountMessages> 
         "هنا تؤخذ الضريبة من الحساب في 31 ديسمبر. ويسمح القانون للمزوّد بأخذها من الحساب أو بطريقة أخرى تتفقان عليها، ودفعها إلى Revenue بحلول 14 أبريل (747Q(6)، 747T).",
         "يُودع {limit} كحد أقصى في كل سنة ميلادية، أيًا كان ما يُسحب (747H، 747L). وتُدفع المبالغ في اليوم الأول من الشهر.",
         "يُوزَّع النمو ورسوم المزوّد بالتساوي على الأيام، فتنمو السنة الكاملة بالمعدل الذي اخترته تمامًا ناقص الرسوم. ويُعرض النمو بعد الرسوم وقبل هذه الضريبة.",
-        "لا تُفرض ضريبة على أي شيء آخر: لا ضريبة خروج ولا CGT ولا ضريبة استقطاع على الأرباح الموزعة ولا تصرف افتراضي داخل الحساب، ولا شيء عند سحب المال (747P، Finance Bill s.27).",
+        "لا تُفرض ضريبة على أي شيء آخر: لا ضريبة خروج ولا CGT ولا ضريبة استقطاع على الأرباح الموزعة ولا تصرف افتراضي داخل الحساب، ولا شيء عند سحب المال (المادة الجديدة 747P، مع تغييرات ذات صلة في المادة 28 من Finance Bill).",
       ],
       source: "المصدر:",
-      sourceLink: "Finance (No. 2) Bill 2026، المادة 26، الجزء الجديد Part 27A",
+      sourceLink: "Finance (No. 2) Bill 2026، المادة 27، الجزء الجديد Part 27A",
       illustration:
         "توضيح فقط، وليس نصيحة. يفترض عائدًا ثابتًا واحدًا كل سنة؛ العوائد الفعلية تتغير ويمكن أن تكون سالبة. القواعد كما في Finance (No. 2) Bill 2026 وقد تتغير قبل أن يصبح قانونًا.",
     },
@@ -1100,7 +1100,7 @@ export const investmentAccountMessages: Translations<InvestmentAccountMessages> 
     lede: "শেয়ার, বন্ড ও ফান্ডের জন্য একটি নতুন অ্যাকাউন্ট, যা 1 জুলাই 2027 থেকে কার্যকর হতে যাচ্ছে। CGT বা এক্সিট ট্যাক্সের পরিবর্তে, {threshold}-এর বেশি অংশের ওপর আপনি বছরে 1% কর দেবেন, আর সেবাদাতা প্রতিষ্ঠান সরাসরি Revenue-র সাথে এটি নিষ্পত্তি করবে।",
     status: "Finance Bill-এ প্রস্তাবিত। এখনও আইন হিসেবে পাস হয়নি।",
     statusBody:
-      "Finance (No. 2) Bill 2026 19 অক্টোবর 2026-এ প্রকাশিত হয়েছে। Finance Act পাসের মাধ্যমে এটি আইনে পরিণত হবে, তারপর মন্ত্রণালয়ের আদেশে কার্যকর হবে। সর্বশেষ যাচাই {date}।",
+      "Finance (No. 2) Bill 2026 19 অক্টোবর 2026-এ প্রকাশিত হয়েছে এবং 12 নভেম্বর 2026-এ Dáil-এর কমিটি পর্যায়ে সংশোধিত হয়েছে। Finance Act পাসের মাধ্যমে এটি আইনে পরিণত হবে, তারপর মন্ত্রণালয়ের আদেশে কার্যকর হবে। সর্বশেষ যাচাই {date}।",
     canOpen: "আমি কি অ্যাকাউন্ট খুলতে পারব?",
     workOut: "কর হিসাব করুন",
     rulesTitle: "নিয়মাবলী সংক্ষেপে",
@@ -1167,7 +1167,7 @@ export const investmentAccountMessages: Translations<InvestmentAccountMessages> 
     openQs: [
       {
         q: "অ্যাকাউন্ট কখন চালু হবে?",
-        said: "বিলটি 1 জানুয়ারি 2027 থেকে অ্যাকাউন্ট খোলার অনুমোদন দেয়, যার সূচনা হবে মন্ত্রণালয়ের আদেশের মাধ্যমে। সরকার জানিয়েছে যে সেবাদাতা প্রতিষ্ঠানগুলো 1 জুলাই 2027 থেকে এটি চালু করবে।",
+        said: "বিলে শুরুর কোনো তারিখ ঠিক করা নেই: এটি মন্ত্রণালয়ের আদেশের মাধ্যমে কার্যকর হবে। সরকার জানিয়েছে যে সেবাদাতা প্রতিষ্ঠানগুলো 1 জুলাই 2027 থেকে অ্যাকাউন্ট দেওয়া শুরু করবে।",
       },
       {
         q: "এটি কি সরকারি সমাজকল্যাণ ভাতার জন্য সঞ্চয় হিসেবে গণ্য হবে?",
@@ -1187,7 +1187,7 @@ export const investmentAccountMessages: Translations<InvestmentAccountMessages> 
       },
       {
         q: "বিলটিতে কি কোনো পরিবর্তন আসতে পারে?",
-        said: "20 অক্টোবর Dáil-এর দ্বিতীয় পর্যায়ের বিতর্কের পর এটি সিলেক্ট কমিটিতে পাঠানো হয়েছে এবং কমিটি ও রিপোর্ট পর্যায়ে এতে সংশোধনী আনা হতে পারে।",
+        said: "12 নভেম্বর 2026-এ Dáil-এর সিলেক্ট কমিটি বিলটি সংশোধন করেছে, তবে বছরের জমার সীমা, 1% কর আর করমুক্ত সীমা বদলায়নি। রিপোর্ট পর্যায়ে এটি এখনও বদলাতে পারে।",
       },
     ],
     timelineTitle: "বর্তমান অগ্রগতি",
@@ -1198,15 +1198,15 @@ export const investmentAccountMessages: Translations<InvestmentAccountMessages> 
       { what: "বাজেট 2027-এ {limit}, {threshold} এবং 1% কর নির্ধারণ করা হয়" },
       { what: "অ্যাকাউন্টের আইনি নিয়মাবলীসহ Finance (No. 2) Bill প্রকাশিত হয়" },
       { what: "Dáil-এ দ্বিতীয় পর্যায়ের বিতর্ক; বিলটি সিলেক্ট কমিটিতে পাঠানো হয়" },
-      { what: "কমিটি ও রিপোর্ট পর্যায় (প্রত্যাশিত)" },
+      { what: "সিলেক্ট কমিটি বিলটি সংশোধন করে; এরপর রিপোর্ট পর্যায়" },
       { what: "Finance Act স্বাক্ষরিত হয়ে আইনে পরিণত হওয়া (প্রত্যাশিত)" },
       { what: "মন্ত্রণালয়ের আদেশে অ্যাকাউন্টের নিয়মাবলী কার্যকর হওয়া" },
-      { what: "সেবাদাতারা অ্যাকাউন্ট অফার করা শুরু করবেন (সরকারি পরিকল্পনা; বিল অনুযায়ী 1 জানুয়ারি 2027 থেকে অনুমোদিত)" },
+      { what: "সেবাদাতারা অ্যাকাউন্ট অফার করা শুরু করবেন (সরকারি পরিকল্পনা; শুরুর সময় মন্ত্রণালয়ের আদেশে ঠিক হবে)" },
     ],
     afterAct: "আইন পাসের পর",
     providersTitle: "কারা এটি অফার করতে পারবে",
     providersBody:
-      "কেবলমাত্র নিয়ন্ত্রিত প্রতিষ্ঠান: MiFID-এর অধীনে অনুমোদিত বিনিয়োগ প্রতিষ্ঠান ও ব্রোকার, বিনিয়োগের অনুমতিপ্রাপ্ত ব্যাংক, ফান্ড ম্যানেজমেন্ট কোম্পানি এবং বীমাভিত্তিক প্রোডাক্টের জন্য বীমাকারী প্রতিষ্ঠান। EEA-এর অন্যান্য প্রতিষ্ঠানও এটি অফার করতে পারবে, যদি তারা আপনার পক্ষে আইরিশ কর পরিচালনা করে। প্রতিটি সেবাদাতাকে Revenue-তে নিবন্ধিত হতে হবে, যারা তালিকা প্রকাশ করবে। ক্রেডিট ইউনিয়ন অংশ নিতে চাইলেও বিলে তাদের নাম উল্লেখ নেই।",
+      "কেবলমাত্র নিয়ন্ত্রিত প্রতিষ্ঠান: MiFID-এর অধীনে অনুমোদিত বিনিয়োগ প্রতিষ্ঠান ও ব্রোকার, বিনিয়োগের অনুমতিপ্রাপ্ত ব্যাংক এবং বীমাভিত্তিক প্রোডাক্টের জন্য বীমাকারী প্রতিষ্ঠান। EEA-এর অন্যান্য প্রতিষ্ঠানও এটি অফার করতে পারবে, যদি তারা আপনার পক্ষে আইরিশ কর পরিচালনা করে। প্রতিটি সেবাদাতাকে Revenue-তে নিবন্ধিত হতে হবে, যারা তালিকা প্রকাশ করবে। ক্রেডিট ইউনিয়ন অংশ নিতে চাইলেও বিলে তাদের নাম উল্লেখ নেই।",
     noBrands: "আমরা কোনো ব্র্যান্ডের নাম উল্লেখ করি না। কেউই এখনও মূল্য প্রকাশ করেনি এবং এমন কোনো তালিকা সুপারিশ হিসেবে বিবেচিত হতে পারে।",
     faqTitle: "সাধারণ জিজ্ঞাসা",
     faqs: [
@@ -1236,7 +1236,7 @@ export const investmentAccountMessages: Translations<InvestmentAccountMessages> 
       },
       {
         q: "অ্যাকাউন্টধারী মারা গেলে কী হবে?",
-        a: "তাঁর আইনি প্রতিনিধিরা অ্যাকাউন্টের দায়িত্ব নেবেন। নতুন কোনো অর্থ জমা দেওয়া যাবে না এবং প্রোবেট বা প্রশাসনের অনুমোদনের এক বছরের মধ্যে অথবা মৃত্যুর তৃতীয় বার্ষিকীর মধ্যে (যেটি আগে আসে) বিনিয়োগগুলো বিক্রি করতে হবে। সেই সময়ের মধ্যে বিক্রি না করা সম্পদ বাজারমূল্যে বিক্রি হিসেবে গণ্য হবে।",
+        a: "তাঁর আইনি প্রতিনিধিরা অ্যাকাউন্টের দায়িত্ব নেবেন। নতুন কোনো অর্থ জমা দেওয়া যাবে না এবং প্রোবেট বা প্রশাসনের অনুমোদনের এক বছরের মধ্যে, অথবা মৃত্যুর তৃতীয় বার্ষিকীর মধ্যে অনুমোদন না এলে সেই বার্ষিকী থেকে এক বছরের মধ্যে বিনিয়োগগুলো বিক্রি করতে হবে। মৃত ব্যক্তির সম্পত্তির প্রশাসন আগেই সম্পূর্ণ হলে এই সময়সীমা আরও আগে শেষ হয়। সেই সময়ের মধ্যে বিক্রি না করা সম্পদ বাজারমূল্যে বিক্রি হিসেবে গণ্য হবে।",
       },
       {
         q: "এটি কি যুক্তরাজ্যের ISA-এর মতো?",
@@ -1253,7 +1253,7 @@ export const investmentAccountMessages: Translations<InvestmentAccountMessages> 
     ccpc: { label: "CCPC Investment Readiness Tool", body: "আপনি বিনিয়োগের জন্য প্রস্তুত কি না তা যাচাই করার একটি সংক্ষিপ্ত পরীক্ষা" },
     sourcesTitle: "উৎস",
     disclaimer:
-      "শুধুমাত্র সাধারণ তথ্য, কোনো আর্থিক, কর বা আইনি পরামর্শ নয়। নিয়মাবলী 19 অক্টোবর 2026-এ প্রকাশিত Finance (No. 2) Bill 2026 অনুযায়ী এবং আইনে পরিণত হওয়ার আগে পরিবর্তিত হতে পারে। অ্যাকাউন্টটি কোনো রাষ্ট্রীয় গ্যারান্টি নয়: বিনিয়োগের মূল্য বাড়ার পাশাপাশি কমতেও পারে।",
+      "শুধুমাত্র সাধারণ তথ্য, কোনো আর্থিক, কর বা আইনি পরামর্শ নয়। নিয়মাবলী 12 নভেম্বর 2026-এ Dáil-এর কমিটি পর্যায়ে সংশোধিত Finance (No. 2) Bill 2026 অনুযায়ী এবং আইনে পরিণত হওয়ার আগে পরিবর্তিত হতে পারে। অ্যাকাউন্টটি কোনো রাষ্ট্রীয় গ্যারান্টি নয়: বিনিয়োগের মূল্য বাড়ার পাশাপাশি কমতেও পারে।",
     calc: {
       opens: "অ্যাকাউন্ট খোলার তারিখ",
       first: "খোলার সময় জমা",
@@ -1294,10 +1294,10 @@ export const investmentAccountMessages: Translations<InvestmentAccountMessages> 
         "এখানে 31 ডিসেম্বরে অ্যাকাউন্ট থেকে কর কেটে নেওয়া হয়। আইন সেবাদাতাকে অ্যাকাউন্ট থেকে বা আপনার সম্মতিতে অন্য উপায়ে কর কেটে 14 এপ্রিলের মধ্যে Revenue-কে পরিশোধ করার অনুমতি দেয় (747Q(6), 747T)।",
         "টাকা তুলে নেওয়া নির্বিশেষে প্রতিটি ক্যালেন্ডার বছরে সর্বোচ্চ {limit} জমা দেওয়া যায় (747H, 747L)। প্রতি মাসের 1 তারিখে জমা সম্পন্ন হয়।",
         "প্রবৃদ্ধি এবং সেবাদাতার ফি দিনগুলোতে সমানভাবে বণ্টন করা হয়, ফলে একটি পূর্ণ বছরে ঠিক আপনার নির্বাচিত হারে ফি বাদ দিয়ে প্রবৃদ্ধি ঘটে। প্রবৃদ্ধি ফি কাটার পর এবং এই করের পূর্বে দেখানো হয়েছে।",
-        "অন্য কোনো কর নেই: অ্যাকাউন্টের ভেতরে কোনো এক্সিট ট্যাক্স, CGT, লভ্যাংশ কর কর্তন বা ডিমড ডিসপোজাল নেই এবং টাকা তোলার সময়ও কোনো কর নেই (747P, Finance Bill s.27)।",
+        "অন্য কোনো কর নেই: অ্যাকাউন্টের ভেতরে কোনো এক্সিট ট্যাক্স, CGT, লভ্যাংশ কর কর্তন বা ডিমড ডিসপোজাল নেই এবং টাকা তোলার সময়ও কোনো কর নেই (নতুন ধারা 747P, সাথে Finance Bill-এর ধারা 28-এ সংশ্লিষ্ট পরিবর্তন)।",
       ],
       source: "উৎস:",
-      sourceLink: "Finance (No. 2) Bill 2026, ধারা 26, নতুন Part 27A",
+      sourceLink: "Finance (No. 2) Bill 2026, ধারা 27, নতুন Part 27A",
       illustration:
         "শুধুমাত্র দৃষ্টান্তমূলক হিসাব, কোনো পরামর্শ নয়। এটি প্রতি বছর একটি নির্দিষ্ট রিটার্ন ধরে হিসাব করে; কিন্তু প্রকৃত রিটার্ন পরিবর্তিত হয় এবং নেতিবাচক হতে পারে। নিয়মাবলী Finance (No. 2) Bill 2026 অনুযায়ী এবং আইনে পরিণত হওয়ার আগে পরিবর্তিত হতে পারে।",
     },
@@ -1315,7 +1315,7 @@ export const investmentAccountMessages: Translations<InvestmentAccountMessages> 
     lede: "शेयर, बॉन्ड और फ़ंड के लिए एक नया अकाउंट, 1 जुलाई 2027 से आने वाला। CGT या एग्ज़िट टैक्स की जगह आप इसके मूल्य के {threshold} से ऊपर के हिस्से पर साल में 1% देते हैं, और Revenue से जुड़ा काम प्रदाता सँभालता है।",
     status: "Finance Bill में है। अभी क़ानून नहीं।",
     statusBody:
-      "Finance (No. 2) Bill 2026 19 अक्टूबर 2026 को प्रकाशित हुआ। Finance Act के साथ यह क़ानून बनेगा, फिर मंत्री के आदेश से शुरू होगा। पिछली जाँच: {date}।",
+      "Finance (No. 2) Bill 2026 19 अक्टूबर 2026 को प्रकाशित हुआ और 12 नवंबर 2026 को Dáil के Committee Stage में संशोधित हुआ। Finance Act के साथ यह क़ानून बनेगा, फिर मंत्री के आदेश से शुरू होगा। पिछली जाँच: {date}।",
     canOpen: "क्या मैं खोल सकता हूँ?",
     workOut: "टैक्स निकालें",
     rulesTitle: "नियम संक्षेप में",
@@ -1382,7 +1382,7 @@ export const investmentAccountMessages: Translations<InvestmentAccountMessages> 
     openQs: [
       {
         q: "अकाउंट कब खुलेंगे?",
-        said: "बिल 1 जनवरी 2027 से अकाउंट की अनुमति देता है, शुरुआत मंत्री के आदेश से तय होगी। सरकार का कहना है कि प्रदाता 1 जुलाई 2027 से इन्हें देना शुरू करेंगे।",
+        said: "बिल में शुरू होने की कोई तारीख़ तय नहीं है: यह मंत्री के आदेश से शुरू होगा। सरकार का कहना है कि प्रदाता 1 जुलाई 2027 से अकाउंट देना शुरू करेंगे।",
       },
       {
         q: "क्या आय-जाँच वाले सरकारी भुगतानों में इसे बचत माना जाएगा?",
@@ -1402,7 +1402,7 @@ export const investmentAccountMessages: Translations<InvestmentAccountMessages> 
       },
       {
         q: "क्या बिल बदलेगा?",
-        said: "20 अक्टूबर को Dáil में Second Stage बहस के बाद यह Select Committee को गया, और Committee व Report Stage में इसमें संशोधन हो सकता है।",
+        said: "Dáil की Select Committee ने 12 नवंबर 2026 को इसमें संशोधन किया, और सालाना सीमा, 1% और टैक्स-मुक्त सीमा वैसे ही रहे। Report Stage में यह अभी भी बदल सकता है।",
       },
     ],
     timelineTitle: "अभी कहाँ है",
@@ -1413,15 +1413,15 @@ export const investmentAccountMessages: Translations<InvestmentAccountMessages> 
       { what: "बजट 2027 ने {limit}, {threshold} और 1% तय किया" },
       { what: "अकाउंट के क़ानूनी नियमों के साथ Finance (No. 2) Bill प्रकाशित" },
       { what: "Dáil में Second Stage बहस; बिल Select Committee को गया" },
-      { what: "Committee और Report Stage (अपेक्षित)" },
+      { what: "Select Committee बिल में संशोधन करती है; आगे Report Stage" },
       { what: "Finance Act पर हस्ताक्षर होकर क़ानून बनेगा (अपेक्षित)" },
       { what: "मंत्री का आदेश अकाउंट के नियम शुरू करेगा" },
-      { what: "प्रदाता अकाउंट देना शुरू करेंगे (सरकार की योजना; बिल 1 जनवरी 2027 की अनुमति देता है)" },
+      { what: "प्रदाता अकाउंट देना शुरू करेंगे (सरकार की योजना; शुरुआत मंत्री के आदेश से तय होगी)" },
     ],
     afterAct: "Act के बाद",
     providersTitle: "कौन इसे दे सकता है",
     providersBody:
-      "सिर्फ़ विनियमित कंपनियाँ: MiFID के तहत अधिकृत निवेश कंपनियाँ और ब्रोकर, निवेश की अनुमति वाले बैंक, फ़ंड मैनेजमेंट कंपनियाँ, और बीमा-आधारित प्रोडक्ट के लिए बीमा कंपनियाँ। EEA के दूसरे देशों की कंपनियाँ भी इसे दे सकती हैं, बशर्ते वे आपके लिए आयरिश टैक्स सँभालें। हर प्रदाता को Revenue में पंजीकरण कराना होगा, जो सूची प्रकाशित करेगा। क्रेडिट यूनियन इसमें शामिल होना चाहती हैं, पर बिल में बताए गए प्रकारों में वे नहीं हैं।",
+      "सिर्फ़ विनियमित कंपनियाँ: MiFID के तहत अधिकृत निवेश कंपनियाँ और ब्रोकर, निवेश की अनुमति वाले बैंक, और बीमा-आधारित प्रोडक्ट के लिए बीमा कंपनियाँ। EEA के दूसरे देशों की कंपनियाँ भी इसे दे सकती हैं, बशर्ते वे आपके लिए आयरिश टैक्स सँभालें। हर प्रदाता को Revenue में पंजीकरण कराना होगा, जो सूची प्रकाशित करेगा। क्रेडिट यूनियन इसमें शामिल होना चाहती हैं, पर बिल में बताए गए प्रकारों में वे नहीं हैं।",
     noBrands: "हम किसी ब्रांड का नाम नहीं लेते। अभी किसी ने क़ीमतें प्रकाशित नहीं की हैं, और सूची सिफ़ारिश जैसी लगेगी।",
     faqTitle: "सवाल",
     faqs: [
@@ -1451,7 +1451,7 @@ export const investmentAccountMessages: Translations<InvestmentAccountMessages> 
       },
       {
         q: "किसी की मृत्यु होने पर क्या होता है?",
-        a: "उनके क़ानूनी प्रतिनिधि इसे सँभालते हैं। आगे कुछ जमा नहीं हो सकता, और प्रोबेट या एडमिनिस्ट्रेशन मिलने के एक साल के भीतर, या मृत्यु की तीसरी बरसी तक, जो भी पहले हो, निवेश बेचने होते हैं। तब तक जो नहीं बिका, उसे बाज़ार मूल्य पर बिका हुआ माना जाता है।",
+        a: "उनके क़ानूनी प्रतिनिधि इसे सँभालते हैं। आगे कुछ जमा नहीं हो सकता, और प्रोबेट या एडमिनिस्ट्रेशन मिलने के एक साल के भीतर, या, अगर मृत्यु की तीसरी बरसी तक अनुदान जारी नहीं हुआ, तो उस बरसी से एक साल के भीतर निवेश बेचने होते हैं। अगर उससे पहले संपत्ति का प्रशासन पूरा हो जाए, तो यह अवधि जल्दी ख़त्म हो जाती है। तब तक जो नहीं बिका, उसे बाज़ार मूल्य पर बिका हुआ माना जाता है।",
       },
       {
         q: "क्या यह ब्रिटेन के ISA जैसा है?",
@@ -1468,7 +1468,7 @@ export const investmentAccountMessages: Translations<InvestmentAccountMessages> 
     ccpc: { label: "CCPC Investment Readiness Tool", body: "आप निवेश के लिए तैयार हैं या नहीं, इसकी छोटी जाँच (अंग्रेज़ी में)" },
     sourcesTitle: "स्रोत",
     disclaimer:
-      "केवल सामान्य जानकारी, वित्तीय, टैक्स या क़ानूनी सलाह नहीं। नियम 19 अक्टूबर 2026 को प्रकाशित Finance (No. 2) Bill 2026 के अनुसार हैं, और क़ानून बनने से पहले बदल सकते हैं। यह अकाउंट सरकारी गारंटी नहीं है: निवेश बढ़ भी सकते हैं और घट भी सकते हैं।",
+      "केवल सामान्य जानकारी, वित्तीय, टैक्स या क़ानूनी सलाह नहीं। नियम Finance (No. 2) Bill 2026 के अनुसार हैं, जैसा 12 नवंबर 2026 को Dáil के Committee Stage में संशोधित हुआ, और क़ानून बनने से पहले बदल सकते हैं। यह अकाउंट सरकारी गारंटी नहीं है: निवेश बढ़ भी सकते हैं और घट भी सकते हैं।",
     calc: {
       opens: "अकाउंट खुलने की तारीख़",
       first: "खुलते समय जमा",
@@ -1509,10 +1509,10 @@ export const investmentAccountMessages: Translations<InvestmentAccountMessages> 
         "यहाँ टैक्स 31 दिसंबर को अकाउंट से काटा जाता है। क़ानून प्रदाता को इसे अकाउंट से या आपकी सहमति से किसी और तरीक़े से लेने और 14 अप्रैल तक Revenue को चुकाने देता है (747Q(6), 747T)।",
         "हर कैलेंडर साल में अधिकतम {limit} जमा होता है, चाहे जितना निकाला जाए (747H, 747L)। जमा महीने की 1 तारीख़ को होती है।",
         "बढ़त और प्रदाता की फ़ीस दिनों में बराबर बाँटी जाती है, इसलिए पूरे साल में ठीक आपकी चुनी दर से बढ़त होती है, फ़ीस घटाकर। बढ़त फ़ीस के बाद और इस टैक्स से पहले दिखाई जाती है।",
-        "और किसी चीज़ पर टैक्स नहीं: अकाउंट के अंदर एग्ज़िट टैक्स, CGT, डिविडेंड विदहोल्डिंग टैक्स या डीम्ड डिस्पोज़ल नहीं, और पैसा निकालने पर भी कुछ नहीं (747P, Finance Bill s.27)।",
+        "और किसी चीज़ पर टैक्स नहीं: अकाउंट के अंदर एग्ज़िट टैक्स, CGT, डिविडेंड विदहोल्डिंग टैक्स या डीम्ड डिस्पोज़ल नहीं, और पैसा निकालने पर भी कुछ नहीं (नई धारा 747P, और Finance Bill की धारा 28 में जुड़े बदलाव)।",
       ],
       source: "स्रोत:",
-      sourceLink: "Finance (No. 2) Bill 2026, धारा 26, नया Part 27A",
+      sourceLink: "Finance (No. 2) Bill 2026, धारा 27, नया Part 27A",
       illustration:
         "सिर्फ़ उदाहरण, सलाह नहीं। यह हर साल एक ही स्थिर रिटर्न मानता है; असली रिटर्न बदलते हैं और नकारात्मक हो सकते हैं। नियम Finance (No. 2) Bill 2026 के अनुसार हैं और क़ानून बनने से पहले बदल सकते हैं।",
     },

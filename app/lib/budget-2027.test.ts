@@ -165,7 +165,9 @@ test("only what applies: a renter sees nothing about farms, companies or pension
 });
 
 test("timeline: dated lines in order, unannounced ones last", () => {
-  const r = personalise(profile({ smoker: true, heatingOil: true, funds: true, welfarePayment: true }));
+  // Heating oil is dated now (14 Oct 2026); the student contribution is the
+  // one measure still without a start date.
+  const r = personalise(profile({ smoker: true, heatingOil: true, funds: true, welfarePayment: true, college: true, studentsInCollege: 1 }));
   const dates = r.timeline.filter((t) => t.starts.date).map((t) => t.starts.date as string);
   assert.deepEqual(dates, [...dates].sort());
   assert.equal(r.timeline.at(-1)?.starts.label, "Not announced yet");

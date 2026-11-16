@@ -16,7 +16,7 @@ const en = {
   crumb: "Ireland mortgage",
   title: "Ireland mortgage calculator",
   lede: "Compare monthly repayments across Irish lenders: variable, fixed and green rates as of {date}.",
-  budgetNote: "Budget 2027 raised Help to Buy for first-time buyers of a new home from €30,000 to €35,000, for applications from 7 October 2026.",
+  budgetNote: "Budget 2027 raises Help to Buy for first-time buyers of a new home from €30,000 to €35,000, for contracts signed from 7 October 2026 (or, for a self-build, a first mortgage drawdown from that date).",
   notes: [
     { title: "Compare Irish lenders", body: "Monthly repayments across Irish lenders, with each product's interest rate, APRC and incentives side by side. Only rates checked on the lender's own site are shown." },
     { title: "Every rate type", body: "Filter variable and fixed rates, including green mortgage rates for energy-efficient homes and cashback offers." },
@@ -120,7 +120,7 @@ export const mortgageMessages: Translations<MortgageMessages> = {
     crumb: "Hipoteca en Irlanda",
     title: "Calculadora de hipotecas de Irlanda",
     lede: "Compara las cuotas mensuales entre bancos irlandeses: tipos variables, fijos y verdes a {date}.",
-    budgetNote: "El Presupuesto 2027 subió la ayuda Help to Buy para quien compra su primera vivienda nueva de 30.000 € a 35.000 €, para solicitudes desde el 7 de octubre de 2026.",
+    budgetNote: "El Presupuesto 2027 sube la ayuda Help to Buy para quien compra su primera vivienda nueva de 30.000 € a 35.000 €, para contratos firmados desde el 7 de octubre de 2026 (o, en una autoconstrucción, la primera disposición de la hipoteca desde esa fecha).",
     notes: [
       { title: "Compara bancos irlandeses", body: "Cuotas mensuales de bancos irlandeses, con el tipo de interés, la TAE y los incentivos de cada producto uno al lado del otro. Solo se muestran tipos comprobados en la web del propio banco." },
       { title: "Todos los tipos de interés", body: "Filtra tipos variables y fijos, incluidos los tipos de hipoteca verde para viviendas eficientes y las ofertas de cashback." },
@@ -219,7 +219,7 @@ export const mortgageMessages: Translations<MortgageMessages> = {
     crumb: "Financiamento na Irlanda",
     title: "Calculadora de financiamento imobiliário da Irlanda",
     lede: "Compare as parcelas mensais entre bancos irlandeses: taxas variáveis, fixas e verdes em {date}.",
-    budgetNote: "O Orçamento 2027 aumentou o Help to Buy para quem compra o primeiro imóvel novo de € 30.000 para € 35.000, para pedidos a partir de 7 de outubro de 2026.",
+    budgetNote: "O Orçamento 2027 aumenta o Help to Buy para quem compra o primeiro imóvel novo de € 30.000 para € 35.000, para contratos assinados a partir de 7 de outubro de 2026 (ou, numa autoconstrução, a primeira liberação do financiamento a partir dessa data).",
     notes: [
       { title: "Compare bancos irlandeses", body: "Parcelas mensais de bancos irlandeses, com a taxa de juros, o CET e os incentivos de cada produto lado a lado. Só aparecem taxas conferidas no site do próprio banco." },
       { title: "Todos os tipos de taxa", body: "Filtre taxas variáveis e fixas, incluindo as taxas de financiamento verde para imóveis eficientes e as ofertas de cashback." },
@@ -318,7 +318,7 @@ export const mortgageMessages: Translations<MortgageMessages> = {
     crumb: "Morgáiste na hÉireann",
     title: "Áireamhán morgáiste na hÉireann",
     lede: "Cuir aisíocaíochtaí míosúla i gcomparáid idir iasachtóirí na hÉireann: rátaí athraitheacha, seasta agus glasa amhail {date}.",
-    budgetNote: "D’ardaigh Buiséad 2027 Cabhair le Ceannach do chéad cheannaitheoirí tí nua ó €30,000 go €35,000, d’iarratais ó 7 Deireadh Fómhair 2026.",
+    budgetNote: "Ardaíonn Buiséad 2027 Cabhair le Ceannach do chéad cheannaitheoirí tí nua ó €30,000 go €35,000, do chonarthaí a shínítear ó 7 Deireadh Fómhair 2026 (nó, i gcás féintógála, an chéad tarraingt anuas ar an morgáiste ón dáta sin).",
     notes: [
       { title: "Cuir iasachtóirí Éireannacha i gcomparáid", body: "Aisíocaíochtaí míosúla ag iasachtóirí Éireannacha, le ráta úis, RBMT agus dreasachtaí gach táirge taobh le taobh. Ní thaispeántar ach rátaí a seiceáladh ar shuíomh an iasachtóra féin." },
       { title: "Gach cineál ráta", body: "Scag rátaí athraitheacha agus seasta, rátaí morgáiste glais do thithe atá éifeachtach ó thaobh fuinnimh agus tairiscintí aisíocaíochta airgid san áireamh." },
@@ -417,7 +417,7 @@ export const mortgageMessages: Translations<MortgageMessages> = {
     crumb: "الرهن العقاري في أيرلندا",
     title: "حاسبة الرهن العقاري في أيرلندا",
     lede: "قارن الأقساط الشهرية بين المقرضين في أيرلندا: المعدلات المتغيرة والثابتة والخضراء حتى {date}.",
-    budgetNote: "رفعت ميزانية 2027 برنامج Help to Buy للمشترين لأول مرة لمنزل جديد من 30,000 يورو إلى 35,000 يورو، للطلبات المقدمة اعتبارًا من 7 أكتوبر 2026.",
+    budgetNote: "ترفع ميزانية 2027 برنامج Help to Buy للمشترين لأول مرة لمنزل جديد من 30,000 يورو إلى 35,000 يورو، للعقود الموقعة اعتبارًا من 7 أكتوبر 2026 (أو، في حال البناء الذاتي، أول سحب من الرهن العقاري اعتبارًا من ذلك التاريخ).",
     notes: [
       { title: "قارن المقرضين في أيرلندا", body: "الأقساط الشهرية لدى المقرضين في أيرلندا، مع معدل الفائدة وAPRC والحوافز لكل منتج جنبًا إلى جنب. لا تظهر إلا المعدلات التي تحققنا منها على موقع المقرض نفسه." },
       { title: "كل أنواع المعدلات", body: "صفِّ المعدلات المتغيرة والثابتة، بما فيها معدلات الرهن الأخضر للمنازل الموفرة للطاقة وعروض الاسترداد النقدي." },
@@ -516,7 +516,7 @@ export const mortgageMessages: Translations<MortgageMessages> = {
     crumb: "আইরিশ মর্টগেজ",
     title: "আয়ারল্যান্ড মর্টগেজ ক্যালকুলেটর",
     lede: "আইরিশ ঋণদাতা প্রতিষ্ঠানগুলোর মাসিক কিস্তির তুলনা করুন: {date} অনুযায়ী পরিবর্তনশীল, নির্দিষ্ট এবং গ্রিন সুদের হার।",
-    budgetNote: "বাজেট 2027-এ নতুন বাড়ি কেনা প্রথমবার বাড়ি ক্রেতাদের জন্য Help to Buy সুবিধা €30,000 থেকে বৃদ্ধি করে €35,000 করা হয়েছে (7 অক্টোবর 2026 থেকে কার্যকর)।",
+    budgetNote: "বাজেট 2027-এ নতুন বাড়ি কেনা প্রথমবার বাড়ি ক্রেতাদের জন্য Help to Buy সুবিধা €30,000 থেকে বাড়িয়ে €35,000 করা হচ্ছে, 7 অক্টোবর 2026 বা তার পরে স্বাক্ষরিত চুক্তির জন্য (নিজে বাড়ি বানালে, ওই তারিখ থেকে ঋণের প্রথম কিস্তি তোলার জন্য)।",
     notes: [
       { title: "আইরিশ ঋণদাতাদের তুলনা", body: "আইরিশ ঋণদাতা প্রতিষ্ঠানগুলোর মাসিক কিস্তি, প্রতিটি পণ্যের সুদের হার, APRC এবং বিভিন্ন প্রণোদনা পাশাপাশি তুলনা করুন। কেবল ঋণদাতার নিজস্ব ওয়েবসাইটে যাচাইকৃত সুদের হার এখানে দেখানো হয়।" },
       { title: "সব ধরনের সুদের হার", body: "পরিবর্তনশীল ও নির্দিষ্ট সুদের হারের পাশাপাশি জ্বালানি-সাশ্রয়ী বাড়ির জন্য গ্রিন মর্টগেজের হার এবং ক্যাশব্যাক অফারগুলো ফিল্টার করুন।" },
@@ -615,7 +615,7 @@ export const mortgageMessages: Translations<MortgageMessages> = {
     crumb: "आयरलैंड मॉर्टगेज",
     title: "आयरलैंड मॉर्टगेज कैलकुलेटर",
     lede: "आयरलैंड के ऋणदाताओं की मासिक किस्तों की तुलना करें: {date} तक की परिवर्तनीय, फ़िक्स्ड और ग्रीन दरें।",
-    budgetNote: "बजट 2027 ने नए घर के पहली बार ख़रीदारों के लिए Help to Buy €30,000 से बढ़ाकर €35,000 कर दिया, 7 अक्टूबर 2026 से आवेदनों पर।",
+    budgetNote: "बजट 2027 नए घर के पहली बार ख़रीदारों के लिए Help to Buy €30,000 से बढ़ाकर €35,000 करता है, 7 अक्टूबर 2026 से साइन किए गए अनुबंधों पर (या ख़ुद घर बनाने पर, उस तारीख़ से मॉर्गेज की पहली निकासी पर)।",
     notes: [
       { title: "आयरलैंड के ऋणदाताओं की तुलना", body: "आयरलैंड के ऋणदाताओं की मासिक किस्तें, हर प्रोडक्ट की ब्याज दर, APRC और प्रोत्साहनों के साथ आमने-सामने। सिर्फ़ वही दरें दिखती हैं जो ऋणदाता की अपनी साइट पर जाँची गई हैं।" },
       { title: "हर तरह की दर", body: "परिवर्तनीय और फ़िक्स्ड दरें छाँटें, ऊर्जा-कुशल घरों की ग्रीन मॉर्टगेज दरों और कैशबैक ऑफ़र सहित।" },

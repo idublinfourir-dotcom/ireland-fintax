@@ -269,14 +269,21 @@ test("pension rows carry the relief-in / taxed-out caveat", () => {
 /* ---------- warnings ---------- */
 
 test("an impossible combination returns nothing, with an explanation", () => {
-  /* State-backed, guaranteed, needed within three years, but only €10 of it:
-     the Post Office account needs €50 and Prize Bonds €25, and every State
-     Savings product locks for three years or more. */
+  /* Private sector only, but under €1: every private option needs at least
+     €1, so nothing is left. */
   const plan = planInvestments(
-    inputs({ risk: 1, horizon: "short", sector: "state", guaranteedOnly: true, amount: 10 }),
+    inputs({ risk: 1, horizon: "short", sector: "private", guaranteedOnly: true, amount: 0.5 }),
   );
   assert.equal(plan.results.length, 0);
   assert.ok(plan.warnings.some((w) => w.includes("Nothing matches")));
+});
+
+test("the Post Office account has no minimum deposit (statesavings.ie, 16 Nov 2026)", () => {
+  assert.equal(byId("posb-deposit").minimum, 0);
+  const plan = planInvestments(
+    inputs({ risk: 1, horizon: "short", sector: "state", guaranteedOnly: true, amount: 10 }),
+  );
+  assert.ok(plan.results.some((r) => r.option.id === "posb-deposit"));
 });
 
 test("a cash-only plan that loses to inflation says so", () => {

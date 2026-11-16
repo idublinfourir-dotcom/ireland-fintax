@@ -142,7 +142,7 @@ const en = {
       },
       {
         title: "Investment Account",
-        note: "Announced, in the Finance Bill and not yet law (status checked 29 October 2026). From 1 July 2027: 1% a year on value above €50,000, and no deemed disposal.",
+        note: "Announced, in the Finance Bill and not yet law (status checked 16 November 2026). From 1 July 2027: 1% a year on value above €50,000, and no deemed disposal.",
         tags: ["1% a year", "€12,000 a year in", "From July 2027"],
       },
       {
@@ -361,7 +361,7 @@ const ga: HomeMessages = {
       },
       {
         title: "Cuntas Infheistíochta",
-        note: "Fógartha, sa Bhille Airgeadais agus nach dlí fós (stádas seiceáilte 29 Deireadh Fómhair 2026). An cuntas nua ón 1 Iúil 2027: 1% sa bhliain ar luach os cionn €50,000, agus gan diúscairt mheasta.",
+        note: "Fógartha, sa Bhille Airgeadais agus nach dlí fós (stádas seiceáilte 16 Samhain 2026). An cuntas nua ón 1 Iúil 2027: 1% sa bhliain ar luach os cionn €50,000, agus gan diúscairt mheasta.",
         tags: ["1% sa bhliain", "€12,000 isteach sa bhliain", "Ó Iúil 2027"],
       },
       {
@@ -576,7 +576,7 @@ const es: HomeMessages = {
       },
       {
         title: "Cuenta de Inversión",
-        note: "Anunciado, en el Proyecto de Ley de Finanzas y aún no es ley (estado revisado el 29 de octubre de 2026). La nueva cuenta desde el 1 de julio de 2027: 1% al año sobre el valor que supere 50.000 €, sin transmisión ficticia.",
+        note: "Anunciado, en el Proyecto de Ley de Finanzas y aún no es ley (estado revisado el 16 de noviembre de 2026). La nueva cuenta desde el 1 de julio de 2027: 1% al año sobre el valor que supere 50.000 €, sin transmisión ficticia.",
         tags: ["1% al año", "12.000 € al año", "Desde julio de 2027"],
       },
       {
@@ -791,7 +791,7 @@ const pt: HomeMessages = {
       },
       {
         title: "Conta de Investimento",
-        note: "Anunciado, no Projeto de Lei de Finanças e ainda não é lei (situação verificada em 29 de outubro de 2026). A nova conta a partir de 1º de julho de 2027: 1% ao ano sobre o valor acima de € 50.000, sem alienação presumida.",
+        note: "Anunciado, no Projeto de Lei de Finanças e ainda não é lei (situação verificada em 16 de novembro de 2026). A nova conta a partir de 1º de julho de 2027: 1% ao ano sobre o valor acima de € 50.000, sem alienação presumida.",
         tags: ["1% ao ano", "€ 12.000 por ano", "A partir de julho de 2027"],
       },
       {
@@ -1006,7 +1006,7 @@ const ar: HomeMessages = {
       },
       {
         title: "حساب الاستثمار",
-        note: "معلن، ضمن مشروع قانون المالية ولم يصبح قانونًا بعد (تم التحقق من الوضع في 29 أكتوبر 2026). الحساب الجديد اعتبارًا من 1 يوليو 2027: 1% سنويًا على القيمة التي تتجاوز € 50,000، ودون بيع افتراضي.",
+        note: "معلن، ضمن مشروع قانون المالية ولم يصبح قانونًا بعد (تم التحقق من الوضع في 16 نوفمبر 2026). الحساب الجديد اعتبارًا من 1 يوليو 2027: 1% سنويًا على القيمة التي تتجاوز € 50,000، ودون بيع افتراضي.",
         tags: ["1% سنويًا", "€ 12,000 في السنة", "من يوليو 2027"],
       },
       {
@@ -1221,7 +1221,7 @@ const bn: HomeMessages = {
       },
       {
         title: "ইনভেস্টমেন্ট অ্যাকাউন্ট",
-        note: "ঘোষিত, Finance Bill-এ অন্তর্ভুক্ত কিন্তু এখনো আইন হয়নি (29 অক্টোবর 2026 তারিখ অনুযায়ী অবস্থা)। 1 জুলাই 2027 থেকে: €50,000-এর বেশি মূল্যের ওপর বছরে 1%, এবং কোনো ডিমড ডিসপোজাল নেই।",
+        note: "ঘোষিত, Finance Bill-এ অন্তর্ভুক্ত কিন্তু এখনো আইন হয়নি (16 নভেম্বর 2026 তারিখ অনুযায়ী অবস্থা)। 1 জুলাই 2027 থেকে: €50,000-এর বেশি মূল্যের ওপর বছরে 1%, এবং কোনো ডিমড ডিসপোজাল নেই।",
         tags: ["বছরে 1%", "বছরে জমা €12,000", "জুলাই 2027 থেকে"],
       },
       {
@@ -1436,7 +1436,7 @@ const hi: HomeMessages = {
       },
       {
         title: "इन्वेस्टमेंट अकाउंट",
-        note: "घोषित, Finance Bill में है और अभी कानून नहीं बना (स्थिति 29 अक्टूबर 2026 को जाँची गई)। 1 जुलाई 2027 से नया अकाउंट: €50,000 से ऊपर की वैल्यू पर सालाना 1%, और कोई डीम्ड डिस्पोज़ल नहीं।",
+        note: "घोषित, Finance Bill में है और अभी कानून नहीं बना (स्थिति 16 नवंबर 2026 को जाँची गई)। 1 जुलाई 2027 से नया अकाउंट: €50,000 से ऊपर की वैल्यू पर सालाना 1%, और कोई डीम्ड डिस्पोज़ल नहीं।",
         tags: ["सालाना 1%", "साल में €12,000 तक जमा", "जुलाई 2027 से"],
       },
       {
