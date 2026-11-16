@@ -102,8 +102,8 @@ export interface LenderProduct {
 const OWNER_OCCUPIER: ProductType[] = ["first-time", "trading-up", "switch"];
 
 /* The November 2026 snapshot (re-checked 16 Nov 2026: Avant, Bank of Ireland
-   and Haven live, AIB and PTSB from archived copies of 1 and 2 Nov, ICS 3-year
-   from the CCPC tool; ICS buy-to-let still as of 1 Aug). Before that, the
+   and Haven live, AIB and PTSB from archived copies of 1 and 2 Nov, ICS from
+   its own rates page, correct as at 1 Nov). Before that, the
    October 2026 snapshot: the live rows as re-checked on the lenders' own
    pages on 28 Oct 2026. Each row shows the rate every borrower it admits can
    get: the top LTV band (AIB, Haven, Avant, PTSB, ICS) or the BER G rate (Bank
@@ -278,7 +278,7 @@ export const LENDER_PRODUCTS: LenderProduct[] = [
     details: "4.10% above 80% loan-to-value; 3.90% from 60% to 80%, 3.75% at 60% or less. Green rate for BER A or B homes: 3.95% above 80%. Rolls to PTSB's managed variable rate for your loan-to-value (4.70% above 80%, 4.50% from 60% to 80%, 4.40% at 60% or less). 2% cashback at drawdown.",
     audience: OWNER_OCCUPIER,
   },
-  // ── ICS Mortgages (owner-occupier 17 Sep 2026, buy-to-let 1 Aug 2026) ──
+  // ── ICS Mortgages (icsmortgages.ie rates page, correct as at 1 Nov 2026) ──
   {
     id: "ics-3f",
     lender: "ICS Mortgages",
@@ -287,8 +287,8 @@ export const LENDER_PRODUCTS: LenderProduct[] = [
     ratePercent: 5.95,
     aprcPercent: 5.49,
     maxLtv: 0.9,
-    revertRatePercent: 4.85,
-    details: "5.95% (APRC 5.49%) above 70% loan-to-value, up to 80%; 5.90% (APRC 5.48%) at 70% or less. Rolls to ICS's variable rate of 5.10%. APRC over 30 years.",
+    revertRatePercent: 5.1,
+    details: "5.95% (APRC 5.49%) above 70% loan-to-value; 5.90% (APRC 5.48%) at 70% or less. Rolls to ICS's variable rate of 5.10%.",
     audience: OWNER_OCCUPIER,
   },
   // ── Variable ──
@@ -353,10 +353,10 @@ export const LENDER_PRODUCTS: LenderProduct[] = [
     lender: "ICS Mortgages",
     name: "Buy-to-Let Variable",
     rateType: "variable",
-    ratePercent: 5.8,
-    aprcPercent: 6.15,
+    ratePercent: 6.05,
+    aprcPercent: 6.45,
     maxLtv: 0.7,
-    details: "Capital and interest, individual investors: 5.80% at 70% loan-to-value or less, 5.70% (APRC 6.05%) at 60% or less. Interest-only and company rates differ.",
+    details: "Capital and interest: 6.05% (APRC 6.45%) at 70% loan-to-value or less, 5.95% (APRC 6.35%) at 60% or less. Interest-only, Flexi and pension rates differ.",
     audience: ["investment"],
   },
 ];
