@@ -42,6 +42,7 @@ export default async function MortgageRatesPage() {
     revertRatePercent: r.revertRatePercent,
     cashbackPercent: r.cashbackPercent,
     cashbackFlat: r.cashbackFlat,
+    minLoan: r.minLoan ?? null,
     details: r.details ?? "",
     audience: r.audience,
     active: r.active,

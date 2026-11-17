@@ -31,6 +31,7 @@ export interface AdminProduct {
   revertRatePercent: number | null;
   cashbackPercent: number | null;
   cashbackFlat: number | null;
+  minLoan: number | null;
   details: string;
   audience: string[];
   active: boolean;
@@ -209,6 +210,9 @@ function ProductForm({ product }: { product?: AdminProduct }) {
           </Field>
           <Field label="Cashback (flat €)">
             <input name="cashback_flat" type="number" step="1" min="1" defaultValue={product?.cashbackFlat ?? ""} placeholder="none" className={inputClass} />
+          </Field>
+          <Field label="Minimum loan (€)">
+            <input name="min_loan" type="number" step="1000" min="1000" defaultValue={product?.minLoan ?? ""} placeholder="none" className={inputClass} />
           </Field>
           <div className="flex items-end gap-4 pb-1">
             <label className="flex items-center gap-1.5 text-sm text-ink">

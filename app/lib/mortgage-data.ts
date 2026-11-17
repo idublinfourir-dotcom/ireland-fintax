@@ -65,6 +65,7 @@ export async function getMortgageData(): Promise<MortgageData> {
       revertRatePercent: r.revertRatePercent ?? undefined,
       cashbackPercent: r.cashbackPercent ?? undefined,
       cashbackFlat: r.cashbackFlat ?? undefined,
+      minLoan: r.minLoan ?? undefined,
       details: r.details ?? undefined,
       audience: r.audience,
     }));
