@@ -46,6 +46,11 @@ function translateProductName(name: string, t: MortgageMessages["products"]): st
     if (n === "Variable") return t.variable;
     return null;
   };
+  const hv = /^(.+) \(High Value\)$/.exec(name);
+  if (hv) {
+    const inner = one(hv[1]);
+    return inner ? t.highValue.replace("{name}", inner) : name;
+  }
   const btl = /^Buy-to-Let (.+)$/.exec(name);
   if (btl) {
     const inner = one(btl[1]);

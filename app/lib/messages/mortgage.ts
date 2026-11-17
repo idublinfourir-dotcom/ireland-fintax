@@ -31,6 +31,7 @@ const en = {
   products: {
     yearFixed: "{n} Year Fixed",
     buyToLet: "Buy-to-Let {name}",
+    highValue: "{name} (High Value)",
     fullTerm: "Full-term Fixed",
     standardVariable: "Standard Variable",
     variable: "Variable",
@@ -135,6 +136,7 @@ export const mortgageMessages: Translations<MortgageMessages> = {
     products: {
       yearFixed: "Fijo {n} años",
       buyToLet: "Alquiler: {name}",
+      highValue: "{name} (importe alto)",
       fullTerm: "Fijo todo el plazo",
       standardVariable: "Variable estándar",
       variable: "Variable",
@@ -234,6 +236,7 @@ export const mortgageMessages: Translations<MortgageMessages> = {
     products: {
       yearFixed: "Fixa {n} anos",
       buyToLet: "Para alugar: {name}",
+      highValue: "{name} (montante elevado)",
       fullTerm: "Fixa o prazo todo",
       standardVariable: "Variável padrão",
       variable: "Variável",
@@ -333,6 +336,7 @@ export const mortgageMessages: Translations<MortgageMessages> = {
     products: {
       yearFixed: "Seasta {n} bliain",
       buyToLet: "Ceannach le ligean: {name}",
+      highValue: "{name} (ardluach)",
       fullTerm: "Seasta don téarma iomlán",
       standardVariable: "Athraitheach caighdeánach",
       variable: "Athraitheach",
@@ -432,6 +436,7 @@ export const mortgageMessages: Translations<MortgageMessages> = {
     products: {
       yearFixed: "ثابت {n} سنوات",
       buyToLet: "شراء للتأجير {name}",
+      highValue: "{name} (للقروض الكبيرة)",
       fullTerm: "ثابت لكامل المدة",
       standardVariable: "متغير قياسي",
       variable: "متغير",
@@ -531,6 +536,7 @@ export const mortgageMessages: Translations<MortgageMessages> = {
     products: {
       yearFixed: "{n} বছরের ফিক্সড",
       buyToLet: "Buy-to-Let {name}",
+      highValue: "{name} (হাই ভ্যালু)",
       fullTerm: "সম্পূর্ণ মেয়াদের ফিক্সড",
       standardVariable: "স্ট্যান্ডার্ড ভ্যারিয়েবল",
       variable: "পরিবর্তনশীল",
@@ -630,6 +636,7 @@ export const mortgageMessages: Translations<MortgageMessages> = {
     products: {
       yearFixed: "{n} साल फ़िक्स्ड",
       buyToLet: "किराये के लिए ख़रीद: {name}",
+      highValue: "{name} (हाई वैल्यू)",
       fullTerm: "पूरी अवधि फ़िक्स्ड",
       standardVariable: "मानक परिवर्तनीय",
       variable: "परिवर्तनीय",

@@ -68,6 +68,7 @@ interface ParsedProduct {
   revertRatePercent: number | null;
   cashbackPercent: number | null;
   cashbackFlat: number | null;
+  minLoan: number | null;
   details: string | null;
   audience: ProductAudience[];
   active: boolean;
@@ -85,6 +86,7 @@ function parseProduct(formData: FormData): ParsedProduct | string {
   const revertRatePercent = optNum(formData.get("revert_rate_percent"));
   const cashbackPercent = optNum(formData.get("cashback_percent"));
   const cashbackFlat = optNum(formData.get("cashback_flat"));
+  const minLoan = optNum(formData.get("min_loan"));
   const details = String(formData.get("details") ?? "").trim();
   const audience = formData
     .getAll("audience")
@@ -121,6 +123,11 @@ function parseProduct(formData: FormData): ParsedProduct | string {
     (!Number.isFinite(cashbackFlat) || cashbackFlat <= 0 || cashbackFlat > 50_000)
   )
     return "Flat cashback looks wrong: expected up to €50,000, or leave it empty.";
+  if (
+    minLoan !== null &&
+    (!Number.isFinite(minLoan) || minLoan <= 0 || minLoan > 5_000_000)
+  )
+    return "Minimum loan looks wrong: expected up to €5,000,000, or leave it empty.";
   if (audience.length === 0) return "Pick at least one buyer type.";
 
   return {
@@ -136,6 +143,7 @@ function parseProduct(formData: FormData): ParsedProduct | string {
     revertRatePercent,
     cashbackPercent,
     cashbackFlat,
+    minLoan,
     details: details || null,
     audience,
     active: formData.get("active") === "on",

@@ -225,6 +225,8 @@ export interface MortgageProductDoc {
   revertRatePercent: number | null;
   cashbackPercent: number | null;
   cashbackFlat: number | null;
+  /** Smallest loan the rate is offered on; absent or null = no minimum. */
+  minLoan?: number | null;
   details: string | null;
   audience: ProductAudience[];
   active: boolean;
