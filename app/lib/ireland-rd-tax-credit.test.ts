@@ -11,6 +11,7 @@ import {
   computeRdCredit,
   parseRdConfig,
   rdConfigForPeriod,
+  RD_PERIODS,
   round2,
   RD_CREDIT,
   RD_CONFIG_DEFAULT,
@@ -156,14 +157,14 @@ test("parseRdConfig: rejects bad / out-of-range / missing", () => {
 
 test("an earlier period uses 30% and a €75,000 first year (Revenue's example)", () => {
   // TDM 29-02-03: a €100,000 credit pays €75,000, then €15,000, then €10,000.
-  const r = computeRdCredit(333_333.33, 0, rdConfigForPeriod(RD_CONFIG_DEFAULT, true));
+  const r = computeRdCredit(333_333.33, 0, rdConfigForPeriod(RD_CONFIG_DEFAULT, "earlier"));
   assert.equal(r.ratePercent, 30);
   assert.equal(r.credit, 100_000);
   assert.deepEqual(r.instalments, { year1: 75_000, year2: 15_000, year3: 10_000 });
 });
 
 test("the current period keeps the configured 35% and €87,500", () => {
-  const cfg = rdConfigForPeriod(RD_CONFIG_DEFAULT, false);
+  const cfg = rdConfigForPeriod(RD_CONFIG_DEFAULT, "current");
   assert.equal(cfg, RD_CONFIG_DEFAULT);
   const r = computeRdCredit(250_000, 0, cfg); // credit 87,500: all in year one
   assert.equal(r.credit, 87_500);
@@ -171,7 +172,37 @@ test("the current period keeps the configured 35% and €87,500", () => {
 });
 
 test("the earlier-period override keeps the other config fields", () => {
-  const cfg = rdConfigForPeriod({ ...RD_CONFIG_DEFAULT, secondInstalmentFraction: 0.5 }, true);
+  const cfg = rdConfigForPeriod({ ...RD_CONFIG_DEFAULT, secondInstalmentFraction: 0.5 }, "earlier");
   assert.equal(cfg.secondInstalmentFraction, 0.5);
   assert.equal(cfg.tradingDeductionPercent, 12.5);
+});
+
+/* ---------- later periods: €105,000 first year (Finance (No. 2) Bill 2026 s.26) ---------- */
+
+test("Revenue's €150,000 example: €87,500 now, €105,000 under the Finance Bill", () => {
+  // TDM 29-02-03: a €150,000 credit pays €87,500 in year one, leaving €62,500.
+  const spend = 150_000 / 0.35;
+  const now = computeRdCredit(spend, 0, rdConfigForPeriod(RD_CONFIG_DEFAULT, "current"));
+  assert.deepEqual(now.instalments, { year1: 87_500, year2: 37_500, year3: 25_000 });
+  // Bill: greater of €105,000 or 50%; then 3/5 of the €45,000 balance.
+  const later = computeRdCredit(spend, 0, rdConfigForPeriod(RD_CONFIG_DEFAULT, "later"));
+  assert.equal(later.ratePercent, 35);
+  assert.deepEqual(later.instalments, { year1: 105_000, year2: 27_000, year3: 18_000 });
+});
+
+test("the €105,000 only changes credits between €87,500 and €210,000", () => {
+  const y1 = (credit: number, p: "current" | "later") =>
+    computeRdCredit(credit / 0.35, 0, rdConfigForPeriod(RD_CONFIG_DEFAULT, p)).instalments.year1;
+  assert.equal(y1(80_000, "later"), 80_000, "under both amounts: all in year one");
+  assert.equal(y1(105_000, "later"), 105_000, "paid in full in year one");
+  assert.equal(y1(105_000, "current"), 87_500);
+  assert.equal(y1(300_000, "later"), 150_000, "50% is greater: no change");
+  assert.equal(y1(300_000, "current"), 150_000);
+});
+
+test("periods run newest first, and the later one keeps the other config fields", () => {
+  assert.deepEqual(RD_PERIODS, ["later", "current", "earlier"]);
+  const cfg = rdConfigForPeriod({ ...RD_CONFIG_DEFAULT, ratePercent: 40 }, "later");
+  assert.equal(cfg.ratePercent, 40, "the rate stays admin-editable");
+  assert.equal(cfg.firstYearThresholdEur, 105_000);
 });

@@ -109,7 +109,7 @@ function Row({
   );
 }
 
-function ResultCard({ r }: { r: CgtResult }) {
+function ResultCard({ r, other }: { r: CgtResult; other?: { rate: number; before: boolean; total: number } }) {
   const t = useT(cgtMessages);
   const { money, rate } = useFormat();
   const computed = (s: string) => t.computed[s] ?? s;
@@ -181,6 +181,9 @@ function ResultCard({ r }: { r: CgtResult }) {
           />
         ))}
         <Row label={t.total} value={money(r.totalTax)} strong muted />
+        {other && other.total !== r.totalTax && (
+          <Row label={t.taxIf[other.before ? "before" : "from"].replace("{rate}", rate(other.rate))} value={money(other.total)} />
+        )}
         {r.lossCarried > 0 && (
           <Row label={t.carried} value={money(r.lossCarried)} />
         )}
@@ -249,10 +252,8 @@ export function IrelandCgtCalculator({
   const standardRate = standardRateFor(config, saleDate);
   const enhMult = enhYearKey === "none" ? 1 : multMap.get(enhYearKey) ?? 1;
 
-  const r = useMemo(
-    () =>
-      computeCgt(
-        {
+  const { r, otherTotal } = useMemo(() => {
+    const input = {
           proceeds,
           disposalCosts,
           acquisitionCost,
@@ -266,15 +267,28 @@ export function IrelandCgtCalculator({
           rateMode: showRelief ? rateMode : "standard",
           entrepreneurReliefUsedEur: entrepreneurUsed,
           saleDate,
-        },
-        config,
-      ),
-    [
+    };
+    // The same sale on the other side of the 7 October 2026 cut, for comparison.
+    const otherDate: SaleDate =
+      standardRateFor(config, saleDate) === PREVIOUS_STANDARD_RATE
+        ? { year: 2027, month: 1 }
+        : { year: 2026, month: 3 };
+    return {
+      r: computeCgt(input, config),
+      otherTotal: computeCgt({ ...input, saleDate: otherDate }, config).totalTax,
+    };
+  }, [
       proceeds, disposalCosts, acquisitionCost, acqMult, showEnhancement, enhancementCost,
       enhMult, showLosses, currentYearLosses, broughtForwardLosses, showPpr, monthsOwned,
       monthsOccupied, showRelief, rateMode, entrepreneurUsed, saleDate, config,
-    ],
-  );
+  ]);
+
+  const before = standardRate !== PREVIOUS_STANDARD_RATE;
+  const other = {
+    before,
+    rate: before ? PREVIOUS_STANDARD_RATE : config.standardRatePercent,
+    total: otherTotal,
+  };
 
   const rateOptions: { value: RateMode; label: string }[] = [
     { value: "standard", label: t.rates.standard.replace("{rate}", rate(standardRate)) },
@@ -447,7 +461,7 @@ export function IrelandCgtCalculator({
 
       {/* results */}
       <div className="flex flex-col">
-        <ResultCard r={r} />
+        <ResultCard r={r} other={other} />
         <ResultDisclaimer asOf={CGT_LAST_REVIEWED} sourceUrl={CGT_SOURCE_URL} />
       </div>
     </div>

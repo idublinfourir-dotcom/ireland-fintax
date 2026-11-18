@@ -154,7 +154,7 @@ unproved address is not an ownership boundary.
 | `calculator_settings` | slug (`"cgt"`, `"vat"`, …) | One config per editable calculator |
 | `cgt_settings` | `1` | CGT's singleton config |
 | `cgt_multipliers` | year key (`"2002"`) | Indexation multipliers |
-| `mortgage_products` | ObjectId | Lender products |
+| `mortgage_products` | ObjectId | Lender products (`minLoan` hides a rate below that loan amount, for High Value rates) |
 | `mortgage_settings` | `1` | Central Bank policy + the "rates as of" label |
 
 Configs are stored as **subdocuments, not JSON strings**, so they come back

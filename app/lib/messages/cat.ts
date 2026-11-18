@@ -81,6 +81,8 @@ const en = {
   remaining: "Threshold remaining",
   excess: "Taxable excess",
   catAt: "CAT at {rate}",
+  otherBefore: "Tax under the thresholds before 7 October 2026",
+  otherAfter: "Tax under the thresholds from 7 October 2026",
   basedOn: "Based on a {month} valuation date, the return and payment are due {date}.",
   setMonth: "Set a valuation month to see the pay & file date.",
   computed: {
@@ -166,6 +168,8 @@ export const catMessages: Translations<CatMessages> = {
     remaining: "Umbral restante",
     excess: "Exceso imponible",
     catAt: "CAT al {rate}",
+    otherBefore: "Impuesto con los umbrales anteriores al 7 de octubre de 2026",
+    otherAfter: "Impuesto con los umbrales desde el 7 de octubre de 2026",
     basedOn: "Con una fecha de valoración en {month}, la declaración y el pago vencen el {date}.",
     setMonth: "Elige un mes de valoración para ver la fecha de pago y presentación.",
     computed: {
@@ -246,6 +250,8 @@ export const catMessages: Translations<CatMessages> = {
     remaining: "Limite restante",
     excess: "Excedente tributável",
     catAt: "CAT a {rate}",
+    otherBefore: "Imposto com os limites anteriores a 7 de outubro de 2026",
+    otherAfter: "Imposto com os limites a partir de 7 de outubro de 2026",
     basedOn: "Com data de avaliação em {month}, a declaração e o pagamento vencem em {date}.",
     setMonth: "Escolha um mês de avaliação para ver a data de pagamento e entrega.",
     computed: {
@@ -326,6 +332,8 @@ export const catMessages: Translations<CatMessages> = {
     remaining: "Tairseach fágtha",
     excess: "Barrachas inchánach",
     catAt: "CFC ag {rate}",
+    otherBefore: "Cáin faoi na tairseacha roimh 7 Deireadh Fómhair 2026",
+    otherAfter: "Cáin faoi na tairseacha ón 7 Deireadh Fómhair 2026",
     basedOn: "Bunaithe ar dháta luachála i mí {month}, tá an tuairisceán agus an íocaíocht dlite {date}.",
     setMonth: "Socraigh mí luachála chun an dáta íoc agus comhdaigh a fheiceáil.",
     computed: {
@@ -408,6 +416,8 @@ export const catMessages: Translations<CatMessages> = {
     remaining: "المتبقي من الحد",
     excess: "الزيادة الخاضعة للضريبة",
     catAt: "CAT بنسبة {rate}",
+    otherBefore: "الضريبة وفق الحدود السارية قبل 7 أكتوبر 2026",
+    otherAfter: "الضريبة وفق الحدود السارية من 7 أكتوبر 2026",
     basedOn: "بناءً على تاريخ تقييم في {month}، يُستحق الإقرار والدفع في {date}.",
     setMonth: "حدد شهر التقييم لترى موعد الدفع والتقديم.",
     computed: {
@@ -490,6 +500,8 @@ export const catMessages: Translations<CatMessages> = {
     remaining: "অবশিষ্ট করমুক্ত সীমা",
     excess: "করযোগ্য অতিরিক্ত অঙ্ক",
     catAt: "{rate} হারে CAT",
+    otherBefore: "7 অক্টোবর 2026-এর আগের করমুক্ত সীমায় কর",
+    otherAfter: "7 অক্টোবর 2026 থেকে প্রযোজ্য করমুক্ত সীমায় কর",
     basedOn: "{month} মূল্যায়নের তারিখের ভিত্তিতে, রিটার্ন দাখিল ও কর পরিশোধের শেষ সময় {date}।",
     setMonth: "দাখিল ও পরিশোধের তারিখ দেখতে মূল্যায়নের মাস নির্বাচন করুন।",
     computed: {
@@ -572,6 +584,8 @@ export const catMessages: Translations<CatMessages> = {
     remaining: "बची हुई कर-मुक्त सीमा",
     excess: "कर योग्य अतिरिक्त राशि",
     catAt: "{rate} पर CAT",
+    otherBefore: "7 अक्टूबर 2026 से पहले की कर-मुक्त सीमा पर कर",
+    otherAfter: "7 अक्टूबर 2026 से लागू कर-मुक्त सीमा पर कर",
     basedOn: "{month} की मूल्यांकन तारीख़ के आधार पर, रिटर्न और भुगतान की अंतिम तारीख़ {date} है।",
     setMonth: "भुगतान और फ़ाइलिंग की तारीख़ देखने के लिए मूल्यांकन का महीना चुनें।",
     computed: {

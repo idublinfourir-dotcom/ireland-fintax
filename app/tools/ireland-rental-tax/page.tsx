@@ -21,7 +21,7 @@ export async function generateMetadata(): Promise<Metadata> {
    in ireland-rental-tax.ts. */
 export default async function IrelandRentalTaxPage() {
   const ratesByYear = await getTaxRates();
-  const { current } = comparisonYears(new Date(), ratesByYear);
+  const { current } = comparisonYears(ratesByYear);
   const t = await getT(rentalMessages);
   const c = await getT(calcMessages);
   const eur = numberFormat(await getLocale(), { style: "currency", currency: "EUR", maximumFractionDigits: 0 });

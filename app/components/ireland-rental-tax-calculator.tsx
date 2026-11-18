@@ -75,8 +75,9 @@ export function IrelandRentalTaxCalculator({
   const [selfEmployment, setSelfEmployment] = useState(0);
   const [spouse, setSpouse] = useState(0);
 
-  const r = useMemo(
-    () =>
+  const otherYear = years.find((y) => y !== year);
+  const [r, other] = useMemo(() => {
+    const run = (y: number) =>
       computeRentalTax(
         {
           letting,
@@ -95,11 +96,11 @@ export function IrelandRentalTaxCalculator({
             pensionContribution: 0,
           },
         },
-        year,
-        ratesByYear[year],
-      ),
-    [letting, grossRent, expenses, furnishings, rprir, status, age, employment, selfEmployment, spouse, year, ratesByYear],
-  );
+        y,
+        ratesByYear[y],
+      );
+    return [run(year), otherYear === undefined ? null : run(otherYear)] as const;
+  }, [letting, grossRent, expenses, furnishings, rprir, status, age, employment, selfEmployment, spouse, year, otherYear, ratesByYear]);
 
   const s = r.standard;
   /* Intl writes the minus, so it sits on the correct side in Arabic. */
@@ -247,6 +248,9 @@ export function IrelandRentalTaxCalculator({
             <Row label={t.rows.usc} value={money(s.usc)} />
             <Row label={t.rows.prsi} value={money(s.prsi)} />
             <Row label={t.rows.total} value={money(s.total)} strong />
+            {other && otherYear !== undefined && other.standard.total !== s.total && (
+              <Row label={t.otherYear.replace("{year}", String(otherYear))} value={money(other.standard.total)} />
+            )}
           </dl>
         </div>
 

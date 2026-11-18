@@ -7,15 +7,16 @@
    The EDITABLE rates/limits (per-class rate + years, the €24,000 car cap, the
    trading CT rate) live in CA_CONFIG_DEFAULT below: the single code source of
    truth (loader fallback AND the default arg of computeCapitalAllowance). The
-   CO2 emissions groups (CAR_CO2_GROUPS factors) and CAR_2027_NOTE are STATUTORY
-   and stay in code: not admin-editable.
+   car CO2 rules (CAR_RELIEF) are STATUTORY and stay in code: not
+   admin-editable.
 
    HOW IT WORKS
    - Capital allowances are tax depreciation: the cost of a qualifying asset is
      written off against taxable profits over a fixed life at a fixed rate.
        • Plant & machinery:  12.5% straight-line over 8 years.
-       • Motor vehicles (cars): 12.5% over 8 years, but the cost is capped at
-         €24,000 and further restricted by CO2 emissions (full / half / nil).
+       • Motor vehicles (cars): 12.5% over 8 years on a set €24,000 (full
+         relief, whatever the car cost), half the cost up to €12,000, or nil,
+         by CO2 emissions and when the car was bought.
        • Industrial buildings: 4% straight-line over 25 years.
        • Energy-efficient equipment (ACA): 100% in year one.
    - The cash value is the allowance × the tax rate (12.5% trading here).
@@ -26,13 +27,18 @@
      Budget 2026; excludes fossil-fuel-run equipment):
        revenue.ie/en/companies-and-charities/corporation-tax-for-companies/corporation-tax/capital-allowances-and-deductions
        taxsummaries.pwc.com/ireland/corporate/deductions
-   - Car €24,000 cap + CO2 categories for spending before 1 Jan 2027 (s.380L
-     TCA 1997): A and B (up to 140 g/km) €24,000; C (141 to 155 g/km) the
-     lesser of €12,000 or half the cost, which is half of the capped cost;
-     D, E and F (over 155 g/km) nil. Revenue, Notes for Guidance TCA Part 11C
-     (Finance Act 2025 edition):
+   - Cars, s.380L(3) TCA 1997 (read 18 November 2026): the cost is "taken to
+     be" €24,000 for a full-relief car, even one that cost less (the Finance
+     Act 2008 s.31 wording, kept by FA 2019 s.19 and FA 2024 s.33); half
+     relief is half the lower of the cost and €24,000; otherwise nil.
+     Categories (s.380K, FA 2020 s.14): A up to 120 g/km, B 121 to 140, C 141
+     to 155, D to F over 155. Spending before 1 Jan 2027: A and B full, C half.
+     From 1 Jan 2027 (Finance Act 2024 s.33, enacted): A full, B half, C to F
+     nil. Revenue, Notes for Guidance TCA Part 11C (Finance Act 2025 edition),
+     which also says a low-emission car gets €24,000 "even if the car costs
+     less than that":
        revenue.ie/en/tax-professionals/documents/notes-for-guidance/tca/part11c.pdf
-     The bands used before 2021 (full to 155, half to 190) no longer apply.
+       irishstatutebook.ie/eli/2024/act/43/enacted/en/print.html (s.33)
 
    Figures are ESTIMATES for guidance only: not tax advice. Balancing
    allowances/charges on disposal, private-use restrictions, leasing rules and
@@ -67,7 +73,7 @@ export interface AssetClass {
   years: number;
   /** True when the whole cost is written off in year one (ACA). */
   firstYearFull: boolean;
-  /** True for cars: the €24,000 cap + CO2 restriction apply. */
+  /** True for cars: the €24,000 specified amount + CO2 rules apply. */
   co2Restricted?: boolean;
   note: string;
 }
@@ -88,7 +94,7 @@ export const ASSET_CLASSES: AssetClass[] = [
     years: 8,
     firstYearFull: false,
     co2Restricted: true,
-    note: "12.5% over 8 years, but the cost is capped at €24,000 and restricted by CO2 emissions. Commercial vehicles (vans, trucks) aren't restricted; use Plant & machinery for those.",
+    note: "12.5% over 8 years on a set €24,000 whatever the car cost, halved or nil for higher CO2 emissions. Commercial vehicles (vans, trucks) aren't restricted; use Plant & machinery for those.",
   },
   {
     key: "industrial-building",
@@ -114,53 +120,28 @@ export function getAssetClass(key: AssetKey): AssetClass {
   return cls;
 }
 
-/* ---------- car CO2 emissions groups (2026 rules) ---------- */
+/* ---------- car CO2 rules (statutory) ---------- */
 
-export type Co2GroupKey = "group1" | "group2" | "group3";
+/** The s.380K emissions categories, grouped as the two sets of rules need. */
+export type Co2Category = "a" | "b" | "c" | "d-f";
+export const CO2_CATEGORIES: Co2Category[] = ["a", "b", "c", "d-f"];
 
-export interface Co2Group {
-  key: Co2GroupKey;
-  label: string;
-  /** Multiplier applied to the capped cost: 1 (full), 0.5 (half) or 0 (nil). */
-  factor: number;
-  note: string;
-}
+/** Which rules apply: spending before 1 January 2027, or from that date. */
+export type CarRules = 2026 | 2027;
+/** The newer rules first: the calculator leads with them. */
+export const CAR_RULES: CarRules[] = [2027, 2026];
 
-export const CAR_CO2_GROUPS: Co2Group[] = [
-  {
-    key: "group1",
-    label: "0 to 140 g/km (Category A and B)",
-    factor: 1,
-    note: "Full relief: allowances on the cost up to €24,000.",
-  },
-  {
-    key: "group2",
-    label: "141 to 155 g/km (Category C)",
-    factor: 0.5,
-    note: "Half relief: allowances on half the cost, up to €12,000.",
-  },
-  {
-    key: "group3",
-    label: "Over 155 g/km (Category D to F)",
-    factor: 0,
-    note: "No wear-and-tear allowances are available for this car.",
-  },
-];
-
-export function getCo2Group(key: Co2GroupKey): Co2Group {
-  const g = CAR_CO2_GROUPS.find((c) => c.key === key);
-  if (!g) throw new Error(`Unknown CO2 group: ${key}`);
-  return g;
-}
-
-/** Flagged on the car result: the emissions bands change on this date. */
-export const CAR_2027_NOTE =
-  "From 1 January 2027 the car bands change to €24,000 for 0 to 120 g/km, €12,000 for 121 to 140 g/km and nil above 140 g/km. These figures use the rules in force in 2026.";
+/** Share of the €24,000 specified amount a car gets: 1 full (whatever the
+    cost), 0.5 half (of the lower of cost and €24,000), 0 nil. */
+export const CAR_RELIEF: Record<CarRules, Record<Co2Category, 1 | 0.5 | 0>> = {
+  2026: { a: 1, b: 1, c: 0.5, "d-f": 0 },
+  2027: { a: 1, b: 0.5, c: 0, "d-f": 0 },
+};
 
 /* ---------- editable config (single source of truth) ---------- */
 
 /** The admin-editable slice: the four asset classes plus the two scalars. The
-    CO2 groups + notes are NOT here (statutory / prose, stay code). */
+    car CO2 rules are NOT here (statutory, stay code). */
 export interface CaConfig {
   classes: AssetClass[];
   /** Car cost ceiling (specified amount), €: MOTOR_CAP_EUR. */
@@ -245,13 +226,16 @@ export function round2(n: number): number {
 export interface CapitalAllowanceInput {
   assetKey: AssetKey;
   cost: number;
-  /** Required for cars; ignored otherwise. Defaults to the full-relief group. */
-  co2Group?: Co2GroupKey;
+  /** Cars only: the CO2 category. Defaults to A (full relief). */
+  co2Category?: Co2Category;
+  /** Cars only: which rules apply. Defaults to 2027 (spending from 1 Jan 2027). */
+  carRules?: CarRules;
 }
 
 export interface CapitalAllowanceResult {
   cost: number;
-  /** Cost after the car cap + CO2 restriction (equals cost for other assets). */
+  /** The cost allowances are worked out on: for cars, set by the CO2 rules
+      (can be above the cost); for other assets, the cost. */
   allowableCost: number;
   ratePercent: number;
   years: number;
@@ -267,14 +251,16 @@ export interface CapitalAllowanceResult {
   totalAllowances: number;
   /** Cash value of the total allowances at the 12.5% trading rate. */
   taxSaving: number;
-  /** True when the car cap / CO2 factor reduced the cost. */
+  /** True when the car rules made the allowable cost differ from the cost. */
   restricted: boolean;
 }
 
 /**
  * Compute the capital allowance profile for one asset.
  *
- *   allowableCost = cost, except cars: min(cost, €24,000) × CO2 factor.
+ *   allowableCost = cost, except cars (s.380L(3)): €24,000 for full relief
+ *                   whatever the cost, half the lower of cost and €24,000
+ *                   for half relief, nil otherwise. No cost, no allowance.
  *   annual        = allowableCost × rate       (straight-line)
  *   finalYear     = allowableCost − annual × (years − 1)   ← reconciles rounding
  *   ACA (100%)    = whole allowableCost in year one.
@@ -284,17 +270,18 @@ export function computeCapitalAllowance(
   config: CaConfig = CA_CONFIG_DEFAULT,
 ): CapitalAllowanceResult {
   // Resolve the class from the (possibly edited) config, not the module const,
-  // so admin rate/years edits flow through. CO2 groups stay statutory.
+  // so admin rate/years edits flow through. The car CO2 rules stay statutory.
   const cls = config.classes.find((a) => a.key === input.assetKey);
   if (!cls) throw new Error(`Unknown asset class: ${input.assetKey}`);
-  const cost = round2(Math.max(0, input.cost));
+  const cost = round2(Math.max(0, input.cost) || 0); // NaN is no cost
 
   let allowableCost = cost;
   let restricted = false;
   if (cls.co2Restricted) {
-    const capped = Math.min(cost, config.motorCapEur);
-    const group = getCo2Group(input.co2Group ?? "group1");
-    allowableCost = round2(capped * group.factor);
+    // An unknown category or year (never from the form) gets no relief, not NaN.
+    const relief = CAR_RELIEF[input.carRules ?? 2027]?.[input.co2Category ?? "a"] ?? 0;
+    allowableCost =
+      cost === 0 ? 0 : relief === 1 ? config.motorCapEur : round2(Math.min(cost, config.motorCapEur) * relief);
     restricted = allowableCost !== cost;
   }
 

@@ -1,27 +1,32 @@
 "use client";
 
 /* Ireland Capital Allowances calculator: wear & tear / writing-down allowances
-   on plant & machinery (12.5%/8yr), cars (12.5%/8yr, €24k cap + CO2 restriction),
+   on plant & machinery (12.5%/8yr), cars (12.5%/8yr on €24,000, by CO2 and date),
    industrial buildings (4%/25yr) and energy-efficient equipment (100% ACA).
    The user picks the asset class; this component never guesses. The editable
    rates/limits arrive as `config` (admin-editable, DB-backed with a code
-   fallback); the maths + the statutory CO2 groups live in
-   ../lib/ireland-capital-allowances. */
+   fallback); the maths + the statutory car CO2 rules live in
+   ../lib/ireland-capital-allowances. Cars lead with the rules from 1 January
+   2027 and show the 2026 total alongside, like the income tax calculator. */
 
 import { useMemo, useState } from "react";
 import {
   computeCapitalAllowance,
-  CAR_CO2_GROUPS,
+  CAR_RELIEF,
+  CAR_RULES,
+  CO2_CATEGORIES,
   CA_LAST_REVIEWED,
   CA_SOURCE_URL,
   type AssetKey,
   type CaConfig,
-  type Co2GroupKey,
+  type CarRules,
+  type Co2Category,
 } from "../lib/ireland-capital-allowances";
 import {
   CurrencyField,
   LegendDot,
   ResultDisclaimer,
+  SegmentedField,
   SelectField,
   useFormat,
 } from "./calculator-fields";
@@ -80,16 +85,23 @@ export function IrelandCapitalAllowancesCalculator({ config }: { config: CaConfi
   const years = (n: number) => plural(locale, n, t.years);
   const [assetKey, setAssetKey] = useState<AssetKey>("plant-machinery");
   const [cost, setCost] = useState(0);
-  const [co2Group, setCo2Group] = useState<Co2GroupKey>("group1");
+  const [co2Category, setCo2Category] = useState<Co2Category>("a");
+  const [carRules, setCarRules] = useState<CarRules>(CAR_RULES[0]);
+  const otherRules = CAR_RULES.find((y) => y !== carRules)!;
 
   // Resolve from the (possibly edited) config, not the module const.
   const cls = config.classes.find((a) => a.key === assetKey) ?? config.classes[0];
   const isCar = cls.co2Restricted === true;
 
   const r = useMemo(
-    () => computeCapitalAllowance({ assetKey, cost, co2Group }, config),
-    [assetKey, cost, co2Group, config],
+    () => computeCapitalAllowance({ assetKey, cost, co2Category, carRules }, config),
+    [assetKey, cost, co2Category, carRules, config],
   );
+  const other = computeCapitalAllowance({ assetKey, cost, co2Category, carRules: otherRules }, config);
+  const relief = CAR_RELIEF[carRules][co2Category];
+  const reliefNote = (relief === 1 ? t.co2Relief.full : relief === 0.5 ? t.co2Relief.half : t.co2Relief.none)
+    .replace("{cap}", eur0(config.motorCapEur))
+    .replace("{half}", eur0(config.motorCapEur / 2));
 
   const heroLabel = r.firstYearFull ? t.firstYear : t.annual;
   const heroValue = r.firstYearFull ? r.firstYearAllowance : r.annualAllowance;
@@ -119,23 +131,26 @@ export function IrelandCapitalAllowancesCalculator({ config }: { config: CaConfi
         </SelectField>
 
         {isCar && (
-          <SelectField
-            label={t.co2}
-            value={co2Group}
-            onChange={(v) => setCo2Group(v as Co2GroupKey)}
-            hint={
-              <>
-                {t.co2Groups[co2Group].note}
-                <span className="mt-1 block">{t.car2027}</span>
-              </>
-            }
-          >
-            {CAR_CO2_GROUPS.map((g) => (
-              <option key={g.key} value={g.key}>
-                {t.co2Groups[g.key].label}
-              </option>
-            ))}
-          </SelectField>
+          <>
+            <SegmentedField
+              label={t.bought}
+              value={String(carRules)}
+              onChange={(v) => setCarRules(Number(v) as CarRules)}
+              options={CAR_RULES.map((y) => ({ value: String(y), label: t.boughtOptions[y] }))}
+            />
+            <SelectField
+              label={t.co2}
+              value={co2Category}
+              onChange={(v) => setCo2Category(v as Co2Category)}
+              hint={reliefNote}
+            >
+              {CO2_CATEGORIES.map((k) => (
+                <option key={k} value={k}>
+                  {t.co2Groups[k]}
+                </option>
+              ))}
+            </SelectField>
+          </>
         )}
 
         <CurrencyField
@@ -195,11 +210,11 @@ export function IrelandCapitalAllowancesCalculator({ config }: { config: CaConfi
                 dotClass="bg-navy-900"
                 label={t.allowable}
                 sub={
-                  co2Group === "group3"
+                  relief === 0
                     ? t.noRelief
-                    : `${t.cappedAt.replace("{cap}", eur0(config.motorCapEur))}${
-                        co2Group === "group2" ? t.halfCo2 : ""
-                      }`
+                    : relief === 1
+                      ? t.setAt.replace("{cap}", eur0(config.motorCapEur))
+                      : `${t.cappedAt.replace("{cap}", eur0(config.motorCapEur))}${t.halfCo2}`
                 }
                 value={money(r.allowableCost)}
               />
@@ -219,6 +234,7 @@ export function IrelandCapitalAllowancesCalculator({ config }: { config: CaConfi
               value={years(r.firstYearFull ? 1 : r.years)}
             />
             <Row label={t.totalAllowances} value={money(r.totalAllowances)} strong />
+            {isCar && <Row label={t.ifBought[otherRules]} value={money(other.totalAllowances)} />}
             <Row
               dotClass="bg-primary-300"
               label={t.saving.replace("{rate}", rate(config.tradingCtPercent))}

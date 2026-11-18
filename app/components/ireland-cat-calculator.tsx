@@ -60,20 +60,19 @@ export function IrelandCatCalculator({ config }: { config: CatConfig }) {
   const [valuationMonth, setValuationMonth] = useState(6);
   const [takenBeforeRise, setTakenBeforeRise] = useState(false);
 
-  const r = computeCat(
-    {
-      benefitType,
-      relationship,
-      marketValue,
-      deductibleLiabilities,
-      relief,
-      applySmallGiftExemption: applySmallGift,
-      priorBenefits,
-      valuationMonth,
-      takenBeforeRise,
-    },
-    config,
-  );
+  const input = {
+    benefitType,
+    relationship,
+    marketValue,
+    deductibleLiabilities,
+    relief,
+    applySmallGiftExemption: applySmallGift,
+    priorBenefits,
+    valuationMonth,
+    takenBeforeRise,
+  };
+  const r = computeCat(input, config);
+  const other = computeCat({ ...input, takenBeforeRise: !takenBeforeRise }, config);
 
   const isGift = benefitType === "gift";
 
@@ -230,6 +229,13 @@ export function IrelandCatCalculator({ config }: { config: CatConfig }) {
             <Line label={t.remaining} value={money(r.thresholdRemaining)} muted />
             <Line label={t.excess} value={money(r.taxableExcess)} />
             <Line label={t.catAt.replace("{rate}", rate(r.ratePercent))} value={money(r.catDue)} strong />
+            {other.catDue !== r.catDue && (
+              <Line
+                label={takenBeforeRise ? t.otherAfter : t.otherBefore}
+                value={money(other.catDue)}
+                muted
+              />
+            )}
           </dl>
           <p className="border-t border-line px-5 py-3 text-xs leading-5 text-muted sm:px-6">
             {r.paymentDue

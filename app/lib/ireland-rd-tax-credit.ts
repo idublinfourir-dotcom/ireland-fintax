@@ -110,10 +110,26 @@ export function parseRdConfig(raw: unknown): RdConfig | null {
    TDM 29-02-03). History, so constants rather than editable config. */
 export const RD_EARLIER_PERIOD = { ratePercent: 30, firstYearThresholdEur: 75_000 };
 
-/** The config for a period: the current one, or the old rate and first-year
-    amount for an earlier period. */
-export function rdConfigForPeriod(config: RdConfig, earlier: boolean): RdConfig {
-  return earlier ? { ...config, ...RD_EARLIER_PERIOD } : config;
+/* A specified return date on or after 23 September 2028 (in general, periods
+   ending 31 December 2027 or later): €105,000 in year one. Finance (No. 2) Bill
+   2026 s.26(1)(b)(i) and (2)(a), as amended in Dáil committee on 12 November
+   2026, read 18 November 2026. NOT LAW YET: when the Act is signed, check the
+   figure and the date, and drop the "Finance Bill" wording in messages/rd.ts.
+   The same section raises the outsourcing limits (15% / €100,000 to 20% /
+   €200,000) for the same periods; outsourcing is not modelled here. */
+export const RD_LATER_PERIOD = { firstYearThresholdEur: 105_000 };
+
+export type RdPeriod = "later" | "current" | "earlier";
+/** Newest first: the calculator opens on it. */
+export const RD_PERIODS: RdPeriod[] = ["later", "current", "earlier"];
+
+/** The config for a period: the current one, the Finance Bill's higher
+    first-year amount for a later period, or the old rate and first-year amount
+    for an earlier one. */
+export function rdConfigForPeriod(config: RdConfig, period: RdPeriod): RdConfig {
+  if (period === "earlier") return { ...config, ...RD_EARLIER_PERIOD };
+  if (period === "later") return { ...config, ...RD_LATER_PERIOD };
+  return config;
 }
 
 /** Shown beside the qualifying-spend input. */

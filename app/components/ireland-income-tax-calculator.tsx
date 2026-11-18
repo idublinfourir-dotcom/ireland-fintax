@@ -47,11 +47,13 @@ function SegmentedField<T extends string>({
   value,
   onChange,
   options,
+  hint,
 }: {
   label: string;
   value: T;
   onChange: (v: T) => void;
   options: { value: T; label: string }[];
+  hint?: string;
 }) {
   return (
     <div>
@@ -79,6 +81,7 @@ function SegmentedField<T extends string>({
           );
         })}
       </div>
+      {hint && <p className="mt-1 text-xs text-muted">{hint}</p>}
     </div>
   );
 }
@@ -87,15 +90,18 @@ function YesNoField({
   label,
   value,
   onChange,
+  hint,
 }: {
   label: string;
   value: boolean;
   onChange: (v: boolean) => void;
+  hint?: string;
 }) {
   const t = useT(incomeTaxMessages);
   return (
     <SegmentedField<"yes" | "no">
       label={label}
+      hint={hint}
       value={value ? "yes" : "no"}
       onChange={(v) => onChange(v === "yes")}
       options={[
@@ -254,8 +260,8 @@ function AmountCell({ row, r }: { row: RowDef; r: IncomeTaxResult }) {
   const money = useMoney();
   const text = row.deduct ? `(${money(row.value(r))})` : money(row.value(r));
   return (
-    <td className="px-4 py-2.5 text-end tabular-nums text-ink">
-      {row.rate && <span className="me-3 text-xs text-muted">({row.rate})</span>}
+    <td className="px-1.5 py-2.5 text-end tabular-nums text-ink sm:px-4">
+      {row.rate && <span className="block text-xs text-muted sm:me-3 sm:inline">({row.rate})</span>}
       {text}
     </td>
   );
@@ -272,7 +278,12 @@ function ResultsTable({
   currentYear: number;
   priorYear: number;
 }) {
-  const { current, prior, delta } = comparison;
+  const { current, prior } = comparison;
+  // The difference of the whole-euro figures shown above, so a reader's own
+  // subtraction agrees (€3,299 − €3,242 = €57, as Deloitte shows), not of
+  // the unrounded ones (€57.58, which would print €58).
+  const shownDiff = (k: "netIncome" | "monthlyNetIncome" | "weeklyNetIncome") =>
+    Math.round(current[k]) - Math.round(prior[k]);
   const t = useT(incomeTaxMessages);
   const money = useMoney();
   const ROWS = buildRows(rates, t.rows, useRateLabel()).filter(
@@ -288,15 +299,17 @@ function ResultsTable({
 
   return (
     <div>
-      <div className="overflow-x-auto border border-line">
-        <table className="w-full border-collapse text-sm">
+      {/* Flush with the card's 1.25rem padding on phones (the tool page and the
+          Budget planner both use p-5 below sm), so both years fit at 360px. */}
+      <div className="-mx-5 overflow-x-auto border-y border-line sm:mx-0 sm:border-x">
+        <table className="w-full border-collapse text-xs sm:text-sm">
           <thead>
             <tr className="bg-surface-muted">
-              <th className="px-4 py-3 text-start font-semibold text-muted" />
-              <th className="px-4 py-3 text-end font-display text-base font-semibold text-primary-600">
+              <th className="px-1.5 py-3 text-start font-semibold text-muted sm:px-4" />
+              <th className="px-1.5 py-3 text-end font-display text-sm font-semibold text-primary-600 sm:px-4 sm:text-base">
                 {currentYear}
               </th>
-              <th className="px-4 py-3 text-end font-display text-base font-semibold text-ink">
+              <th className="px-1.5 py-3 text-end font-display text-sm font-semibold text-ink sm:px-4 sm:text-base">
                 {priorYear}
               </th>
             </tr>
@@ -304,7 +317,7 @@ function ResultsTable({
           <tbody>
             {ROWS.map((row, i) => (
               <tr key={row.label} className={rowBg(row.variant, i)}>
-                <td className="px-4 py-2.5 text-start text-ink">{row.label}</td>
+                <td className="px-1.5 py-2.5 text-start text-ink sm:px-4">{row.label}</td>
                 <AmountCell row={row} r={current} />
                 <AmountCell row={row} r={prior} />
               </tr>
@@ -320,9 +333,9 @@ function ResultsTable({
         </h2>
         <dl className="mx-auto mt-4 max-w-xl">
           {[
-            { label: t.rows.annual, v: delta.annual },
-            { label: t.rows.monthly, v: delta.monthly },
-            { label: t.rows.weekly, v: delta.weekly },
+            { label: t.rows.annual, v: shownDiff("netIncome") },
+            { label: t.rows.monthly, v: shownDiff("monthlyNetIncome") },
+            { label: t.rows.weekly, v: shownDiff("weeklyNetIncome") },
           ].map((d) => (
             <div
               key={d.label}
@@ -357,6 +370,8 @@ const DEFAULTS: IncomeTaxInput = {
   spouseEmploymentIncome: 0,
   spouseSelfEmploymentOrOtherIncome: 0,
   rentPaid: 0,
+  mortgageInterest2022: 0,
+  mortgageInterestThisYear: 0,
   claimHomeCarerCredit: false,
 };
 
@@ -466,6 +481,12 @@ export function IrelandIncomeTaxCalculator({
           value={form.age}
           onChange={(v) => set("age", v)}
         />
+        <YesNoField
+          label={t.medicalCard}
+          value={form.fullMedicalCard ?? false}
+          onChange={(v) => set("fullMedicalCard", v)}
+          hint={t.medicalCardHint}
+        />
 
         <h2 className="mt-4 font-display text-lg font-medium text-ink">
           {t.income}
@@ -513,6 +534,18 @@ export function IrelandIncomeTaxCalculator({
         />
 
         <CurrencyField
+          label={t.mortgage2022}
+          value={form.mortgageInterest2022 ?? 0}
+          onChange={(v) => set("mortgageInterest2022", v)}
+        />
+        <CurrencyField
+          label={t.mortgageThisYear.replace("{prior}", String(priorYear))}
+          value={form.mortgageInterestThisYear ?? 0}
+          onChange={(v) => set("mortgageInterestThisYear", v)}
+          hint={t.mortgageHint}
+        />
+
+        <CurrencyField
           label={t.pensionContribution}
           value={form.pensionContribution}
           onChange={(v) => set("pensionContribution", v)}
@@ -520,7 +553,10 @@ export function IrelandIncomeTaxCalculator({
         />
       </div>
 
-      <div className="mt-8 flex flex-wrap justify-center gap-4">
+      <p className="mt-8 text-center text-sm text-ink-body">
+        {t.compareNote.replace("{current}", String(currentYear)).replace("{prior}", String(priorYear))}
+      </p>
+      <div className="mt-4 flex flex-wrap justify-center gap-4">
         <button type="submit" className={btnPrimary}>
           {t.calculate}
         </button>

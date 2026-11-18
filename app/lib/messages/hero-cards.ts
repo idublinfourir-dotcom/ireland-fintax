@@ -17,6 +17,7 @@ const en = {
   openLabel: "Open the {name} calculator",
   thousands: "€{n}k",
   millions: "€{n}M",
+  budget: "{budget}, subject to the Finance Bill",
   income: {
     eyebrow: "PAYE · USC · PRSI, {year}",
     gross: "Gross salary",
@@ -130,6 +131,7 @@ export const heroCardMessages: Translations<typeof en> = {
     openLabel: "Abrir la calculadora de {name}",
     thousands: "{n} mil €",
     millions: "{n} M€",
+    budget: "{budget}, sujeto al Proyecto de Ley de Finanzas",
     income: {
       eyebrow: "PAYE · USC · PRSI, {year}",
       gross: "Salario bruto",
@@ -240,6 +242,7 @@ export const heroCardMessages: Translations<typeof en> = {
     openLabel: "Abrir a calculadora de {name}",
     thousands: "€ {n} mil",
     millions: "€ {n} mi",
+    budget: "{budget}, sujeito ao Projeto de Lei de Finanças",
     income: {
       eyebrow: "PAYE · USC · PRSI, {year}",
       gross: "Salário bruto",
@@ -350,6 +353,7 @@ export const heroCardMessages: Translations<typeof en> = {
     openLabel: "Oscail an t-áireamhán {name}",
     thousands: "€{n}k",
     millions: "€{n}M",
+    budget: "{budget}, faoi réir an Bhille Airgeadais",
     income: {
       eyebrow: "PAYE · MSU · ÁSPC, {year}",
       gross: "Tuarastal comhlán",
@@ -460,6 +464,7 @@ export const heroCardMessages: Translations<typeof en> = {
     openLabel: "افتح حاسبة {name}",
     thousands: "{n} ألف يورو",
     millions: "{n} مليون يورو",
+    budget: "{budget}، رهنًا بمشروع قانون المالية",
     income: {
       eyebrow: "PAYE · USC · PRSI، {year}",
       gross: "الراتب الإجمالي",
@@ -570,6 +575,7 @@ export const heroCardMessages: Translations<typeof en> = {
     openLabel: "{name} ক্যালকুলেটর খুলুন",
     thousands: "€{n}k",
     millions: "€{n}M",
+    budget: "{budget}, Finance Bill পাসের ওপর নির্ভরশীল",
     income: {
       eyebrow: "PAYE · USC · PRSI, {year}",
       gross: "মোট বেতন",
@@ -680,6 +686,7 @@ export const heroCardMessages: Translations<typeof en> = {
     openLabel: "{name} कैलकुलेटर खोलें",
     thousands: "€{n}k",
     millions: "€{n}M",
+    budget: "{budget}, Finance Bill के अधीन",
     income: {
       eyebrow: "PAYE · USC · PRSI, {year}",
       gross: "कुल वेतन",
