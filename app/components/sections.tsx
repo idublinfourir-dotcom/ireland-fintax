@@ -50,7 +50,7 @@ const homeData = cache(async () => {
     getCatData(),
     getMortgageData(),
   ]);
-  const { current } = comparisonYears(new Date(), rates);
+  const { current } = comparisonYears(rates);
   return { rates, current, vat, ct, rd, ca, cgt, cat, mortgage };
 });
 

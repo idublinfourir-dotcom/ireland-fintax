@@ -14,6 +14,9 @@ import {
   compareYears,
   comparisonYears,
   computeIrishTax,
+  RATES_2025,
+  RATES_2026,
+  RATES_2027,
   type IncomeTaxInput,
 } from "./ireland-income-tax.ts";
 
@@ -276,12 +279,39 @@ test("Rent credit: 20% of rent, capped, joint cap for a couple, never below zero
   assert.equal(computeIrishTax(person({ employmentIncome: 50_000 }), 2027).incomeTax.credits.some((c) => c.name === "Rent Tax Credit"), false);
 });
 
-test("comparisonYears: follows the calendar, held to years with rates", () => {
-  assert.deepEqual(comparisonYears(new Date("2026-10-13T12:00:00Z")), { current: 2026, prior: 2025 });
-  assert.deepEqual(comparisonYears(new Date("2026-12-31T23:59:59Z")), { current: 2026, prior: 2025 });
-  assert.deepEqual(comparisonYears(new Date("2027-01-01T00:00:00Z")), { current: 2027, prior: 2026 });
-  assert.deepEqual(comparisonYears(new Date("2028-06-01T00:00:00Z")), { current: 2027, prior: 2026 }, "no 2028 rates yet");
-  assert.deepEqual(comparisonYears(new Date("2024-06-01T00:00:00Z")), { current: 2026, prior: 2025 }, "never before the earliest pair");
+test("Mortgage Interest Tax Credit: 2026 only, half the increase, capped, one per couple", () => {
+  const mitc = (input: Partial<IncomeTaxInput>, year: number) =>
+    computeIrishTax(person({ employmentIncome: 50_000, ...input }), year).incomeTax.credits.filter(
+      (c) => c.name === "Mortgage Interest Tax Credit",
+    );
+  const amt = (input: Partial<IncomeTaxInput>, year: number) => mitc(input, year)[0]?.amount ?? 0;
+  const rev = { mortgageInterest2022: 9_000, mortgageInterestThisYear: 12_000 };
+  assert.equal(amt(rev, 2026), 300, "20% x 50% x 3,000");
+  assert.equal(amt(rev, 2027), 0, "ends with 2026");
+  assert.equal(amt(rev, 2025), 600, "2025: 20% of the full increase");
+  assert.equal(amt({ mortgageInterest2022: 9_000, mortgageInterestThisYear: 20_000 }, 2026), 625, "cap");
+  assert.equal(amt({ mortgageInterest2022: 9_000, mortgageInterestThisYear: 9_000 }, 2026), 0, "no increase");
+  assert.equal(amt({ mortgageInterestThisYear: 12_000 }, 2026), 0, "no 2022 figure");
+  const married = mitc({ maritalStatus: "married", ...rev }, 2026);
+  assert.equal(married.length, 1, "one credit per property");
+  assert.equal(married[0].amount, 300);
+  const low = computeIrishTax(person({ employmentIncome: 15_000, ...rev }), 2026);
+  assert.equal(low.incomeTax.netTax, 0, "cannot make income tax negative");
+  const without = computeIrishTax(person({ employmentIncome: 50_000 }), 2026);
+  const withMitc = computeIrishTax(person({ employmentIncome: 50_000, ...rev }), 2026);
+  assert.equal(withMitc.incomeTax.netTax, without.incomeTax.netTax - 300);
+  assert.equal(withMitc.usc.total, without.usc.total, "USC unchanged");
+});
+
+test("comparisonYears: the newest year with rates against the year before", () => {
+  assert.deepEqual(comparisonYears(), { current: 2027, prior: 2026 }, "leads with the Budget year, like Deloitte");
+  assert.deepEqual(comparisonYears({ 2025: RATES_2025, 2026: RATES_2026 }), { current: 2026, prior: 2025 });
+  const lone2029 = { ...RATES_2027, year: 2029 };
+  assert.deepEqual(
+    comparisonYears({ 2026: RATES_2026, 2027: RATES_2027, 2029: lone2029 }),
+    { current: 2027, prior: 2026 },
+    "never a year without the year before",
+  );
 });
 
 /* Captured from the Deloitte Ireland calculator (2027 vs 2026) on 23 Oct 2026. */
@@ -432,5 +462,44 @@ test("Deloitte 2027 vs 2026: twelve households, every line", () => {
       ].map(round);
       assert.deepEqual(got, want, `${name}, ${year}: [net tax, USC, PRSI, MyFutureFund, net]`);
     }
+  }
+});
+
+test("full medical card: reduced USC bands at €60,000 or less, you only, both years", () => {
+  const base: IncomeTaxInput = {
+    maritalStatus: "single",
+    hasChildOnChildBenefit: false,
+    isPrincipalCarerOfDependentChild: false,
+    age: 30,
+    employmentIncome: 50_000,
+    selfEmploymentOrOtherIncome: 0,
+    pensionContribution: 0,
+  };
+  const reduced = 0.005 * 12_012 + 0.02 * 37_988; // 819.82
+  for (const year of [2026, 2027]) {
+    const card = computeIrishTax({ ...base, fullMedicalCard: true }, year);
+    assert.ok(card.usc.reducedBandsApplied, `${year} reduced bands`);
+    assert.ok(Math.abs(card.usc.total - reduced) < 1e-9, `${year} medical card USC`);
+    // Omitted flag and false: unchanged.
+    const none = computeIrishTax(base, year);
+    assert.equal(none.usc.reducedBandsApplied, false);
+    assert.deepEqual(computeIrishTax({ ...base, fullMedicalCard: false }, year).usc, none.usc);
+    // Over the €60,000 ceiling: normal bands.
+    const high = { ...base, employmentIncome: 60_001 };
+    assert.deepEqual(
+      computeIrishTax({ ...high, fullMedicalCard: true }, year).usc,
+      computeIrishTax(high, year).usc,
+    );
+    // Spouse unaffected: the card is yours only.
+    const married: IncomeTaxInput = {
+      ...base,
+      maritalStatus: "married",
+      spouseEmploymentIncome: 30_000,
+      spouseSelfEmploymentOrOtherIncome: 0,
+    };
+    const m = computeIrishTax({ ...married, fullMedicalCard: true }, year);
+    assert.ok(m.usc.reducedBandsApplied);
+    assert.equal(m.spouseUsc.reducedBandsApplied, false);
+    assert.deepEqual(m.spouseUsc, computeIrishTax(married, year).spouseUsc);
   }
 });

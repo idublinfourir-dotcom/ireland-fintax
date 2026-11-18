@@ -2,6 +2,7 @@
 
 import { animate, motion, useMotionValue } from "motion/react";
 import { useEffect, useId, useRef, useState, type CSSProperties, type ReactNode } from "react";
+import { LATEST_BUDGET } from "../lib/budgets";
 import { plural, RTL_LOCALES } from "../lib/i18n";
 import { computeCapitalAllowance, type AssetKey, type CaConfig } from "../lib/ireland-capital-allowances";
 import { computeCat, type BenefitType, type CatConfig, type Relationship } from "../lib/ireland-cat";
@@ -9,7 +10,7 @@ import { computeCgt, type CgtConfig } from "../lib/ireland-cgt";
 import { computeCorporationTax, type CtConfig } from "../lib/ireland-corporation-tax";
 import { computeIrishTax, type YearRates } from "../lib/ireland-income-tax";
 import { monthlyPayment } from "../lib/ireland-mortgage";
-import { computeRdCredit, RD_EARLIER_PERIOD, type RdConfig } from "../lib/ireland-rd-tax-credit";
+import { computeRdCredit, rdConfigForPeriod, RD_EARLIER_PERIOD, RD_PERIODS, type RdConfig } from "../lib/ireland-rd-tax-credit";
 import { addVat, getVatRate, removeVat, type VatConfig, type VatRateKey } from "../lib/ireland-vat";
 import { heroCardMessages } from "../lib/messages/hero-cards";
 import { toolNames } from "../lib/messages/tool-names";
@@ -326,11 +327,14 @@ function Shell(props: {
   result: string;
   big: string;
   sub: string;
+  /** The card shows announced Budget figures that are not law yet. */
+  budget?: boolean;
   viz: ReactNode;
   children: ReactNode;
 }) {
   const t = useT(heroCardMessages);
-  const name = useT(toolNames)[props.href]?.label ?? props.href;
+  const names = useT(toolNames);
+  const name = names[props.href]?.label ?? props.href;
   return (
     <>
       <header className="hf-top">
@@ -353,6 +357,7 @@ function Shell(props: {
         <span>{props.result}</span>
         <output className="hf-big">{props.big}</output>
         <span>{props.sub}</span>
+        {props.budget && <span>{t.budget.replace("{budget}", names[LATEST_BUDGET.href]?.label ?? LATEST_BUDGET.label)}</span>}
       </div>
       <div className="hf-viz">{props.viz}</div>
       <form className="hf-ctrls" onSubmit={(ev) => ev.preventDefault()}>
@@ -556,6 +561,7 @@ function IncomeCard({ d, n }: CardProps) {
       eyebrow={t.eyebrow.replace("{year}", String(d.year))}
       result={t.result}
       big={f.eur0(r.netIncome)}
+      budget={d.year >= LATEST_BUDGET.year}
       sub={t.sub.replace("{monthly}", f.eur0(r.monthlyNetIncome)).replace("{rate}", f.pct1(r.effectiveRate))}
       viz={
         <Donut
@@ -641,7 +647,8 @@ function RdCard({ d, n }: CardProps) {
   const t = useT(heroCardMessages).rd;
   const f = useFmt();
   const [spend, setSpend] = useState(450000);
-  const r = computeRdCredit(spend, 0, d.rd);
+  // The period the R&D page opens on, so the card and the page agree.
+  const r = computeRdCredit(spend, 0, rdConfigForPeriod(d.rd, RD_PERIODS[0]));
   const years = [r.instalments.year1, r.instalments.year2, r.instalments.year3];
   return (
     <Shell
@@ -650,6 +657,7 @@ function RdCard({ d, n }: CardProps) {
       eyebrow={t.eyebrow.replace("{rate}", f.rate(d.rd.ratePercent))}
       result={t.result}
       big={f.eur0(r.credit)}
+      budget
       sub={t.sub.replace("{amount}", f.eur0(r.instalments.year1)).replace("{earlier}", f.rate(RD_EARLIER_PERIOD.ratePercent))}
       viz={<Columns items={years.map((v, i) => ({ label: t.year.replace("{n}", f.num(i + 1)), value: v, text: f.k(v), tone: i === 0 ? 1 : 2 }))} />}
     >

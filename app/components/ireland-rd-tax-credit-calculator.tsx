@@ -12,17 +12,18 @@ import { useMemo, useState } from "react";
 import {
   computeRdCredit,
   rdConfigForPeriod,
-  RD_EARLIER_PERIOD,
   RD_LAST_REVIEWED,
+  RD_PERIODS,
   RD_SOURCE_URL,
   type RdConfig,
+  type RdPeriod,
 } from "../lib/ireland-rd-tax-credit";
 import {
   CurrencyField,
   LegendDot,
   ProportionBar,
   ResultDisclaimer,
-  SegmentedField,
+  SelectField,
   useFormat,
 } from "./calculator-fields";
 import { useT } from "./locale-link";
@@ -61,14 +62,18 @@ export function IrelandRdTaxCreditCalculator({ config: current }: { config: RdCo
   const { money, eur0, rate } = useFormat();
   const [spend, setSpend] = useState(0);
   const [grant, setGrant] = useState(0);
-  /* Periods with a return due before 23 Sep 2027 keep 30% and €75,000. */
-  const [period, setPeriod] = useState<"current" | "earlier">("current");
-  const config = useMemo(() => rdConfigForPeriod(current, period === "earlier"), [current, period]);
+  /* By return due date: from 23 Sep 2028 the Finance Bill's €105,000 (leads),
+     then the current rules, then 30% and €75,000 before 23 Sep 2027. */
+  const [period, setPeriod] = useState<RdPeriod>(RD_PERIODS[0]);
+  const config = useMemo(() => rdConfigForPeriod(current, period), [current, period]);
   const threshold = eur0(config.firstYearThresholdEur);
   const combined = config.ratePercent + config.tradingDeductionPercent;
 
   const r = useMemo(() => computeRdCredit(spend, grant, config), [spend, grant, config]);
   const { year1, year2, year3 } = r.instalments;
+  // Year one under the neighbouring period (later vs current; current vs later; earlier vs current).
+  const otherPeriod: RdPeriod = period === "later" ? "current" : period === "current" ? "later" : "current";
+  const other = computeRdCredit(spend, grant, rdConfigForPeriod(current, otherPeriod)).instalments.year1;
 
   // Explain which arm of the instalment rule applied, in plain words.
   const instalmentNote = (
@@ -91,24 +96,18 @@ export function IrelandRdTaxCreditCalculator({ config: current }: { config: RdCo
             .replace("{combined}", rate(combined))}
         </div>
 
-        <div>
-          <SegmentedField<"current" | "earlier">
-            label={t.period}
-            value={period}
-            onChange={setPeriod}
-            options={[
-              { value: "current", label: `${t.periodCurrent} · ${rate(current.ratePercent)}` },
-              { value: "earlier", label: `${t.periodEarlier} · ${rate(RD_EARLIER_PERIOD.ratePercent)}` },
-            ]}
-          />
-          <p className="mt-1 text-xs leading-5 text-muted">
-            {t.periodHint
-              .replace("{rate}", rate(current.ratePercent))
-              .replace("{threshold}", eur0(current.firstYearThresholdEur))
-              .replace("{oldRate}", rate(RD_EARLIER_PERIOD.ratePercent))
-              .replace("{oldThreshold}", eur0(RD_EARLIER_PERIOD.firstYearThresholdEur))}
-          </p>
-        </div>
+        <SelectField
+          label={t.period}
+          value={period}
+          onChange={(v) => setPeriod(v as RdPeriod)}
+          hint={t.periodHints[period].replace("{rate}", rate(config.ratePercent)).replace("{threshold}", threshold)}
+        >
+          {RD_PERIODS.map((p) => (
+            <option key={p} value={p}>
+              {t.periodOptions[p]}
+            </option>
+          ))}
+        </SelectField>
 
         <CurrencyField
           label={t.spend}
@@ -214,6 +213,15 @@ export function IrelandRdTaxCreditCalculator({ config: current }: { config: RdCo
                 {money(r.credit)}
               </dd>
             </div>
+            {/* After the total, so it doesn't read as a fourth instalment. */}
+            {other !== year1 && (
+              <InstalmentRow
+                dotClass="bg-line"
+                year={t.year1Other.replace("{period}", t.periodOptions[otherPeriod])}
+                when=""
+                value={money(other)}
+              />
+            )}
           </dl>
 
           <p className="border-t border-line px-5 py-3 text-xs leading-5 text-muted sm:px-6">

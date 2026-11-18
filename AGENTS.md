@@ -539,9 +539,10 @@ Whenever anything else gets hidden rather than deleted, add a row here.
   keeping whichever leaves less tax). Their rates are in `YearRates` and the
   admin editor; stored rows that predate them fall back to the code value.
   `IrelandIncomeTaxCalculator` takes `currentYear` / `priorYear`. The tool
-  page picks them with `comparisonYears(new Date())`, so it moves to 2027 v
-  2026 on 1 January 2027 by itself (it renders per request) and holds there
-  until 2028 rates exist.
+  page picks them with `comparisonYears`: the newest year with rates against
+  the year before, so it leads with a Budget's year from the day its rates
+  are added (2027 v 2026 since 18 Nov 2026, as Deloitte's does) and holds
+  there until the next year's rates exist.
 - `budget-2027` is in the news agent's `AFFECTED_CALCULATORS`, so a story
   about a Budget measure (the Finance Bill, a start date still "Not announced
   yet") raises a check in `/admin/news`. There is no rate editor behind it:

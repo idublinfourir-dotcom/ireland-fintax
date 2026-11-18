@@ -71,7 +71,7 @@ export const RATE_CUT_DATE = { year: 2026, month: 10, day: 7 };
 /** Years the sale-date picker offers. Earlier years had other rules (the
     Entrepreneur Relief cap was €1m before 2026), which are not modelled. Add
     a year when it starts. */
-export const CGT_SALE_YEARS = [2026, 2027];
+export const CGT_SALE_YEARS = [2027, 2026]; // newest first: the calculator opens on it
 
 export interface SaleDate {
   year: number;

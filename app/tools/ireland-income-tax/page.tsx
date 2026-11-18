@@ -12,10 +12,9 @@ import { incomeTaxMessages } from "../../lib/messages/income-tax";
 import { calcMessages } from "../../lib/messages/calc";
 import { toolNames } from "../../lib/messages/tool-names";
 
-/* The years follow the calendar (comparisonYears): this page renders per
-   request, so it moves to 2027 v 2026 on 1 January 2027 by itself. */
+/* The newest year with rates against the year before (comparisonYears). */
 export async function generateMetadata(): Promise<Metadata> {
-  const { current, prior } = comparisonYears(new Date(), await getTaxRates());
+  const { current, prior } = comparisonYears(await getTaxRates());
   const t = await getT(incomeTaxMessages);
   const years = (s: string) => s.replace("{current}", String(current)).replace("{prior}", String(prior));
   return { title: years(t.meta.title), description: years(t.meta.description) };
@@ -23,7 +22,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function IrelandIncomeTaxPage() {
   const ratesByYear = await getTaxRates();
-  const { current, prior } = comparisonYears(new Date(), ratesByYear);
+  const { current, prior } = comparisonYears(ratesByYear);
   const t = await getT(incomeTaxMessages);
   const c = await getT(calcMessages);
   const locale = await getLocale();
@@ -49,7 +48,7 @@ export default async function IrelandIncomeTaxPage() {
       <Container className="py-16 sm:py-20">
         <CalculatorTabs current="/tools/ireland-income-tax" />
 
-        <div className="rounded-none border border-line bg-canvas p-6 sm:p-8 lg:p-10">
+        <div className="rounded-none border border-line bg-canvas p-5 sm:p-8 lg:p-10">
           <IrelandIncomeTaxCalculator
             ratesByYear={ratesByYear}
             currentYear={current}

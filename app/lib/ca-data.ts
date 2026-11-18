@@ -5,9 +5,9 @@
    invalid, or the DB is unreachable: so the calculator never renders broken
    numbers. Never throws.
 
-   The CO2 emissions groups + CAR_2027_NOTE stay in code and are imported
-   directly by the component; only the per-class rate/years and the car cap +
-   trading CT rate are DB-backed. */
+   The car CO2 rules (CAR_RELIEF, statutory) stay in code and are imported
+   directly by the component; only the per-class rate/years and the car's
+   specified amount + trading CT rate are DB-backed. */
 
 import { getCalculatorConfig, type CalculatorConfigResult } from "./calculator-settings";
 import { CA_CONFIG_DEFAULT, parseCaConfig, type CaConfig } from "./ireland-capital-allowances";

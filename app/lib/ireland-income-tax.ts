@@ -1,8 +1,8 @@
 /* ──────────────────────────────────────────────────────────────────────────
    Irish personal income tax engine: Income Tax + USC + PRSI.
    Mirrors the public Deloitte Ireland "Income Tax Calculator"
-   (https://services.deloitte.ie) input/output model for the 2026 tax year,
-   with a 2025 comparison.
+   (https://services.deloitte.ie) input/output model: the newest tax year
+   with rates, with the year before as the comparison (comparisonYears).
 
    PURE FUNCTIONS ONLY (no React, no I/O) so every figure is unit-testable
    and traceable back to a specific Revenue.ie / gov.ie rule. This is a
@@ -35,6 +35,18 @@
    `TODO` inline and MUST stay TODOs until checked against the live Revenue
    guidance page: do not silently resolve them.
    ────────────────────────────────────────────────────────────────────────── */
+
+/** Mortgage Interest Tax Credit, a statutory code constant (not in YearRates):
+    20% of `share` of the increase in interest over 2022, the increase capped
+    at `capRelievable`. Years not listed (2027 on) get nothing.
+    Source: revenue.ie/en/personal-tax-credits-reliefs-and-exemptions/land-and-property/mortgage/index.aspx
+    (and how-much-can-you-claim.aspx, qualifying-conditions.aspx), read 18 November 2026. */
+export const MORTGAGE_INTEREST_CREDIT: Record<number, { share: number; capRelievable: number }> = {
+  2023: { share: 1, capRelievable: 6_250 },
+  2024: { share: 1, capRelievable: 6_250 },
+  2025: { share: 1, capRelievable: 6_250 },
+  2026: { share: 0.5, capRelievable: 3_125 },
+};
 
 /** When the rates below were last checked against Revenue and the Budget
     book, and the page the calculator cites for them. */
@@ -70,6 +82,9 @@ export interface IncomeTaxInput {
   isPrincipalCarerOfDependentChild: boolean;
   /** Age attained during the tax year. */
   age: number;
+  /** Holds a full medical card (not a GP visit card): reduced USC bands at
+      income of €60,000 or less, as at 70+. Applies to "you" only. */
+  fullMedicalCard?: boolean;
   employmentIncome: number;
   selfEmploymentOrOtherIncome: number;
   /** Rental profit and other unearned income. Taxed, and charged USC and PRSI,
@@ -86,6 +101,10 @@ export interface IncomeTaxInput {
       tenancy qualifies (not HAP / RAS / an approved housing body, registered
       with the RTB) is for the user to confirm. */
   rentPaid?: number;
+  /** Mortgage Interest Tax Credit: interest paid on your home's mortgage in
+      2022 and in the claim year. Both needed; omitted means no credit. */
+  mortgageInterest2022?: number;
+  mortgageInterestThisYear?: number;
   /** Married / civil partners only: one spouse works in the home caring for a
       child on Child Benefit, someone aged 65+, or someone permanently
       incapacitated, so the couple may claim the Home Carer Tax Credit. */
@@ -283,8 +302,8 @@ export const RATES_2026: YearRates = {
     reduced: {
       ageThreshold: 70,
       incomeCeiling: 60_000,
-      // TODO: also applies to full medical-card holders: there is no medical-card
-      // input in this form, so this can only be triggered by age here.
+      // Also full medical card holders (input.fullMedicalCard), revenue.ie
+      // usc/reduced-rates; s.531AN(4) runs it to the end of 2027 (Finance Act 2025 s.2).
       bands: [
         { upTo: 12_012, rate: 0.005 },
         { upTo: Infinity, rate: 0.02 },
@@ -421,22 +440,18 @@ export const RATES_BY_YEAR: Record<number, YearRates> = {
 };
 
 /**
- * The tax year a calculator leads with: the calendar year on `now`, limited to
- * the years that have rates, compared with the year before. The income tax
- * page renders per request, so it moves to 2027 v 2026 on 1 January 2027 with
- * no deploy, and holds there until 2028 rates exist. Ireland is on UTC in
- * winter, so the server's UTC date is the Irish date at New Year.
+ * The tax years a calculator compares: the newest year that has rates, against
+ * the year before. A year's rates go in on Budget day, so from then on the
+ * calculators lead with the Budget's year and show this year as the
+ * comparison, as Deloitte's does (2027 v 2026 since Budget 2027). It holds
+ * there until the next Budget's rates are added.
  */
 export function comparisonYears(
-  now: Date,
   ratesByYear: Record<number, YearRates> = RATES_BY_YEAR,
 ): { current: number; prior: number } {
-  const years = Object.keys(ratesByYear)
-    .map(Number)
-    .filter((y) => ratesByYear[y - 1])
-    .sort((a, b) => b - a);
-  const calendar = now.getUTCFullYear();
-  const current = years.find((y) => y <= calendar) ?? years[years.length - 1];
+  const current = Math.max(
+    ...Object.keys(ratesByYear).map(Number).filter((y) => ratesByYear[y - 1]),
+  );
   return { current, prior: current - 1 };
 }
 
@@ -765,6 +780,24 @@ export function computeIncomeTax(
     });
   }
 
+  // Mortgage Interest Tax Credit: one per property (so one for a couple),
+  // income tax only, cannot take tax below zero like every credit here.
+  // ponytail: assumes a full year of interest in both years and one claimant.
+  const mitc = MORTGAGE_INTEREST_CREDIT[rates.year];
+  const increase =
+    sanitize(input.mortgageInterestThisYear ?? 0) - sanitize(input.mortgageInterest2022 ?? 0);
+  if (mitc && sanitize(input.mortgageInterest2022 ?? 0) > 0 && increase > 0) {
+    const relievable = Math.min(increase * mitc.share, mitc.capRelievable);
+    credits.push({
+      name: "Mortgage Interest Tax Credit",
+      amount: relievable * 0.2,
+      reason:
+        relievable < mitc.capRelievable
+          ? `20% of ${mitc.share < 1 ? "half of " : ""}the increase in mortgage interest over 2022`
+          : `Maximum for ${rates.year}`,
+    });
+  }
+
   const totalCredits = credits.reduce((s, c) => s + c.amount, 0);
   const netTax = clampMin0(grossTax - totalCredits);
 
@@ -793,6 +826,7 @@ function uscForPerson(
   selfEmp: number,
   age: number,
   rates: YearRates,
+  medicalCard = false,
 ): IncomeTaxResult["usc"] {
   const u = rates.usc;
   const income = employment + selfEmp;
@@ -811,7 +845,7 @@ function uscForPerson(
   }
 
   const reducedBandsApplied =
-    age >= u.reduced.ageThreshold && income <= u.reduced.incomeCeiling;
+    (age >= u.reduced.ageThreshold || medicalCard) && income <= u.reduced.incomeCeiling;
   const bands = reducedBandsApplied ? u.reduced.bands : u.bands;
 
   const bandBreakdown: UscBandLine[] = [];
@@ -843,7 +877,7 @@ function uscForPerson(
 }
 
 export function computeUSC(input: IncomeTaxInput, rates: YearRates): IncomeTaxResult["usc"] {
-  return uscForPerson(sanitize(input.employmentIncome), nonPaye(input), input.age, rates);
+  return uscForPerson(sanitize(input.employmentIncome), nonPaye(input), input.age, rates, input.fullMedicalCard);
 }
 
 /** Spouse USC on the spouse's own income. The form has no spouse-age field

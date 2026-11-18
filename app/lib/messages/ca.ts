@@ -1,5 +1,5 @@
 import type { PluralForms, Translations } from "../i18n";
-import type { Co2GroupKey } from "../ireland-capital-allowances.ts";
+import type { CarRules, Co2Category } from "../ireland-capital-allowances.ts";
 
 /* The capital allowances page: the tax calculator, the working capital
    (finance) calculator and the notes that follow the mode. Asset classes are
@@ -7,7 +7,6 @@ import type { Co2GroupKey } from "../ireland-capital-allowances.ts";
    shows as stored. {placeholders} are filled at runtime. */
 
 type AssetText = { label: string; note: string };
-type Co2Text = { label: string; note: string };
 
 const en = {
   meta: {
@@ -26,7 +25,7 @@ const en = {
   modeNotes: {
     tax: [
       { title: "Rates by asset", body: "Plant & machinery: 12.5% a year over 8 years. Industrial buildings: 4% over 25 years. Energy-efficient equipment on the SEAI Triple-E register: 100% in year one (accelerated), extended to 31 December 2030." },
-      { title: "Cars are capped", body: "Car allowances are limited to €24,000 and restricted by CO2: full relief up to 140 g/km, half relief (at most €12,000) from 141 to 155 g/km, and none above 155 g/km. The emissions bands change again on 1 January 2027." },
+      { title: "Cars follow CO2", body: "A car's allowances are worked out on €24,000 whatever it cost (full relief), on half its cost up to €12,000 (half relief), or nothing, by CO2 emissions. Bought from 1 January 2027: full up to 120 g/km, half from 121 to 140 g/km, none above 140. Bought by 31 December 2026: full up to 140 g/km, half from 141 to 155 g/km, none above 155." },
       { title: "The cash value", body: "Allowances reduce taxable profit, so the cash saving is the allowance times your tax rate, shown here at the 12.5% trading rate. Disposals can trigger a balancing allowance or charge later." },
     ],
     finance: [
@@ -46,7 +45,7 @@ const en = {
     co2: "Car CO₂ emissions",
     carCost: "Cost of the car",
     assetCost: "Cost of the asset",
-    carCostHint: "Full purchase cost. Allowances are capped at {cap} and adjusted for CO₂.",
+    carCostHint: "Full purchase cost. The CO₂ band and when you buy decide what the allowances are worked out on.",
     assetCostHint: "Capital cost of the qualifying asset.",
     notIncluded: "Not included",
     notIncludedBody: "One asset, the standard write-off. Balancing allowances or charges on disposal, private-use restrictions, leasing rules and scheme-specific building reliefs can each change the position: that’s a conversation, not a slider.",
@@ -63,18 +62,27 @@ const en = {
     totalAllowances: "Total allowances",
     saving: "Tax saving at {rate}",
     savingSub: "cash value over the write-off period",
-    car2027: "From 1 January 2027 the car bands change to €24,000 for 0 to 120 g/km, €12,000 for 121 to 140 g/km and nil above 140 g/km. These figures use the rules in force in 2026.",
+    bought: "When the car is bought",
+    boughtOptions: { 2027: "From 1 January 2027", 2026: "By 31 December 2026" } as Record<CarRules, string>,
+    ifBought: { 2027: "Total if bought from 1 January 2027", 2026: "Total if bought by 31 December 2026" } as Record<CarRules, string>,
+    setAt: "{cap} for this CO₂ band, whatever the cost",
     assets: {
       "plant-machinery": { label: "Plant & machinery", note: "Machinery, equipment, fixtures and fittings, plus commercial vehicles (vans, trucks, tractors), written off at 12.5% a year over 8 years." },
-      "motor-vehicle": { label: "Motor vehicle (car)", note: "12.5% over 8 years, but the cost is capped at €24,000 and restricted by CO2 emissions. Commercial vehicles (vans, trucks) aren't restricted; use Plant & machinery for those." },
+      "motor-vehicle": { label: "Motor vehicle (car)", note: "12.5% over 8 years on a set €24,000 whatever the car cost, halved or nil for higher CO2 emissions. Commercial vehicles (vans, trucks) aren't restricted; use Plant & machinery for those." },
       "industrial-building": { label: "Industrial building", note: "Factories, mills and similar buildings in use for a trade: 4% a year over 25 years. Many scheme-specific building reliefs have ended; check the building qualifies." },
       "energy-efficient": { label: "Energy-efficient equipment (ACA)", note: "Accelerated Capital Allowance, 100% written off in year one for approved energy-efficient equipment on the SEAI Triple-E register. Extended to 31 December 2030. Excludes equipment run on fossil fuels." },
     } as Record<string, AssetText>,
     co2Groups: {
-      group1: { label: "0 to 140 g/km (Category A and B)", note: "Full relief: allowances on the cost up to €24,000." },
-      group2: { label: "141 to 155 g/km (Category C)", note: "Half relief: allowances on half the cost, up to €12,000." },
-      group3: { label: "Over 155 g/km (Category D to F)", note: "No wear-and-tear allowances are available for this car." },
-    } as Record<Co2GroupKey, Co2Text>,
+      a: "0 to 120 g/km (Category A)",
+      b: "121 to 140 g/km (Category B)",
+      c: "141 to 155 g/km (Category C)",
+      "d-f": "Over 155 g/km (Category D to F)",
+    } as Record<Co2Category, string>,
+    co2Relief: {
+      full: "Full relief: allowances on {cap}, whatever the car cost.",
+      half: "Half relief: allowances on half the cost, up to {half}.",
+      none: "No wear-and-tear allowances are available for this car.",
+    },
   },
   wc: {
     bands: {
@@ -135,7 +143,7 @@ export const caMessages: Translations<CaMessages> = {
     modeNotes: {
       tax: [
         { title: "Tipos por activo", body: "Maquinaria e instalaciones: 12,5 % al año durante 8 años. Edificios industriales: 4 % durante 25 años. Equipos de eficiencia energética del registro Triple-E de la SEAI: 100 % el primer año (acelerada), ampliada hasta el 31 de diciembre de 2030." },
-        { title: "Los coches tienen límite", body: "La amortización de los coches tiene un máximo de 24.000 € y depende del CO2: deducción completa hasta 140 g/km, media deducción (como máximo 12.000 €) de 141 a 155 g/km y nada por encima de 155 g/km. Los tramos de emisiones cambian otra vez el 1 de enero de 2027." },
+        { title: "Los coches dependen del CO2", body: "La amortización de un coche se calcula sobre 24.000 € sea cual sea su coste (deducción completa), sobre la mitad del coste hasta 12.000 € (media deducción) o sobre nada, según el CO2. Comprado desde el 1 de enero de 2027: completa hasta 120 g/km, media de 121 a 140 g/km y nada por encima de 140. Comprado hasta el 31 de diciembre de 2026: completa hasta 140 g/km, media de 141 a 155 g/km y nada por encima de 155." },
         { title: "El valor en efectivo", body: "Las amortizaciones reducen el beneficio imponible, así que el ahorro en efectivo es la amortización por tu tipo impositivo, aquí al tipo comercial del 12,5 %. Las ventas pueden generar más adelante un ajuste a favor o en contra." },
       ],
       finance: [
@@ -155,7 +163,7 @@ export const caMessages: Translations<CaMessages> = {
       co2: "Emisiones de CO₂ del coche",
       carCost: "Coste del coche",
       assetCost: "Coste del activo",
-      carCostHint: "Coste total de compra. La amortización tiene un máximo de {cap} y se ajusta por CO₂.",
+      carCostHint: "Coste total de compra. El tramo de CO₂ y la fecha de compra deciden sobre qué importe se calcula la amortización.",
       assetCostHint: "Coste de adquisición del activo que cumple los requisitos.",
       notIncluded: "No incluido",
       notIncludedBody: "Un solo activo, la amortización estándar. Los ajustes al vender, las limitaciones por uso privado, las normas de arrendamiento y las deducciones específicas para edificios pueden cambiar el resultado: eso requiere una conversación, no un control deslizante.",
@@ -172,17 +180,26 @@ export const caMessages: Translations<CaMessages> = {
       totalAllowances: "Amortización total",
       saving: "Ahorro fiscal al {rate}",
       savingSub: "valor en efectivo durante el periodo de amortización",
-      car2027: "Desde el 1 de enero de 2027 los tramos de los coches pasan a 24.000 € para 0 a 120 g/km, 12.000 € para 121 a 140 g/km y nada por encima de 140 g/km. Estas cifras usan las normas vigentes en 2026.",
+      bought: "Cuándo se compra el coche",
+      boughtOptions: { 2027: "Desde el 1 de enero de 2027", 2026: "Hasta el 31 de diciembre de 2026" },
+      ifBought: { 2027: "Total si se compra desde el 1 de enero de 2027", 2026: "Total si se compra hasta el 31 de diciembre de 2026" },
+      setAt: "{cap} para este tramo de CO₂, sea cual sea el coste",
       assets: {
         "plant-machinery": { label: "Maquinaria e instalaciones", note: "Maquinaria, equipos, instalaciones y mobiliario, más vehículos comerciales (furgonetas, camiones, tractores), amortizados al 12,5 % al año durante 8 años." },
-        "motor-vehicle": { label: "Vehículo (coche)", note: "12,5 % durante 8 años, pero el coste tiene un máximo de 24.000 € y depende de las emisiones de CO2. Los vehículos comerciales (furgonetas, camiones) no tienen límite; para esos usa Maquinaria e instalaciones." },
+        "motor-vehicle": { label: "Vehículo (coche)", note: "12,5 % durante 8 años sobre una cantidad fija de 24.000 € sea cual sea el coste del coche, la mitad o nada si las emisiones de CO2 son mayores. Los vehículos comerciales (furgonetas, camiones) no tienen límite; para esos usa Maquinaria e instalaciones." },
         "industrial-building": { label: "Edificio industrial", note: "Fábricas, molinos y edificios similares usados en una actividad: 4 % al año durante 25 años. Muchas deducciones específicas para edificios han terminado; comprueba que el edificio cumple." },
         "energy-efficient": { label: "Equipo de eficiencia energética (ACA)", note: "Amortización acelerada: 100 % el primer año para equipos de eficiencia energética aprobados del registro Triple-E de la SEAI. Ampliada hasta el 31 de diciembre de 2030. Excluye los equipos que funcionan con combustibles fósiles." },
       },
       co2Groups: {
-        group1: { label: "0 a 140 g/km (categoría A y B)", note: "Deducción completa: amortización sobre el coste hasta 24.000 €." },
-        group2: { label: "141 a 155 g/km (categoría C)", note: "Media deducción: amortización sobre la mitad del coste, hasta 12.000 €." },
-        group3: { label: "Más de 155 g/km (categoría D a F)", note: "Este coche no tiene derecho a amortización." },
+        a: "0 a 120 g/km (categoría A)",
+        b: "121 a 140 g/km (categoría B)",
+        c: "141 a 155 g/km (categoría C)",
+        "d-f": "Más de 155 g/km (categoría D a F)",
+      },
+      co2Relief: {
+        full: "Deducción completa: amortización sobre {cap}, sea cual sea el coste del coche.",
+        half: "Media deducción: amortización sobre la mitad del coste, hasta {half}.",
+        none: "Este coche no tiene derecho a amortización.",
       },
     },
     wc: {
@@ -239,7 +256,7 @@ export const caMessages: Translations<CaMessages> = {
     modeNotes: {
       tax: [
         { title: "Alíquotas por ativo", body: "Máquinas e equipamentos: 12,5% ao ano por 8 anos. Edifícios industriais: 4% por 25 anos. Equipamentos de eficiência energética do registro Triple-E da SEAI: 100% no primeiro ano (acelerada), estendida até 31 de dezembro de 2030." },
-        { title: "Carros têm limite", body: "A depreciação de carros é limitada a € 24.000 e depende do CO2: dedução total até 140 g/km, meia dedução (no máximo € 12.000) de 141 a 155 g/km e nada acima de 155 g/km. As faixas de emissão mudam de novo em 1º de janeiro de 2027." },
+        { title: "Carros dependem do CO2", body: "A depreciação de um carro é calculada sobre € 24.000 seja qual for o custo (dedução total), sobre metade do custo até € 12.000 (meia dedução) ou sobre nada, conforme o CO2. Comprado a partir de 1º de janeiro de 2027: total até 120 g/km, meia de 121 a 140 g/km e nada acima de 140. Comprado até 31 de dezembro de 2026: total até 140 g/km, meia de 141 a 155 g/km e nada acima de 155." },
         { title: "O valor em dinheiro", body: "A depreciação reduz o lucro tributável, então a economia em dinheiro é a depreciação vezes a sua alíquota, mostrada aqui na alíquota comercial de 12,5%. Vendas podem gerar depois um ajuste a favor ou contra." },
       ],
       finance: [
@@ -259,7 +276,7 @@ export const caMessages: Translations<CaMessages> = {
       co2: "Emissões de CO₂ do carro",
       carCost: "Custo do carro",
       assetCost: "Custo do ativo",
-      carCostHint: "Custo total de compra. A depreciação é limitada a {cap} e ajustada pelo CO₂.",
+      carCostHint: "Custo total de compra. A faixa de CO₂ e a data da compra decidem sobre qual valor a depreciação é calculada.",
       assetCostHint: "Custo de aquisição do ativo qualificado.",
       notIncluded: "Não incluído",
       notIncludedBody: "Um único ativo, a depreciação padrão. Ajustes na venda, restrições por uso particular, regras de leasing e alívios específicos para edifícios podem mudar o resultado: isso pede uma conversa, não um controle deslizante.",
@@ -276,17 +293,26 @@ export const caMessages: Translations<CaMessages> = {
       totalAllowances: "Depreciação total",
       saving: "Economia de imposto a {rate}",
       savingSub: "valor em dinheiro ao longo do período de depreciação",
-      car2027: "A partir de 1º de janeiro de 2027 as faixas dos carros passam a € 24.000 para 0 a 120 g/km, € 12.000 para 121 a 140 g/km e nada acima de 140 g/km. Estes números usam as regras em vigor em 2026.",
+      bought: "Quando o carro é comprado",
+      boughtOptions: { 2027: "A partir de 1º de janeiro de 2027", 2026: "Até 31 de dezembro de 2026" },
+      ifBought: { 2027: "Total se comprado a partir de 1º de janeiro de 2027", 2026: "Total se comprado até 31 de dezembro de 2026" },
+      setAt: "{cap} para esta faixa de CO₂, seja qual for o custo",
       assets: {
         "plant-machinery": { label: "Máquinas e equipamentos", note: "Máquinas, equipamentos, instalações e acessórios, mais veículos comerciais (vans, caminhões, tratores), depreciados a 12,5% ao ano por 8 anos." },
-        "motor-vehicle": { label: "Veículo (carro)", note: "12,5% por 8 anos, mas o custo é limitado a € 24.000 e depende das emissões de CO2. Veículos comerciais (vans, caminhões) não têm restrição; para eles use Máquinas e equipamentos." },
+        "motor-vehicle": { label: "Veículo (carro)", note: "12,5% por 8 anos sobre um valor fixo de € 24.000 seja qual for o custo do carro, metade ou nada se as emissões de CO2 forem maiores. Veículos comerciais (vans, caminhões) não têm restrição; para eles use Máquinas e equipamentos." },
         "industrial-building": { label: "Edifício industrial", note: "Fábricas, moinhos e edifícios parecidos usados numa atividade: 4% ao ano por 25 anos. Muitos alívios específicos para edifícios acabaram; confira se o edifício se qualifica." },
         "energy-efficient": { label: "Equipamento de eficiência energética (ACA)", note: "Depreciação acelerada: 100% no primeiro ano para equipamentos de eficiência energética aprovados no registro Triple-E da SEAI. Estendida até 31 de dezembro de 2030. Exclui equipamentos movidos a combustíveis fósseis." },
       },
       co2Groups: {
-        group1: { label: "0 a 140 g/km (categoria A e B)", note: "Dedução total: depreciação sobre o custo até € 24.000." },
-        group2: { label: "141 a 155 g/km (categoria C)", note: "Meia dedução: depreciação sobre metade do custo, até € 12.000." },
-        group3: { label: "Acima de 155 g/km (categoria D a F)", note: "Não há depreciação disponível para este carro." },
+        a: "0 a 120 g/km (categoria A)",
+        b: "121 a 140 g/km (categoria B)",
+        c: "141 a 155 g/km (categoria C)",
+        "d-f": "Acima de 155 g/km (categoria D a F)",
+      },
+      co2Relief: {
+        full: "Dedução total: depreciação sobre {cap}, seja qual for o custo do carro.",
+        half: "Meia dedução: depreciação sobre metade do custo, até {half}.",
+        none: "Não há depreciação disponível para este carro.",
       },
     },
     wc: {
@@ -343,7 +369,7 @@ export const caMessages: Translations<CaMessages> = {
     modeNotes: {
       tax: [
         { title: "Rátaí de réir sócmhainne", body: "Gléasra agus innealra: 12.5% sa bhliain thar 8 mbliana. Foirgnimh thionsclaíocha: 4% thar 25 bliana. Trealamh éifeachtach ó thaobh fuinnimh ar chlár Triple-E SEAI: 100% sa chéad bhliain (luathaithe), leathnaithe go 31 Nollaig 2030." },
-        { title: "Tá uasteorainn ar charranna", body: "Tá liúntais carranna teoranta do €24,000 agus srianta ag CO2: faoiseamh iomlán suas go 140 g/km, leath-fhaoiseamh (€12,000 ar a mhéad) ó 141 go 155 g/km, agus dada os cionn 155 g/km. Athraíonn na bandaí astaíochtaí arís ar 1 Eanáir 2027." },
+        { title: "Braitheann carranna ar CO2", body: "Oibrítear liúntais cairr amach ar €24,000 is cuma cén costas a bhí air (faoiseamh iomlán), ar leath den chostas suas go €12,000 (leath-fhaoiseamh), nó ar dada, de réir CO2. Ceannaithe ó 1 Eanáir 2027: iomlán suas go 120 g/km, leath ó 121 go 140 g/km agus dada os cionn 140. Ceannaithe faoi 31 Nollaig 2026: iomlán suas go 140 g/km, leath ó 141 go 155 g/km agus dada os cionn 155." },
         { title: "An luach airgid", body: "Laghdaíonn liúntais an brabús inchánach, mar sin is é an coigilteas airgid an liúntas faoi do ráta cánach, taispeánta anseo ag an ráta trádála 12.5%. Is féidir le diúscairtí liúntas nó muirear cothromúcháin a spreagadh níos déanaí." },
       ],
       finance: [
@@ -363,7 +389,7 @@ export const caMessages: Translations<CaMessages> = {
       co2: "Astaíochtaí CO₂ an chairr",
       carCost: "Costas an chairr",
       assetCost: "Costas na sócmhainne",
-      carCostHint: "Costas ceannaigh iomlán. Tá uasteorainn {cap} ar na liúntais agus coigeartaítear iad de réir CO₂.",
+      carCostHint: "Costas ceannaigh iomlán. Socraíonn an banda CO₂ agus dáta an cheannaigh cén méid ar a n-oibrítear na liúntais amach.",
       assetCostHint: "Costas caipitiúil na sócmhainne cáilithí.",
       notIncluded: "Gan áireamh",
       notIncludedBody: "Sócmhainn amháin, an díscríobh caighdeánach. Is féidir le liúntais nó muirir chothromúcháin ar dhiúscairt, srianta úsáide príobháidí, rialacha léasaithe agus faoisimh foirgnimh a bhaineann le scéimeanna an staid a athrú: comhrá atá ansin, ní sleamhnán.",
@@ -380,17 +406,26 @@ export const caMessages: Translations<CaMessages> = {
       totalAllowances: "Liúntais iomlána",
       saving: "Coigilteas cánach ag {rate}",
       savingSub: "luach airgid thar thréimhse an díscríofa",
-      car2027: "Ó 1 Eanáir 2027 athraíonn bandaí na gcarranna go €24,000 do 0 go 120 g/km, €12,000 do 121 go 140 g/km agus nialas os cionn 140 g/km. Úsáideann na figiúirí seo na rialacha a bhí i bhfeidhm in 2026.",
+      bought: "Cathain a cheannaítear an carr",
+      boughtOptions: { 2027: "Ó 1 Eanáir 2027", 2026: "Faoi 31 Nollaig 2026" },
+      ifBought: { 2027: "Iomlán má cheannaítear é ó 1 Eanáir 2027", 2026: "Iomlán má cheannaítear é faoi 31 Nollaig 2026" },
+      setAt: "{cap} don bhanda CO₂ seo, is cuma cén costas",
       assets: {
         "plant-machinery": { label: "Gléasra agus innealra", note: "Innealra, trealamh, daingneáin agus feistis, móide feithiclí tráchtála (veaineanna, trucailí, tarracóirí), díscríofa ag 12.5% sa bhliain thar 8 mbliana." },
-        "motor-vehicle": { label: "Mótarfheithicil (carr)", note: "12.5% thar 8 mbliana, ach tá uasteorainn €24,000 ar an gcostas agus srianann astaíochtaí CO2 é. Níl srian ar fheithiclí tráchtála (veaineanna, trucailí); úsáid Gléasra agus innealra dóibh siúd." },
+        "motor-vehicle": { label: "Mótarfheithicil (carr)", note: "12.5% thar 8 mbliana ar €24,000 socraithe, is cuma cén costas a bhí ar an gcarr, leath nó dada d’astaíochtaí CO2 níos airde. Níl srian ar fheithiclí tráchtála (veaineanna, trucailí); úsáid Gléasra agus innealra dóibh siúd." },
         "industrial-building": { label: "Foirgneamh tionsclaíoch", note: "Monarchana, muilte agus foirgnimh chosúla a úsáidtear le haghaidh trádála: 4% sa bhliain thar 25 bliana. Tá deireadh le go leor faoiseamh foirgnimh a bhain le scéimeanna; seiceáil go gcáilíonn an foirgneamh." },
         "energy-efficient": { label: "Trealamh éifeachtach ó thaobh fuinnimh (ACA)", note: "Liúntas Caipitiúil Luathaithe, 100% díscríofa sa chéad bhliain do threalamh ceadaithe atá éifeachtach ó thaobh fuinnimh ar chlár Triple-E SEAI. Leathnaithe go 31 Nollaig 2030. Ní áirítear trealamh a ritheann ar bhreoslaí iontaise." },
       },
       co2Groups: {
-        group1: { label: "0 go 140 g/km (Catagóir A agus B)", note: "Faoiseamh iomlán: liúntais ar an gcostas suas go €24,000." },
-        group2: { label: "141 go 155 g/km (Catagóir C)", note: "Leath-fhaoiseamh: liúntais ar leath den chostas, suas go €12,000." },
-        group3: { label: "Os cionn 155 g/km (Catagóir D go F)", note: "Níl aon liúntais caitheamh agus cuimilte ar fáil don charr seo." },
+        a: "0 go 120 g/km (Catagóir A)",
+        b: "121 go 140 g/km (Catagóir B)",
+        c: "141 go 155 g/km (Catagóir C)",
+        "d-f": "Os cionn 155 g/km (Catagóir D go F)",
+      },
+      co2Relief: {
+        full: "Faoiseamh iomlán: liúntais ar {cap}, is cuma cén costas a bhí ar an gcarr.",
+        half: "Leath-fhaoiseamh: liúntais ar leath den chostas, suas go {half}.",
+        none: "Níl aon liúntais caitheamh agus cuimilte ar fáil don charr seo.",
       },
     },
     wc: {
@@ -447,7 +482,7 @@ export const caMessages: Translations<CaMessages> = {
     modeNotes: {
       tax: [
         { title: "المعدلات حسب الأصل", body: "المعدات والآلات: 12.5% سنويًا على 8 سنوات. المباني الصناعية: 4% على 25 سنة. المعدات الموفرة للطاقة المدرجة في سجل SEAI Triple-E: ‏100% في السنة الأولى (معجّل)، ممدد حتى 31 ديسمبر 2030." },
-        { title: "السيارات لها سقف", body: "خصومات السيارات محدودة بمبلغ 24,000 يورو ومقيدة بانبعاثات CO2: إعفاء كامل حتى 140 غ/كم، ونصف إعفاء (بحد أقصى 12,000 يورو) من 141 إلى 155 غ/كم، ولا شيء فوق 155 غ/كم. تتغير شرائح الانبعاثات مجددًا في 1 يناير 2027." },
+        { title: "السيارات حسب CO2", body: "تُحسب خصومات السيارة على 24,000 يورو أيًّا كانت تكلفتها (إعفاء كامل)، أو على نصف التكلفة حتى 12,000 يورو (نصف إعفاء)، أو لا شيء، حسب انبعاثات CO2. للشراء من 1 يناير 2027: إعفاء كامل حتى 120 غ/كم، ونصف إعفاء من 121 إلى 140 غ/كم، ولا شيء فوق 140. للشراء حتى 31 ديسمبر 2026: إعفاء كامل حتى 140 غ/كم، ونصف إعفاء من 141 إلى 155 غ/كم، ولا شيء فوق 155." },
         { title: "القيمة النقدية", body: "تخفّض الخصومات الربح الخاضع للضريبة، لذا فإن التوفير النقدي هو الخصم مضروبًا في معدل ضريبتك، معروضًا هنا بالمعدل التجاري 12.5%. قد يؤدي التصرف في الأصل لاحقًا إلى خصم موازنة أو رسم موازنة." },
       ],
       finance: [
@@ -467,7 +502,7 @@ export const caMessages: Translations<CaMessages> = {
       co2: "انبعاثات CO₂ للسيارة",
       carCost: "تكلفة السيارة",
       assetCost: "تكلفة الأصل",
-      carCostHint: "تكلفة الشراء الكاملة. الخصومات محدودة بسقف {cap} ومعدّلة حسب CO₂.",
+      carCostHint: "تكلفة الشراء الكاملة. شريحة CO₂ وتاريخ الشراء يحددان المبلغ الذي تُحسب عليه الخصومات.",
       assetCostHint: "التكلفة الرأسمالية للأصل المؤهل.",
       notIncluded: "غير مشمول",
       notIncludedBody: "أصل واحد، والشطب العادي. خصومات أو رسوم الموازنة عند التصرف، وقيود الاستخدام الخاص، وقواعد التأجير، وإعفاءات المباني الخاصة ببرامج معينة يمكن لكل منها أن يغيّر الوضع: هذا يحتاج إلى نقاش، لا إلى شريط تمرير.",
@@ -484,17 +519,26 @@ export const caMessages: Translations<CaMessages> = {
       totalAllowances: "إجمالي الخصومات",
       saving: "التوفير الضريبي بنسبة {rate}",
       savingSub: "القيمة النقدية على مدى فترة الشطب",
-      car2027: "اعتبارًا من 1 يناير 2027 تتغير شرائح السيارات إلى 24,000 يورو لـ0 إلى 120 غ/كم، و12,000 يورو لـ121 إلى 140 غ/كم، ولا شيء فوق 140 غ/كم. تستخدم هذه الأرقام القواعد السارية في 2026.",
+      bought: "متى تُشترى السيارة",
+      boughtOptions: { 2027: "من 1 يناير 2027", 2026: "حتى 31 ديسمبر 2026" },
+      ifBought: { 2027: "الإجمالي عند الشراء من 1 يناير 2027", 2026: "الإجمالي عند الشراء حتى 31 ديسمبر 2026" },
+      setAt: "{cap} لشريحة CO₂ هذه، أيًّا كانت التكلفة",
       assets: {
         "plant-machinery": { label: "المعدات والآلات", note: "الآلات والمعدات والتجهيزات والتركيبات، إضافة إلى المركبات التجارية (الشاحنات الصغيرة والشاحنات والجرارات)، تُشطب بنسبة 12.5% سنويًا على 8 سنوات." },
-        "motor-vehicle": { label: "مركبة (سيارة)", note: "12.5% على 8 سنوات، لكن التكلفة محدودة بسقف 24,000 يورو ومقيدة بانبعاثات CO2. المركبات التجارية (الشاحنات الصغيرة والشاحنات) غير مقيدة؛ استخدم المعدات والآلات لها." },
+        "motor-vehicle": { label: "مركبة (سيارة)", note: "12.5% على 8 سنوات على مبلغ ثابت قدره 24,000 يورو أيًّا كانت تكلفة السيارة، أو نصفه أو لا شيء للانبعاثات الأعلى من CO2. المركبات التجارية (الشاحنات الصغيرة والشاحنات) غير مقيدة؛ استخدم المعدات والآلات لها." },
         "industrial-building": { label: "مبنى صناعي", note: "المصانع والمطاحن والمباني المماثلة المستخدمة في نشاط تجاري: 4% سنويًا على 25 سنة. انتهت كثير من إعفاءات المباني الخاصة ببرامج معينة؛ تحقق من أن المبنى مؤهل." },
         "energy-efficient": { label: "معدات موفرة للطاقة (ACA)", note: "الخصم الرأسمالي المعجّل، 100% تُشطب في السنة الأولى للمعدات الموفرة للطاقة المعتمدة في سجل SEAI Triple-E. ممدد حتى 31 ديسمبر 2030. يستثني المعدات العاملة بالوقود الأحفوري." },
       },
       co2Groups: {
-        group1: { label: "0 إلى 140 غ/كم (الفئتان A وB)", note: "إعفاء كامل: خصومات على التكلفة حتى 24,000 يورو." },
-        group2: { label: "141 إلى 155 غ/كم (الفئة C)", note: "نصف إعفاء: خصومات على نصف التكلفة حتى 12,000 يورو." },
-        group3: { label: "أكثر من 155 غ/كم (الفئات D إلى F)", note: "لا تتوفر خصومات الاستهلاك لهذه السيارة." },
+        a: "0 إلى 120 غ/كم (الفئة A)",
+        b: "121 إلى 140 غ/كم (الفئة B)",
+        c: "141 إلى 155 غ/كم (الفئة C)",
+        "d-f": "أكثر من 155 غ/كم (الفئات D إلى F)",
+      },
+      co2Relief: {
+        full: "إعفاء كامل: خصومات على {cap} أيًّا كانت تكلفة السيارة.",
+        half: "نصف إعفاء: خصومات على نصف التكلفة حتى {half}.",
+        none: "لا تتوفر خصومات الاستهلاك لهذه السيارة.",
       },
     },
     wc: {
@@ -551,7 +595,7 @@ export const caMessages: Translations<CaMessages> = {
     modeNotes: {
       tax: [
         { title: "সম্পদভিত্তিক করহার", body: "যন্ত্রপাতি ও সরঞ্জাম: 8 বছরে বার্ষিক 12.5%। শিল্প ভবন: 25 বছরে বার্ষিক 4%। SEAI Triple-E রেজিস্টারে তালিকাভুক্ত জ্বালানি-সাশ্রয়ী সরঞ্জাম: প্রথম বছরেই 100% (ত্বরান্বিত সুবিধা), যা 31 ডিসেম্বর 2030 পর্যন্ত বর্ধিত করা হয়েছে।" },
-        { title: "গাড়ির ক্ষেত্রে নির্দিষ্ট সীমা", body: "গাড়ির ক্ষেত্রে মূলধনি ভাতা সর্বোচ্চ €24,000 এবং CO2 নির্গমন অনুযায়ী নিয়ন্ত্রিত: 140 g/km পর্যন্ত সম্পূর্ণ সুবিধা, 141 থেকে 155 g/km পর্যন্ত অর্ধেক সুবিধা (সর্বোচ্চ €12,000) এবং 155 g/km-এর বেশি হলে কোনো সুবিধা নেই। নির্গমনের ধাপগুলো 1 জানুয়ারি 2027 থেকে আবার পরিবর্তিত হবে।" },
+        { title: "গাড়ির ভাতা CO2 অনুযায়ী", body: "গাড়ির ভাতা হিসাব হয় দাম যা-ই হোক €24,000-এর ওপর (সম্পূর্ণ কর ছাড়), দামের অর্ধেকের ওপর সর্বোচ্চ €12,000 পর্যন্ত (অর্ধেক কর ছাড়), অথবা কিছুই নয়, CO2 নির্গমন অনুযায়ী। 1 জানুয়ারি 2027 থেকে কেনা হলে: 120 g/km পর্যন্ত সম্পূর্ণ, 121 থেকে 140 g/km পর্যন্ত অর্ধেক এবং 140-এর বেশি হলে কিছুই নয়। 31 ডিসেম্বর 2026-এর মধ্যে কেনা হলে: 140 g/km পর্যন্ত সম্পূর্ণ, 141 থেকে 155 g/km পর্যন্ত অর্ধেক এবং 155-এর বেশি হলে কিছুই নয়।" },
         { title: "নগদ সাশ্রয়", body: "মূলধনি ভাতা করযোগ্য মুনাফা কমায়, ফলে নগদ কর সাশ্রয় হলো ভাতা ও করহারের গুণফল, যা এখানে 12.5% ব্যবসায়িক করহারে দেখানো হয়েছে। সম্পদ বিক্রির ক্ষেত্রে পরবর্তীতে ব্যালেন্সিং ভাতা বা চার্জ প্রযোজ্য হতে পারে।" },
       ],
       finance: [
@@ -571,7 +615,7 @@ export const caMessages: Translations<CaMessages> = {
       co2: "গাড়ির CO₂ নির্গমন",
       carCost: "গাড়ির কেনার দাম",
       assetCost: "সম্পদের কেনার দাম",
-      carCostHint: "মোট ক্রয়মূল্য। ভাতা সর্বোচ্চ {cap} পর্যন্ত সীমিত এবং CO₂ নির্গমন অনুযায়ী সমন্বয় করা হয়।",
+      carCostHint: "মোট ক্রয়মূল্য। CO₂ ধাপ এবং কেনার তারিখ ঠিক করে কোন অঙ্কের ওপর ভাতা হিসাব হবে।",
       assetCostHint: "যোগ্য সম্পদের মোট মূলধনি খরচ।",
       notIncluded: "এখানে অন্তর্ভুক্ত নয়",
       notIncludedBody: "একটি নির্দিষ্ট সম্পদ এবং তার সাধারণ অবচয়। সম্পদ বিক্রির ক্ষেত্রে ব্যালেন্সিং ভাতা বা চার্জ, ব্যক্তিগত ব্যবহারের সীমাবদ্ধতা, লিজিং নিয়ম এবং নির্দিষ্ট প্রকল্পের ভবন সুবিধা হিসাবের পরিবর্তন আনতে পারে: এটি আলোচনার বিষয়, কোনো স্লাইডারের কাজ নয়।",
@@ -588,17 +632,26 @@ export const caMessages: Translations<CaMessages> = {
       totalAllowances: "মোট ভাতা",
       saving: "{rate} হারে কর সাশ্রয়",
       savingSub: "সম্পূর্ণ মেয়াদে প্রাপ্ত নগদ সুবিধা",
-      car2027: "1 জানুয়ারি 2027 থেকে গাড়ির নির্গমন ধাপ পরিবর্তিত হয়ে 0 থেকে 120 g/km-এর জন্য €24,000, 121 থেকে 140 g/km-এর জন্য €12,000 এবং 140 g/km-এর উপরে শূন্য হবে। এই হিসাবগুলো 2026 সালের নিয়মে প্রস্তুত।",
+      bought: "গাড়িটি কবে কেনা হচ্ছে",
+      boughtOptions: { 2027: "1 জানুয়ারি 2027 থেকে", 2026: "31 ডিসেম্বর 2026-এর মধ্যে" },
+      ifBought: { 2027: "1 জানুয়ারি 2027 থেকে কেনা হলে মোট", 2026: "31 ডিসেম্বর 2026-এর মধ্যে কেনা হলে মোট" },
+      setAt: "এই CO₂ ধাপে {cap}, দাম যা-ই হোক",
       assets: {
         "plant-machinery": { label: "যন্ত্রপাতি ও সরঞ্জাম", note: "যন্ত্রপাতি, সরঞ্জাম, আসবাবপত্র এবং বাণিজ্যিক যানবাহন (ভ্যান, ট্রাক, ট্র্যাক্টর), যা 8 বছরে বার্ষিক 12.5% হারে অবচয় সমন্বয় হয়।" },
-        "motor-vehicle": { label: "মোটরগাড়ি (কার)", note: "8 বছরে 12.5%, তবে সর্বোচ্চ খরচ €24,000 এবং CO2 নির্গমন অনুযায়ী সীমাবদ্ধ। বাণিজ্যিক যানবাহনে (ভ্যান, ট্রাক) এই সীমাবদ্ধতা নেই; সেগুলোর জন্য যন্ত্রপাতি ও সরঞ্জাম ব্যবহার করুন।" },
+        "motor-vehicle": { label: "মোটরগাড়ি (কার)", note: "8 বছরে 12.5%, গাড়ির দাম যা-ই হোক নির্দিষ্ট €24,000-এর ওপর; CO2 নির্গমন বেশি হলে অর্ধেক বা শূন্য। বাণিজ্যিক যানবাহনে (ভ্যান, ট্রাক) এই সীমাবদ্ধতা নেই; সেগুলোর জন্য যন্ত্রপাতি ও সরঞ্জাম ব্যবহার করুন।" },
         "industrial-building": { label: "শিল্প কারখানা ভবন", note: "ব্যবসায়িক কাজে ব্যবহৃত কারখানা, মিল ও অনুরূপ ভবন: 25 বছরে বার্ষিক 4%। অনেক বিশেষ প্রকল্পের ভবন সুবিধা শেষ হয়ে গেছে; আপনার ভবনটি যোগ্য কি না তা যাচাই করে নিন।" },
         "energy-efficient": { label: "জ্বালানি-সাশ্রয়ী সরঞ্জাম (ACA)", note: "Accelerated Capital Allowance, SEAI Triple-E রেজিস্টারে অনুমোদিত জ্বালানি-সাশ্রয়ী সরঞ্জামে প্রথম বছরেই 100% অবচয় সমন্বয় সুবিধা। 31 ডিসেম্বর 2030 পর্যন্ত বর্ধিত। জীবাশ্ম জ্বালানিতে চালিত সরঞ্জাম এর আওতাবহির্ভূত।" },
       },
       co2Groups: {
-        group1: { label: "0 থেকে 140 g/km (Category A ও B)", note: "সম্পূর্ণ কর ছাড়: €24,000 পর্যন্ত খরচের ওপর পূর্ণ ভাতা।" },
-        group2: { label: "141 থেকে 155 g/km (Category C)", note: "অর্ধেক কর ছাড়: খরচের অর্ধেকের ওপর ভাতা, সর্বোচ্চ €12,000 পর্যন্ত।" },
-        group3: { label: "155 g/km-এর বেশি (Category D থেকে F)", note: "এই গাড়ির জন্য কোনো অবচয় ভাতা পাওয়া যাবে না।" },
+        a: "0 থেকে 120 g/km (Category A)",
+        b: "121 থেকে 140 g/km (Category B)",
+        c: "141 থেকে 155 g/km (Category C)",
+        "d-f": "155 g/km-এর বেশি (Category D থেকে F)",
+      },
+      co2Relief: {
+        full: "সম্পূর্ণ কর ছাড়: গাড়ির দাম যা-ই হোক {cap}-এর ওপর ভাতা।",
+        half: "অর্ধেক কর ছাড়: খরচের অর্ধেকের ওপর ভাতা, সর্বোচ্চ {half} পর্যন্ত।",
+        none: "এই গাড়ির জন্য কোনো অবচয় ভাতা পাওয়া যাবে না।",
       },
     },
     wc: {
@@ -655,7 +708,7 @@ export const caMessages: Translations<CaMessages> = {
     modeNotes: {
       tax: [
         { title: "संपत्ति के अनुसार दरें", body: "प्लांट और मशीनरी: 8 साल तक हर साल 12.5%। औद्योगिक इमारतें: 25 साल में 4%। SEAI Triple-E रजिस्टर पर ऊर्जा-कुशल उपकरण: पहले साल में 100% (त्वरित), 31 दिसंबर 2030 तक बढ़ाया गया।" },
-        { title: "कारों पर सीमा है", body: "कार भत्ते €24,000 तक सीमित हैं और CO2 के हिसाब से और घटते हैं: 140 g/km तक पूरी राहत, 141-155 g/km पर आधी राहत (अधिकतम €12,000), और 155 g/km से ऊपर कुछ नहीं। 1 जनवरी 2027 को उत्सर्जन बैंड फिर बदलेंगे।" },
+        { title: "कारें CO2 पर निर्भर", body: "कार के भत्ते €24,000 पर गिने जाते हैं, चाहे कार की लागत कुछ भी हो (पूरी राहत), लागत के आधे पर €12,000 तक (आधी राहत), या शून्य, CO2 के अनुसार। 1 जनवरी 2027 से ख़रीदी गई: 120 g/km तक पूरी, 121-140 g/km पर आधी और 140 से ऊपर कुछ नहीं। 31 दिसंबर 2026 तक ख़रीदी गई: 140 g/km तक पूरी, 141-155 g/km पर आधी और 155 से ऊपर कुछ नहीं।" },
         { title: "नक़द मूल्य", body: "भत्ते कर योग्य लाभ घटाते हैं, इसलिए नक़द बचत भत्ता गुणा आपकी टैक्स दर है, यहाँ 12.5% व्यापारिक दर पर दिखाई गई। बाद में बेचने पर बैलेंसिंग भत्ता या चार्ज लग सकता है।" },
       ],
       finance: [
@@ -675,7 +728,7 @@ export const caMessages: Translations<CaMessages> = {
       co2: "कार का CO₂ उत्सर्जन",
       carCost: "कार की लागत",
       assetCost: "संपत्ति की लागत",
-      carCostHint: "पूरी ख़रीद लागत। भत्ते {cap} तक सीमित हैं और CO₂ के अनुसार समायोजित होते हैं।",
+      carCostHint: "पूरी ख़रीद लागत। CO₂ बैंड और ख़रीद की तारीख़ तय करते हैं कि भत्ते किस राशि पर गिने जाएँगे।",
       assetCostHint: "योग्य संपत्ति की पूंजीगत लागत।",
       notIncluded: "शामिल नहीं",
       notIncludedBody: "एक संपत्ति, मानक घटाव। बिक्री पर बैलेंसिंग भत्ते या चार्ज, निजी इस्तेमाल की पाबंदियाँ, लीज़िंग के नियम और योजना-विशेष इमारत राहतें, इनमें से हर एक स्थिति बदल सकता है: यह बातचीत का विषय है, स्लाइडर का नहीं।",
@@ -692,17 +745,26 @@ export const caMessages: Translations<CaMessages> = {
       totalAllowances: "कुल भत्ते",
       saving: "{rate} पर टैक्स बचत",
       savingSub: "घटाने की पूरी अवधि में नक़द मूल्य",
-      car2027: "1 जनवरी 2027 से कार बैंड बदलकर 0-120 g/km पर €24,000, 121-140 g/km पर €12,000 और 140 g/km से ऊपर शून्य हो जाएँगे। ये आँकड़े 2026 में लागू नियमों का इस्तेमाल करते हैं।",
+      bought: "कार कब ख़रीदी जा रही है",
+      boughtOptions: { 2027: "1 जनवरी 2027 से", 2026: "31 दिसंबर 2026 तक" },
+      ifBought: { 2027: "1 जनवरी 2027 से ख़रीदने पर कुल", 2026: "31 दिसंबर 2026 तक ख़रीदने पर कुल" },
+      setAt: "इस CO₂ बैंड के लिए {cap}, लागत चाहे जो हो",
       assets: {
         "plant-machinery": { label: "प्लांट और मशीनरी", note: "मशीनरी, उपकरण, फ़िक्सचर और फ़िटिंग, साथ में व्यावसायिक वाहन (वैन, ट्रक, ट्रैक्टर), 8 साल तक हर साल 12.5% पर घटाए जाते हैं।" },
-        "motor-vehicle": { label: "मोटर वाहन (कार)", note: "8 साल में 12.5%, लेकिन लागत €24,000 तक सीमित है और CO2 उत्सर्जन के अनुसार और घटती है। व्यावसायिक वाहन (वैन, ट्रक) सीमित नहीं हैं; उनके लिए प्लांट और मशीनरी चुनें।" },
+        "motor-vehicle": { label: "मोटर वाहन (कार)", note: "8 साल में 12.5%, तय €24,000 पर, कार की लागत चाहे जो हो; ज़्यादा CO2 उत्सर्जन पर आधा या शून्य। व्यावसायिक वाहन (वैन, ट्रक) सीमित नहीं हैं; उनके लिए प्लांट और मशीनरी चुनें।" },
         "industrial-building": { label: "औद्योगिक इमारत", note: "कारोबार में इस्तेमाल होने वाली फ़ैक्टरियाँ, मिलें और ऐसी इमारतें: 25 साल तक हर साल 4%। योजना-विशेष कई इमारत राहतें ख़त्म हो चुकी हैं; जाँच लें कि इमारत योग्य है।" },
         "energy-efficient": { label: "ऊर्जा-कुशल उपकरण (ACA)", note: "Accelerated Capital Allowance, SEAI Triple-E रजिस्टर पर स्वीकृत ऊर्जा-कुशल उपकरणों पर पहले साल में 100% घटाव। 31 दिसंबर 2030 तक बढ़ाया गया। जीवाश्म ईंधन से चलने वाले उपकरण शामिल नहीं।" },
       },
       co2Groups: {
-        group1: { label: "0-140 g/km (Category A और B)", note: "पूरी राहत: €24,000 तक की लागत पर भत्ते।" },
-        group2: { label: "141-155 g/km (Category C)", note: "आधी राहत: लागत के आधे पर भत्ते, €12,000 तक।" },
-        group3: { label: "155 g/km से ऊपर (Category D-F)", note: "इस कार के लिए कोई घिसावट भत्ता उपलब्ध नहीं है।" },
+        a: "0-120 g/km (Category A)",
+        b: "121-140 g/km (Category B)",
+        c: "141-155 g/km (Category C)",
+        "d-f": "155 g/km से ऊपर (Category D-F)",
+      },
+      co2Relief: {
+        full: "पूरी राहत: {cap} पर भत्ते, कार की लागत चाहे जो हो।",
+        half: "आधी राहत: लागत के आधे पर भत्ते, {half} तक।",
+        none: "इस कार के लिए कोई घिसावट भत्ता उपलब्ध नहीं है।",
       },
     },
     wc: {
