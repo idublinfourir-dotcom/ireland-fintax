@@ -27,7 +27,7 @@ const en = {
   },
   calculators: {
     title: "The calculators",
-    body: "The calculators work in your browser. The figures you type are not sent to us or stored, and you do not need an account to use them.",
+    body: "The calculators work in your browser. The figures you type are not sent to us or stored, and you do not need an account to use them. One exception: to fill in a price, the crypto tax calculator sends a coin's ticker and a date (never your amounts) to our server, which asks Coinbase or Bitstamp for that day's price. Your address is not passed on, and only the price is kept.",
   },
   collect: {
     title: "What we collect, and why",
@@ -125,7 +125,7 @@ export const privacyMessages: Translations<PrivacyMessages> = {
     },
     calculators: {
       title: "Las calculadoras",
-      body: "Las calculadoras funcionan en tu navegador. Las cifras que escribes no se nos envían ni se guardan, y no necesitas una cuenta para usarlas.",
+      body: "Las calculadoras funcionan en tu navegador. Las cifras que escribes no se nos envían ni se guardan, y no necesitas una cuenta para usarlas. Una excepción: para rellenar un precio, la calculadora de impuestos sobre cripto envía el símbolo de una moneda y una fecha (nunca tus importes) a nuestro servidor, que pide a Coinbase o Bitstamp el precio de ese día. Tu dirección no se transmite y solo se guarda el precio.",
     },
     collect: {
       title: "Qué recogemos y por qué",
@@ -219,7 +219,7 @@ export const privacyMessages: Translations<PrivacyMessages> = {
     },
     calculators: {
       title: "As calculadoras",
-      body: "As calculadoras funcionam no seu navegador. Os números que você digita não são enviados para nós nem guardados, e você não precisa de uma conta para usá-las.",
+      body: "As calculadoras funcionam no seu navegador. Os números que você digita não são enviados para nós nem guardados, e você não precisa de uma conta para usá-las. Uma exceção: para preencher um preço, a calculadora de impostos sobre cripto envia o símbolo de uma moeda e uma data (nunca os seus valores) para o nosso servidor, que pede à Coinbase ou à Bitstamp o preço desse dia. O seu endereço não é transmitido e só o preço é guardado.",
     },
     collect: {
       title: "O que recolhemos e por quê",
@@ -313,7 +313,7 @@ export const privacyMessages: Translations<PrivacyMessages> = {
     },
     calculators: {
       title: "Na háireamháin",
-      body: "Oibríonn na háireamháin i do bhrabhsálaí. Ní sheoltar chugainn na figiúirí a chlóscríobhann tú agus ní stóráiltear iad, agus níl cuntas de dhíth ort chun iad a úsáid.",
+      body: "Oibríonn na háireamháin i do bhrabhsálaí. Ní sheoltar chugainn na figiúirí a chlóscríobhann tú agus ní stóráiltear iad, agus níl cuntas de dhíth ort chun iad a úsáid. Eisceacht amháin: chun praghas a líonadh isteach, seolann áireamhán cánach crypto siombail boinn agus dáta (ní do mhéideanna riamh) chuig ár bhfreastalaí, a iarrann praghas an lae sin ar Coinbase nó Bitstamp. Ní chuirtear do sheoladh ar aghaidh, agus ní choinnítear ach an praghas.",
     },
     collect: {
       title: "Cad a bhailímid, agus cén fáth",
@@ -407,7 +407,7 @@ export const privacyMessages: Translations<PrivacyMessages> = {
     },
     calculators: {
       title: "الحاسبات",
-      body: "تعمل الحاسبات في متصفحك. الأرقام التي تكتبها لا تُرسل إلينا ولا تُخزَّن، ولا تحتاج إلى حساب لاستخدامها.",
+      body: "تعمل الحاسبات في متصفحك. الأرقام التي تكتبها لا تُرسل إلينا ولا تُخزَّن، ولا تحتاج إلى حساب لاستخدامها. استثناء واحد: لملء السعر، ترسل حاسبة ضريبة العملات المشفرة رمز العملة وتاريخًا (وليس مبالغك أبدًا) إلى خادمنا، الذي يطلب سعر ذلك اليوم من Coinbase أو Bitstamp. لا يُمرَّر عنوانك، ولا يُحفظ إلا السعر.",
     },
     collect: {
       title: "ما الذي نجمعه ولماذا",
@@ -500,7 +500,7 @@ export const privacyMessages: Translations<PrivacyMessages> = {
     },
     calculators: {
       title: "ক্যালকুলেটরসমূহ",
-      body: "ক্যালকুলেটরগুলো আপনার ব্রাউজারেই চলে। আপনি যেসব সংখ্যা টাইপ করেন তা আমাদের কাছে পাঠানো হয় না বা সংরক্ষণ করা হয় না, এবং এগুলো ব্যবহার করার জন্য কোনো অ্যাকাউন্টের প্রয়োজন নেই।",
+      body: "ক্যালকুলেটরগুলো আপনার ব্রাউজারেই চলে। আপনি যেসব সংখ্যা টাইপ করেন তা আমাদের কাছে পাঠানো হয় না বা সংরক্ষণ করা হয় না, এবং এগুলো ব্যবহার করার জন্য কোনো অ্যাকাউন্টের প্রয়োজন নেই। একটা ব্যতিক্রম: দাম বসাতে, ক্রিপ্টো কর ক্যালকুলেটর একটা কয়েনের টিকার আর একটা তারিখ (আপনার অঙ্ক কখনো না) আমাদের সার্ভারে পাঠায়, যা Coinbase বা Bitstamp থেকে সেদিনের দাম আনে। আপনার ঠিকানা পাঠানো হয় না, আর শুধু দামটা রাখা হয়।",
     },
     collect: {
       title: "আমরা কী সংগ্রহ করি, আর কেন করি",
@@ -594,7 +594,7 @@ export const privacyMessages: Translations<PrivacyMessages> = {
     },
     calculators: {
       title: "कैलकुलेटर",
-      body: "कैलकुलेटर आपके ब्राउज़र में चलते हैं। आप जो आँकड़े लिखते हैं, वे न हमें भेजे जाते हैं न सहेजे जाते हैं, और इन्हें इस्तेमाल करने के लिए अकाउंट की ज़रूरत नहीं है।",
+      body: "कैलकुलेटर आपके ब्राउज़र में चलते हैं। आप जो आँकड़े लिखते हैं, वे न हमें भेजे जाते हैं न सहेजे जाते हैं, और इन्हें इस्तेमाल करने के लिए अकाउंट की ज़रूरत नहीं है। एक अपवाद: कीमत भरने के लिए, क्रिप्टो टैक्स कैलकुलेटर किसी कॉइन का टिकर और एक तारीख़ (आपकी रकम कभी नहीं) हमारे सर्वर को भेजता है, जो Coinbase या Bitstamp से उस दिन की कीमत मँगाता है। आपका पता आगे नहीं भेजा जाता, और सिर्फ़ कीमत रखी जाती है।",
     },
     collect: {
       title: "हम क्या इकट्ठा करते हैं, और क्यों",

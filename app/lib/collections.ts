@@ -471,6 +471,16 @@ export interface ToolkitRequestDoc {
 }
 
 /** Monotonic sequence sources for public, human-readable ids. */
+/** One coin's closing euro price for one past day, cached for the crypto
+    calculator (app/lib/crypto-prices.ts). A past close never changes, so
+    rows are never updated or expired. _id is "BTC:2026-03-19". */
+export interface CryptoPriceDoc {
+  _id: string;
+  eur: number;
+  source: "Coinbase" | "Bitstamp";
+  fetchedAt: Date;
+}
+
 export interface CounterDoc {
   _id: string;
   seq: number;
@@ -532,6 +542,7 @@ export const COLLECTIONS = {
   counters: "counters",
   newsItems: "news_items",
   newsRuns: "news_runs",
+  cryptoPrices: "crypto_prices",
 } as const;
 
 async function collection<T extends { _id: unknown }>(
@@ -601,3 +612,5 @@ export async function nextSequence(name: string): Promise<number> {
   }
   return seq;
 }
+export const cryptoPricesCollection = () =>
+  collection<CryptoPriceDoc>(COLLECTIONS.cryptoPrices);

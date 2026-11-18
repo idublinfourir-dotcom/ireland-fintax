@@ -349,6 +349,26 @@ Whenever anything else gets hidden rather than deleted, add a row here.
   database is server-side only and Google sign-in is a top-level redirect,
   not a cross-origin fetch.
 
+### Crypto tax calculator (`/tools/ireland-crypto-tax`)
+
+- Maths in `app/lib/ireland-crypto-cgt.ts` (pure, unit-tested): each sale is
+  matched with buys of the last four weeks, latest first, then first in, first
+  out; a loss followed by a buy-back within four weeks only counts against
+  those coins; losses and the exemption go against higher-rate gains first.
+  The rate and exemption come from the CGT calculator's settings
+  (`getCgtData`), so there is nothing separate to edit.
+- Prices: `POST /api/crypto-prices` takes `{ items: [{ coin, date }] }` and
+  answers from `app/lib/crypto-prices.ts`: Coinbase Exchange first, Bitstamp
+  as the fallback, both public and keyless. Past days are cached for good in
+  `crypto_prices`; today's price is not cached. The route is rate limited per
+  visitor and site-wide. The coin list on the page is the live union of both
+  exchanges' euro pairs, cached for a day.
+- Only a ticker and a date ever reach the server, never amounts: the privacy
+  notice says so, and it must stay true.
+- Tests never call the exchanges: unit tests inject a fake `fetch`, and the
+  e2e server is started with `CRYPTO_PRICE_TEST_ORIGIN` pointing at the fake
+  in `e2e/fake-exchange.ts`. Leave that variable unset everywhere else.
+
 ### Editable calculator rates (CGT, VAT, Corp Tax, R&D, Capital Allowances, CAT)
 
 - Six calculators (`ireland-cgt`, `ireland-vat`, `ireland-corporation-tax`,

@@ -45,6 +45,11 @@ export const CALCULATOR_TOOLS = [
     label: "Rental tax",
     desc: "Rent-a-Room Relief vs rental income tax",
   },
+  {
+    href: "/tools/ireland-crypto-tax",
+    label: "Crypto tax",
+    desc: "CGT on crypto sales, swaps and spending",
+  },
 ] as const;
 
 export interface ToolTab {

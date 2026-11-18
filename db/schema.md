@@ -319,6 +319,12 @@ drafted, and any errors. A run still `running` after two hours is marked
 | `request_rate_limits` | `{action, keyHash, windowStart}` | Fixed-window throttles |
 | `toolkit_requests` | ObjectId | Founders Hub "request a copy" submissions |
 | `counters` | name (`"enquiries"`) | Sequence source for public ids |
+| `crypto_prices` | `"BTC:2026-03-19"` | Cached daily euro closes for the crypto calculator (`eur`, `source`, `fetchedAt`) |
+
+`crypto_prices` holds past days only: a past close never changes, so rows are
+written once (`$setOnInsert`) and never expire. No index beyond `_id`; lookups
+are `_id: { $in: [...] }`. Holds no user data: only a ticker, a date and a
+price from Coinbase or Bitstamp.
 
 `request_rate_limits` keys the whole window triple into `_id`, so one
 `findOneAndUpdate` with `$inc` + `upsert` is atomic and concurrent requests in
