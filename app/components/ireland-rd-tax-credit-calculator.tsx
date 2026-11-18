@@ -72,7 +72,7 @@ export function IrelandRdTaxCreditCalculator({ config: current }: { config: RdCo
   const r = useMemo(() => computeRdCredit(spend, grant, config), [spend, grant, config]);
   const { year1, year2, year3 } = r.instalments;
   // Year one under the neighbouring period (later vs current; current vs later; earlier vs current).
-  const otherPeriod: RdPeriod = period === "later" ? "current" : period === "current" ? "later" : "current";
+  const otherPeriod: "current" | "later" = period === "current" ? "later" : "current";
   const other = computeRdCredit(spend, grant, rdConfigForPeriod(current, otherPeriod)).instalments.year1;
 
   // Explain which arm of the instalment rule applied, in plain words.
@@ -217,7 +217,7 @@ export function IrelandRdTaxCreditCalculator({ config: current }: { config: RdCo
             {other !== year1 && (
               <InstalmentRow
                 dotClass="bg-line"
-                year={t.year1Other.replace("{period}", t.periodOptions[otherPeriod])}
+                year={t.year1Under[otherPeriod]}
                 when=""
                 value={money(other)}
               />
