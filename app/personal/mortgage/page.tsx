@@ -8,6 +8,8 @@ import { getMortgageData } from "../../lib/mortgage-data";
 import { getMessages, getT } from "../../lib/messages";
 import { mortgageMessages } from "../../lib/messages/mortgage";
 import { calcMessages } from "../../lib/messages/calc";
+import { toolNames } from "../../lib/messages/tool-names";
+import { LocaleLink } from "../../components/locale-link";
 import { localDate } from "../../lib/i18n";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -19,6 +21,7 @@ export default async function IrelandMortgagePage() {
   const { locale } = await getMessages();
   const t = await getT(mortgageMessages);
   const c = await getT(calcMessages);
+  const stampDuty = (await getT(toolNames))["/personal/stamp-duty"];
   const { products, policy, ratesAsOf } = await getMortgageData();
 
   return (
@@ -49,6 +52,15 @@ export default async function IrelandMortgagePage() {
           />
         </div>
 
+        <p className="mt-6 text-sm leading-6">
+          <LocaleLink
+            locale={locale}
+            href="/personal/stamp-duty"
+            className="font-semibold text-primary-600 transition-colors duration-200 hover:text-primary-500"
+          >
+            {stampDuty.desc} <span aria-hidden="true" className="inline-block rtl:-scale-x-100">→</span>
+          </LocaleLink>
+        </p>
         <BudgetNote>{t.budgetNote}</BudgetNote>
         <ReviewedBy className="mt-2" />
 

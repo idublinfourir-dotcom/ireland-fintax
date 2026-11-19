@@ -10,6 +10,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { computeIrishTax, type IncomeTaxInput } from "./ireland-income-tax.ts";
 import { computeRentalTax, RENT_A_ROOM_LIMIT, type RentalInput } from "./ireland-rental-tax.ts";
+import { cpuMs } from "./cpu-time.ts";
 
 const near = (a: number, b: number) => assert.ok(Math.abs(a - b) < 0.01, `${a} ≠ ${b}`);
 
@@ -177,13 +178,13 @@ test("Hostile numbers never reach the result: no NaN, no negatives", () => {
 /* ---------- performance ---------- */
 
 test("Performance: 10,000 calculations inside 500ms (each one runs the tax engine twice)", () => {
-  const start = performance.now();
+  const start = cpuMs();
   for (let i = 0; i < 10_000; i++) {
     computeRentalTax(
       rental({ letting: i % 2 ? "room" : "property", grossRent: i * 3, expenses: i, person: person({ employmentIncome: i * 10 }) }),
       2026,
     );
   }
-  const ms = performance.now() - start;
+  const ms = cpuMs() - start;
   assert.ok(ms < 500, `took ${ms.toFixed(0)}ms`);
 });

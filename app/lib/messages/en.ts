@@ -66,6 +66,7 @@ export const en = {
       cat: "Capital acquisitions tax (CAT)",
       rd: "Section 766 R&D credits",
       mortgage: "Mortgage & borrowing",
+      stampDuty: "Stamp duty",
       investment: "Investment & deemed disposal",
       budget: "{budget} hub",
       calendar: "Tax calendar",

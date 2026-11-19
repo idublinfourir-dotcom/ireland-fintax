@@ -18,6 +18,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/blog",
     ...BUDGETS.map((b) => b.href),
     "/personal/mortgage",
+    "/personal/stamp-duty",
     "/personal/investment",
     "/investment-account",
     "/tools/ireland-income-tax",
