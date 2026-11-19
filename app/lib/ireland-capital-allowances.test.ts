@@ -18,6 +18,7 @@ import {
   CAR_RELIEF,
   type CapitalAllowanceResult,
 } from "./ireland-capital-allowances.ts";
+import { cpuMs } from "./cpu-time.ts";
 
 /** The yearly allowances must sum back to the allowable cost, to the cent. */
 function assertScheduleSums(r: CapitalAllowanceResult) {
@@ -140,13 +141,13 @@ test("Car: both sets of rules for every category, 10,000 times, inside 100 ms", 
   // (the suite runs files in parallel) can slow one batch. ~13 ms alone.
   let ms = Infinity;
   for (let run = 0; run < 3; run++) {
-    const start = performance.now();
+    const start = cpuMs();
     for (let i = 0; i < 10_000; i++)
       for (const c of ["a", "b", "c", "d-f"] as const) {
         car(i * 7, c, 2026);
         car(i * 7, c, 2027);
       }
-    ms = Math.min(ms, performance.now() - start);
+    ms = Math.min(ms, cpuMs() - start);
   }
   assert.ok(ms < 100, `took ${ms.toFixed(1)} ms`);
 });

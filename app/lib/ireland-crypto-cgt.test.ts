@@ -6,6 +6,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { CGT_CONFIG_DEFAULT } from "./ireland-cgt.ts";
 import { computeCryptoCgt, dayNumber, MAX_TRADES, type CryptoTrade } from "./ireland-crypto-cgt.ts";
+import { cpuMs } from "./cpu-time.ts";
 
 const C = CGT_CONFIG_DEFAULT; // 31% from 7 Oct 2026, €1,270 exemption
 const buy = (date: string, quantity: number, amountEur: number, coin = "BTC", feesEur = 0): CryptoTrade => ({
@@ -300,8 +301,8 @@ test(`Performance: ${MAX_TRADES} rows (500 buys, 500 sales, two coins) 20 times 
     const coin = i % 2 ? "BTC" : "ETH";
     trades.push(buy(d, 2, 1000 + i, coin), sell(d, 1, 900 + (i % 7) * 100, coin));
   }
-  const start = performance.now();
+  const start = cpuMs();
   for (let i = 0; i < 20; i++) assert.deepEqual(run(trades).issues, []);
-  const ms = performance.now() - start;
+  const ms = cpuMs() - start;
   assert.ok(ms < 500, `took ${ms.toFixed(0)}ms`);
 });

@@ -7,6 +7,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 
 import { LENDER_PRODUCTS, compareProducts, type ComparisonInput } from "./ireland-mortgage.ts";
+import { cpuMs } from "./cpu-time.ts";
 
 const input = (loanAmount: number): ComparisonInput => ({
   productType: "first-time",
@@ -59,9 +60,9 @@ test("snapshot rows are plausible and consistent", () => {
 });
 
 test("comparison stays fast over the whole snapshot", () => {
-  const start = performance.now();
+  const start = cpuMs();
   for (let i = 0; i < 2_000; i++) compareProducts(input(200_000 + i * 100));
-  const ms = performance.now() - start;
+  const ms = cpuMs() - start;
   // ~42 products x 2,000 runs; budget is generous for slow CI runners.
   assert.ok(ms < 1_500, `took ${ms.toFixed(0)}ms`);
 });

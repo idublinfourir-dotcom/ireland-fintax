@@ -3,6 +3,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { MAX_PASTE_CHARS, parsePastedTrades, pastedDate, pastedNumber } from "./crypto-paste.ts";
+import { cpuMs } from "./cpu-time.ts";
 
 test("A spreadsheet copy (tabs) with a header line", () => {
   const { rows, badType } = parsePastedTrades(
@@ -81,9 +82,9 @@ test("Performance: a 1,000-row paste parses 50 times inside 300ms", () => {
   const text = "2026-01-05\tbuy\tBTC\t0.5\t\"1,000.00\"\t1\n".repeat(1000);
   let best = Infinity;
   for (let batch = 0; batch < 3; batch++) {
-    const start = performance.now();
+    const start = cpuMs();
     for (let i = 0; i < 50; i++) parsePastedTrades(text);
-    best = Math.min(best, performance.now() - start);
+    best = Math.min(best, cpuMs() - start);
   }
   assert.ok(best < 300, `took ${best.toFixed(0)}ms`);
 });

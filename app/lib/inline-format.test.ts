@@ -4,6 +4,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { parseInline, parseLines, safeHref } from "./inline-format.ts";
+import { cpuMs } from "./cpu-time.ts";
 
 const text = (value: string) => ({ type: "text", value });
 
@@ -100,10 +101,10 @@ test("safeHref allows http(s), mailto, relative paths and anchors only", () => {
 });
 
 test("pathological input parses in linear time", () => {
-  const started = Date.now();
+  const started = cpuMs();
   parseInline("*".repeat(50_000));
   parseInline("_a".repeat(25_000));
   parseInline("`".repeat(50_000));
   parseInline("[".repeat(50_000));
-  assert.ok(Date.now() - started < 1_000, "parsing took too long");
+  assert.ok(cpuMs() - started < 1_000, "parsing took too long");
 });
