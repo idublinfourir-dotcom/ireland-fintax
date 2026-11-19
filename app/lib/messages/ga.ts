@@ -60,6 +60,7 @@ export const ga: Messages = {
       cat: "Cáin fáltas caipitiúil (CFC)",
       rd: "Creidmheasanna T&F alt 766",
       mortgage: "Morgáiste agus iasachtaí",
+      stampDuty: "Dleacht stampála",
       investment: "Infheistíocht agus diúscairt mheasta",
       budget: "Mol {budget}",
       calendar: "Féilire cánach",

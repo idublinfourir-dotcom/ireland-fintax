@@ -21,6 +21,7 @@ const columns = {
   },
   resources: {
     mortgage: "/personal/mortgage",
+    stampDuty: "/personal/stamp-duty",
     investment: "/personal/investment",
     budget: LATEST_BUDGET.href,
     calendar: "/#calendar",

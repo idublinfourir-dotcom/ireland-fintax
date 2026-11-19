@@ -60,6 +60,7 @@ export const bn: Messages = {
       cat: "উপহার ও উত্তরাধিকার কর (CAT)",
       rd: "Section 766 R&D ক্রেডিট",
       mortgage: "মর্টগেজ ও ঋণ",
+      stampDuty: "স্ট্যাম্প ডিউটি",
       investment: "বিনিয়োগ ও ডিমড ডিসপোজাল",
       budget: "{budget} হাব",
       calendar: "কর ক্যালেন্ডার",

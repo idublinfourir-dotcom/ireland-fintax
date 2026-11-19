@@ -60,6 +60,7 @@ export const hi: Messages = {
       cat: "उपहार और विरासत टैक्स (CAT)",
       rd: "सेक्शन 766 R&D क्रेडिट",
       mortgage: "मॉर्गेज और उधार",
+      stampDuty: "स्टांप ड्यूटी",
       investment: "निवेश और डीम्ड डिस्पोज़ल",
       budget: "{budget} हब",
       calendar: "टैक्स कैलेंडर",

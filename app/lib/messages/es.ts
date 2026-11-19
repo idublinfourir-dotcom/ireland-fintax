@@ -59,6 +59,7 @@ export const es: Messages = {
       cat: "Donaciones y herencias (CAT)",
       rd: "Créditos de I+D, sección 766",
       mortgage: "Hipoteca y préstamo",
+      stampDuty: "Impuesto de timbre",
       investment: "Inversión y transmisión ficticia",
       budget: "Centro del {budget}",
       calendar: "Calendario fiscal",

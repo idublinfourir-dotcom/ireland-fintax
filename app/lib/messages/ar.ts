@@ -61,6 +61,7 @@ export const ar: Messages = {
       cat: "ضريبة الهبات والمواريث (CAT)",
       rd: "إعفاءات البحث والتطوير، المادة 766",
       mortgage: "الرهن العقاري والاقتراض",
+      stampDuty: "رسم الدمغة",
       investment: "الاستثمار والبيع الافتراضي",
       budget: "مركز {budget}",
       calendar: "التقويم الضريبي",

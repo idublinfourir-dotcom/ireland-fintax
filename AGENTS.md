@@ -33,7 +33,7 @@ app/
   page.tsx, about/, contact/   # marketing routes
   _services/, _pricing/  # parked: unrouted, every /services URL redirects home
   tools/             # Accountants Hub: the 8 Ireland tax calculators
-  personal/          # Personal Hub: mortgage/, investment/
+  personal/          # Personal Hub: mortgage/, stamp-duty/, investment/
   blog/              # public blog: /blog index + /blog/[slug] posts
   _pricing/          # hidden route: see "Hidden for now" below
   login/, signup/, portal/, admin/, auth/{confirm,callback}/  # auth routes

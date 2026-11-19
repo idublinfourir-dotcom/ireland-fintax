@@ -59,6 +59,7 @@ export const pt: Messages = {
       cat: "Doações e heranças (CAT)",
       rd: "Créditos de P&D, seção 766",
       mortgage: "Financiamento e empréstimo",
+      stampDuty: "Imposto do selo",
       investment: "Investimento e alienação presumida",
       budget: "Central do {budget}",
       calendar: "Calendário fiscal",

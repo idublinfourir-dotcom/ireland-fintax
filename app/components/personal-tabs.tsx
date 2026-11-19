@@ -12,6 +12,11 @@ export const PERSONAL_TOOLS = [
     desc: "Compare repayments across Irish lenders",
   },
   {
+    href: "/personal/stamp-duty",
+    label: "Stamp duty",
+    desc: "Stamp duty on buying a home or other property",
+  },
+  {
     href: "/personal/investment",
     label: "Personal investment",
     desc: "Compare options by return after Irish tax",
