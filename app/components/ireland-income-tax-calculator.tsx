@@ -18,7 +18,7 @@ import {
 } from "../lib/ireland-income-tax";
 import { useT } from "./locale-link";
 import { incomeTaxMessages, type IncomeTaxMessages } from "../lib/messages/income-tax";
-import { RateStamp, ResultDisclaimer, useFormat } from "./calculator-fields";
+import { AdviceNote, RateStamp, ResultDisclaimer, useFormat } from "./calculator-fields";
 
 /* Money in the results table: whole euros (rounded like Deloitte) shown as .00.
    Negatives come out as "-€4,987.00"; deduction rows wrap in parentheses. */
@@ -566,6 +566,8 @@ export function IrelandIncomeTaxCalculator({
       </div>
       <div className="mt-6 text-center">
         <RateStamp asOf={INCOME_TAX_LAST_REVIEWED} sourceUrl={INCOME_TAX_SOURCE_URL} />
+        {/* The results screen has it in ResultDisclaimer. */}
+        <AdviceNote className="mt-4" />
       </div>
     </form>
   );

@@ -20,7 +20,7 @@ import {
 } from "../lib/ireland-mortgage";
 import { useT } from "./locale-link";
 import { mortgageMessages, type MortgageMessages } from "../lib/messages/mortgage";
-import { useFormat } from "./calculator-fields";
+import { AdviceNote, useFormat } from "./calculator-fields";
 import { localDate, numberFormat, plural } from "../lib/i18n";
 import { fill } from "./ui";
 
@@ -652,6 +652,7 @@ export function IrelandMortgageCalculator({
         <p className="mt-8 text-center text-xs leading-5 text-muted">
           {t.footnote.replace("{date}", localDate(locale, ratesAsOf))}
         </p>
+        <AdviceNote className="mt-4" />
       </div>
     );
   }
@@ -792,6 +793,7 @@ export function IrelandMortgageCalculator({
           {step === 1 ? t.next : t.calculate}
         </button>
       </div>
+      <AdviceNote className="mt-6" />
     </form>
   );
 }

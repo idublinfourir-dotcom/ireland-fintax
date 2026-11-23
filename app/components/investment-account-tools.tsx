@@ -6,7 +6,7 @@
    anywhere. */
 
 import { useState } from "react";
-import { CurrencyField, SelectField, useFormat } from "./calculator-fields";
+import { AdviceNote, CurrencyField, SelectField, useFormat } from "./calculator-fields";
 import { useT } from "./locale-link";
 import { INVESTMENT_ACCOUNT, projectAccount } from "../lib/ireland-investment-account";
 import { localDate, MONTHS } from "../lib/i18n";
@@ -137,6 +137,7 @@ export function AccountProjection() {
         </details>
 
         <p className="mt-4 text-xs leading-5 text-muted">{t.illustration}</p>
+        <AdviceNote className="mt-4" />
       </div>
     </div>
   );
