@@ -8,9 +8,12 @@ import { computeCapitalAllowance, type AssetKey, type CaConfig } from "../lib/ir
 import { computeCat, type BenefitType, type CatConfig, type Relationship } from "../lib/ireland-cat";
 import { computeCgt, type CgtConfig } from "../lib/ireland-cgt";
 import { computeCorporationTax, type CtConfig } from "../lib/ireland-corporation-tax";
+import { computeCryptoCgt, LAST_TAX_YEAR } from "../lib/ireland-crypto-cgt";
 import { computeIrishTax, type YearRates } from "../lib/ireland-income-tax";
 import { monthlyPayment } from "../lib/ireland-mortgage";
 import { computeRdCredit, rdConfigForPeriod, RD_EARLIER_PERIOD, RD_PERIODS, type RdConfig } from "../lib/ireland-rd-tax-credit";
+import { computeRentalTax, RENT_A_ROOM_LIMIT, RENT_A_ROOM_PENDING, type Letting } from "../lib/ireland-rental-tax";
+import { computeStampDuty, NON_RESIDENTIAL_RATE, RESIDENTIAL_BANDS, type HomeVat } from "../lib/ireland-stamp-duty";
 import { addVat, getVatRate, removeVat, type VatConfig, type VatRateKey } from "../lib/ireland-vat";
 import { heroCardMessages } from "../lib/messages/hero-cards";
 import { toolNames } from "../lib/messages/tool-names";
@@ -279,7 +282,7 @@ export function HeroCoverflow({ data }: { data: HeroCardsData }) {
 }
 
 /** The fan at rest on card 1, written by the server so the first paint is the
-    fan, not eight cards stacked with the last on top. The layout effect then
+    fan, not every card stacked with the last on top. The layout effect then
     takes over with measured pixels. Cards two or more back on the copy side
     stay hidden until it does: only it can fade them under the copy. */
 function startStyle(d: number): CSSProperties {
@@ -294,7 +297,8 @@ function startStyle(d: number): CSSProperties {
 
 /* ---------- card parts ---------- */
 
-/* Card icons: Phosphor Icons "fill" (MIT), as in the design export. */
+/* Card icons: Phosphor Icons "fill" (MIT), as in the design export; key,
+   coins and stamp from @phosphor-icons/core 2.1.1. */
 const ICONS: Record<string, string> = {
   "/tools/ireland-income-tax": "M216 64H56a8 8 0 0 1 0-16h136a8 8 0 0 0 0-16H56a24 24 0 0 0-24 24v128a24 24 0 0 0 24 24h160a16 16 0 0 0 16-16V80a16 16 0 0 0-16-16m-36 80a12 12 0 1 1 12-12a12 12 0 0 1-12 12",
   "/tools/ireland-vat": "M216 40H40a16 16 0 0 0-16 16v152a8 8 0 0 0 11.58 7.15L64 200.94l28.42 14.21a8 8 0 0 0 7.16 0L128 200.94l28.42 14.21a8 8 0 0 0 7.16 0L192 200.94l28.42 14.21A8 8 0 0 0 232 208V56a16 16 0 0 0-16-16m-40 104H80a8 8 0 0 1 0-16h96a8 8 0 0 1 0 16m0-32H80a8 8 0 0 1 0-16h96a8 8 0 0 1 0 16",
@@ -303,6 +307,9 @@ const ICONS: Record<string, string> = {
   "/tools/ireland-capital-allowances": "M232 208h-8v-72.98a1 1 0 0 0 0-.15L209 29.74A16.08 16.08 0 0 0 193.06 16h-18.12a16.08 16.08 0 0 0-15.84 13.74l-11.56 80.91L108.8 81.6A8 8 0 0 0 96 88v32L44.8 81.6A8 8 0 0 0 32 88v120h-8a8 8 0 0 0 0 16h208a8 8 0 0 0 0-16m-124-24H80a8 8 0 0 1 0-16h28a8 8 0 0 1 0 16m68 0h-28a8 8 0 0 1 0-16h28a8 8 0 0 1 0 16m-5.33-56l-8.53-6.4l12.8-89.6h18.12l13.72 96Z",
   "/tools/ireland-cgt": "M216 40H40a16 16 0 0 0-16 16v144a16 16 0 0 0 16 16h176a16 16 0 0 0 16-16V56a16 16 0 0 0-16-16m-16 152H56a8 8 0 0 1-8-8V72a8 8 0 0 1 16 0v76.69l34.34-34.35a8 8 0 0 1 11.32 0L128 132.69L172.69 88H144a8 8 0 0 1 0-16h48a8 8 0 0 1 8 8v48a8 8 0 0 1-16 0V99.31l-50.34 50.35a8 8 0 0 1-11.32 0L104 131.31l-40 40V176h136a8 8 0 0 1 0 16",
   "/tools/ireland-cat": "M216 72h-35.08c.39-.33.79-.65 1.17-1A29.53 29.53 0 0 0 192 49.57A32.62 32.62 0 0 0 158.44 16A29.53 29.53 0 0 0 137 25.91a55 55 0 0 0-9 14.48a55 55 0 0 0-9-14.48A29.53 29.53 0 0 0 97.56 16A32.62 32.62 0 0 0 64 49.57A29.53 29.53 0 0 0 73.91 71c.38.33.78.65 1.17 1H40a16 16 0 0 0-16 16v32a16 16 0 0 0 16 16v64a16 16 0 0 0 16 16h60a4 4 0 0 0 4-4v-92H40V88h80v32h16V88h80v32h-80v92a4 4 0 0 0 4 4h60a16 16 0 0 0 16-16v-64a16 16 0 0 0 16-16V88a16 16 0 0 0-16-16M84.51 59a13.7 13.7 0 0 1-4.5-10a16.62 16.62 0 0 1 16.58-17h.49a13.7 13.7 0 0 1 10 4.5c8.39 9.48 11.35 25.2 12.39 34.92C109.71 70.39 94 67.43 84.51 59m87 0c-9.49 8.4-25.24 11.36-35 12.4C137.7 60.89 141 45.5 149 36.51a13.7 13.7 0 0 1 10-4.5h.49A16.62 16.62 0 0 1 176 49.08a13.7 13.7 0 0 1-4.51 9.92Z",
+  "/tools/ireland-rental-tax": "M216.57,39.43A80,80,0,0,0,83.91,120.78L28.69,176A15.86,15.86,0,0,0,24,187.31V216a16,16,0,0,0,16,16H72a8,8,0,0,0,8-8V208H96a8,8,0,0,0,8-8V184h16a8,8,0,0,0,5.66-2.34l9.56-9.57A79.73,79.73,0,0,0,160,176h.1A80,80,0,0,0,216.57,39.43ZM180,92a16,16,0,1,1,16-16A16,16,0,0,1,180,92Z",
+  "/tools/ireland-crypto-tax": "M184,89.57V84c0-25.08-37.83-44-88-44S8,58.92,8,84v40c0,20.89,26.25,37.49,64,42.46V172c0,25.08,37.83,44,88,44s88-18.92,88-44V132C248,111.3,222.58,94.68,184,89.57ZM56,146.87C36.41,141.4,24,132.39,24,124V109.93c8.16,5.78,19.09,10.44,32,13.57Zm80-23.37c12.91-3.13,23.84-7.79,32-13.57V124c0,8.39-12.41,17.4-32,22.87Zm-16,71.37C100.41,189.4,88,180.39,88,172v-4.17c2.63.1,5.29.17,8,.17,3.88,0,7.67-.13,11.39-.35A121.92,121.92,0,0,0,120,171.41Zm0-44.62A163,163,0,0,1,96,152a163,163,0,0,1-24-1.75V126.46A183.74,183.74,0,0,0,96,128a183.74,183.74,0,0,0,24-1.54Zm64,48a165.45,165.45,0,0,1-48,0V174.4a179.48,179.48,0,0,0,24,1.6,183.74,183.74,0,0,0,24-1.54ZM232,172c0,8.39-12.41,17.4-32,22.87V171.5c12.91-3.13,23.84-7.79,32-13.57Z",
+  "/personal/stamp-duty": "M224,224a8,8,0,0,1-8,8H40a8,8,0,0,1,0-16H216A8,8,0,0,1,224,224Zm-16-96H151.57l15.71-73.29A32,32,0,0,0,136,16H120A32,32,0,0,0,88.72,54.71L104.43,128H48a16,16,0,0,0-16,16v40a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V144A16,16,0,0,0,208,128Z",
   "/personal/mortgage": "M240 208h-16v-72l2.34 2.34A8 8 0 0 0 237.66 127l-98.35-98.32a16 16 0 0 0-22.62 0L18.34 127a8 8 0 0 0 11.32 11.31L32 136v72H16a8 8 0 0 0 0 16h224a8 8 0 0 0 0-16m-88 0h-48v-48a4 4 0 0 1 4-4h40a4 4 0 0 1 4 4Z",
 };
 
@@ -831,6 +838,182 @@ function MortgageCard({ d, n }: CardProps) {
   );
 }
 
+function RentalCard({ d, n }: CardProps) {
+  const t = useT(heroCardMessages).rental;
+  const f = useFmt();
+  const [letting, setLetting] = useState<Letting>("room");
+  const [rent, setRent] = useState(12000);
+  const [salary, setSalary] = useState(50000);
+  // The rental page's own module, for the income tax card's year when it has
+  // a Rent-a-Room limit, else the latest year that does.
+  const year = d.year in RENT_A_ROOM_LIMIT ? d.year : Math.max(...Object.keys(RENT_A_ROOM_LIMIT).map(Number));
+  const r = computeRentalTax(
+    {
+      letting,
+      // For a separate property the slider is the rent less costs, so the costs are already out.
+      grossRent: rent,
+      expenses: 0,
+      furnishings: 0,
+      rprir: false,
+      person: {
+        maritalStatus: "single",
+        hasChildOnChildBenefit: false,
+        isPrincipalCarerOfDependentChild: false,
+        age: 40,
+        employmentIncome: salary,
+        selfEmploymentOrOtherIncome: 0,
+        pensionContribution: 0,
+      },
+    },
+    year,
+    year === d.year ? d.rates : undefined,
+  );
+  const free = r.room?.qualifies ?? false;
+  const part = (v: number) => (free ? 0 : v);
+  const tax = part(r.standard.total);
+  const kept = rent - tax;
+  return (
+    <Shell
+      href="/tools/ireland-rental-tax"
+      n={n}
+      eyebrow={t.eyebrow.replace("{limit}", f.eur0(r.limit))}
+      result={t.result}
+      big={f.eur0(tax)}
+      budget={RENT_A_ROOM_PENDING.includes(year) || year >= LATEST_BUDGET.year}
+      sub={
+        r.room && free
+          ? t.subFree.replace("{headroom}", f.eur0(r.room.headroom))
+          : r.room
+            ? t.subOver.replace("{over}", f.eur0(r.room.overBy))
+            : t.subTaxed.replace("{kept}", f.eur0(kept)).replace("{rent}", f.eur0(rent))
+      }
+      viz={
+        <Donut
+          total={rent}
+          parts={[
+            { value: kept, color: C1 },
+            { value: part(r.standard.incomeTax), color: C2 },
+            { value: part(r.standard.usc), color: C3 },
+            { value: part(r.standard.prsi), color: C4 },
+          ]}
+          center={f.rate(rent ? Math.round((kept / rent) * 100) : 100)}
+          caption={t.keptCaption}
+          legend={[
+            { label: t.kept, text: f.k(kept), color: C1 },
+            { label: t.tax, text: f.k(part(r.standard.incomeTax)), color: C2 },
+            { label: t.usc, text: f.k(part(r.standard.usc)), color: C3 },
+            { label: t.prsi, text: f.k(part(r.standard.prsi)), color: C4 },
+          ]}
+        />
+      }
+    >
+      <Seg label={t.letting} value={letting} options={[["room", t.room], ["property", t.property]]} onChange={setLetting} />
+      <Range label={letting === "room" ? t.rentRoom : t.rentProperty} value={rent} min={0} max={60000} step={500} show={f.eur0} onChange={setRent} />
+      <Range label={t.salary} value={salary} min={0} max={200000} step={1000} show={f.eur0} onChange={setSalary} />
+    </Shell>
+  );
+}
+
+function CryptoCard({ d, n }: CardProps) {
+  const t = useT(heroCardMessages).crypto;
+  const f = useFmt();
+  const [proceeds, setProceeds] = useState(15000);
+  const [cost, setCost] = useState(6000);
+  const [when, setWhen] = useState<"janNov" | "december">("janNov");
+  // One coin, bought the year before and sold in the card's year, through the
+  // crypto page's own module: its rate, exemption and payment dates.
+  const year = Math.min(d.year, LAST_TAX_YEAR);
+  const r = computeCryptoCgt(
+    [
+      { date: `${year - 1}-03-01`, kind: "buy", coin: "coin", quantity: 1, amountEur: cost, feesEur: 0 },
+      { date: `${year}-${when === "december" ? "12" : "06"}-15`, kind: "sell", coin: "coin", quantity: 1, amountEur: proceeds, feesEur: 0 },
+    ],
+    d.cgt,
+  );
+  const y = r.years.find((x) => x.year === year);
+  const tax = y?.tax ?? 0;
+  const gain = proceeds - cost;
+  const due = (y?.dueJanuary ?? 0) > 0 ? t.dueJanuary.replace("{year}", String(year + 1)) : t.dueDecember.replace("{year}", String(year));
+  return (
+    <Shell
+      href="/tools/ireland-crypto-tax"
+      n={n}
+      eyebrow={t.eyebrow
+        .replace("{rate}", f.rate(r.disposals[0]?.ratePercent ?? d.cgt.standardRatePercent))
+        .replace("{exemption}", f.eur0(d.cgt.annualExemptionEur))}
+      result={t.result}
+      big={f.eur0(tax)}
+      sub={
+        gain <= 0
+          ? t.loss.replace("{loss}", f.eur0(-gain))
+          : tax === 0
+            ? t.exempt.replace("{gain}", f.eur0(gain))
+            : t.sub.replace("{gain}", f.eur0(gain)).replace("{due}", due)
+      }
+      viz={
+        <Waffle
+          parts={[
+            { value: Math.min(cost, proceeds), tone: 3 },
+            { value: Math.max(0, gain - tax), tone: 1 },
+            { value: tax, tone: 2 },
+          ]}
+          legend={[
+            { label: t.paid, text: f.k(cost), color: C3 },
+            { label: t.kept, text: f.k(Math.max(0, gain - tax)), color: C1 },
+            { label: t.tax, text: f.k(tax), color: C2 },
+          ]}
+        />
+      }
+    >
+      <Range label={t.proceeds} value={proceeds} min={0} max={200000} step={500} show={f.eur0} onChange={setProceeds} />
+      <Range label={t.cost} value={cost} min={0} max={200000} step={500} show={f.eur0} onChange={setCost} />
+      <Seg label={t.when} value={when} options={[["janNov", t.janNov], ["december", t.december]]} onChange={setWhen} />
+    </Shell>
+  );
+}
+
+type StampKind = "secondHand" | "newHouse" | "newApartment" | "other";
+/** A rate as a percent, free of float noise (0.075 * 100 is 7.500000000000001). */
+const pct = (rate: number) => Math.round(rate * 1000) / 10;
+
+function StampCard({ n }: CardProps) {
+  const t = useT(heroCardMessages).stamp;
+  const f = useFmt();
+  const [price, setPrice] = useState(450000);
+  const [kind, setKind] = useState<StampKind>("secondHand");
+  const vat: HomeVat = kind === "newHouse" ? "house" : kind === "newApartment" ? "apartment" : "none";
+  // The stamp duty page's own module: its bands, VAT and rounding.
+  const r = computeStampDuty({ kind: kind === "other" ? "nonResidential" : "residential", price, residentialPart: 0, vat });
+  const bands = kind === "other" ? [NON_RESIDENTIAL_RATE] : RESIDENTIAL_BANDS.map((b) => b.rate);
+  return (
+    <Shell
+      href="/personal/stamp-duty"
+      n={n}
+      eyebrow={t.eyebrow.replace("{rates}", RESIDENTIAL_BANDS.map((b) => f.rate(pct(b.rate))).join(" · "))}
+      result={t.result}
+      big={f.eur0(r.total)}
+      sub={(r.vat > 0 ? t.subVat.replace("{vat}", f.rate(pct(r.vatRate))) : t.sub).replace("{rate}", f.pct1(r.effectiveRate))}
+      viz={
+        <Bars
+          items={bands.map((rate) => {
+            // Down to the euro, as the total is: only one band has cents, so the bars add up to it.
+            const duty = Math.floor((r.slices.find((s) => s.rate === rate)?.duty ?? 0) + 1e-7);
+            return { label: f.rate(pct(rate)), value: duty, text: f.k(duty), dim: duty === 0 };
+          })}
+        />
+      }
+    >
+      <Range label={t.price} value={price} min={50000} max={3000000} step={5000} show={f.eur0} onChange={setPrice} />
+      <Seg
+        label={t.kind}
+        value={kind}
+        options={[["secondHand", t.secondHand], ["newHouse", t.newHouse], ["newApartment", t.newApartment], ["other", t.other]]}
+        onChange={setKind}
+      />
+    </Shell>
+  );
+}
+
 const CARDS: { href: string; Card: (p: CardProps) => ReactNode }[] = [
   { href: "/tools/ireland-income-tax", Card: IncomeCard },
   { href: "/tools/ireland-vat", Card: VatCard },
@@ -839,5 +1022,8 @@ const CARDS: { href: string; Card: (p: CardProps) => ReactNode }[] = [
   { href: "/tools/ireland-capital-allowances", Card: CaCard },
   { href: "/tools/ireland-cgt", Card: CgtCard },
   { href: "/tools/ireland-cat", Card: CatCard },
+  { href: "/tools/ireland-rental-tax", Card: RentalCard },
+  { href: "/tools/ireland-crypto-tax", Card: CryptoCard },
   { href: "/personal/mortgage", Card: MortgageCard },
+  { href: "/personal/stamp-duty", Card: StampCard },
 ];
