@@ -6,7 +6,7 @@ import type { Translations } from "../i18n";
    *Asterisks* mark the emphasised words of a title (Emphasis in ui.tsx).
    {placeholders} are filled at runtime from the same rate data the
    calculators use, so a figure changes in one place:
-     {count}       the number of tax calculators (CALCULATOR_TOOLS)
+     {count}       the number of tax calculators (TAX_CALCULATOR_COUNT, sections.tsx)
      {band} {year} the single person's 20% band for the current tax year
      {exemption}   the CGT annual exemption
      {goods} {services} the VAT registration thresholds

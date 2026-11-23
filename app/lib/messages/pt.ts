@@ -53,11 +53,6 @@ export const pt: Messages = {
     resources: "Recursos",
     company: "Empresa",
     links: {
-      incomeTax: "Imposto de renda e PAYE",
-      corporationTax: "Imposto sobre empresas (12,5%)",
-      cgt: "Ganho de capital",
-      cat: "Doações e heranças (CAT)",
-      rd: "Créditos de P&D, seção 766",
       mortgage: "Financiamento e empréstimo",
       stampDuty: "Imposto do selo",
       investment: "Investimento e alienação presumida",

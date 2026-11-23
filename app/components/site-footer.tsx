@@ -5,20 +5,16 @@ import { LATEST_BUDGET } from "../lib/budgets";
 import { REVIEWER } from "../lib/reviewer";
 import { LanguageList } from "./language-menu";
 import { getMessages } from "../lib/messages";
+import { CALCULATOR_TOOLS } from "./calculator-tabs";
 
 /* Three columns of links as the ui-ux-reviews design has them (28 Oct 2026).
-   Labels are t.footer.links. Pricing and Services stay hidden (app/_pricing,
+   The calculators column is CALCULATOR_TOOLS with the header menu's names,
+   so a new calculator shows up here on its own. The other labels are
+   t.footer.links. Pricing and Services stay hidden (app/_pricing,
    app/_services): this is a learning site, not a firm. The design's "Our
    partners", "Rates at a glance" and "Disclaimer" links are left out: there
    is no page behind them (the disclaimer is the line at the bottom). */
 const columns = {
-  suite: {
-    incomeTax: "/tools/ireland-income-tax",
-    corporationTax: "/tools/ireland-corporation-tax",
-    cgt: "/tools/ireland-cgt",
-    cat: "/tools/ireland-cat",
-    rd: "/tools/ireland-rd-tax-credit",
-  },
   resources: {
     mortgage: "/personal/mortgage",
     stampDuty: "/personal/stamp-duty",
@@ -39,6 +35,19 @@ export async function SiteFooter() {
   const { locale, t: all } = await getMessages();
   const t = all.footer;
   const budget = all.header.tools[LATEST_BUDGET.href]?.label ?? LATEST_BUDGET.label;
+  const linksOf = (column: keyof typeof columns) =>
+    Object.entries(columns[column]).map(([key, href]) => ({
+      href,
+      label: t.links[key as keyof typeof t.links].replace("{budget}", budget),
+    }));
+  const lists: Record<"suite" | keyof typeof columns, { href: string; label: string }[]> = {
+    suite: CALCULATOR_TOOLS.map(({ href, label }) => ({
+      href,
+      label: all.header.tools[href]?.label ?? label,
+    })),
+    resources: linksOf("resources"),
+    company: linksOf("company"),
+  };
   return (
     <footer className="relative isolate overflow-hidden bg-navy-900 text-white">
       {/* photographic backdrop: Irish countryside at dusk */}
@@ -94,20 +103,20 @@ export async function SiteFooter() {
             <LanguageList />
           </div>
 
-          {(Object.keys(columns) as (keyof typeof columns)[]).map((column) => (
+          {(Object.keys(lists) as (keyof typeof lists)[]).map((column) => (
             <nav key={column} aria-label={t[column]}>
               <h2 className="text-xs font-semibold uppercase tracking-[0.18em] text-primary-300">
                 {t[column]}
               </h2>
               <ul className="mt-4 flex flex-col gap-2.5 text-sm text-white/70">
-                {Object.entries(columns[column]).map(([key, href]) => (
-                  <li key={key}>
+                {lists[column].map(({ href, label }) => (
+                  <li key={label}>
                     <LocaleLink
                       locale={locale}
                       href={href}
                       className="transition-colors duration-200 hover:text-white"
                     >
-                      {t.links[key as keyof typeof t.links].replace("{budget}", budget)}
+                      {label}
                     </LocaleLink>
                   </li>
                 ))}

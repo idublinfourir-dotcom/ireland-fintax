@@ -3,7 +3,7 @@
 
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { readdirSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
 import { INTL_LOCALE, LOCALES, hasLocaleRoute, isEnglishOnly, isTranslated, localDate, localeHref, numberFormat, plural, shortDateTime, splitLocale, switchHref } from "./i18n.ts";
 import { ar } from "./messages/ar.ts";
 import { bn } from "./messages/bn.ts";
@@ -12,6 +12,8 @@ import { es } from "./messages/es.ts";
 import { ga } from "./messages/ga.ts";
 import { hi } from "./messages/hi.ts";
 import { pt } from "./messages/pt.ts";
+import { toolNames } from "./messages/tool-names.ts";
+import { comparisonYears } from "./ireland-income-tax.ts";
 
 test("splitLocale reads the prefix", () => {
   assert.deepEqual(splitLocale("/"), { locale: "en", path: "/" });
@@ -303,6 +305,27 @@ test("every route is translated, chrome-only or English-only, exactly one", () =
   const wrong = routes.filter((r) => {
     const kinds = [isTranslated(r), hasLocaleRoute(r) && !isTranslated(r), isEnglishOnly(r)];
     return kinds.filter(Boolean).length !== 1;
+  });
+  assert.deepEqual(wrong, []);
+});
+
+/* calculator-tabs.tsx is .tsx, which the test runner cannot import, so its
+   hrefs are read from the source text. */
+const calculatorHrefs = [...readFileSync("app/components/calculator-tabs.tsx", "utf8").matchAll(/href: "([^"]+)"/g)].map((m) => m[1]);
+
+test("every calculator has a menu and footer name in every language", () => {
+  assert.ok(calculatorHrefs.length >= 9, `read only ${calculatorHrefs.length} hrefs`);
+  const missing = LOCALES.flatMap((l) => calculatorHrefs.filter((href) => !toolNames[l][href]?.label.trim()).map((href) => `${l} ${href}`));
+  assert.deepEqual(missing, []);
+});
+
+test("the income tax menu line names the two years the calculator compares", () => {
+  // It went stale once ("2026 vs 2025" after the page moved to 2027): this
+  // fails again when the rates gain a new year and the line is not updated.
+  const { current, prior } = comparisonYears();
+  const wrong = LOCALES.filter((l) => {
+    const desc = toolNames[l]["/tools/ireland-income-tax"]?.desc ?? "";
+    return !(desc.indexOf(String(current)) >= 0 && desc.indexOf(String(current)) < desc.lastIndexOf(String(prior)));
   });
   assert.deepEqual(wrong, []);
 });

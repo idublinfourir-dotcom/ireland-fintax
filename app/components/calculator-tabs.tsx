@@ -8,7 +8,7 @@ export const CALCULATOR_TOOLS = [
   {
     href: "/tools/ireland-income-tax",
     label: "Income tax",
-    desc: "Income tax, USC & PRSI: 2026 vs 2025",
+    desc: "Income tax, USC & PRSI: 2027 vs 2026",
   },
   {
     href: "/tools/ireland-vat",

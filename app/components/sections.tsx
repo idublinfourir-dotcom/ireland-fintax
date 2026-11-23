@@ -8,6 +8,7 @@ import { HeroVideo } from "./hero-video";
 import { HeroCoverflow } from "./hero-coverflow";
 import { TaxCalendarBoard, type CalendarRow } from "./tax-calendar-board";
 import { CALCULATOR_TOOLS } from "./calculator-tabs";
+import { PERSONAL_TOOLS } from "./personal-tabs";
 import { getTaxRates } from "../lib/tax-data";
 import { comparisonYears } from "../lib/ireland-income-tax";
 import { getVatData } from "../lib/vat-data";
@@ -98,6 +99,12 @@ function Index({ n }: { n: number }) {
 
 /* ---------- hero ---------- */
 
+/* The tax calculators: the /tools ones plus stamp duty, the one tax
+   calculator in the Personal hub (mortgage and the investment planner are
+   not tax calculators). */
+const TAX_CALCULATOR_COUNT =
+  CALCULATOR_TOOLS.length + PERSONAL_TOOLS.filter((tool) => tool.href === "/personal/stamp-duty").length;
+
 export async function Hero() {
   const { locale, t } = await getMessages();
   const h = (await getT(homeMessages)).hero;
@@ -107,7 +114,7 @@ export async function Hero() {
   const median = owner[Math.floor(owner.length / 2)] ?? 4;
   const num = numberFormat(locale);
   const stats = [
-    { value: num.format(CALCULATOR_TOOLS.length), label: h.stats.tools },
+    { value: num.format(TAX_CALCULATOR_COUNT), label: h.stats.tools },
     { value: euro(locale, rates[current].incomeTax.srcop.single), label: h.stats.band.replace("{year}", String(current)) },
     { value: num.format(LIVE_LOCALES.length), label: h.stats.languages },
   ];
@@ -166,7 +173,7 @@ export async function Hero() {
             <Emphasis text={h.title.replace("{budget}", budgetLabel(t))} className="block text-primary-300 not-italic" />
           </h1>
           <p className="animate-fade-up mt-7 max-w-xl text-lg leading-8 text-white/80 [animation-delay:150ms]">
-            {h.lede.replace("{count}", num.format(CALCULATOR_TOOLS.length))}
+            {h.lede.replace("{count}", num.format(TAX_CALCULATOR_COUNT))}
           </p>
           <div className="animate-fade-up mt-8 flex flex-col items-stretch gap-3 [animation-delay:220ms] sm:flex-row sm:items-center sm:gap-3.5">
             <Button locale={locale} href="/tools/ireland-income-tax" className="group">

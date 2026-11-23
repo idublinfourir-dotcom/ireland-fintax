@@ -54,11 +54,6 @@ export const bn: Messages = {
     resources: "রিসোর্স",
     company: "প্রতিষ্ঠান",
     links: {
-      incomeTax: "আয়কর ও PAYE",
-      corporationTax: "করপোরেট কর (12.5%)",
-      cgt: "মূলধনি লাভ কর (CGT)",
-      cat: "উপহার ও উত্তরাধিকার কর (CAT)",
-      rd: "Section 766 R&D ক্রেডিট",
       mortgage: "মর্টগেজ ও ঋণ",
       stampDuty: "স্ট্যাম্প ডিউটি",
       investment: "বিনিয়োগ ও ডিমড ডিসপোজাল",

@@ -8,7 +8,7 @@ export type ToolNames = Record<string, { label: string; desc: string }>;
 
 export const toolNames: Translations<ToolNames> = {
   en: {
-    "/tools/ireland-income-tax": { label: "Income tax", desc: "Income tax, USC & PRSI: 2026 vs 2025" },
+    "/tools/ireland-income-tax": { label: "Income tax", desc: "Income tax, USC & PRSI: 2027 vs 2026" },
     "/tools/ireland-vat": { label: "VAT", desc: "Net VAT position: payable or receivable" },
     "/tools/ireland-corporation-tax": { label: "Corporation tax", desc: "12.5% trading, 25% passive: total tax due" },
     "/tools/ireland-rd-tax-credit": { label: "R&D credit", desc: "35% credit on qualifying R&D spend" },
@@ -23,7 +23,7 @@ export const toolNames: Translations<ToolNames> = {
     "/budget/2027": { label: "Budget 2027", desc: "Announced 6 October 2026. See what changes for you." },
   },
   ga: {
-    "/tools/ireland-income-tax": { label: "Cáin ioncaim", desc: "Cáin ioncaim, MSU agus ÁSPC: 2026 i gcomparáid le 2025" },
+    "/tools/ireland-income-tax": { label: "Cáin ioncaim", desc: "Cáin ioncaim, MSU agus ÁSPC: 2027 i gcomparáid le 2026" },
     "/tools/ireland-vat": { label: "CBL", desc: "Glanstaid CBL: iníoctha nó infhaighte" },
     "/tools/ireland-corporation-tax": { label: "Cáin chorparáide", desc: "12.5% trádála, 25% éighníomhach: an cháin iomlán dlite" },
     "/tools/ireland-rd-tax-credit": { label: "Creidmheas T&F", desc: "Creidmheas 35% ar chaiteachas incháilithe T&F" },
@@ -38,7 +38,7 @@ export const toolNames: Translations<ToolNames> = {
     "/budget/2027": { label: "Buiséad 2027", desc: "Fógraíodh é ar 6 Deireadh Fómhair 2026. Féach cad a athraíonn duit." },
   },
   es: {
-    "/tools/ireland-income-tax": { label: "Impuesto sobre la renta", desc: "Impuesto sobre la renta, USC y PRSI: 2026 frente a 2025" },
+    "/tools/ireland-income-tax": { label: "Impuesto sobre la renta", desc: "Impuesto sobre la renta, USC y PRSI: 2027 frente a 2026" },
     "/tools/ireland-vat": { label: "IVA", desc: "Saldo de IVA: a pagar o a devolver" },
     "/tools/ireland-corporation-tax": { label: "Impuesto de sociedades", desc: "12,5 % actividad comercial, 25 % pasiva: impuesto total" },
     "/tools/ireland-rd-tax-credit": { label: "Crédito por I+D", desc: "Crédito del 35 % sobre el gasto en I+D que cumple los requisitos" },
@@ -53,7 +53,7 @@ export const toolNames: Translations<ToolNames> = {
     "/budget/2027": { label: "Presupuesto 2027", desc: "Anunciado el 6 de octubre de 2026. Mira qué cambia para ti." },
   },
   pt: {
-    "/tools/ireland-income-tax": { label: "Imposto de renda", desc: "Imposto de renda, USC e PRSI: 2026 x 2025" },
+    "/tools/ireland-income-tax": { label: "Imposto de renda", desc: "Imposto de renda, USC e PRSI: 2027 x 2026" },
     "/tools/ireland-vat": { label: "IVA", desc: "Saldo de IVA: a pagar ou a receber" },
     "/tools/ireland-corporation-tax": { label: "Imposto sobre empresas", desc: "12,5% atividade comercial, 25% passiva: imposto total" },
     "/tools/ireland-rd-tax-credit": { label: "Crédito de P&D", desc: "Crédito de 35% sobre gastos qualificados de P&D" },
@@ -68,7 +68,7 @@ export const toolNames: Translations<ToolNames> = {
     "/budget/2027": { label: "Orçamento 2027", desc: "Anunciado em 6 de outubro de 2026. Veja o que muda para você." },
   },
   ar: {
-    "/tools/ireland-income-tax": { label: "ضريبة الدخل", desc: "ضريبة الدخل وUSC وPRSI: مقارنة 2026 بعام 2025" },
+    "/tools/ireland-income-tax": { label: "ضريبة الدخل", desc: "ضريبة الدخل وUSC وPRSI: مقارنة 2027 بعام 2026" },
     "/tools/ireland-vat": { label: "ضريبة القيمة المضافة", desc: "صافي ضريبة القيمة المضافة: مستحقة الدفع أو قابلة للاسترداد" },
     "/tools/ireland-corporation-tax": { label: "ضريبة الشركات", desc: "12.5% على النشاط التجاري و25% على الدخل السلبي: إجمالي الضريبة" },
     "/tools/ireland-rd-tax-credit": { label: "ائتمان البحث والتطوير", desc: "ائتمان بنسبة 35% على الإنفاق المؤهل على البحث والتطوير" },
@@ -83,7 +83,7 @@ export const toolNames: Translations<ToolNames> = {
     "/budget/2027": { label: "ميزانية 2027", desc: "أُعلنت في 6 أكتوبر 2026. اعرف ما الذي يتغير بالنسبة لك." },
   },
   bn: {
-    "/tools/ireland-income-tax": { label: "আয়কর", desc: "আয়কর, USC ও PRSI: 2026 বনাম 2025" },
+    "/tools/ireland-income-tax": { label: "আয়কর", desc: "আয়কর, USC ও PRSI: 2027 বনাম 2026" },
     "/tools/ireland-vat": { label: "ভ্যাট", desc: "নিট ভ্যাটের হিসাব: প্রদেয় নাকি ফেরতযোগ্য" },
     "/tools/ireland-corporation-tax": { label: "করপোরেট কর", desc: "ব্যবসায়িক আয়ে 12.5%, নিষ্ক্রিয় আয়ে 25%: মোট প্রদেয় কর" },
     "/tools/ireland-rd-tax-credit": { label: "R&D ক্রেডিট", desc: "যোগ্য R&D ব্যয়ের ওপর 35% কর ক্রেডিট" },
@@ -98,7 +98,7 @@ export const toolNames: Translations<ToolNames> = {
     "/budget/2027": { label: "বাজেট 2027", desc: "ঘোষিত 6 অক্টোবর 2026। দেখুন আপনার কী পরিবর্তন আসছে।" },
   },
   hi: {
-    "/tools/ireland-income-tax": { label: "आयकर", desc: "आयकर, USC और PRSI: 2026 बनाम 2025" },
+    "/tools/ireland-income-tax": { label: "आयकर", desc: "आयकर, USC और PRSI: 2027 बनाम 2026" },
     "/tools/ireland-vat": { label: "वैट", desc: "शुद्ध वैट स्थिति: देय या वापसी योग्य" },
     "/tools/ireland-corporation-tax": { label: "कॉर्पोरेशन टैक्स", desc: "व्यापार पर 12.5%, निष्क्रिय आय पर 25%: कुल देय टैक्स" },
     "/tools/ireland-rd-tax-credit": { label: "R&D क्रेडिट", desc: "योग्य अनुसंधान और विकास ख़र्च पर 35% क्रेडिट" },
