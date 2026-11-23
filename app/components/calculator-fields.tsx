@@ -345,6 +345,21 @@ export function RateStamp({
   );
 }
 
+/** The Chartered Accountant line, under every calculator. Tinted, bold and
+    larger than the grey small print around it, at the owner's ask, so it is
+    seen. `className` carries the caller's spacing only. */
+export function AdviceNote({ className = "" }: { className?: string }) {
+  const t = useT(calcMessages);
+  return (
+    <p className={`flex items-start gap-2.5 border-s-4 border-primary-500 bg-primary-50 px-4 py-3 text-start text-sm font-semibold leading-6 text-primary-600 ${className}`}>
+      <svg aria-hidden="true" viewBox="0 0 20 20" fill="currentColor" className="mt-0.5 h-5 w-5 shrink-0">
+        <path fillRule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm.9-11.5a.9.9 0 1 1-1.8 0 .9.9 0 0 1 1.8 0ZM9.25 9h1.5v5h-1.5Z" />
+      </svg>
+      <span>{t.adviceNote}</span>
+    </p>
+  );
+}
+
 /** Indicative-estimate disclaimer shown with every result. */
 export function ResultDisclaimer({
   asOf,
@@ -357,7 +372,8 @@ export function ResultDisclaimer({
   const [before, after] = t.disclaimer.split("{link}");
   return (
     <div className="mt-8 border-t border-line pt-6">
-      <p className="text-xs leading-5 text-muted">
+      <AdviceNote />
+      <p className="mt-4 text-xs leading-5 text-muted">
         {before}
         <a
           href={sourceUrl}

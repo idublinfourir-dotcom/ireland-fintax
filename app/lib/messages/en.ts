@@ -60,11 +60,6 @@ export const en = {
     company: "Company",
     /* {budget} is the Budget's label in this language, from header.tools. */
     links: {
-      incomeTax: "Income tax & PAYE",
-      corporationTax: "Corporation tax (12.5%)",
-      cgt: "Capital gains tax",
-      cat: "Capital acquisitions tax (CAT)",
-      rd: "Section 766 R&D credits",
       mortgage: "Mortgage & borrowing",
       stampDuty: "Stamp duty",
       investment: "Investment & deemed disposal",

@@ -55,11 +55,6 @@ export const ar: Messages = {
     resources: "موارد",
     company: "المنصّة",
     links: {
-      incomeTax: "ضريبة الدخل وPAYE",
-      corporationTax: "ضريبة الشركات (12.5%)",
-      cgt: "ضريبة الأرباح الرأسمالية",
-      cat: "ضريبة الهبات والمواريث (CAT)",
-      rd: "إعفاءات البحث والتطوير، المادة 766",
       mortgage: "الرهن العقاري والاقتراض",
       stampDuty: "رسم الدمغة",
       investment: "الاستثمار والبيع الافتراضي",

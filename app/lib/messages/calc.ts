@@ -15,6 +15,7 @@ const en = {
   source: "Source: revenue.ie",
   disclaimer:
     "This is an indicative estimate only, not tax advice. Figures are general and may not reflect reliefs, exemptions or your specific circumstances. Confirm any figure with a qualified adviser or {link} before acting on it.",
+  adviceNote: "Based on our best estimates; please speak to a Chartered Accountant for professional advice.",
   noAmount: "No amount entered yet",
   budgetLink: "See what {budget} changes for you →",
   budgetStatus: "Announced in {budget}, subject to the Finance Bill (checked {date}).",
@@ -39,6 +40,7 @@ export const calcMessages: Translations<CalcMessages> = {
     source: "Fuente: revenue.ie",
     disclaimer:
       "Esto es solo una estimación orientativa, no asesoramiento fiscal. Las cifras son generales y puede que no reflejen deducciones, exenciones ni tus circunstancias concretas. Confirma cualquier cifra con un asesor cualificado o en {link} antes de actuar.",
+    adviceNote: "Basado en nuestras mejores estimaciones; habla con un contable colegiado (Chartered Accountant) para recibir asesoramiento profesional.",
     noAmount: "Aún no has introducido ninguna cantidad",
     budgetLink: "Mira qué cambia para ti el {budget} →",
     budgetStatus: "Anunciado en el {budget}, sujeto al Proyecto de Ley de Finanzas (revisado el {date}).",
@@ -57,6 +59,7 @@ export const calcMessages: Translations<CalcMessages> = {
     source: "Fonte: revenue.ie",
     disclaimer:
       "Esta é apenas uma estimativa indicativa, não aconselhamento fiscal. Os números são gerais e podem não refletir isenções, deduções ou a sua situação específica. Confirme qualquer número com um consultor qualificado ou em {link} antes de agir.",
+    adviceNote: "Com base em nossas melhores estimativas; fale com um contador credenciado (Chartered Accountant) para receber aconselhamento profissional.",
     noAmount: "Nenhum valor informado ainda",
     budgetLink: "Veja o que o {budget} muda para você →",
     budgetStatus: "Anunciado no {budget}, sujeito ao Projeto de Lei de Finanças (verificado em {date}).",
@@ -75,6 +78,7 @@ export const calcMessages: Translations<CalcMessages> = {
     source: "Foinse: revenue.ie",
     disclaimer:
       "Meastachán táscach amháin é seo, ní comhairle chánach. Is figiúirí ginearálta iad agus b’fhéidir nach léiríonn siad faoisimh, díolúintí ná do chúinsí féin. Deimhnigh aon fhigiúr le comhairleoir cáilithe nó ar {link} sula ngníomhaíonn tú air.",
+    adviceNote: "Bunaithe ar ár meastacháin is fearr; labhair le Cuntasóir Cairte chun comhairle ghairmiúil a fháil.",
     noAmount: "Níl aon mhéid curtha isteach fós",
     budgetLink: "Féach cad a athraíonn {budget} duit →",
     budgetStatus: "Fógartha i {budget}, faoi réir an Bhille Airgeadais (seiceáilte {date}).",
@@ -93,6 +97,7 @@ export const calcMessages: Translations<CalcMessages> = {
     source: "المصدر: revenue.ie",
     disclaimer:
       "هذا تقدير إرشادي فقط، وليس نصيحة ضريبية. الأرقام عامة وقد لا تعكس الإعفاءات أو الاستثناءات أو ظروفك الخاصة. تحقق من أي رقم مع مستشار مؤهل أو {link} قبل أن تتصرف بناءً عليه.",
+    adviceNote: "مبني على أفضل تقديراتنا؛ يُرجى التحدث إلى محاسب قانوني (Chartered Accountant) للحصول على مشورة مهنية.",
     noAmount: "لم يُدخل أي مبلغ بعد",
     budgetLink: "اعرف ما الذي تغيّره {budget} بالنسبة لك ←",
     budgetStatus: "أُعلن في {budget}، رهنًا بمشروع قانون المالية (تم التحقق في {date}).",
@@ -111,6 +116,7 @@ export const calcMessages: Translations<CalcMessages> = {
     source: "উৎস: revenue.ie",
     disclaimer:
       "এটি কেবল একটি আনুমানিক হিসাব, কোনো কর পরামর্শ নয়। হিসাবগুলো সাধারণ এবং এতে সব ধরনের কর ছাড়, কর অব্যাহতি বা আপনার নির্দিষ্ট পরিস্থিতি প্রতিফলিত নাও হতে পারে। কোনো পদক্ষেপ নেওয়ার আগে উপযুক্ত পেশাদার উপদেষ্টা বা {link}-এর সাথে যাচাই করে নিন।",
+    adviceNote: "আমাদের সর্বোত্তম অনুমানের ভিত্তিতে তৈরি; পেশাদার পরামর্শের জন্য একজন চার্টার্ড অ্যাকাউন্ট্যান্টের সাথে কথা বলুন।",
     noAmount: "এখনো কোনো অঙ্ক লেখা হয়নি",
     budgetLink: "{budget} আপনার জন্য কী বদলাচ্ছে, দেখুন →",
     budgetStatus: "{budget}-এ ঘোষিত, Finance Bill পাসের ওপর নির্ভরশীল ({date} তারিখে যাচাইকৃত)।",
@@ -129,6 +135,7 @@ export const calcMessages: Translations<CalcMessages> = {
     source: "स्रोत: revenue.ie",
     disclaimer:
       "यह केवल एक अनुमान है, टैक्स सलाह नहीं। आँकड़े सामान्य हैं और हो सकता है इनमें राहतें, छूटें या आपकी ख़ास स्थिति शामिल न हो। किसी भी आँकड़े पर अमल करने से पहले किसी योग्य सलाहकार या {link} से पुष्टि कर लें।",
+    adviceNote: "हमारे सबसे अच्छे अनुमानों पर आधारित; पेशेवर सलाह के लिए किसी चार्टर्ड अकाउंटेंट से बात करें।",
     noAmount: "अभी कोई राशि नहीं डाली गई",
     budgetLink: "देखें {budget} आपके लिए क्या बदलता है →",
     budgetStatus: "{budget} में घोषित, Finance Bill के अधीन ({date} को जाँचा गया)।",

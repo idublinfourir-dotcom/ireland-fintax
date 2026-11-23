@@ -26,7 +26,7 @@ import {
 } from "../lib/budget-2027";
 import type { YearRates } from "../lib/ireland-income-tax";
 import { CheckIcon, Chevron, GroupRow } from "./ui";
-import { btnOutline, btnPrimary, CurrencyField, NumericField, useFormat } from "./calculator-fields";
+import { AdviceNote, btnOutline, btnPrimary, CurrencyField, NumericField, useFormat } from "./calculator-fields";
 import { useT } from "./locale-link";
 import { budgetMessages, type BudgetMessages } from "../lib/messages/budget";
 import { budgetWords } from "../lib/budget-2027-words";
@@ -664,6 +664,7 @@ export function Budget2027Planner({ ratesByYear }: { ratesByYear: Record<number,
       <p className="mt-12 max-w-2xl text-xs leading-5 text-muted">
         {t.footer}
       </p>
+      <AdviceNote className="mt-4 max-w-2xl" />
     </div>
   );
 }

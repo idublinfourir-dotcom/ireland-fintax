@@ -30,7 +30,7 @@ import {
 import { useT } from "./locale-link";
 import { investmentMessages } from "../lib/messages/investment";
 import { investmentData } from "../lib/messages/investment-options";
-import { useFormat } from "./calculator-fields";
+import { AdviceNote, useFormat } from "./calculator-fields";
 import { localDate, numberFormat } from "../lib/i18n";
 
 /* ---------- the page's language ---------- */
@@ -563,6 +563,7 @@ export function IrelandInvestmentPlanner() {
           <p className="max-w-3xl text-sm leading-6 text-muted">
             {t.plannerDisclaimer.replace("{date}", localDate(locale, DATA_AS_OF))}
           </p>
+          <AdviceNote className="mt-4" />
           <Link
             href="/contact"
             className="mt-4 inline-flex text-sm font-semibold text-primary-500 transition-colors duration-200 hover:text-primary-600"

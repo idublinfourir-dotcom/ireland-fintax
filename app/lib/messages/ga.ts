@@ -54,11 +54,6 @@ export const ga: Messages = {
     resources: "Acmhainní",
     company: "Eagraíocht",
     links: {
-      incomeTax: "Cáin ioncaim agus ÍMAT",
-      corporationTax: "Cáin chorparáide (12.5%)",
-      cgt: "Cáin ghnóchan caipitiúil",
-      cat: "Cáin fáltas caipitiúil (CFC)",
-      rd: "Creidmheasanna T&F alt 766",
       mortgage: "Morgáiste agus iasachtaí",
       stampDuty: "Dleacht stampála",
       investment: "Infheistíocht agus diúscairt mheasta",

@@ -54,11 +54,6 @@ export const hi: Messages = {
     resources: "संसाधन",
     company: "संस्था",
     links: {
-      incomeTax: "इनकम टैक्स और PAYE",
-      corporationTax: "कॉर्पोरेशन टैक्स (12.5%)",
-      cgt: "कैपिटल गेन्स टैक्स",
-      cat: "उपहार और विरासत टैक्स (CAT)",
-      rd: "सेक्शन 766 R&D क्रेडिट",
       mortgage: "मॉर्गेज और उधार",
       stampDuty: "स्टांप ड्यूटी",
       investment: "निवेश और डीम्ड डिस्पोज़ल",
