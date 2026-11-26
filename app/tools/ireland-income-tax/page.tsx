@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { ReviewedBy } from "../../components/reviewed-by";
+import { GuideLink } from "../../components/guide-link";
 import { Breadcrumbs, BudgetNote, Container, PageHero } from "../../components/ui";
 import { ContactCta } from "../../components/sections";
 import { CalculatorTabs } from "../../components/tool-tabs";
@@ -62,6 +63,7 @@ export default async function IrelandIncomeTaxPage() {
             : years(t.budgetAfter).replace("{budget}", budgetLabel)}
         </BudgetNote>
         <ReviewedBy className="mt-2" />
+        <GuideLink slug="how-irish-income-tax-works" />
 
         <div className="mt-12 grid gap-6 sm:grid-cols-3">
           {t.notes.map((raw) => ({ title: years(raw.title), body: years(raw.body) })).map((note) => (

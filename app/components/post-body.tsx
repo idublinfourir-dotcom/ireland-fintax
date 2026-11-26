@@ -41,6 +41,7 @@ export function PostImg({
       src={imageUrl(image, width)}
       alt={alt}
       loading={eager ? "eager" : "lazy"}
+      fetchPriority={eager ? "high" : undefined}
       decoding="async"
       {...size}
       className={className}
