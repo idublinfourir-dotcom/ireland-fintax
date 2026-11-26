@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { ReviewedBy } from "../../components/reviewed-by";
+import { GuideLink } from "../../components/guide-link";
 import { Breadcrumbs, BudgetNote, Container, PageHero } from "../../components/ui";
 import { ContactCta } from "../../components/sections";
 import { PersonalTabs } from "../../components/tool-tabs";
@@ -63,6 +64,7 @@ export default async function IrelandMortgagePage() {
         </p>
         <BudgetNote>{t.budgetNote}</BudgetNote>
         <ReviewedBy className="mt-2" />
+        <GuideLink slug="how-much-can-you-borrow-mortgage-rules" />
 
         <div className="mt-12 grid gap-6 sm:grid-cols-3">
           {t.notes.map((note) => (

@@ -120,6 +120,19 @@ export async function getPublishedPost(slug: string): Promise<Post | null> {
   }
 }
 
+/** A published post's title, or null: for links to a post from other pages. */
+export async function getPublishedTitle(slug: string): Promise<string | null> {
+  if (!SLUG_PATTERN.test(slug)) return null;
+  try {
+    const posts = await postsCollection();
+    const doc = await posts.findOne({ ...publishedFilter(), slug }, { projection: { title: 1 } });
+    return doc?.title ?? null;
+  } catch (err) {
+    console.error("[blog] title read failed:", err);
+    return null;
+  }
+}
+
 /** Up to `limit` other posts: the same category first, then the newest. */
 export async function getRelatedPosts(
   post: Pick<Post, "id" | "category">,

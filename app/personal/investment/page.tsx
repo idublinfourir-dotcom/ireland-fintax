@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { ReviewedBy } from "../../components/reviewed-by";
+import { GuideLink } from "../../components/guide-link";
 import Link from "../../components/locale-link";
 import { Breadcrumbs, BudgetNote, Button, Container, PageHero } from "../../components/ui";
 import { ContactCta } from "../../components/sections";
@@ -77,6 +78,7 @@ export default async function PersonalInvestmentPage() {
           </Link>
         </BudgetNote>
         <ReviewedBy className="mt-2" />
+        <GuideLink slug="how-savings-and-investments-are-taxed" />
 
         <div className="mt-16 max-w-3xl border-t border-line pt-12">
           <h2 className="font-display text-3xl font-bold leading-tight tracking-[-0.02em] text-ink sm:text-4xl">
