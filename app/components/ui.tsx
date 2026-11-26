@@ -1,4 +1,4 @@
-import { Fragment, type CSSProperties, type ReactNode } from "react";
+import { Fragment, type ReactNode } from "react";
 import Link from "./locale-link";
 import { images, type ImageKey } from "../lib/images";
 import { LocaleLink } from "./locale-link";
@@ -166,13 +166,16 @@ export function PageHero({
   breadcrumb?: ReactNode;
   action?: ReactNode;
 }) {
-  const style: CSSProperties = { backgroundImage: `url(${images[image]})` };
   return (
     <section className="relative isolate overflow-hidden bg-navy-900 text-white">
-      <div
-        aria-hidden="true"
-        className="absolute inset-0 -z-20 bg-cover bg-center"
-        style={style}
+      {/* An <img>, not a CSS background, so the photo (the largest paint on
+          every inner page) can carry fetchPriority and be preloaded. */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={images[image]}
+        alt=""
+        fetchPriority="high"
+        className="absolute inset-0 -z-20 h-full w-full object-cover"
       />
       <div
         aria-hidden="true"
